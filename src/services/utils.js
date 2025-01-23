@@ -32,6 +32,24 @@ class Helper {
         return 'https://ik.imagekit.io/default.jpg'; // Default fallback image
     }
   }
+  static getDocumentUrl(documentPath) {
+    try {
+        // Check if documentPath is an object and extract documentUrl
+        if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string' && documentPath.documentUrl.startsWith('https://ik.imagekit.io')) {
+            return documentPath.documentUrl;
+        }
+        // Check if documentPath is a valid URL string directly
+        if (typeof documentPath === 'string' && documentPath.startsWith('https://ik.imagekit.io')) {
+            return documentPath;
+        }
+        // Handle invalid documentPath or non-string values
+        console.error('Invalid document path:', documentPath);
+        return 'https://ik.imagekit.io/default-document.pdf'; // Fallback document
+    } catch (error) {
+        console.error('Error generating document URL:', error);
+        return 'https://ik.imagekit.io/default-document.pdf'; // Default fallback document
+    }
+  }
   // Validation Functions
   static validateText(text) {
     const textPattern = /^[A-Z][a-z]{4,}$/
