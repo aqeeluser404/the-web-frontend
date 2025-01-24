@@ -1,11 +1,11 @@
 <template>
   <q-page>
-    <q-img src="~src/assets/theme/abstract1.jpg" alt="Hero Image" style="width: 100%; height: 100vh;">
+    <q-img src="" alt="Hero Image" style="width: 100%; height: 100vh;">
       <div class="absolute-full row justify-center items-center text-black">
 
         <q-card class="column q-pa-lg bg-white" style="max-width: 430px;">
           <div class="row justify-center">
-            <p class="font-size-responsive-xxxl anton-regular q-mb-md">CREATE A NEW ACCOUNT</p>
+            <p class="q-mb-md">CREATE A NEW ACCOUNT</p>
           </div>
           <br>
           <div class="q-gutter-lg q-mb-md">
@@ -29,13 +29,13 @@
 
           <div class="column col-12 col-md-4 text-center">
             <div class="q-mb-sm">
-              <router-link to="/auth/login" class="text-h6 caveat" style="text-decoration: underline; color: black;">
+              <router-link to="/auth/login" class="" style="text-decoration: underline; color: black;">
                 Already a member, login instead?
               </router-link>
             </div>
             <div>
-              <p class="text-caption">By signing up, you acknowledge and agree to Shaded Eyewear’s Terms of Service.</p>
-              <q-btn rounded label="Create your account" @click="onSubmit" color="black" text-color="white" class="q-px-lg q-py-sm custom-button font-size-responsive-md" style="width: 100%;" />
+              <p class="text-caption">By signing up, you acknowledge and agree to The Webs’s Terms of Service.</p>
+              <CustomButton label="Create your account" @click="onSubmit" />
             </div>
           </div>
         </q-card>
@@ -48,6 +48,7 @@
 <script>
   import UserService from 'src/services/UserService'
   import Helper from 'src/services/utils';
+  import CustomButton from 'src/components/CustomButton.vue';
 
   export default {
     name: "RegisterPage",
@@ -56,6 +57,9 @@
       return {
         user: { firstName: '', lastName: '', email: '', phone: '', username: '', password: '' }
       }
+    },
+    components: {
+      CustomButton
     },
     methods: {
       validateText: Helper.validateText,

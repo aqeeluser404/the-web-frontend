@@ -2,13 +2,94 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap')
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap')
 @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css')
-// @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')
 
-// body
-//   font-family: "Poppins", sans-serif
-//   font-weight: 400
-//   font-style: normal
 
+// =========================================
+// component styles
+.custom-button .q-btn__content
+  text-transform: none
+  display: flex
+  align-items: center
+  justify-content: center
+
+.round-btn                        // for icons
+  width: fit-content
+  height: fit-content
+  background: $primary
+  color: white
+
+
+// =========================================
+// container styles
+.list-container-nowrap                   // for nowrap
+  flex: 1 1 30%
+  max-width: 30%
+  box-sizing: border-box
+  margin: 1rem
+
+.carousel-container
+  flex: 1 1 30%
+  max-width: 29%
+  box-sizing: border-box
+  margin: 1rem
+  height: 350px
+  @media (max-width: 1024px)
+    flex: 1 1 90%
+    max-width: 50%
+    margin: 0rem
+    height: 100%
+
+
+// =========================================
+// screen styles
+.small-screen-only
+  @media (max-width: 1024px)
+    display: block
+  @media (min-width: 1025px)
+    display: none
+
+.large-screen-only
+  @media (max-width: 1024px)
+    display: none
+  @media (min-width: 1025px)
+    display: block
+
+.constrain
+  max-width: 1280px
+  margin: 0 auto
+
+.constrain-more
+  max-width: 600px
+  margin: 0 auto
+
+
+// =========================================
+// images styles
+.image
+  width: 400px
+  height: 400px
+  object-fit: cover
+  @media (max-width: 1025px)
+    width: 300px
+    height: 300px
+
+.product-image
+  height: 100%
+  max-height: 1280px
+
+
+// =========================================
+// element styles
+.cursor-pointer
+  cursor: pointer
+
+
+
+
+
+
+
+// =========================================
 // header code
 .header-transparent
   background-color: rgba(255, 255, 255, 0)
@@ -23,46 +104,12 @@
 .transparent-black
   color: black
 
-.list-container
-  flex: 1 1 30%
-  max-width: 30%
-  box-sizing: border-box
-  margin: 1rem
-
-.carousel-container
-  flex: 1 1 30%
-  max-width: 29%
-  box-sizing: border-box
-  margin: 1rem
-  height: 350px
-
-@media (max-width: 1024px)
-  .carousel-container
-    flex: 1 1 90%
-    max-width: 50%
-    margin: 0rem
-    height: 100%
-
-// ================================================================= // LAYOUT
 
 
-.small-screen-only
-  @media (max-width: 1024px)
-    display: block
-  @media (min-width: 1025px)
-    display: none
-
-.large-screen-only
-  @media (max-width: 1024px)
-    display: none
-
-  @media (min-width: 1025px)
-    display: block
 
 
-.constrain
-  max-width: 1280px
-  margin: 0 auto
+
+
 
 .constrain-sunglasses
   max-width: 1024px
@@ -70,10 +117,6 @@
 
 .constrain-carousel
   max-width: 1024px
-
-.constrain-more
-  max-width: 600px
-  margin: 0 auto
 
 p
   // margin: 0
@@ -92,14 +135,8 @@ p
   z-index: 999
 
 // ================================================================= // MISC
-.custom-button .q-btn__content
-  text-transform: none
-  display: flex
-  align-items: center
-  justify-content: center
 
-.cursor-pointer
-  cursor: pointer
+
 
 .dark-overlay
   position: fixed
@@ -143,11 +180,7 @@ p
   color: #800000
   font-weight: bold
 
-.round-btn
-  width: fit-content
-  height: fit-content
-  background: $primary
-  color: white
+
 
 // ================================================================= // FONTS
 .text-uppercase
@@ -223,14 +256,7 @@ p
 
 
 // ================================================================= // IMAGES
-// .image
-//   width: 300px
-//   height: 300px
-//   object-fit: cover
 
-.product-image
-  height: 100%
-  max-height: 1280px
 
 .image-rounded
   border-radius: 5%

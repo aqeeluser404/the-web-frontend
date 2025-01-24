@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" style="height: 10vh;">
+    <q-header class="bg-white flex" style="height: 10vh;" v-if="$route.path !== '/auth/login' && $route.path !== '/auth/register'">
 
       <q-toolbar class="q-px-lg text-black row items-center justify-between">
 
@@ -27,91 +27,98 @@
               label="Home" flat rounded />
 
             <q-btn
+              v-if="$route.path === '/'"
               @click="scrollToSection('amenities-section')"
               class="custom-button q-py-sm large-screen-only"
               label="Amenities" flat rounded />
 
             <q-btn
+              v-if="$route.path === '/'"
               @click="scrollToSection('images-section')"
               class="custom-button q-py-sm large-screen-only"
               label="Images" flat rounded />
 
             <q-btn
+              v-if="$route.path === '/'"
               @click="scrollToSection('academics-section')"
               class="custom-button q-py-sm large-screen-only"
               label="Academics" flat rounded />
 
             <q-btn
+              v-if="$route.path === '/'"
               @click="scrollToSection('units-section')"
               class="custom-button q-py-sm large-screen-only"
               label="Units" flat rounded />
 
             <q-btn
+              v-if="$route.path === '/'"
               @click="scrollToSection('contact-section')"
               class="custom-button q-py-sm large-screen-only"
               label="Contract" flat rounded />
 
-            <!-- authentication -->
+            <!-- dashboards -->
             <q-btn
-              v-if="!isLoggedIn"
-              to="/auth/login"
-              class="custom-button q-py-sm large-screen-only"
-              label="Login" flat rounded />
-
-            <q-btn
-              v-else
-              @click="logout"
-              class="custom-button q-py-sm large-screen-only"
-              label="Logout" flat rounded />
-
-            <!-- user dashboard -->
-            <q-btn
+              v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')"
               @click="openDash"
               class="custom-button q-py-sm large-screen-only"
-              icon="eva-person-outline" flat rounded />
-
-            <!-- admin -->
+              label="Book Now" rounded />
             <q-btn
               v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
               to="/admin/dashboard"
-              class="custom-button q-py-sm large-screen-only font-size-responsive-sm text-black"
-              icon="eva-pie-chart-outline" flat rounded />
+              class="custom-button q-py-sm large-screen-only"
+              icon="eva-pie-chart-outline" rounded />
+
+            <!-- authentication -->
+            <CustomButton
+              v-if="!isLoggedIn"
+              label="Login"
+              to="/auth/login"
+              class="large-screen-only"
+              :customStyle="{ width: 'fit-content' }"
+            />
+            <CustomButton
+              v-else
+              label="Logout"
+              @click="logout"
+              class="large-screen-only"
+              :customStyle="{ width: 'fit-content' }"
+            />
           </div>
 
           <!-- Mobile nav -->
           <q-btn-dropdown class="small-screen-only" dropdown-icon="menu" flat>
-            <q-list style="width: 200px">
+            <q-list style="width: 200px;">
               <q-item clickable v-close-popup to="/">
                 <q-item-section class="">Home</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('amenities-section')">Amenities</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('images-section')">Images</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('academics-section')">Academics</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('units-section')">Units</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('contact-section')">Contact</q-item-section>
               </q-item>
 
               <!-- authentication -->
+              <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')">
+                <q-item-section class="">Book Now</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/admin/dashboard" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+                <q-item-section class="">Admin Dashboard</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
                 <q-item-section class="">Login</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="logout" v-else>
                 <q-item-section class="">Logout</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="openDash">
-                <q-item-section class="">User Profile</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup to="/admin/dashboard" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
-                <q-item-section class="">Admin Panel</q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -121,6 +128,16 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- <q-footer class="bg-black text-white q-pa-md">
+      <q-toolbar class="constrain">
+        <q-toolbar-title>
+          <div class="row justify-center items-center q-pa-md">
+            The Web ™ | Est. 2025 | Developed by WLV Solutions
+          </div>
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer> -->
   </q-layout>
 </template>
 
@@ -129,6 +146,7 @@ import logoWhite from '../assets/resources/logos/THE WEB.gif'
 import logoBlack from '../assets/resources/logos/THE WEB.gif'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
+import CustomButton from 'src/components/CustomButton.vue'
 
 export default {
   data() {
@@ -144,6 +162,9 @@ export default {
       logoWhite, logoBlack,
       logoSrc: logoWhite,
     }
+  },
+  components: {
+    CustomButton
   },
   mounted() {
     this.checkLoginStatus()
@@ -194,13 +215,28 @@ export default {
     handleLogout() {
       Helper.removeCookie('token')
     },
+    async logout() {
+      this.$q.dialog({
+        title: 'Logout', message: `You are about to logout, continue?`, color: 'primary', cancel: true, persistent: true
+      }).onOk(async () => {
+        const response = await UserService.logout(this.userDetails._id)
+        if (response) {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'You have successfully logged out!' })
+          this.$router.push('/')
+          this.isLoggedIn = false
+          window.location.reload()
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Logout failed. Please try again.' })
+        }
+      })
+    },
     async fetchUserDetails() {
       const response = await UserService.FindUserByToken()
       this.userDetails = response
     },
     async openDash() {
       if (this.isLoggedIn == true) {
-        this.$router.push('/user/dashboard')
+        this.$router.push('/units/apply')
       } else {
         this.$q.notify({ type: 'negative', message: 'Please login to continue.' })
       }

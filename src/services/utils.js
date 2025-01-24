@@ -1,9 +1,12 @@
 import { format } from 'quasar'
-// import { jwtDecode } from 'jwt-decode'
-import CryptoJS from 'crypto-js';
-import axios from 'axios';
+import axios from 'axios'
+import UserService from './UserService'
+import UnitService from './UnitService';
 
 class Helper {
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // FORMATTING FUNCTIONS
   static formatDate(dateString) {
     const date = new Date(dateString);
     const options = { day: 'numeric', month: 'short', year: 'numeric' };
@@ -14,43 +17,42 @@ class Helper {
     const lowerCaseText = text.toLowerCase();
     return format.capitalize(lowerCaseText);
   }
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // GETTING DATA FUNCTIONS
   static getImageUrl(imagePath) {
     try {
-        // Check if imagePath is an object and extract imageUrl
-        if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string' && imagePath.imageUrl.startsWith('https://ik.imagekit.io')) {
-            return imagePath.imageUrl;
-        }
-        // Check if imagePath is a valid URL string directly
-        if (typeof imagePath === 'string' && imagePath.startsWith('https://ik.imagekit.io')) {
-            return imagePath;
-        }
-        // Handle invalid imagePath or non-string values
-        console.error('Invalid image path:', imagePath);
-        return 'https://ik.imagekit.io/default.jpg'; // Fallback image
+      if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string' && imagePath.imageUrl.startsWith('https://ik.imagekit.io')) {
+        return imagePath.imageUrl;
+      }
+      if (typeof imagePath === 'string' && imagePath.startsWith('https://ik.imagekit.io')) {
+        return imagePath;
+      }
+      console.error('Invalid image path:', imagePath);
+      return 'https://ik.imagekit.io/default.jpg';
     } catch (error) {
-        console.error('Error generating image URL:', error);
-        return 'https://ik.imagekit.io/default.jpg'; // Default fallback image
+      console.error('Error generating image URL:', error);
+      return 'https://ik.imagekit.io/default.jpg';
     }
   }
   static getDocumentUrl(documentPath) {
     try {
-        // Check if documentPath is an object and extract documentUrl
-        if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string' && documentPath.documentUrl.startsWith('https://ik.imagekit.io')) {
-            return documentPath.documentUrl;
-        }
-        // Check if documentPath is a valid URL string directly
-        if (typeof documentPath === 'string' && documentPath.startsWith('https://ik.imagekit.io')) {
-            return documentPath;
-        }
-        // Handle invalid documentPath or non-string values
-        console.error('Invalid document path:', documentPath);
-        return 'https://ik.imagekit.io/default-document.pdf'; // Fallback document
+      if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string' && documentPath.documentUrl.startsWith('https://ik.imagekit.io')) {
+        return documentPath.documentUrl;
+      }
+      if (typeof documentPath === 'string' && documentPath.startsWith('https://ik.imagekit.io')) {
+        return documentPath;
+      }
+      console.error('Invalid document path:', documentPath);
+      return 'https://ik.imagekit.io/default-document.pdf';
     } catch (error) {
-        console.error('Error generating document URL:', error);
-        return 'https://ik.imagekit.io/default-document.pdf'; // Default fallback document
+      console.error('Error generating document URL:', error);
+      return 'https://ik.imagekit.io/default-document.pdf';
     }
   }
-  // Validation Functions
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // VALIDATION FUNCTION
   static validateText(text) {
     const textPattern = /^[A-Z][a-z]{4,}$/
     return textPattern.test(text)
@@ -71,29 +73,30 @@ class Helper {
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordPattern.test(password);
   }
-  // Function to check if the cookie exists on the server-side
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // COOKIE SECURITY FUNCTIONS
   static async checkCookie() {
     try {
-        const response = await axios.get(`https://the-web-backend.onrender.com/check-token`, { withCredentials: true });
-        return response.data.exists; // Assuming the server returns { exists: true/false }
+      const response = await axios.get(`https://the-web-backend.onrender.com/check-token`, { withCredentials: true });
+      return response.data.exists;
     } catch (error) {
-        console.error('Error checking token existence:', error);
-        return false;
+      console.error('Error checking token existence:', error);
+      return false;
     }
   }
-  // Function to get the cookie from the backend
   static async getCookie(name) {
     try {
-        if (name === 'token') {
-            const response = await axios.get(`https://the-web-backend.onrender.com/get-token`, { withCredentials: true });
-            return response.data || null;
-        } else {
-            console.log(`Cookie ${name} not found`);
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching token from backend:', error);
+      if (name === 'token') {
+        const response = await axios.get(`https://the-web-backend.onrender.com/get-token`, { withCredentials: true });
+        return response.data || null;
+      } else {
+        console.log(`Cookie ${name} not found`);
         return null;
+      }
+    } catch (error) {
+      console.error('Error fetching token from backend:', error);
+      return null;
     }
   }
   static async removeCookie(name) {
@@ -103,43 +106,63 @@ class Helper {
       console.error(`Error removing cookie ${name}:`, error);
     }
   }
-  static beforeRouteEnter(to, from, next) {
-    Helper.getCookie('token').then((token) => {
-      if (!token) {
-        next({ path: '/' }); // Redirect to home if no token
-      } else {
-        next(); // Proceed to the requested route
-      }
-    }).catch((error) => {
-      console.error('Error fetching token:', error);
-      next({ path: '/' }); // Handle the error case
-    });
+
+  // DATA RETRIEVAL
+  static async fetchUserDetails() {
+    try {
+      const response = await UserService.FindUserByToken()
+      return await UserService.findUserById(response._id)
+    } catch (error) {
+      throw error
+    }
   }
-  static beforeRouteEnterUser(to, from, next) {
-    Helper.getCookie('token').then((token) => {
-      // Check if token exists
-      if (!token) {
-        next({ path: '/' }); // Redirect to home if no token
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // AUTHENTICATED ROUTE FUNCTIONS
+
+  static async beforeRouteEnterUser(to, from, next) {
+    try {
+      const isLoggedIn = await Helper.checkCookie();
+      if (!isLoggedIn) {
+        next({ path: '/' });
       } else {
-        next(); // Proceed to the requested route
+        next();
       }
-    }).catch((error) => {
-      console.error('Error fetching token:', error);
-      next({ path: '/' }); // Redirect in case of error
-    });
+    } catch (error) {
+      console.error('Error fetching token or user details:', error);
+      next({ path: '/' });
+    }
   }
-  static beforeRouteLeave(to, from, next) {
-    Helper.getCookie('token').then((token) => {
-      // Check if token exists
-      if (!token) {
+  static async beforeRouteEnterAdmin(to, from, next) {
+    try {
+      const isLoggedIn = await Helper.checkCookie();
+      if (!isLoggedIn) {
+        next({ path: '/' });
+      } else {
+        const user = await UserService.FindUserByToken();
+        if (user && user.userType === 'admin') {
+          next();
+        } else {
+          next({ path: '/' });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching token or user details:', error);
+      next({ path: '/' });
+    }
+  }
+  static async beforeRouteLeaveUser(to, from, next) {
+    try {
+      const isLoggedIn = await Helper.checkCookie();
+      if (!isLoggedIn) {
         next(false); // Prevent navigation if no token
       } else {
-        next(); // Allow navigation
+        next(); // Allow navigation if token exists
       }
-    }).catch((error) => {
-      console.error('Error fetching token:', error);
-      next(false); // Prevent navigation in case of error
-    });
+    } catch (error) {
+      console.error('Error fetching token or user details:', error);
+      next(false);
+    }
   }
 }
 export default Helper
