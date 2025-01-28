@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" style="height: 10vh;" v-if="$route.path !== '/auth/login' && $route.path !== '/auth/register'">
+    <q-header class="bg-white flex" style="height: 10vh;" v-if="$route.path !== '/auth/login' && $route.path !== '/auth/register' && $route.path !== '/verify-email' && $route.path !== '/resend-verification'">
 
       <q-toolbar class="q-px-lg text-black row items-center justify-between">
 
@@ -61,26 +61,36 @@
               v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')"
               @click="openDash"
               class="custom-button q-py-sm large-screen-only"
-              label="Book Now" rounded />
+              label="Book Now" flat rounded />
+            <q-btn
+              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])"
+              to="/user/profile"
+              class="custom-button q-py-sm large-screen-only"
+              label="User Profile" flat rounded />
+            <q-btn
+              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])"
+              to="/user/applications"
+              class="custom-button q-py-sm large-screen-only"
+              label="Application History" flat rounded />
             <q-btn
               v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
               to="/admin/dashboard"
               class="custom-button q-py-sm large-screen-only"
-              icon="eva-pie-chart-outline" rounded />
+              icon="eva-pie-chart-outline" flat rounded />
 
             <!-- authentication -->
             <CustomButton
               v-if="!isLoggedIn"
               label="Login"
               to="/auth/login"
-              class="large-screen-only"
+              class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
             <CustomButton
               v-else
               label="Logout"
               @click="logout"
-              class="large-screen-only"
+              class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
           </div>
@@ -111,6 +121,13 @@
               <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')">
                 <q-item-section class="">Book Now</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup to="/user/profile" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])">
+                <q-item-section class="">User Profile</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/user/applications" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])">
+                <q-item-section class="">Application History</q-item-section>
+              </q-item>
+
               <q-item clickable v-close-popup to="/admin/dashboard" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
                 <q-item-section class="">Admin Dashboard</q-item-section>
               </q-item>
@@ -175,6 +192,9 @@ export default {
     },
   },
   methods: {
+    isRouteMatch(paths) {
+      return paths.includes(this.$route.path);
+    },
     scrollToSection(sectionId) {
       const element = document.getElementById(sectionId)
       if (element) {

@@ -1,10 +1,8 @@
 import axios from 'axios'
 
-// const API_BASE_URL = 'https://the-web-backend.onrender.com'
-
 // ensures cookies & tokens are validated
 const axiosInstance = axios.create({
-  baseURL: "https://the-web-backend.onrender.com",
+  baseURL: `${process.env.VUE_APP_API_BASE_URL}`,
   withCredentials: true
 })
 

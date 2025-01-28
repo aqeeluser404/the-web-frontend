@@ -85,6 +85,36 @@ class UserService {
       Logger.error(error)
     }
   }
+
+    // user document routes
+
+    static async uploadUserDocs(userId, documents) {
+      const ENDPOINT = `/users/${userId}/documents`
+      try {
+        const response = await axiosInstance.post(ENDPOINT, documents)
+        return response
+      } catch (error) {
+        Logger.error(error)
+      }
+    }
+    static async clearAllUserDocs(userId) {
+      const ENDPOINT = `/users/${userId}/documents`
+      try {
+        const response = await axiosInstance.post(ENDPOINT)
+        return response
+      } catch (error) {
+        Logger.error(error)
+      }
+    }
+    static async removeUserDoc(userId, fileId) {
+      const ENDPOINT = `/users/${userId}/documents/${fileId}`
+      try {
+        const response = await axiosInstance.delete(ENDPOINT)
+        return response
+      } catch (error) {
+        Logger.error(error)
+      }
+    }
 }
 
 export default UserService

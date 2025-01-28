@@ -17,6 +17,9 @@ const routes = [
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
       { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },
+
+      { path: '/verify-email', component: () => import('src/pages/email/VerifyEmailPage.vue')},
+      { path: '/resend-verification', component: () => import('src/pages/email/ResendVerificationEmailPage.vue') },
     ]
   },
 

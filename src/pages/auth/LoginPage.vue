@@ -4,7 +4,7 @@
       <div class="absolute-full column justify-center items-start text-black">
         <q-card bordered flat class="column q-pa-lg constrain" style="">
           <div class="row justify-center">
-            <p class="q-mb-md">RETURNING CUSTOMER</p>
+            <p class="q-mb-md text-h6">RETURNING CUSTOMER</p>
           </div>
           <br>
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" style="min-width: 280px;">
