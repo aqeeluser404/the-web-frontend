@@ -11,9 +11,12 @@
             <q-input filled label-color=black color="black" v-model="user.usernameOrEmail" label="Username or Email *" />
             <q-input filled label-color=black color="black" v-model="user.password" label="Password *" type="password" />
 
-            <div class="text-right q-my-none" style="transform: translateY(-1px);">
+            <div class="q-my-none column text-right" style="transform: translateY(-1px);">
               <router-link to="/forgot-password" style="text-decoration: underline; color: black;">
                 Forgot password?
+              </router-link>
+              <router-link to="/" style="text-decoration: underline; color: black;">
+                Go Back
               </router-link>
             </div>
             <div class="">
@@ -32,6 +35,16 @@
             </div>
           </q-form>
         </q-card>
+
+        <q-card flat class="constrain">
+
+        </q-card>
+
+        <!-- <div class="text-right q-my-none" style="transform: translateY(-1px);">
+              <router-link to="/forgot-password" style="text-decoration: underline; color: black;">
+                Forgot password?
+              </router-link>
+            </div> -->
       </div>
     </q-img>
   </q-page>

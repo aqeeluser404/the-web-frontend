@@ -1,7 +1,9 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
+import axios from 'axios'
 
+const VUE_APP_API_BASE_URL = process.env.VUE_APP_API_BASE_URL
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -24,6 +26,46 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
+  })
+
+  Router.beforeEach(async (to, from, next) => {
+    try {
+      const response = await axios.get(`${VUE_APP_API_BASE_URL}/health`)
+      if (response.status === 200) {
+        if (to.path === '/verify-email')  {
+          const token = to.query.token
+          if (token) {
+            next()
+          } else {
+            next(({ path: '/404'}))
+          }
+        } else if (to.path === '/resend-verification') {
+          if (from.path === '/verify-email') {
+            next()
+          } else {
+            next(({ path: '/404'}))
+          }
+        } else if (to.path === '/reset-password') {
+          const token = to.query.token
+          if (token) {
+            next()
+          } else {
+            next(({ path: '/404'}))
+          }
+        } else if (to.path === '/404') {
+          next('/');
+        } else {
+          next();
+        }
+      }
+    } catch (error) {
+      // If the server is offline or an error occurs
+      if (to.path !== '/404') {
+        next('/404');
+      } else {
+        next();
+      }
+    }
   })
 
   return Router

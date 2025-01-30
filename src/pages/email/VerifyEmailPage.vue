@@ -66,7 +66,6 @@ export default {
       } else {
         this.message = 'Invalid verification link.';
         this.success = false;
-        console.log(this.message); // Debugging statement
       }
     }
   }

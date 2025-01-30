@@ -4,7 +4,7 @@
       <q-list v-for="unit in units" :key="unit._id">
         <q-card
           flat bordered
-          class="cursor-pointer q-ma-sm"
+          class="q-ma-sm"
         >
           <q-card-section class="row justify-center">
             <div class="text-h6">{{ unit.unitType }} ({{ unit.unitStatus }})</div>
@@ -18,7 +18,7 @@
           </q-card-section>
           <q-card-section class="row justify-between">
             <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
-            <CustomButton label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
+            <CustomButton v-if="unit.unitStatus !== 'Occupied'" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
           </q-card-section>
         </q-card>
       </q-list>
@@ -28,7 +28,7 @@
       <UnitDetailsComponent :unit="selectedUnit" @close="detailsDialog = false" />
     </q-dialog>
     <q-dialog v-model="applyDialog">
-      <UnitApplicationForm :unit="selectedUnit" @close="applyDialog = false" />
+      <UnitApplicationForm :unit="selectedUnit" @close="handleDialogClose" />
     </q-dialog>
   </q-page>
 
@@ -72,6 +72,10 @@
       openApplicationForm(unit) {
         this.selectedUnit = unit,
         this.applyDialog = true
+      },
+      handleDialogClose() {
+        this.applyDialog = false
+        this.fetchUnits()
       }
     },
     created() {

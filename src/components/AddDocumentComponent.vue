@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 450px;">
+  <q-card style="width: 400px;">
     <q-card-section>
       <div class="text-h6">Add New Document</div>
     </q-card-section>

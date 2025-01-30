@@ -5,7 +5,7 @@ class RentalService {
   static async createRental(rentalDetails) {
     const ENDPOINT = "/rentals"
     try {
-      const response = await axiosInstance.post(ENDPOINT, { rentalDetails })
+      const response = await axiosInstance.post(ENDPOINT, rentalDetails)
       return response.data
     } catch (error) {
       Logger.error(error)
@@ -43,6 +43,15 @@ class RentalService {
     try {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static async deleteRental(rentalId) {
+    const ENDPOINT = `rentals/${rentalId}`
+    try {
+      const response = await axiosInstance.delete(ENDPOINT)
+      return response
     } catch (error) {
       Logger.error(error)
     }

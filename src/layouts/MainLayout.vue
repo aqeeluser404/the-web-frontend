@@ -1,7 +1,15 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" style="height: 10vh;" v-if="$route.path !== '/auth/login' && $route.path !== '/auth/register' && $route.path !== '/verify-email' && $route.path !== '/resend-verification'">
-
+    <q-header class="bg-white flex" style="height: 10vh;"
+      v-if="
+        $route.path !== '/auth/login' &&
+        $route.path !== '/auth/register' &&
+        $route.path !== '/verify-email' &&
+        $route.path !== '/resend-verification' &&
+        $route.path !== '/reset-password' &&
+        $route.path !== '/forgot-password'
+      "
+    >
       <q-toolbar class="q-px-lg text-black row items-center justify-between">
 
         <!-- title and avatar -->

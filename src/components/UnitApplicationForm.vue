@@ -1,15 +1,19 @@
 <template>
-  <q-card style="max-width: 450px;">
+  <q-card style="width: 400px;">
     <q-card-section>
       <div class="text-h6">Application Form</div>
     </q-card-section>
     <q-separator />
     <q-card-section>
-      <q-img
-        v-if="unit.images && unit.images.length > 0"
-        :src="getImageUrl(unit.images[0].imageUrl)"
-        class="q-mb-md"
-      />
+      <div class="image-container">
+        <q-img
+          v-if="unit.images && unit.images.length > 0"
+          :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
+          class="q-mb-md product-image"
+        />
+        <button class="nav-button left" @click="prevImage">‹</button>
+        <button class="nav-button right" @click="nextImage">›</button>
+      </div>
     </q-card-section>
 
     <q-card-section class="wrap-text">
@@ -32,19 +36,29 @@
         <li>Last Name: {{ userDetails.lastName }}</li>
         <li>Phone Number: {{ userDetails.phone }}</li>
         <li>Email Address: {{ userDetails.email }}</li>
-        <li v-if="userDetails.documents && userDetails.documents.length === 3">
-          <b>Documentation <span class="text-green">UPLOADED</span></b>
-        </li>
-        <li v-else>
-          <b>OUTSTANDING <span class="text-red">Documentation</span></b>
-        </li>
       </ul>
     </q-card-section>
 
     <q-card-section>
-      <div>Unit price <b>per monthly</b> installment: R {{ unit.unitPrice }}.00</div>
-    </q-card-section>
+      <div>
+        <div v-if="userDetails.verification && userDetails.verification.isVerified === true">
+          Your email has <span style="text-decoration: underline;">been verified</span>.
+        </div>
+        <div v-else>
+          Your email has <span style="text-decoration: underline;">not been verified</span>.
+        </div>
+      </div>
 
+      <div>
+        <div v-if="userDetails.documents && userDetails.documents.length === 3">
+          All your documents have been uploaded
+        </div>
+        <div v-else>
+          You still have documents <span style="text-decoration: underline;">outstanding</span>.
+        </div>
+      </div>
+      <div>Unit price per monthly installment: <b style="text-decoration: underline;">R {{ unit.unitPrice }}.00</b></div>
+    </q-card-section>
 
     <q-card-section class="row justify-between">
       <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
@@ -52,6 +66,8 @@
     </q-card-section>
   </q-card>
 </template>
+
+
 <script>
 import Helper from 'src/services/utils'
 import CustomButton from './CustomButton.vue'
@@ -67,8 +83,12 @@ export default {
   },
   data() {
     return {
+      currentImageIndex: 0,
       userDetails: {},
-      rentalDetails: { user: "", unit: ""}
+      rentalDetails: {
+        user: "",
+        unit: ""
+      }
     }
   },
   components: {
@@ -77,6 +97,13 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
 
+    nextImage() {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length;
+    },
+    prevImage() {
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length;
+    },
+
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()
     },
@@ -84,18 +111,20 @@ export default {
       this.rentalDetails.user = this.userDetails._id
       this.rentalDetails.unit = unit._id
 
-      try {
+      if (this.userDetails.verification && this.userDetails.verification.isVerified === true) {
         if (this.userDetails.documents && this.userDetails.documents.length === 3) {
-          const response = await RentalService.createRental(rentalDetails)
+          const response = await RentalService.createRental(this.rentalDetails)
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Your application has been successfully submitted. Please check your application history to monitor the status of your application.' })
+            this.$emit('close')
           }
         } else {
           this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure all required documentation is uploaded before proceeding with your application.' });
         }
-      } catch(error) {
-
+      } else {
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please verify your email before proceeding with your application.' });
       }
+
     }
   },
 
@@ -108,5 +137,29 @@ export default {
 <style lang="sass">
 .wrap-text
   white-space: pre-wrap
+
+.image-container
+  position: relative
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 300px
+
+.nav-button
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+  background: rgba(0, 0, 0, 0.5)
+  color: white
+  border: none
+  padding: 10px
+  cursor: pointer
+
+.nav-button.left
+  left: 10px
+
+
+.nav-button.right
+  right: 10px
 
 </style>

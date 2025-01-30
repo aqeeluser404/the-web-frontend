@@ -27,6 +27,7 @@
 <script>
 import EmailService from 'src/services/EmailService';
 import CustomButton from 'src/components/CustomButton.vue'
+import Helper from 'src/services/utils'
 
 export default {
   data() {
@@ -39,16 +40,26 @@ export default {
     CustomButton
   },
   methods: {
+    validateEmail: Helper.validateEmail,
+    validateFields() {
+      if (!this.validateEmail(this.email)) {
+        this.$q.notify({ type: 'negative', message: 'Invalid email address.' })
+        return false
+      }
+      return true
+    },
     async resendVerificationEmail() {
       if (this.email !== '') {
         try {
-          const response = await EmailService.resendVerificationEmail(this.email)
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Verification email resent successfully!' })
-            this.message = 'Verification email resent successfully!'
-          } else {
-            this.$q.notify({ type: 'negative', message: 'Error resending verification email.' })
-            this.message = 'Error resending verification email.'
+          if (this.validateFields()) {
+            const response = await EmailService.resendVerificationEmail(this.email)
+            if (response) {
+              this.$q.notify({ type: 'positive', color: 'primary', message: 'Verification email resent successfully!' })
+              this.message = 'Verification email resent successfully!'
+            } else {
+              this.$q.notify({ type: 'negative', message: 'Error resending verification email.' })
+              this.message = 'Error resending verification email.'
+            }
           }
         } catch (error) {
           this.$q.notify({ type: 'negative', message: 'An error occurred while resending the verification email. Please try again later.' })

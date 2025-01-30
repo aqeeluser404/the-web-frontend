@@ -100,7 +100,7 @@ class UserService {
     static async clearAllUserDocs(userId) {
       const ENDPOINT = `/users/${userId}/documents`
       try {
-        const response = await axiosInstance.post(ENDPOINT)
+        const response = await axiosInstance.delete(ENDPOINT)
         return response
       } catch (error) {
         Logger.error(error)

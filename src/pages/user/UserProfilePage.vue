@@ -1,13 +1,13 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center q-gutter-md">
+    <div class="q-pa-md row justify-center">
 
       <!-- user profile section -->
 
       <q-card
         flat
         bordered
-        class="col-md-4"
+        class="col-md-4 col-11 q-ma-sm"
       >
         <q-card-section>
           <div class="text-h6">Personal Details</div>
@@ -79,7 +79,7 @@
       <q-card
         flat
         bordered
-        class="col-md-4 full-height"
+        class="col-md-4 col-11 q-ma-sm full-height"
       >
         <q-card-section>
           <div class="text-h6">Your Documents</div>
@@ -98,12 +98,12 @@
                 />
               </q-card-section>
 
-              <q-card-section>
-                <div class="text-caption wrap-text">{{ document.documentUrl.split('/').pop() }}</div>
+              <q-card-section class="">
+                <div class="text-caption wrap-text limit-text">{{ document.documentUrl.split('/').pop() }}</div>
 
                 <div class="row justify-between q-my-md">
-                  <CustomButton flat @click="viewDocument(document._id)" label="OPEN" color="white" text-color="black" customStyle="width: 45%"  />
-                  <CustomButton flat @click="deleteDocument(document.fileId)" label="DELETE" color="white" text-color="black" customStyle="width: 45%"  />
+                  <CustomButton flat @click="viewDocument(document._id)" label="Open" color="white" text-color="black" customStyle="width: 45%"  />
+                  <CustomButton flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  />
                 </div>
 
               </q-card-section>
@@ -123,7 +123,7 @@
 
         <q-card-section  class="row justify-between">
           <CustomButton label="Add Document" customStyle="width: 45%" color="black" text-color="white" @click="openAddDocumentDialog" />
-          <CustomButton label="Remove All" customStyle="width: 45%" color="white" text-color="black" />
+          <CustomButton label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
         </q-card-section>
       </q-card>
     </div>
@@ -186,7 +186,7 @@ export default {
         const response = await EmailService.resendVerificationEmail(this.userDetails.email);
         if (response) {
           this.$q.notify({ type: 'negative', message: 'Please check your email for verification link.' })
-          this.getUserDetails()
+          this.fetchUserDetails()
         }
         this.message = 'Verification email resent successfully!';
       } catch (error) {
@@ -213,12 +213,12 @@ export default {
           const response = await UserService.updateUserDetails(this.userDetails._id, updatedUser)
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Update successful!' })
-            this.getUserDetails()
+            this.fetchUserDetails()
           } else {
             this.$q.notify({ type: 'negative', message: 'Update failed. Please try again.' })
           }
         }).onCancel(() => {
-          this.getUserDetails()
+          this.fetchUserDetails()
           return
         })
       }
@@ -235,6 +235,26 @@ export default {
       if (response) {
         this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' })
         this.fetchUserDetails()
+      }
+    },
+    async removeAllDocuments() {
+      if (this.userDetails.documents.length > 0) {
+        this.$q.dialog({
+          title: 'Confirm', message: `You are about to delete all your documents, continue?`, color: 'primary', cancel: true, persistent: true
+        }).onOk(async () => {
+          const response = await UserService.clearAllUserDocs(this.userDetails._id)
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' })
+            this.fetchUserDetails()
+          } else {
+            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' })
+          }
+        }).onCancel(() => {
+          this.fetchUserDetails()
+          return
+        })
+      } else {
+        this.$q.notify({ type: 'negative', message: 'You have no documents to delete. Please try again.' })
       }
     },
     openAddDocumentDialog() {
