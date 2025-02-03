@@ -57,7 +57,7 @@
       </q-card>
 
       <div class="col-md-5 col-12">
-        <q-img src="~src/assets/resources/home/amenities/about.jpeg" alt="hero image" class="side-image"/>
+        <q-img src="~src/assets/resources/home/amenities/About.jpeg" alt="hero image" class="side-image"/>
       </div>
     </div>
 
