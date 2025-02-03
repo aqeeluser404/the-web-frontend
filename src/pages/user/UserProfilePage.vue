@@ -69,7 +69,7 @@
           </q-item>
         </q-card-section>
         <q-card-section  class="row justify-between">
-          <CustomButton label="Save" customStyle="width: 45%" color="black" text-color="white" @click="updateUser" />
+          <CustomButton label="Save" customStyle="width: 45%" color="brown" text-color="white" @click="updateUser" />
           <CustomButton label="Verify Email" customStyle="width: 45%" color="white" text-color="black" @click="resendVerificationEmail" v-if="userDetails && userDetails.verification && !userDetails.verification.isVerified" />
         </q-card-section>
       </q-card>
@@ -122,7 +122,7 @@
         </div>
 
         <q-card-section  class="row justify-between">
-          <CustomButton label="Add Document" customStyle="width: 45%" color="black" text-color="white" @click="openAddDocumentDialog" />
+          <CustomButton label="Add Document" customStyle="width: 45%" color="brown" text-color="white" @click="openAddDocumentDialog" />
           <CustomButton label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
         </q-card-section>
       </q-card>

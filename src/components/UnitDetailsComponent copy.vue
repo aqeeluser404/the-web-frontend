@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
+  <q-card style="width: 400px;">
     <q-card-section>
       <div class="text-h6">{{ unit.unitType }} Details</div>
     </q-card-section>
@@ -17,17 +17,18 @@
     </q-card-section>
 
     <q-card-section class="wrap-text">
-      <div><b>Unit Availability</b></div>
-      <br>
-      <div>This unit accommodates up to {{ unit.unitOccupants }} occupants, currently housing <span style="text-decoration: underline;">{{ unit.currentOccupants }} residents</span>. <span v-if="unit.unitOccupants > unit.currentOccupants"><b>{{ unit.unitOccupants - unit.currentOccupants }} occupants</b> can still make an application.</span><span v-else>This unit has been fully booked.</span></div>
-
-      <br>
-      <div><b>Unit Description</b></div>
-      <br>
+      <div><b>Unit Specifications</b></div>
+      <ul>
+        <li>{{ unit.bedrooms }} Bedroom(s)</li>
+        <li>{{ unit.kitchens }} Kitchen(s)</li>
+        <li>{{ unit.bathrooms }} Bathroom(s)</li>
+        <li>{{ unit.parking }} Parking(s)</li>
+        <li>{{ unit.lounges }} Lounge(s)</li>
+      </ul>
       <div>{{ unit.unitDescription }}</div>
     </q-card-section>
     <q-card-section align="right">
-      <CustomButton label="Close" color="brown" @click="$emit('close')" />
+      <CustomButton label="Close" @click="$emit('close')" />
     </q-card-section>
   </q-card>
 </template>
@@ -75,7 +76,7 @@ export default {
   display: flex
   justify-content: center
   align-items: center
-  height: 450px
+  height: 300px
 
 .nav-button
   position: absolute

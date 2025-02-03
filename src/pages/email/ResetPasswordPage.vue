@@ -10,7 +10,7 @@
 
           <q-card-section>
             <q-input filled v-model="password" label="Enter your new password *" style="width: 100%;" class="q-mb-md"/>
-            <CustomButton @click="ResetPassword" icon="eva-email-outline" label="Change Password" />
+            <CustomButton color="brown" @click="ResetPassword" icon="eva-email-outline" label="Change Password" />
           </q-card-section>
 
           <q-card-section v-if="message" class="column items-center">

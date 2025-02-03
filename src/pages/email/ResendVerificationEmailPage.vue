@@ -10,7 +10,7 @@
 
           <q-card-section>
             <q-input filled v-model="email" label="Enter email for the verification code" style="width: 100%;" class="q-mb-md"/>
-            <CustomButton color="black" text-color="white" label="Send Verification" icon="eva-email-outline" @click="resendVerificationEmail" />
+            <CustomButton color="brown" text-color="white" label="Send Verification" icon="eva-email-outline" @click="resendVerificationEmail" />
             <CustomButton label="Home" to="/" color="white" text-color="black" class="q-mt-md" />
           </q-card-section>
 

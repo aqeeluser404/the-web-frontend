@@ -10,7 +10,7 @@
 
           <q-card-section>
             <q-input filled label-color=black color="black" v-model="email" label="Email to reset your password" style="width: 100%;" class="q-mb-md" />
-            <CustomButton @click="ForgotPassword" icon="eva-email-outline" color="black" text-color="white" label="Send Code" />
+            <CustomButton @click="ForgotPassword" icon="eva-email-outline" color="brown" text-color="white" label="Send Code" />
             <CustomButton to='auth/login' color="white" text-color="black" label="Return to Login" class="q-mt-md" />
           </q-card-section>
 

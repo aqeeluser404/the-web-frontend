@@ -10,7 +10,7 @@
 
           <q-card-section>
             <CustomButton v-if="success" label="Home" to="/" color="black" text-color="white" />
-            <CustomButton v-if="!success" label="Resend Verification" to="/resend-verification" color="black" text-color="white" icon="eva-email-outline" />
+            <CustomButton v-if="!success" label="Resend Verification" to="/resend-verification" color="brown" text-color="white" icon="eva-email-outline" />
           </q-card-section>
 
           <q-card-section v-if="message" class="column items-center">

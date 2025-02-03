@@ -7,7 +7,7 @@
           class="q-ma-sm"
         >
           <q-card-section class="row justify-center">
-            <div class="text-h6">{{ unit.unitType }} ({{ unit.unitStatus }})</div>
+            <div class="text-h6">{{ unit.unitType }} (<span class="text-brown">{{ unit.unitStatus }}</span>)</div>
           </q-card-section>
           <q-card-section class="">
             <q-img
@@ -18,7 +18,7 @@
           </q-card-section>
           <q-card-section class="row justify-between">
             <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
-            <CustomButton v-if="unit.unitStatus !== 'Occupied'" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
+            <CustomButton color="brown" v-if="unit.unitStatus !== 'Occupied'" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
           </q-card-section>
         </q-card>
       </q-list>

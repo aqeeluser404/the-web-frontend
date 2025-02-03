@@ -22,7 +22,7 @@
             <div class="">
               <CustomButton
                 label="Sign In"
-                color="black"
+                color="brown"
                 text-color="white"
                 class="q-mb-md"
               />

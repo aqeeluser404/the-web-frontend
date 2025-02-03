@@ -35,7 +35,7 @@
             </div>
             <div>
               <p class="text-caption">By signing up, you acknowledge and agree to The Webs’s Terms of Service.</p>
-              <CustomButton label="Create your account" @click="onSubmit" />
+              <CustomButton color="brown" label="Create your account" @click="onSubmit" />
             </div>
           </div>
         </q-card>

@@ -8,6 +8,7 @@
         $route.path !== '/resend-verification' &&
         $route.path !== '/reset-password' &&
         $route.path !== '/forgot-password'
+        // $route.path !== '/admin/dashboard'
       "
     >
       <q-toolbar class="q-px-lg text-black row items-center justify-between">
@@ -62,7 +63,7 @@
               v-if="$route.path === '/'"
               @click="scrollToSection('contact-section')"
               class="custom-button q-py-sm large-screen-only"
-              label="Contract" flat rounded />
+              label="Contact" flat rounded />
 
             <!-- dashboards -->
             <q-btn
@@ -91,6 +92,7 @@
               v-if="!isLoggedIn"
               label="Login"
               to="/auth/login"
+              color="brown"
               class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
@@ -98,6 +100,7 @@
               v-else
               label="Logout"
               @click="logout"
+              color="brown"
               class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
@@ -204,9 +207,16 @@ export default {
       return paths.includes(this.$route.path);
     },
     scrollToSection(sectionId) {
-      const element = document.getElementById(sectionId)
+      const element = document.getElementById(sectionId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
+        const offset = window.innerHeight * 0.1; // 10vh
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
     },
     async checkLoginStatus() {

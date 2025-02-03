@@ -9,7 +9,7 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <CustomButton label="Add Document" color="black" text-color="white" @click="addDocument" customStyle="width: 45%" />
+      <CustomButton label="Add Document" color="brown" text-color="white" @click="addDocument" customStyle="width: 45%" />
       <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
     </q-card-section>
   </q-card>

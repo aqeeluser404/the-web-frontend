@@ -17,12 +17,16 @@
     </q-card-section>
 
     <q-card-section class="wrap-text">
-      <div><b>You are applying for the {{ unit.unitType }} unit.</b><br><br>{{ unit.unitDescription }}</div>
+      <div>
+        You are applying for the <b>{{ unit.unitType }}</b> unit, which includes:
+      </div>
       <ul>
-        <li>Unit Availability: {{ unit.unitOccupants - unit.currentOccupants }} occupants</li>
-        <li>Monthly price per occupant: <b style="text-decoration: underline;">R {{ unit.unitPrice }}.00</b></li>
+        <li>{{ unit.bedrooms }} Bedroom(s)</li>
+        <li>{{ unit.kitchens }} Kitchen(s)</li>
+        <li>{{ unit.bathrooms }} Bathroom(s)</li>
+        <li>{{ unit.parking }} Parking(s)</li>
+        <li>{{ unit.lounges }} Lounge(s)</li>
       </ul>
-
     </q-card-section>
 
     <q-card-section>
@@ -53,12 +57,12 @@
           You still have documents <span style="text-decoration: underline;">outstanding</span>.
         </div>
       </div>
-      <!-- <div>Unit price per monthly installment: <b style="text-decoration: underline;">R {{ unit.unitPrice }}.00</b></div> -->
+      <div>Unit price per monthly installment: <b style="text-decoration: underline;">R {{ unit.unitPrice }}.00</b></div>
     </q-card-section>
 
     <q-card-section class="row justify-between">
       <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
-      <CustomButton label="Apply" color="brown" customStyle="width: 45%" @click="createRentalApplication(unit)" />
+      <CustomButton label="Apply" customStyle="width: 45%" @click="createRentalApplication(unit)" />
     </q-card-section>
   </q-card>
 </template>
@@ -139,7 +143,7 @@ export default {
   display: flex
   justify-content: center
   align-items: center
-  height: 450px
+  height: 300px
 
 .nav-button
   position: absolute
