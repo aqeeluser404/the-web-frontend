@@ -3,7 +3,6 @@ import { createRouter, createMemoryHistory, createWebHistory, createWebHashHisto
 import routes from './routes'
 import axios from 'axios'
 
-const VUE_APP_API_BASE_URL = process.env.VUE_APP_API_BASE_URL
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -30,7 +29,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to, from, next) => {
     try {
-      const response = await axios.get(`${VUE_APP_API_BASE_URL}/health`)
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/health`)
       if (response.status === 200) {
         if (to.path === '/verify-email')  {
           const token = to.query.token
