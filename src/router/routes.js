@@ -17,6 +17,7 @@ const routes = [
       { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
       { path: '/admin/units', component: () => import('src/pages/admin/AdminUnitsCard.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
 
+      { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
       { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },

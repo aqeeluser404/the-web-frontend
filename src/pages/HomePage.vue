@@ -17,7 +17,7 @@
       >
         <q-card-section class="text-h4">Attention Students! Looking to rent in 2025?</q-card-section>
         <q-card-section>
-          <CustomButton color="brown" text-color="white" label="Visit the Rental Price List" style="border: 2px solid white;" />
+          <CustomButton color="brown" text-color="white" label="Visit the Unit Rental List" @click="openUnitDash" style="border: 2px solid white;" />
         </q-card-section>
       </div>
     </div>
@@ -50,8 +50,8 @@
             <li><span class="q-mr-sm">✔️</span> High-speed Wi-Fi throughout</li>
             <li><span class="q-mr-sm">✔️</span> Secure car, motorbike & bicycle parking</li>
           </ul>
-          <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="brown" text-color="white" label="Make an Enquiry" />
-          <CustomButton v-else color="brown" customStyle="width: 100%" text-color="white" label="Make an Enquiry" />
+          <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="brown" text-color="white" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
+          <CustomButton v-else color="brown" customStyle="width: 100%" text-color="white" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
         </q-card-section>
       </q-card>
 
@@ -100,8 +100,8 @@
             <li><span class="q-mr-sm">✔️</span> Print & copy facilities</li>
             <li><span class="q-mr-sm">✔️</span> Conference facilities</li>
           </ul>
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Rent in 2025" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Rent in 2025" />
+          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Rent in 2025" @click="openUnitDash" />
+          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Rent in 2025" @click="openUnitDash" />
         </q-card-section>
       </q-card>
     </div>
@@ -144,8 +144,8 @@
           <div class="q-mb-lg">
             With Stellenbosch’s student population rapidly growing over the past decade, The Web is set to become the ultimate choice for students seeking quality and convenience in their home away from home.
           </div>
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Secure your spot" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Secure your spot" />
+          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Secure your spot"  @click="openUnitDash" />
+          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Secure your spot" @click="openUnitDash" />
         </q-card-section>
       </q-card>
 
@@ -210,7 +210,7 @@
       >
         <q-card-section class="text-h4">Need more answers? Read our FAQs</q-card-section>
         <q-card-section>
-          <CustomButton color="brown" text-color="white" label="Visit the Rental Price List" style="border: 2px solid white;" />
+          <CustomButton color="brown" text-color="white" label="View FAQs" to="/frequently-asked-questions" style="border: 2px solid white;" />
         </q-card-section>
       </div>
     </div>
@@ -255,8 +255,8 @@
           <div class="text-h3 q-mb-md">Expertly Designed</div>
           <div class="q-mb-lg">Architects Boogertman & Partners have spent countless hours configuring each of the living spaces at The Web. Ergonomically designed units all feature a kitchenette, private bathroom, study desk, and open-plan living spaces with premium fittings and fixtures.</div>
 
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Make an enquiry" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Make an enquiry" />
+          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Make an enquiry" @click="scrollToSection('contact-section')" />
+          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Make an enquiry" @click="scrollToSection('contact-section')" />
 
         </q-card-section>
       </q-card>
@@ -271,17 +271,20 @@
         <q-card-section class="col-md-6 col-12">
           <div class="text-h4 q-mb-md">Discuss with Our Team</div>
 
+          <div class="text-body2 q-mb-md">Founder and Managing Director</div>
+          <div class="text-body1 q-mb-md"><b>Wayne Louw</b></div>
+
           <div class="column">
-            <a href="mailto:leon@the-one.co.za" class="q-mb-md" style="text-decoration: underline; color: white;">
-              leon@the-one.co.za
+            <a href="mailto:admin@the-web.co.za" class="q-mb-md" style="text-decoration: underline; color: white;">
+              <q-icon name="eva-email-outline" class="q-mr-sm" /> admin@the-web.co.za
             </a>
 
-            <a href="tel:0828205342" class="q-mb-md" style="text-decoration: underline; color: white;">
-              0828205342
+            <a href="tel:0823433945" class="q-mb-md" style="text-decoration: underline; color: white;">
+              <q-icon name="eva-phone-outline" class="q-mr-sm" /> (+27) 82-343-3945
             </a>
 
             <a href="https://api.whatsapp.com/send/?phone=0828205342&text&type=phone_number&app_absent=0" style="text-decoration: underline; color: white;">
-              Send WhatsApp
+              <q-icon name="eva-message-circle-outline" class="q-mr-sm" /> Send WhatsApp
             </a>
           </div>
         </q-card-section>
@@ -316,6 +319,7 @@
 <script>
 import CustomButton from 'src/components/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
+import Helper from 'src/services/utils'
 
 import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
 import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
@@ -374,6 +378,19 @@ export default {
   },
 
   methods: {
+    scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const offset = window.innerHeight * 0.1; // 10vh
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    },
     async submitContactForm() {
       const checkbox = document.querySelector('input[name="privacyPolicy"]');
       if (!checkbox.checked) {
@@ -393,6 +410,15 @@ export default {
         }
       } catch (error) {
         this.$q.notify({ type: 'negative', message: 'Error sending message.' });
+      }
+    },
+    async openUnitDash() {
+      const isLoggedIn = await Helper.checkCookie()
+      if (isLoggedIn) {
+        this.$router.push('/units/apply')
+      } else {
+        this.$router.push('/auth/login')
+        this.$q.notify({ type: 'negative', message: 'Please login to continue.' })
       }
     }
   }
