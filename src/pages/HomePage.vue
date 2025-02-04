@@ -325,7 +325,7 @@ import Room9 from 'src/assets/resources/home/images/Room_9.jpg';
 import Room10 from 'src/assets/resources/home/images/Room_10.jpg';
 import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
 import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
-import Bathroom from 'src/assets/resources/home/images/bathroom.jpg';
+import Bathroom from 'src/assets/resources/home/images/Bathroom.jpg';
 
 import StudioPatio from 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png';
 import StudioBalconyB from 'src/assets/resources/home/unit-types/B3-Studio-768x689.png';
