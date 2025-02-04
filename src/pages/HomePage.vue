@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- hero -->
     <div style="height: 100vh;" class="bg-grey">
        <q-img src="~src/assets/resources/home/hero/location.jpeg" alt="hero image" class="hero-image" />
@@ -318,33 +317,51 @@
 import CustomButton from 'src/components/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
 
+import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
+import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
+import Room3 from 'src/assets/resources/home/images/Room_3.jpg';
+import Room8 from 'src/assets/resources/home/images/Room_8.jpg';
+import Room9 from 'src/assets/resources/home/images/Room_9.jpg';
+import Room10 from 'src/assets/resources/home/images/Room_10.jpg';
+import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
+import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
+import Bathroom from 'src/assets/resources/home/images/bathroom.jpg';
+
+import StudioPatio from 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png';
+import StudioBalconyB from 'src/assets/resources/home/unit-types/B3-Studio-768x689.png';
+import StudioPatioB from 'src/assets/resources/home/unit-types/B4-StudioBalcony-768x689.png';
+import StudioBal from 'src/assets/resources/home/unit-types/D-StudioBalcony-768x689.png';
+import Deluxe from 'src/assets/resources/home/unit-types/Deluxe-768x689.png';
+import StudioPatioC from 'src/assets/resources/home/unit-types/C-StudioPatio-768x689.png';
+import SharedStudio from 'src/assets/resources/home/unit-types/E-Shared-768x689.png';
+import TwoBed from 'src/assets/resources/home/unit-types/F-2-Bed-768x689.png';
+
+
 export default {
   name: 'Homepage',
 
   data() {
     return {
       cards: [
-        { _id: 1, imageUrl: 'src/assets/resources/home/images/Room_1.jpg' },
-        { _id: 2, imageUrl: 'src/assets/resources/home/images/Room_2.jpg' },
-        { _id: 3, imageUrl: 'src/assets/resources/home/images/Room_3.jpg' },
-        { _id: 4, imageUrl: 'src/assets/resources/home/images/Room_8.jpg' },
-        { _id: 5, imageUrl: 'src/assets/resources/home/images/Room_9.jpg' },
-        { _id: 6, imageUrl: 'src/assets/resources/home/images/Room_10.jpg' },
-        { _id: 7, imageUrl: 'src/assets/resources/home/images/Room_11.jpg' },
-        { _id: 8, imageUrl: 'src/assets/resources/home/images/Room_12.jpg' },
-        { _id: 9, imageUrl: 'src/assets/resources/home/images/bathroom.jpg' },
+        { _id: 1, imageUrl: Room1 },
+        { _id: 2, imageUrl: Room2 },
+        { _id: 3, imageUrl: Room3 },
+        { _id: 4, imageUrl: Room8 },
+        { _id: 5, imageUrl: Room9 },
+        { _id: 6, imageUrl: Room10 },
+        { _id: 7, imageUrl: Room11 },
+        { _id: 8, imageUrl: Room12 },
+        { _id: 9, imageUrl: Bathroom },
       ],
       unitTypes: [
-        // { _id: 1, imageUrl: 'src/assets/resources/home/unit-types/7.png' },
-        { _id: 2, imageUrl: 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png', label: 'Studio Patio' },
-        { _id: 3, imageUrl: 'src/assets/resources/home/unit-types/B3-Studio-768x689.png', label: 'Studio Balcony B' },
-        { _id: 4, imageUrl: 'src/assets/resources/home/unit-types/B4-StudioBalcony-768x689.png', label: 'Studio Patio' },
-        { _id: 5, imageUrl: 'src/assets/resources/home/unit-types/D-StudioBalcony-768x689.png', label: 'Studio Bal' },
-        { _id: 6, imageUrl: 'src/assets/resources/home/unit-types/Deluxe-768x689.png', label: 'Deluxe' },
-        { _id: 7, imageUrl: 'src/assets/resources/home/unit-types/C-StudioPatio-768x689.png', label: 'Studio Patio' },
-        { _id: 8, imageUrl: 'src/assets/resources/home/unit-types/E-Shared-768x689.png', label: 'Studio Patio' },
-        { _id: 9, imageUrl: 'src/assets/resources/home/unit-types/F-2-Bed-768x689.png', label: 'Shared Studio' },
-        // { _id: 10, imageUrl: 'src/assets/resources/home/unit-types/unit1.png', label: 'Studio Patio' },
+        { _id: 2, imageUrl: StudioPatio, label: 'Studio Patio' },
+        { _id: 3, imageUrl: StudioBalconyB, label: 'Studio Balcony B' },
+        { _id: 4, imageUrl: StudioPatioB, label: 'Studio Patio' },
+        { _id: 5, imageUrl: StudioBal, label: 'Studio Bal' },
+        { _id: 6, imageUrl: Deluxe, label: 'Deluxe' },
+        { _id: 7, imageUrl: StudioPatioC, label: 'Studio Patio' },
+        { _id: 8, imageUrl: SharedStudio, label: 'Studio Patio' },
+        { _id: 9, imageUrl: TwoBed, label: 'Shared Studio' },
       ],
       userContact: {
         firstName: '',
