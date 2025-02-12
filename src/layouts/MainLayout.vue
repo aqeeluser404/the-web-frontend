@@ -14,19 +14,27 @@
       <q-toolbar class="q-px-lg text-black row items-center justify-between">
 
         <!-- title and avatar -->
-        <q-toolbar-title class="col-md-5 row items-center ">
+        <q-toolbar-title class="col-md-4 row items-center ">
 
-          <q-avatar>
-            <img :src="logoSrc"/>
-          </q-avatar>
 
-          <router-link to="/" class="text-remove-decoration text-black q-mr-md" >The Web </router-link>
+
+          <router-link to="/">
+            <img
+              :src="logoSrc"
+              alt="Home"
+              style="width: 16%; cursor: pointer;"
+            >
+          </router-link>
+
+
+
+          <!-- <router-link to="/" class="text-remove-decoration text-black q-mr-md" >The Web </router-link> -->
           <!-- <span v-if="isLoggedIn">
             Hi, {{ userDetails.username }}
           </span> -->
         </q-toolbar-title>
 
-        <div class="col-md-7">
+        <div class="col-md-8">
           <!----------------------------------------------------------- NAV SECTION -------------------------------------------------->
           <!-- Desktop nav -->
           <div class="row justify-end items-center">
@@ -170,8 +178,8 @@
 </template>
 
 <script>
-import logoWhite from '../assets/resources/logos/THE WEB.gif'
-import logoBlack from '../assets/resources/logos/THE WEB.gif'
+import logoWhite from '../assets/resources/logos/Logo2.png'
+import logoBlack from '../assets/resources/logos/Logo2.png'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/CustomButton.vue'

@@ -12,10 +12,15 @@ const routes = [
       { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },            // user profile page (update and view), documents
       { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
 
-      { path: '/admin/dashboard', component: () => import('src/pages/admin/AdminDashPage.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/users', component: () => import('src/pages/admin/AdminUsersCard.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/units', component: () => import('src/pages/admin/AdminUnitsCard.vue'), beforeRouteEnterAdmin: Helper.beforeRouteEnterAdmin },
+      { path: '/admin/dashboard', component: () => import('src/pages/admin/AdminDashPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      { path: '/admin/users', component: () => import('src/pages/admin/AdminUsersCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      { path: '/admin/rentals/view/:id', component: () => import('src/pages/admin/AdminRentalDetailsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      { path: '/admin/units', component: () => import('src/pages/admin/AdminUnitsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
 
       { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
 

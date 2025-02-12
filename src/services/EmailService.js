@@ -50,5 +50,23 @@ class EmailService {
       Logger.error('Error sending message: ', error.message)
     }
   }
+  static async ApprovedRental(userId, unitId, rentalId) {
+    const ENDPOINT = '/approved-rental'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId, unitId, rentalId})
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
+  static async RejectedRental(userId, message) {
+    const ENDPOINT = '/rejected-rental'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId, message})
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
 }
 export default EmailService

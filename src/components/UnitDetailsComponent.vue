@@ -19,8 +19,8 @@
     <q-card-section class="wrap-text">
       <div><b>Unit Availability</b></div>
       <br>
-      <div>This unit accommodates up to {{ unit.unitOccupants }} occupants, currently housing <span style="text-decoration: underline;">{{ unit.currentOccupants }} residents</span>. <span v-if="unit.unitOccupants > unit.currentOccupants"><b>{{ unit.unitOccupants - unit.currentOccupants }} occupants</b> can still make an application.</span><span v-else>This unit has been fully booked.</span></div>
-
+      <div>This unit accommodates up to {{ unit.unitOccupants }} occupants, currently housing <span style="text-decoration: underline;">{{ unit.currentOccupants }} residents</span>. <br>
+        <span v-if="unit.unitOccupants > unit.currentOccupants"><span style="text-decoration: underline;">{{ unit.unitOccupants - unit.currentOccupants }} occupants</span> can still make an application.</span><span v-else>This unit has been fully booked.</span></div>
       <br>
       <div><b>Unit Description</b></div>
       <br>

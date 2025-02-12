@@ -2,7 +2,7 @@
   <q-page>
     <!-- hero -->
     <div style="height: 100vh;" class="bg-grey">
-       <q-img src="~src/assets/resources/home/hero/location.jpeg" alt="hero image" class="hero-image" />
+       <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" />
     </div>
 
     <!-- hero - BANNER -->
@@ -55,7 +55,7 @@
         </q-card-section>
       </q-card>
       <div class="col-md-5 col-12">
-        <q-img src="~src/assets/resources/home/amenities/About.jpeg" alt="hero image" class="side-image"/>
+        <q-img src="~src/assets/resources/home/amenities/About2.png" alt="hero image" class="side-image"/>
       </div>
     </div>
 
@@ -118,7 +118,7 @@
         </q-card-section>
 
         <q-card-section class="row">
-          <q-img src="~src/assets/resources/home/academics/Home.jpeg" />
+          <q-img src="~src/assets/resources/home/academics/Home1.png" />
         </q-card-section>
       </q-card>
     </div>

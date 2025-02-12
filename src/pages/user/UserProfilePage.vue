@@ -3,15 +3,16 @@
     <div class="q-pa-md row justify-center">
 
       <!-- user profile section -->
-
       <q-card
         flat
         bordered
-        class="col-md-4 col-11 q-ma-sm"
+        class="col-md-4 col-11 q-ma-sm full-height"
       >
         <q-card-section>
           <div class="text-h6">Personal Details</div>
         </q-card-section>
+
+        <q-separator />
 
         <q-card-section>
           <q-item>
@@ -46,7 +47,7 @@
               </span>
             </q-item-section>
             <q-item-section class="text-left text-subtitle1">
-              <q-input v-model="userDetails.email" />
+              <q-input :disable="isEditingDisabled" v-model="userDetails.email" />
             </q-item-section>
           </q-item>
         </q-card-section>
@@ -75,7 +76,6 @@
       </q-card>
 
       <!-- documents section -->
-
       <q-card
         flat
         bordered
@@ -85,7 +85,20 @@
           <div class="text-h6">Your Documents</div>
         </q-card-section>
 
-        <div v-if="userDetails.documents && userDetails.documents.length > 0">
+        <q-separator />
+
+        <q-card-section>
+          <div class="q-mb-sm">Please ensure the following documents are uploaded: </div>
+          <ul>
+            <li>Proof of Residential Address</li>
+            <li>South African Identity Document (ID) or Passport</li>
+            <li>Three Months' Bank Statements</li>
+          </ul>
+          Please note that once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended.
+          <br><br>Therefore, please ensure that all your information is accurate before proceeding.
+        </q-card-section>
+
+        <q-card-section v-if="userDetails.documents && userDetails.documents.length > 0">
           <q-list v-for="document in userDetails.documents" :key="document._id">
             <q-card
               flat bordered
@@ -102,16 +115,16 @@
                 <div class="text-caption wrap-text limit-text">{{ document.documentUrl.split('/').pop() }}</div>
 
                 <div class="row justify-between q-my-md">
-                  <CustomButton flat @click="viewDocument(document._id)" label="Open" color="white" text-color="black" customStyle="width: 45%"  />
-                  <CustomButton flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  />
+                  <CustomButton flat @click="viewDocument(document.documentUrl)" label="Open" color="white" text-color="black" customStyle="width: 45%"  />
+                  <CustomButton :disable="isEditingDisabled" flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  />
                 </div>
 
               </q-card-section>
             </q-card>
           </q-list>
-        </div>
+        </q-card-section>
 
-        <div v-else>
+        <q-card-section v-else>
           <q-card flat>
             <q-card-section>
               <q-item>
@@ -119,11 +132,11 @@
               </q-item>
             </q-card-section>
           </q-card>
-        </div>
+        </q-card-section>
 
-        <q-card-section  class="row justify-between">
-          <CustomButton label="Add Document" customStyle="width: 45%" color="brown" text-color="white" @click="openAddDocumentDialog" />
-          <CustomButton label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
+        <q-card-section class="row justify-between">
+          <CustomButton :disable="isEditingDisabled" label="Add Document" customStyle="width: 45%" color="brown" text-color="white" @click="openAddDocumentDialog" />
+          <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
         </q-card-section>
       </q-card>
     </div>
@@ -140,12 +153,14 @@ import Helper from 'src/services/utils';
 import EmailService from 'src/services/EmailService';
 import CustomButton from 'src/components/CustomButton.vue'
 import AddDocumentComponent from 'src/components/AddDocumentComponent.vue';
+import RentalService from 'src/services/RentalService';
 
 export default {
   data() {
     return {
       userDetails: {},
       addDocDialog: false,
+      isEditingDisabled: false,
     }
   },
   components: {
@@ -158,6 +173,15 @@ export default {
     validatePhone: Helper.validatePhone,
     validateUsername: Helper.validateUsername,
     validatePassword: Helper.validatePassword,
+    async checkEditingDisabled() {
+      if (!this.userDetails || !this.userDetails.rentals) {
+        this.isEditingDisabled = false;
+        return;
+      }
+      const userRentals = await RentalService.findMyRentals(this.userDetails._id)
+      const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status))
+      this.isEditingDisabled = activeOrPendingRentals.length > 0;
+    },
     validateFields() {
       const details = this.userDetails
       const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'username']
@@ -225,6 +249,7 @@ export default {
     },
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()
+      this.checkEditingDisabled();
     },
     viewDocument(document) {
       const url = Helper.getDocumentUrl(document);

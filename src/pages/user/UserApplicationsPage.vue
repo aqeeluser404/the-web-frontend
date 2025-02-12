@@ -2,11 +2,36 @@
   <q-page>
     <div class="q-pa-md row justify-center">
 
-      <q-card flat bordered class="col-md-8 col-11">
+      <q-card flat bordered class="col-md-9 col-11 q-ma-sm">
+
+        <q-card-section class="row justify-center">
+          <div class="text-h6">Rental Information</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="row text-left">
+          <div>
+            For <span style="text-decoration: underline;">returning</span> applicants, you may only apply for one rental at a time. If you have an existing application thats ongoing, you will not be able to apply for another rental until the previous rental has ended.
+            Please note that once your application has been approved, cancellation may not be possible as your booking will have been confirmed and the application process will have progressed significantly. You may cancel your application during the following phases:
+          </div>
+          <ul>
+            <li>The Processing/Pending phase</li>
+            <li>The Rejection phase</li>
+          </ul>
+          <div>
+            If your application is rejected, you will be notified via email and site notifications. To avoid rejection, please ensure that you have provided all the necessary documents and information. Rejection may occur if <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false information is submitted. In such cases, you will be required to cancel the rejected application and reapply by re-uploading the documents during the rejection phase.
+          </div><br>
+
+        </q-card-section>
+
+        <q-separator />
 
         <q-card-section class="row justify-center">
           <div class="text-h6">Application History</div>
         </q-card-section>
+
+        <q-separator />
 
         <q-card-section v-if="userDetails.rentals && userDetails.rentals.length > 0">
           <q-markup-table flat bordered>
@@ -16,6 +41,8 @@
                 <th class="text-left">Application Date</th>
                 <th class="text-left">Applicant</th>
                 <th class="text-left">Start Date</th>
+                <th class="text-left">End Date</th>
+                <th class="text-left">Before Scheduled</th>
                 <th class="text-left">Rental Price</th>
                 <th class="text-left">Unit Type</th>
                 <th class="text-left">Status</th>
@@ -26,7 +53,7 @@
               <tr>
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                  <td class="text-left cursor-pointer">{{ userDetails.username }}</td>
+                <td class="text-left cursor-pointer">{{ userDetails.username }}</td>
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
@@ -35,12 +62,31 @@
                     Being processed...
                   </div>
                 </td>
-                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td>
-                  <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
-                <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.status) }}</td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton color="red" icon="eva-trash-outline" @click="deleteRental(rental)" customStyle="width: 40%" />
+                  <div v-if="rental.rentalEndDate !== null">
+                    {{ formatDate(rental.rentalEndDate) }}
+                  </div>
+                  <div v-else>
+                    Being processed...
+                  </div>
                 </td>
+                <td class="text-left cursor-pointer">
+                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline; color: red;">
+                    <b>{{ formatDate(rental.earlyEndDate) }}</b>
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
+                </td>
+                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td>
+                <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
+                <td class="text-left cursor-pointer text-uppercase" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
+                <td class="text-left cursor-pointer">
+                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                </td>
+                <!-- <td class="text-left cursor-pointer" v-else>
+                  N/A
+                </td> -->
               </tr>
             </tbody>
           </q-markup-table>
@@ -90,9 +136,13 @@ export default {
       this.findMyRentals()
     },
     async deleteRental(rental) {
-      if (rental.status === 'Pending') {
+      if (rental.status === 'Pending' || rental.status === 'Rejected') {
         this.$q.dialog({
-          title: 'Confirm', message: `You are about to delete this rental application, continue?`, color: 'primary', cancel: true, persistent: true
+          title: 'Confirm',
+          message: 'You are about to delete this rental application, continue?',
+          color: 'primary',
+          cancel: true,
+          persistent: true
         }).onOk(async () => {
           const response = await RentalService.deleteRental(rental._id)
           if (response) {
@@ -102,11 +152,10 @@ export default {
             this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' })
           }
         }).onCancel(() => {
-          this.fetchUserDetails()
-          return
+          // No need to fetch user details again on cancel
         })
       } else {
-        this.$q.notify({ type: 'negative', color: 'primary', message: 'Delete failed. You cannot delete an approved rental.' })
+        this.$q.notify({ type: 'negative', color: 'primary', message: 'Delete failed. You cannot delete an approved or active rental.' })
       }
     }
   },

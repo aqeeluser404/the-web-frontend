@@ -2,6 +2,7 @@ import { format } from 'quasar'
 import axios from 'axios'
 import UserService from './UserService'
 import UnitService from './UnitService';
+import CryptoJS from 'crypto-js';
 
 class Helper {
 
@@ -117,6 +118,19 @@ class Helper {
     }
   }
 
+  static adminRentalDetails(id, router) {
+    if (!id) {
+      Logger.error("Invalid sunglasses ID");
+      return;
+    }
+    try {
+      const encyptedId = CryptoJS.AES.encrypt(id.toString(), 'secret-key').toString();
+      router.push(`/admin/rentals/view/${encodeURIComponent(encyptedId)}`)
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // AUTHENTICATED ROUTE FUNCTIONS
 
@@ -139,7 +153,7 @@ class Helper {
       if (!isLoggedIn) {
         next({ path: '/' });
       } else {
-        const user = await UserService.FindUserByToken();
+        const user = await UserService.FindUserByToken()
         if (user && user.userType === 'admin') {
           next();
         } else {

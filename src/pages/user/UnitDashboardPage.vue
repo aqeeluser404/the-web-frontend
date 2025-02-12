@@ -1,27 +1,55 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center constrain">
-      <q-list v-for="unit in units" :key="unit._id">
-        <q-card
-          flat bordered
-          class="q-ma-sm"
+    <div class="q-pa-md">
+      <!-- Banner for rejected rentals -->
+      <q-banner v-if="hasRejectedRentals" class="bg-red text-white" @click="goToRentalHistory">
+        <div class="row justify-center items-center" style="cursor: pointer;">
+          <div>
+            <q-icon name="warning" class="q-mr-sm" size="32px" />
+            <span>You have a rejected rental. Click here to view your rental history and cancel.</span>
+          </div>
+        </div>
+      </q-banner>
+
+      <q-card
+        flat
+        bordered
+        class="q-ma-sm"
+      >
+        <q-expansion-item
+          class="text-subtitle1"
+          v-for="(units, floorIndex) in allUnits"
+          :key="floorIndex"
+          :label="`${floorLabels[floorIndex]} (${units.length} items)`"
+          expand-separator
+          :default-opened="floorIndex === 0"
         >
-          <q-card-section class="row justify-center">
-            <div class="text-h6">{{ unit.unitType }} (<span class="text-brown">{{ unit.unitStatus }}</span>)</div>
-          </q-card-section>
-          <q-card-section class="">
-            <q-img
-              v-if="unit.images && unit.images.length > 0"
-              :src="getImageUrl(unit.images[0].imageUrl)"
-              class="image"
-            />
-          </q-card-section>
-          <q-card-section class="row justify-between">
-            <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
-            <CustomButton color="brown" v-if="unit.unitStatus !== 'Occupied'" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
-          </q-card-section>
-        </q-card>
-      </q-list>
+          <q-list class="row justify-center">
+            <q-card
+              v-for="unit in units"
+              :key="unit._id"
+              flat bordered
+              class="q-ma-sm"
+            >
+              <q-card-section class="column flex-center">
+                <div class="text-h6">{{ unit.unitType }} (<span class="text-brown">{{ unit.unitStatus }}</span>)</div>
+                <div class="text-caption">Unit Number {{ unit.unitNumber }}</div>
+              </q-card-section>
+              <q-card-section class="row justify-center">
+                <q-img
+                  v-if="unit.images && unit.images.length > 0"
+                  :src="getImageUrl(unit.images[0].imageUrl)"
+                  class="image"
+                />
+              </q-card-section>
+              <q-card-section class="row justify-between">
+                <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
+                <CustomButton color="brown" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
+              </q-card-section>
+            </q-card>
+          </q-list>
+        </q-expansion-item>
+      </q-card>
     </div>
 
     <q-dialog v-model="detailsDialog">
@@ -31,57 +59,81 @@
       <UnitApplicationForm :unit="selectedUnit" @close="handleDialogClose" />
     </q-dialog>
   </q-page>
-
 </template>
 
 <script>
-  import UnitService from 'src/services/UnitService'
-  import Helper from 'src/services/utils'
-  import CustomButton from 'src/components/CustomButton.vue'
-  import UnitDetailsComponent from 'src/components/UnitDetailsComponent.vue'
-  import UnitApplicationForm from 'src/components/UnitApplicationForm.vue'
+import UnitService from 'src/services/UnitService'
+import Helper from 'src/services/utils'
+import CustomButton from 'src/components/CustomButton.vue'
+import UnitDetailsComponent from 'src/components/UnitDetailsComponent.vue'
+import UnitApplicationForm from 'src/components/UnitApplicationForm.vue'
+import RentalService from 'src/services/RentalService'
 
-  export default {
-    name: "UnitDashboardPage",
+export default {
+  name: "UnitDashboardPage",
 
-    data() {
-      return {
-        units: [],
-        detailsDialog: false,
-        applyDialog: false,
-        selectedUnit: null
-      }
-    },
-    components: {
-      CustomButton,
-      UnitDetailsComponent,
-      UnitApplicationForm
-    },
-    methods: {
-      getImageUrl: Helper.getImageUrl,
-      capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+  data() {
+    return {
+      units: [],
+      detailsDialog: false,
+      applyDialog: false,
+      selectedUnit: null,
+      myRentals: [],
+      allUnits: [],
+      floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
+    }
+  },
+  components: {
+    CustomButton,
+    UnitDetailsComponent,
+    UnitApplicationForm
+  },
+  computed: {
+    hasRejectedRentals() {
+      return this.myRentals.some(rental => rental.status === 'Rejected')
+    }
+  },
+  methods: {
+    getImageUrl: Helper.getImageUrl,
+    capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
-      async fetchUnits() {
-        const response = await UnitService.getAllUnits()
-        this.units = response
-      },
-      openUnitDetails(unit) {
-        this.selectedUnit = unit,
-        this.detailsDialog = true
-      },
-      openApplicationForm(unit) {
-        this.selectedUnit = unit,
-        this.applyDialog = true
-      },
-      handleDialogClose() {
-        this.applyDialog = false
-        this.fetchUnits()
-      }
+    async fetchMyRentals() {
+      const user = await Helper.fetchUserDetails()
+      this.myRentals = await RentalService.findMyRentals(user._id)
     },
-    created() {
+
+    async fetchUnits() {
+      const response = await UnitService.getAllUnits()
+      this.units = response
+
+      const groundFloorUnits = this.units.filter(unit => unit.floorLevel === 'Ground Floor')
+      const firstFloorUnits = this.units.filter(unit => unit.floorLevel === 'First Floor')
+      const secondFloorUnits = this.units.filter(unit => unit.floorLevel === 'Second Floor')
+
+      this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits]
+
+      this.fetchMyRentals()
+    },
+    openUnitDetails(unit) {
+      this.selectedUnit = unit,
+      this.detailsDialog = true
+    },
+    openApplicationForm(unit) {
+      this.selectedUnit = unit,
+      this.applyDialog = true
+    },
+    handleDialogClose() {
+      this.applyDialog = false
       this.fetchUnits()
     },
-  }
+    goToRentalHistory() {
+      this.$router.push({ path: '/user/applications' })
+    }
+  },
+  created() {
+    this.fetchUnits()
+  },
+}
 </script>
 
 <style lang="sass">

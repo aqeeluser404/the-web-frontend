@@ -29,17 +29,8 @@ class RentalService {
       Logger.error(error)
     }
   }
-  static async deleteRental(rentalId) {
-    const ENDPOINT = `admin/rentals/${rentalId}`
-    try {
-      const response = await axiosInstance.delete(ENDPOINT)
-      return response.data
-    } catch (error) {
-      Logger.error(error)
-    }
-  }
   static async findMyRentals(userId) {
-    const ENDPOINT = `users/${userId}/rentals`
+    const ENDPOINT = `/users/${userId}/rentals`
     try {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
@@ -48,12 +39,32 @@ class RentalService {
     }
   }
   static async deleteRental(rentalId) {
-    const ENDPOINT = `rentals/${rentalId}`
+    const ENDPOINT = `/rentals/${rentalId}`
     try {
       const response = await axiosInstance.delete(ENDPOINT)
-      return response
+      return response.data
     } catch (error) {
       Logger.error(error)
+      throw error;
+    }
+  }
+  static async updateRental(rentalId, rentalDetails) {
+    const ENDPOINT = `/admin/rentals/${rentalId}`
+    try {
+      const response = await axiosInstance.put(ENDPOINT, rentalDetails)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static async endRental(rentalId) {
+    const ENDPOINT = `/admin/rentals/${rentalId}/end`
+    try {
+      const response = await axiosInstance.put(ENDPOINT)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+      throw error;
     }
   }
 }

@@ -32,9 +32,9 @@ export default {
   data() {
     return {
       cards: [
-        { label: 'Users', route: '/admin/users', icon: 'eva-people-outline' },
-        { label: 'Units', route: '/admin/units', icon: 'eva-home-outline' },
-        { label: 'Rentals', route: '/admin/rentals', icon: 'eva-briefcase-outline' }
+        { label: 'User Administration', route: '/admin/users', icon: 'eva-people-outline' },
+        { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline' },
+        { label: 'Rentals Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' }
       ]
     }
   },
