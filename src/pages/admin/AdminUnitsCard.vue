@@ -30,7 +30,8 @@
                 />
               </q-card-section>
               <q-card-section class="row justify-between">
-                <CustomButton label="View & Update " customStyle="width: 100%" color="white" text-color="black" @click="openUnitDetails(unit)" />
+                <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
+                <CustomButton label="Delete " customStyle="width: 40%" color="brown" text-color="white" @click="deleteUnit(unit)" />
               </q-card-section>
             </q-card>
           </q-list>
@@ -67,7 +68,7 @@
 
 <script>
 import UnitService from 'src/services/UnitService';
-import CustomButton from 'src/components/CustomButton.vue';
+import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
 import AdminAddUnitComponent from 'src/components/admin/AdminAddUnitComponent.vue';
 import AdminUnitDetailsComponent from 'src/components/admin/AdminUnitDetailsComponent.vue';
@@ -100,11 +101,33 @@ export default {
       const response = await UnitService.getAllUnits();
       this.units = response;
 
-      const groundFloorUnits = this.units.filter(unit => unit.floorLevel === 'Ground Floor');
-      const firstFloorUnits = this.units.filter(unit => unit.floorLevel === 'First Floor');
-      const secondFloorUnits = this.units.filter(unit => unit.floorLevel === 'Second Floor');
+      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+
+      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor');
+      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor');
+      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor');
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
+    },
+
+    async deleteUnit(unit) {
+      if (unit.rentedHistory.length !== 0) {
+        this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this unit is tied to a previous rental record.' })
+        return
+      }
+      this.$q.dialog({
+        title: 'Confirm', message: `You are about to remove this unit from the database, continue?`, color: 'primary', cancel: true, persistent: true
+      }).onOk(async () => {
+        const response = await UnitService.deleteUnit(unit._id)
+        if (response) {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Deleted!' })
+          this.findAllUnits()
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Failed to delete unit. Please try again.' })
+        }
+      }).onCancel(() => {
+        return
+      })
     },
     openAddUnitsDialog() {
       this.addUnitsDialog = true;

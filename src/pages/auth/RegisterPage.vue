@@ -48,7 +48,7 @@
 <script>
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
-import CustomButton from 'src/components/CustomButton.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
 
 export default {
   name: "RegisterPage",

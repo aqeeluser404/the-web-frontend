@@ -31,7 +31,7 @@
           <div class="text-h6">Application History</div>
         </q-card-section>
 
-        <q-separator />
+        <!-- <q-separator /> -->
 
         <q-card-section v-if="userDetails.rentals && userDetails.rentals.length > 0">
           <q-markup-table flat bordered>
@@ -106,7 +106,7 @@
 import Helper from 'src/services/utils';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
-import CustomButton from 'src/components/CustomButton.vue';
+import CustomButton from 'src/components/elements/CustomButton.vue';
 
 export default {
   data() {

@@ -299,7 +299,7 @@
 </template>
 
 <script>
-import CustomButton from 'src/components/CustomButton.vue';
+import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
 import Helper from 'src/services/utils'
 

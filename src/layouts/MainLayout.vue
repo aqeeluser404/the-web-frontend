@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" style="height: 10vh;"
+    <q-header class="bg-white flex" :style="{ height: headerHeight }"
       v-if="
         $route.path !== '/auth/login' &&
         $route.path !== '/auth/register' &&
@@ -15,9 +15,6 @@
 
         <!-- title and avatar -->
         <q-toolbar-title class="col-md-4 row items-center ">
-
-
-
           <router-link to="/">
             <img
               :src="logoSrc"
@@ -25,13 +22,6 @@
               style="width: 16%; cursor: pointer;"
             >
           </router-link>
-
-
-
-          <!-- <router-link to="/" class="text-remove-decoration text-black q-mr-md" >The Web </router-link> -->
-          <!-- <span v-if="isLoggedIn">
-            Hi, {{ userDetails.username }}
-          </span> -->
         </q-toolbar-title>
 
         <div class="col-md-8">
@@ -91,9 +81,9 @@
               label="Application History" flat rounded />
             <q-btn
               v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
-              to="/admin/dashboard"
+              to="/admin"
               class="custom-button q-py-sm large-screen-only"
-              icon="eva-pie-chart-outline" flat rounded />
+              icon="eva-pie-chart-outline" label="Admin" flat rounded />
 
             <!-- authentication -->
             <CustomButton
@@ -147,7 +137,7 @@
                 <q-item-section class="">Application History</q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup to="/admin/dashboard" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+              <q-item clickable v-close-popup to="/admin" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
                 <q-item-section class="">Admin Dashboard</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
@@ -160,20 +150,31 @@
           </q-btn-dropdown>
         </div>
       </q-toolbar>
+
+      <!-- breadcrumbs -->
+      <div v-if="isAdminRoute">
+        <div class="text-black text-caption">
+          <q-toolbar inset class="">
+            <q-breadcrumbs flat active-color="black">
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin')" label="Admin" to="/admin" icon="home" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users')" label="User Administration" to="/admin/users" icon="eva-people-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users/view/')" label="User Details" icon="eva-person" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/units')" label="Unit Administration" icon="eva-home-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals')" label="Rental Administration" to="/admin/rentals" icon="eva-briefcase-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details" icon="eva-briefcase" />
+            </q-breadcrumbs>
+          </q-toolbar>
+        </div>
+      </div>
+
     </q-header>
+
     <q-page-container>
       <router-view />
     </q-page-container>
-
-    <!-- <q-footer class="bg-black text-white q-pa-md">
-      <q-toolbar class="constrain">
-        <q-toolbar-title>
-          <div class="row justify-center items-center q-pa-md">
-            The Web ™ | Est. 2025 | Developed by WLV Solutions
-          </div>
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-footer> -->
   </q-layout>
 </template>
 
@@ -182,7 +183,7 @@ import logoWhite from '../assets/resources/logos/Logo2.png'
 import logoBlack from '../assets/resources/logos/Logo2.png'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
-import CustomButton from 'src/components/CustomButton.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
 
 export default {
   data() {
@@ -200,7 +201,15 @@ export default {
     }
   },
   components: {
-    CustomButton
+    CustomButton,
+  },
+  computed: {
+    headerHeight() {
+      return this.isAdminRoute ? '20vh' : '10vh';
+    },
+    isAdminRoute() {
+      return this.$route.path.startsWith('/admin')
+    },
   },
   mounted() {
     this.checkLoginStatus()
@@ -290,3 +299,10 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+
+
+.full-width
+  width: 100%
+</style>

@@ -56,7 +56,7 @@
       <UnitDetailsComponent :unit="selectedUnit" @close="detailsDialog = false" />
     </q-dialog>
     <q-dialog v-model="applyDialog">
-      <UnitApplicationForm :unit="selectedUnit" @close="handleDialogClose" />
+      <UnitApplicationFormComponent :unit="selectedUnit" @close="handleDialogClose" />
     </q-dialog>
   </q-page>
 </template>
@@ -64,9 +64,9 @@
 <script>
 import UnitService from 'src/services/UnitService'
 import Helper from 'src/services/utils'
-import CustomButton from 'src/components/CustomButton.vue'
-import UnitDetailsComponent from 'src/components/UnitDetailsComponent.vue'
-import UnitApplicationForm from 'src/components/UnitApplicationForm.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
+import UnitDetailsComponent from 'src/components/user/UnitDetailsComponent.vue'
+import UnitApplicationFormComponent from 'src/components/user/UnitApplicationFormComponent.vue'
 import RentalService from 'src/services/RentalService'
 
 export default {
@@ -86,7 +86,7 @@ export default {
   components: {
     CustomButton,
     UnitDetailsComponent,
-    UnitApplicationForm
+    UnitApplicationFormComponent
   },
   computed: {
     hasRejectedRentals() {
@@ -106,9 +106,11 @@ export default {
       const response = await UnitService.getAllUnits()
       this.units = response
 
-      const groundFloorUnits = this.units.filter(unit => unit.floorLevel === 'Ground Floor')
-      const firstFloorUnits = this.units.filter(unit => unit.floorLevel === 'First Floor')
-      const secondFloorUnits = this.units.filter(unit => unit.floorLevel === 'Second Floor')
+      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+
+      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor')
+      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
+      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits]
 

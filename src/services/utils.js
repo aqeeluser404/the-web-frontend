@@ -18,6 +18,16 @@ class Helper {
     const lowerCaseText = text.toLowerCase();
     return format.capitalize(lowerCaseText);
   }
+  static sortByProperty(array, property, order = 'asc') {
+    if (!array || !Array.isArray(array)) return [];
+    return array.slice().sort((a, b) => {
+      const valueA = a[property]
+      const valueB = b[property]
+      if (valueA < valueB) return order === 'asc' ? -1 : 1;
+      if (valueA > valueB) return order === 'asc' ? 1 : -1;
+      return 0;
+    })
+  }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // GETTING DATA FUNCTIONS
@@ -120,12 +130,24 @@ class Helper {
 
   static adminRentalDetails(id, router) {
     if (!id) {
-      Logger.error("Invalid sunglasses ID");
+      Logger.error("Invalid Rental ID");
       return;
     }
     try {
       const encyptedId = CryptoJS.AES.encrypt(id.toString(), 'secret-key').toString();
       router.push(`/admin/rentals/view/${encodeURIComponent(encyptedId)}`)
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static adminUserDetails(id, router) {
+    if (!id) {
+      Logger.error("Invalid User ID");
+      return;
+    }
+    try {
+      const encyptedId = CryptoJS.AES.encrypt(id.toString(), 'secret-key').toString();
+      router.push(`/admin/users/view/${encodeURIComponent(encyptedId)}`)
     } catch (error) {
       Logger.error(error)
     }

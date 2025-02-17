@@ -25,7 +25,7 @@
 
 <script>
 import EmailService from 'src/services/EmailService'
-import CustomButton from 'src/components/CustomButton.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
 
 export default {
   data() {

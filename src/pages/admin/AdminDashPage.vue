@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="q-pa-md column justify-center flex-center constrain" style="width: 100%; height: 75vh;" >
+    <div class="q-pa-md column justify-center flex-start" style="width: 100%; height: 100%;" >
 
       <q-card flat>
         <q-card-section class="row justify-center">
@@ -24,7 +24,7 @@
 
 <script>
 import Helper from 'src/services/utils';
-import CustomButton from 'src/components/CustomButton.vue';
+import CustomButton from 'src/components/elements/CustomButton.vue';
 
 export default {
   name: "AdminDashPage",

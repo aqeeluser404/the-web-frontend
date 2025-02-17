@@ -21,18 +21,14 @@
               <q-input v-model="userDetails.firstName" />
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-card-section>
           <q-item>
             <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
             <q-item-section class="text-left text-subtitle1">
               <q-input v-model="userDetails.lastName" />
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-card-section>
           <q-item>
             <q-item-section class="text-left text-subtitle1">
               <span>Email
@@ -50,18 +46,14 @@
               <q-input :disable="isEditingDisabled" v-model="userDetails.email" />
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-card-section>
           <q-item>
             <q-item-section class="text-left">Phone</q-item-section>
             <q-item-section class="text-left">
               <q-input v-model="userDetails.phone" />
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-card-section>
           <q-item>
             <q-item-section class="text-left">Username</q-item-section>
             <q-item-section class="text-left">
@@ -82,21 +74,27 @@
         class="col-md-4 col-11 q-ma-sm full-height"
       >
         <q-card-section>
-          <div class="text-h6">Your Documents</div>
+          <div class="text-h6">Instructions</div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section>
-          <div class="q-mb-sm">Please ensure the following documents are uploaded: </div>
+          <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly ensure the following documents are uploaded:</div>
           <ul>
             <li>Proof of Residential Address</li>
             <li>South African Identity Document (ID) or Passport</li>
             <li>Three Months' Bank Statements</li>
           </ul>
-          Please note that once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended.
-          <br><br>Therefore, please ensure that all your information is accurate before proceeding.
+         Once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended.
+
         </q-card-section>
+
+        <q-card-section>
+          <div class="text-h6">Your Documents</div>
+        </q-card-section>
+
+        <q-separator />
 
         <q-card-section v-if="userDetails.documents && userDetails.documents.length > 0">
           <q-list v-for="document in userDetails.documents" :key="document._id">
@@ -151,8 +149,8 @@
 import UserService from 'src/services/UserService';
 import Helper from 'src/services/utils';
 import EmailService from 'src/services/EmailService';
-import CustomButton from 'src/components/CustomButton.vue'
-import AddDocumentComponent from 'src/components/AddDocumentComponent.vue';
+import CustomButton from 'src/components/elements/CustomButton.vue'
+import AddDocumentComponent from 'src/components/user/AddDocumentComponent.vue';
 import RentalService from 'src/services/RentalService';
 
 export default {

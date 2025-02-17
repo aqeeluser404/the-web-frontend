@@ -52,7 +52,7 @@
 
 <script>
   import UserService from 'src/services/UserService'
-  import CustomButton from 'src/components/CustomButton.vue'
+  import CustomButton from 'src/components/elements/CustomButton.vue'
 
   export default {
     name: "LoginPage",

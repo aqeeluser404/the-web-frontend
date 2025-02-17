@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import CustomButton from '../CustomButton.vue';
+import CustomButton from '../elements/CustomButton.vue';
 import UnitService from 'src/services/UnitService';
 
 export default {
@@ -94,13 +94,31 @@ export default {
         const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
 
         if (filteredUnits.length > 0) {
-          // Find the maximum unit number for the selected floor
-          const maxUnitNumber = Math.max(...filteredUnits.map(u => parseInt(u.unitNumber)));
-          this.unit.unitNumber = (maxUnitNumber + 1).toString();
-        } else {
-          // If no units exist for the selected floor, start at 1
-          this.unit.unitNumber = '1';
+
+          // Extract and sort unit numbers as integers
+          const unitNumbers = filteredUnits
+            .map(u => parseInt(u.unitNumber))
+            .sort((a, b) => a - b);
+
+          // Find the first missing number in the sequence
+          let firstMissing = 1;
+          for (const num of unitNumbers) {
+            if (num > firstMissing) {
+              break; // Gap found
+            }
+            firstMissing = num + 1;
+          }
+          this.unit.unitNumber = firstMissing.toString();
+          } else {
+          this.unit.unitNumber = '1'; // Start at 1 if no units exist
         }
+        //   // Find the maximum unit number for the selected floor
+        //   const maxUnitNumber = Math.max(...filteredUnits.map(u => parseInt(u.unitNumber)));
+        //   this.unit.unitNumber = (maxUnitNumber + 1).toString();
+        // } else {
+        //   // If no units exist for the selected floor, start at 1
+        //   this.unit.unitNumber = '1';
+        // }
       } catch (error) {
         console.error('Error fetching units:', error);
         this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });

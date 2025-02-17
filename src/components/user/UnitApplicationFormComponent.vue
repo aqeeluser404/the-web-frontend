@@ -10,6 +10,7 @@
           v-if="unit.images && unit.images.length > 0"
           :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
           class="q-mb-md product-image"
+          :ratio="1"
         />
         <button class="nav-button left" @click="prevImage">‹</button>
         <button class="nav-button right" @click="nextImage">›</button>
@@ -72,7 +73,7 @@
 
 <script>
 import Helper from 'src/services/utils'
-import CustomButton from './CustomButton.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
 import RentalService from 'src/services/RentalService';
 
 export default {
@@ -185,10 +186,11 @@ export default {
 
 .image-container
   position: relative
-  display: flex
-  justify-content: center
-  align-items: center
-  height: 450px
+  width: 100%
+  height: 340px
+  overflow: hidden
+  border-radius: 4px
+  background: #f5f5f5  // Optional: Add background color for empty space
 
 .nav-button
   position: absolute

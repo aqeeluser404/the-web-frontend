@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import CustomButton from './CustomButton.vue';
+import CustomButton from '../elements/CustomButton.vue';
 import UserService from 'src/services/UserService';
 
 export default {

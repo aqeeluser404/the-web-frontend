@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import CustomButton from 'src/components/CustomButton.vue'
+import CustomButton from 'src/components/elements/CustomButton.vue'
 import Helper from 'src/services/utils'
 import RentalService from 'src/services/RentalService';
 import UserService from 'src/services/UserService';
