@@ -2,7 +2,7 @@
   <q-page>
     <div class="q-pa-md row justify-center">
 
-      <q-card flat bordered class="col-md-9 col-11 q-ma-sm">
+      <q-card flat bordered class="col-md-9 col-12 q-ma-sm">
 
         <q-card-section class="row justify-center">
           <div class="text-h6">Rental Information</div>
@@ -80,9 +80,10 @@
                 </td>
                 <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td>
                 <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
-                <td class="text-left cursor-pointer text-uppercase" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
+                <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">
                   <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <!-- <CustomButton v-if="rental.status === 'Active'" flat color="brown" text-color="green" customStyle="width: 15%" icon="eva-email-outline" @click.stop="openRequestUser(rental)" /> -->
                 </td>
                 <!-- <td class="text-left cursor-pointer" v-else>
                   N/A
@@ -99,6 +100,9 @@
         </q-card-section>
       </q-card>
     </div>
+    <q-dialog v-model="requestDialog">
+      <UserRequestComponent :rental="selectedRental" @close="handleDialogClose" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -107,16 +111,20 @@ import Helper from 'src/services/utils';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
+import UserRequestComponent from 'src/components/user/UserRequestComponent.vue';
 
 export default {
   data() {
     return {
       rentals: [],
-      userDetails: {}
+      userDetails: {},
+      requestDialog: false,
+      selectedRental: null
     }
   },
   components: {
-    CustomButton
+    CustomButton,
+    UserRequestComponent
   },
   methods: {
     formatDate: Helper.formatDate,
@@ -155,9 +163,18 @@ export default {
           // No need to fetch user details again on cancel
         })
       } else {
-        this.$q.notify({ type: 'negative', color: 'primary', message: 'Delete failed. You cannot delete an approved or active rental.' })
+        this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this rental is tied to your rental History.' })
       }
-    }
+    },
+    openRequestUser(rental) {
+      this.selectedRental = rental,
+      this.requestDialog = true
+    },
+    handleDialogClose() {
+      this.selectedRental = false
+      this.requestDialog = false
+      this.fetchUserDetails()
+    },
   },
   mounted() {
     this.fetchUserDetails()

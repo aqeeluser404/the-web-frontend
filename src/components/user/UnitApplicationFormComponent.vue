@@ -21,9 +21,13 @@
       <div v-if="unit.unitStatus !== 'Occupied'"><b>You are applying for the {{ unit.unitType }} unit.</b><br><br>{{ unit.unitDescription }}</div>
       <div v-else><b>This {{ unit.unitType }} unit is currently occupied.</b><br><br>{{ unit.unitDescription }}</div>
       <ul>
-        <li v-if="unit.unitStatus !== 'Occupied'">Unit Availability: {{ unit.unitOccupants - unit.currentOccupants }} occupants</li>
+        <li v-if="unit.unitStatus !== 'Occupied'">Unit Availability: {{ unit.unitOccupants - unit.currentOccupants }} spots remaining.</li>
         <li v-if="nextAvailabilityDate !== null">Next Available Date: {{ formatDate(nextAvailabilityDate) }}</li>
         <li>Monthly price per occupant: R <span style="text-decoration: underline;">{{ unit.unitPrice }}.00</span></li>
+        <li>Gender Assignment:
+          <span v-if="unit.genderAssignment">This unit is currently assigned to <span style="text-decoration: underline;">{{ unit.genderAssignment.toLowerCase() }} occupants.</span></span>
+          <span v-else>This unit is currently <span style="text-decoration: underline;">unassigned.</span></span>
+        </li>
       </ul>
     </q-card-section>
 
@@ -35,6 +39,12 @@
         <li>Phone Number: {{ userDetails.phone }}</li>
         <li>Email Address: {{ userDetails.email }}</li>
       </ul>
+    </q-card-section>
+
+    <q-card-section v-if="unit.unitStatus !== 'Occupied'" >
+      <div class="q-mb-sm"><b>Please select your preferred lease dates at your earliest convenience.</b></div>
+      <q-input v-model="rentalDetails.rentalStartDate" label="Rental Start Date" type="date" :min="minDate" />
+      <q-input v-model="rentalDetails.rentalEndDate" label="Rental End Date" type="date" :min="rentalDetails.rentalStartDate || minDate" />
     </q-card-section>
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'">
@@ -56,11 +66,6 @@
         </div>
       </div>
       <!-- <div>Unit price per monthly installment: <b style="text-decoration: underline;">R {{ unit.unitPrice }}.00</b></div> -->
-    </q-card-section>
-
-    <q-card-section v-if="unit.unitStatus !== 'Occupied'" >
-      <q-input v-model="rentalDetails.rentalStartDate" label="Rental Start Date" type="date" :min="minDate" />
-      <q-input v-model="rentalDetails.rentalEndDate" label="Rental End Date" type="date" :min="rentalDetails.rentalStartDate || minDate" />
     </q-card-section>
 
     <q-card-section class="row justify-between">
@@ -114,11 +119,13 @@ export default {
 
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()
-
       this.nextAvailabilityDate = await this.nextAvailability()
-      console.log(this.nextAvailabilityDate)
     },
     async createRentalApplication(unit) {
+      if (this.rentalDetails.rentalStartDate === '' || this.rentalDetails.rentalEndDate === '' ) {
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please specify your desired start and end dates.'})
+        return
+      }
       this.rentalDetails.user = this.userDetails._id
       this.rentalDetails.unit = unit._id
 
@@ -126,6 +133,18 @@ export default {
       const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status))
       if (activeOrPendingRentals.length > 0) {
         this.$q.notify({ type: 'negative', color: 'red', message: 'You have an active or pending rental application. Please complete it before creating a new one.'})
+        return
+      }
+
+      if (!this.userDetails.gender) {
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure you have specified your gender before submitting your application.' })
+        return
+      }
+
+      if (!unit.genderAssignment) {
+        unit.genderAssignment = this.userDetails.gender;
+      } else if (unit.genderAssignment !== this.userDetails.gender) {
+        this.$q.notify({ type: 'negative', color: 'red', message: `This unit is only available for ${unit.genderAssignment}s.` })
         return
       }
 
@@ -171,7 +190,7 @@ export default {
         // If the unit's capacity is not full, return null or a message indicating availability
         return null; // or you can return a specific message like "Unit is available"
       }
-    }
+    },
   },
 
   created() {

@@ -1,15 +1,15 @@
 <template>
   <q-page>
-    <div class="q-pa-md column justify-center flex-start" style="width: 100%; height: 100%;" >
+    <div class="q-pa-md column justify-center flex-center" style="width: 100%; height: 100%;" >
 
-      <q-card flat>
+      <q-card flat class="q-ma-sm">
         <q-card-section class="row justify-center">
           <div class="text-h6">Admin Panel</div>
         </q-card-section>
 
         <q-card-section class="row justify-center flex-center constrain" >
           <q-list v-for="(card, index) in cards" :key="index">
-            <q-card flat bordered class="q-ma-sm card-container">
+            <q-card flat bordered class="q-ma-sm card-container text-center">
               <router-link :to="card.route" class="router-link">
                 <q-icon :name="card.icon" class="card-icon" />
                 <div class="text-subtitle1">{{ card.label }}</div>
@@ -34,7 +34,8 @@ export default {
       cards: [
         { label: 'User Administration', route: '/admin/users', icon: 'eva-people-outline' },
         { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline' },
-        { label: 'Rentals Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' }
+        { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' },
+        { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline' }
       ]
     }
   },
@@ -50,6 +51,7 @@ export default {
   flex-direction: row
   align-items: center
   padding: 40px
+  width: 220px
 
 
 .router-link
@@ -64,8 +66,5 @@ export default {
   font-size: 96px
   margin-bottom: 10px
 
-
-.card-button
-  width: 100%
 
 </style>

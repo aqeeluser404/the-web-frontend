@@ -13,6 +13,11 @@ class Helper {
     const options = { day: 'numeric', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
   }
+  static formatTime(dateString) {
+    const date = new Date(dateString);
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return date.toLocaleTimeString('en-GB', options);
+  }
   static capitalizeFirstLetter(text) {
     if (!text) return '';
     const lowerCaseText = text.toLowerCase();
@@ -73,8 +78,8 @@ class Helper {
     return emailPattern.test(email)
   }
   static validatePhone(phone) {
-    const phonePattern = /^\d{10}$/
-    return phonePattern.test(phone)
+    const phonePattern = /^\d{10,15}$/;
+    return phonePattern.test(phone);
   }
   static validateUsername(username) {
     const usernamePattern = /^[a-zA-Z0-9]{3,15}$/;

@@ -21,10 +21,10 @@
         <li>
           <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
         </li>
-        <li>
+        <li v-if="rental.rentalStartDate">
           Start Date: {{ formatDate(rental.rentalStartDate) }}
         </li>
-        <li>
+        <li v-if="rental.rentalEndDate">
           End Date: {{ formatDate(rental.rentalEndDate) }}
         </li>
       </ul>
@@ -44,6 +44,12 @@
         </li>
       </ul>
     </q-card-section>
+
+    <!-- <q-card-section v-if="unitDetails.unitStatus !== 'Occupied'" >
+      <div class="q-mb-md"><b>Set the rental period</b></div>
+      <q-input v-model="rental.rentalStartDate" label="Rental Start Date" type="date" :min="minDate" />
+      <q-input v-model="rental.rentalEndDate" label="Rental End Date" type="date" :min="rental.rentalStartDate || minDate" />
+    </q-card-section> -->
 
     <q-card-section>
       <q-radio v-model="isApproved" :val="true" label="Approve" />
@@ -70,6 +76,7 @@ import Helper from 'src/services/utils'
 import RentalService from 'src/services/RentalService';
 import UserService from 'src/services/UserService';
 import EmailService from 'src/services/EmailService';
+import UnitService from 'src/services/UnitService';
 
 export default {
   name: 'AdminRentalApprovalComponent',
@@ -82,23 +89,48 @@ export default {
   },
   data() {
     return {
+      unitDetails: {},
       isApproved: null,
       userDetails: {},
-      message: `
-        Dear ${this.rental.userFirstName} ${this.rental.userLastName},<br><br>
-        We regret to inform you that your rental application has been rejected due to the following reasons:<br><br>
-        - [Insert reason here]<br><br>
-        Please review the documents and resubmit your application.<br><br>
-        If you have any questions or need further assistance, please do not hesitate to contact us.<br><br>
-        Best regards,<br>
-        The Web Team`
+      // message: `
+      //   Dear ${this.rental.userFirstName} ${this.rental.userLastName},<br><br>
+      //   We regret to inform you that your rental application has been rejected due to the following reasons:<br><br>
+      //   - [Insert reason here]<br><br>
+      //   Please review the documents and resubmit your application.<br><br>
+      //   If you have any questions or need further assistance, please do not hesitate to contact us.<br><br>
+      //   Best regards,<br>
+      //   The Web Team`,
+      message: '',
+      minDate: new Date().toISOString().split('T')[0]   // Today's date
     }
   },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    async getUnitAvailability() {
+      const response = await UnitService.getByIdUnit(this.rental.unit)
+      this.unitDetails = response
+    },
+
     async approveRental() {
+
+      // const today = new Date();
+      // const startDate = new Date(this.rentalDetails.rentalStartDate);
+      // const endDate = new Date(this.rentalDetails.rentalEndDate);
+
+      // // Check if start date is in the future
+      // if (startDate <= today) {
+      //   this.$q.notify({ type: 'negative', message: 'Rental start date must be in the future.' });
+      //   return;
+      // }
+
+      // // Check if end date is after start date
+      // if (endDate <= startDate) {
+      //   this.$q.notify({ type: 'negative', message: 'Rental end date must be after the start date.' });
+      //   return;
+      // }
+
       const approvedRental = {
         applicationDate: this.rental.applicationDate,
         status: "Active",
@@ -135,8 +167,8 @@ export default {
       const rejectedRental = {
         applicationDate: this.rental.applicationDate,
         status: "Rejected",
-        rentalStartDate: this.rental.rentalStartDate,
-        rentalEndDate: this.rental.rentalEndDate,
+        rentalStartDate: null,
+        rentalEndDate: null,
         rentalPrice: this.rental.rentalPrice,
         unit: this.rental.unit,
         unitType: this.rental.unitType,
@@ -163,7 +195,7 @@ export default {
       } else {
         this.$q.notify({ type: 'negative', message: 'Reject rental failed. Please try again.' })
       }
-    }
+    },
   }
 }
 </script>

@@ -6,60 +6,35 @@
 
         <q-card-section>
           <q-timeline :layout="layout" color="secondary">
-
             <q-timeline-entry heading class="text-h6">
               Rental Application Process
             </q-timeline-entry>
-
             <!-- Account creation -->
             <q-timeline-entry
-              title="Account Creation"
-              icon="eva-people"
-              side="right"
-              color="orange"
-              :subtitle="formatDate(rental.userDateCreated)"
+              title="Account Creation" icon="eva-people" side="right" color="orange" :subtitle="formatDate(rental.userDateCreated)"
             >
               <div class="q-mb-md" style="text-decoration: underline;">Applicant Details</div>
               <ul>
-                <li>
-                  First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}
-                </li>
-                <li>
-                  Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}
-                </li>
-                <li>
-                  Username: {{ rental.userUsername }}
-                </li>
-                <li>
-                  Phone: {{ rental.userPhone }}
-                </li>
-                <li>
-                  Email: {{ rental.userEmail }}
-                </li>
+                <li>First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}</li>
+                <li>Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}</li>
+                <li>Username: {{ rental.userUsername }}</li>
+                <li>Phone: {{ rental.userPhone }}</li>
+                <li>Email: {{ rental.userEmail }}</li>
               </ul>
             </q-timeline-entry>
 
             <!-- Account verification -->
             <q-timeline-entry
               v-if="rental.userVerified === true"
-              title="Account has been Verified"
-              icon="done_all"
-              side="left"
-            />
+              title="Account has been Verified" icon="done_all" side="left" />
+
             <q-timeline-entry
               v-if="rental.userVerified === false"
-              title="Account has not been Verified"
-              color="red"
-              icon="close"
-              side="left"
-            />
+              title="Account has not been Verified" color="red" icon="close" side="left" />
 
             <!-- Rental creation -->
             <q-timeline-entry
-              title="Rental Creation"
-              :subtitle="formatDate(rental.applicationDate)"
-              icon="done_all"
-              side="right"
+              title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all" side="right"
             >
               <div class="q-mb-md">
                 <span style="text-decoration: underline;">Applicant has applied for a {{rental.unitType}} unit.</span>
@@ -71,10 +46,10 @@
                 <li>
                   <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
                 </li>
-                <li>
+                <li v-if="rental.rentalStartDate">
                   Start Date: {{ formatDate(rental.rentalStartDate) }}
                 </li>
-                <li>
+                <li v-if="rental.rentalEndDate">
                   End Date: {{ formatDate(rental.rentalEndDate) }}
                 </li>
               </ul>
@@ -83,87 +58,60 @@
             <!-- Documents upload -->
             <q-timeline-entry
               v-if="rental.userDocuments && rental.userDocuments.length === 3"
-              title="Documents have been Uploaded"
-              side="left"
-              icon="done_all"
-            />
+              title="Documents have been Uploaded" side="left" icon="done_all" />
+
             <q-timeline-entry
               v-else
-              title="Documents have not been Uploaded"
-              side="left"
-              color="red"
-              icon="close"
-            />
+              title="Documents have not been Uploaded" side="left" color="red" icon="close" />
+
+            <q-timeline-entry
+              v-if="rental.status === 'Active' || rental.status === 'Ended'"
+              title="Documents have been Approved" side="right" icon="done_all" />
 
             <!-- Document Approvals -->
             <q-timeline-entry
-              title="Document Approval"
-              side="right"
-              color="grey"
-              icon="eva-file-text-outline"
+              v-else
+              title="Document Approval" side="right" color="grey" icon="eva-file-text-outline"
             >
-              <div class="q-mb-md" style="text-decoration: underline;">Please verify if the following documents are valid.</div>
+              <div class="q-mb-md"  style="cursor: pointer; text-decoration: underline;" @click="openUserDocumentsDialog">Please verify if the following documents are valid.</div>
               <ul>
                 <li>Proof of Residential Address</li>
                 <li>South African Identity Document (ID) or Passport</li>
                 <li>Three Months' Bank Statements</li>
-                <li style="cursor: pointer; text-decoration: underline;" @click="openUserDocumentsDialog">
-                  <b>Check user documents</b>
-                </li>
+                <li>Documents are automatically approved once the rental has been approved</li>
               </ul>
             </q-timeline-entry>
 
             <!-- Rental Approvals -->
             <q-timeline-entry
               v-if="rental.status === 'Pending'"
-              title="Approve Rental"
-              color="orange"
-              icon="eva-briefcase-outline"
-              side="left"
+              title="Approve Rental" color="grey" icon="eva-briefcase-outline" side="left"
             >
               <div class="q-mb-md"></div>
               <div @click="openRentalApprovalDialog" style="cursor: pointer; text-decoration: underline;">
-                <b>Approve Rental</b>
+                Approve the rental information and desired lease period.
               </div>
             </q-timeline-entry>
 
-            <!-- outcomes -->
+            <!-- rejected rental -->
             <q-timeline-entry
               v-if="rental.status === 'Rejected'"
-              title="Rental has been Rejected"
-              icon="close"
-              color="red"
-              side="left"
-            />
+              title="Rental has been Rejected" icon="close" color="red" side="left" />
 
+            <!-- approved rental -->
             <q-timeline-entry
               v-if="rental.status === 'Active'"
-              title="Rental has been Approved"
-              :subtitle="formatDate(rental.rentalStartDate)"
-              icon="done_all"
-              side="left"
-            />
+              title="Rental has been Approved" :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" />
 
+            <!-- scheduled ended rental -->
             <q-timeline-entry
               v-if="rental.status === 'Ended' && rental.earlyEndDate === null"
-              title="Rental has ended"
-              :subtitle="formatDate(rental.rentalEndDate)"
-              :body="`The rental period concluded as scheduled.`"
-              icon="close"
-              side="left"
-              color="orange"
-            />
+              title="Rental has ended" :subtitle="formatDate(rental.rentalEndDate)" :body="`The rental period concluded as scheduled.`" icon="done_all" side="left" color="orange" />
 
+            <!-- early ended rental -->
             <q-timeline-entry
               v-if="rental.status === 'Ended' && rental.earlyEndDate !== null"
-              title="Rental has ended"
-              :subtitle="formatDate(rental.earlyEndDate)"
-              :body="`The rental period concluded ahead of the scheduled end date.`"
-              icon="close"
-              side="left"
-              color="orange"
-            />
-
+              title="Rental has ended" :subtitle="formatDate(rental.earlyEndDate)" :body="`The rental period concluded ahead of the scheduled end date.`" icon="done_all" side="left" color="orange" />
           </q-timeline>
         </q-card-section>
       </q-card>
@@ -260,7 +208,7 @@ export default {
         userDocuments: user.documents
       };
 
-      console.log(this.rental.userDocuments)
+      // console.log(this.rental.userDocuments)
     },
   }
 }

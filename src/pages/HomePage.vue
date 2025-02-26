@@ -261,11 +261,11 @@
               <q-icon name="eva-email-outline" class="q-mr-sm" /> admin@the-web.co.za
             </a>
 
-            <a href="tel:0823433945" class="q-mb-md" style="text-decoration: underline; color: white;">
+            <a href="tel:+27823433945" target="_blank" class="q-mb-md" style="text-decoration: underline; color: white;">
               <q-icon name="eva-phone-outline" class="q-mr-sm" /> (+27) 82-343-3945
             </a>
 
-            <a href="https://api.whatsapp.com/send/?phone=0828205342&text&type=phone_number&app_absent=0" style="text-decoration: underline; color: white;">
+            <a href="https://api.whatsapp.com/send/?phone=27823433945&text&type=phone_number&app_absent=0" target="_blank" style="text-decoration: underline; color: white;">
               <q-icon name="eva-message-circle-outline" class="q-mr-sm" /> Send WhatsApp
             </a>
           </div>

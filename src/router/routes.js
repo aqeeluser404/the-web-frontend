@@ -13,6 +13,7 @@ const routes = [
       { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
       { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },            // user profile page (update and view), documents
       { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
+      { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
 
       // admin authority routes-------------------------------------------------------------------------------------------------------------------
 
@@ -23,14 +24,15 @@ const routes = [
       { path: '/admin/users', component: () => import('src/pages/admin/AdminUsersCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
       { path: '/admin/users/view/:id', component: () => import('src/pages/admin/AdminUserDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
-
-
       // rental management
       { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
       { path: '/admin/rentals/view/:id', component: () => import('src/pages/admin/AdminRentalApprovalsPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // unit management
       { path: '/admin/units', component: () => import('src/pages/admin/AdminUnitsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      // call log management
+      { path: '/admin/call-log', component: () => import('src/pages/admin/AdminCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 

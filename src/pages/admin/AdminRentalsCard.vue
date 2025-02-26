@@ -2,8 +2,28 @@
   <q-page>
     <div class="q-pa-md row justify-center">
 
-      <q-card flat bordered class="col-md-9 col-11 q-ma-sm">
+      <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
+        <!-- Pie Chart Section -->
+        <q-card-section class="row justify-center">
+          <div class="text-h6">Rental Status Distribution</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section class="row justify-center">
+          <div style="width: 300px; height: 300px;">
+            <canvas ref="pieChart"></canvas>
+          </div>
+        </q-card-section>
+        <q-card-section class="row justify-center">
+          <q-toggle
+            v-model="showAllStatuses"
+            label="Show All Statuses"
+            @update:model-value="updateChart"
+          />
+        </q-card-section>
+      </q-card>
 
+      <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
+        <!-- Table Section -->
         <q-card-section class="row justify-center">
           <div class="text-h6">Rental History</div>
         </q-card-section>
@@ -12,12 +32,11 @@
           <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch" class="col-12 col-md-9" />
 
           <q-select
-            filled
             v-model="selectedRentalStatus"
             :options="rentalStatus"
             label="Rental Status"
             @update:model-value="filteredByRentalStatus"
-            class="col-12 col-md-3"
+            class="col-12 col-md-2"
           />
         </q-card-section>
 
@@ -31,8 +50,8 @@
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
-                <th class="text-left">Rental Price</th>
-                <th class="text-left">Unit Type</th>
+                <!-- <th class="text-left">Rental Price</th> -->
+                <!-- <th class="text-left">Unit Type</th> -->
                 <th class="text-left">Status</th>
                 <th class="text-left">Actions</th>
               </tr>
@@ -66,13 +85,13 @@
                     N/A
                   </div>
                 </td>
-                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td>
-                <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
-                <td class="text-left cursor-pointer text-uppercase" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
+                <!-- <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td> -->
+                <!-- <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td> -->
+                <td class="text-left cursor-pointer text-uppercase"  :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <!-- <q-btn flat color="red" text-color="red" icon="eva-close-outline" @click.stop="endRental(rental)" /> -->
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 70%" icon="eva-close-outline" @click.stop="endRental(rental)" />
+                  <CustomButton v-if="rental.status === 'Ended'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-file-text-outline" @click.stop="openExtendRentalDialog(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-close-outline" @click.stop="endRental(rental)" />
                 </td>
               </tr>
             </tbody>
@@ -84,18 +103,25 @@
             <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
           </q-item>
         </q-card-section>
-
       </q-card>
     </div>
+
+    <q-dialog v-model="extendRentalDialog">
+      <AdminExtendRentalComponent :rental="selectedRental" @close="handleClose" />
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
+import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
+Chart.register(PieController, ArcElement, Tooltip, Legend);
+
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
 import UserService from 'src/services/UserService';
-import Helper from 'src/services/utils'
+import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
+import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';
 
 export default {
   name: "AdminRentalsCard",
@@ -109,53 +135,105 @@ export default {
       pendingRentals: [],
       rejectedRentals: [],
       endedRentals: [],
-
       currentRentals: [],
-
+      extendRentalDialog: false,
+      selectedRental: null,
       rentalStatus: ['All', 'Approved', 'Pending', 'Rejected', 'Ended'],
-
-      selectedRentalStatus: 'All'
-    }
+      selectedRentalStatus: 'All',
+      showAllStatuses: false,
+      pieChart: null
+    };
   },
   components: {
-    CustomButton
+    CustomButton,
+    AdminExtendRentalComponent
   },
   methods: {
-
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
     async findAllRentals() {
-      const response = await RentalService.findAllRentals()
+      const response = await RentalService.findAllRentals();
 
       this.rentals = await Promise.all(response.map(async rental => {
-        const unit = await UnitService.getByIdUnit(rental.unit)
-        const user = await UserService.findUserById(rental.user)
+        const unit = await UnitService.getByIdUnit(rental.unit);
+        const user = await UserService.findUserById(rental.user);
         return {
           ...rental,
           unitType: unit.unitType,
           username: user.username
+        };
+      }));
+
+      const filteredRentals = this.rentals.filter(rental => rental.status === 'Pending' || rental.status === 'Active' || rental.status === 'Rejected' || rental.status === 'Ended');
+
+      this.currentRentals = filteredRentals;
+      this.approvedRentals = filteredRentals.filter(rental => rental.status === 'Active');
+      this.pendingRentals = filteredRentals.filter(rental => rental.status === 'Pending');
+      this.rejectedRentals = filteredRentals.filter(rental => rental.status === 'Rejected');
+      this.endedRentals = filteredRentals.filter(rental => rental.status === 'Ended');
+
+      this.filteredByRentalStatus();
+      this.updateChart();
+    },
+
+    updateChart() {
+      const statusData = this.showAllStatuses
+        ? {
+            Approved: this.approvedRentals.length,
+            Pending: this.pendingRentals.length,
+            Rejected: this.rejectedRentals.length,
+            Ended: this.endedRentals.length
+          }
+        : {
+            Active: this.approvedRentals.length,
+            Ended: this.endedRentals.length
+          };
+
+      const labels = Object.keys(statusData);
+      const data = Object.values(statusData);
+
+      if (this.pieChart) {
+        this.pieChart.destroy();
+      }
+
+      const ctx = this.$refs.pieChart.getContext('2d');
+      this.pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#4CAF50', // Green for Approved/Active
+              '#F44336', // Red for Rejected
+              '#FFC107', // Yellow for Pending
+              '#9E9E9E'  // Grey for Ended
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            tooltip: {
+              enabled: true
+            }
+          }
         }
-      }))
-
-      const filteredRentals = this.rentals.filter(rental => rental.status === 'Pending' || rental.status === 'Active' || rental.status === 'Rejected' || rental.status === 'Ended')
-
-      this.currentRentals = filteredRentals
-      this.approvedRentals = filteredRentals.filter(rental => rental.status === 'Active')
-      this.pendingRentals = filteredRentals.filter(rental => rental.status === 'Pending')
-      this.rejectedRentals = filteredRentals.filter(rental => rental.status === 'Rejected')
-      this.endedRentals = filteredRentals.filter(rental => rental.status === 'Ended')
-
-      this.filteredByRentalStatus()
+      });
     },
 
     filterBySearch() {
       if (this.search === '') {
-        this.selectedRentalStatus = 'All'
-        this.filteredByRentalStatus()
-        return
+        this.selectedRentalStatus = 'All';
+        this.filteredByRentalStatus();
+        return;
       }
-      const searchTerm = this.search.toLowerCase()
+      const searchTerm = this.search.toLowerCase();
       this.filteredRentals = this.filteredRentals.filter(rental =>
         rental.username.toLowerCase().includes(searchTerm) ||
         rental.username.toUpperCase().includes(searchTerm) ||
@@ -165,21 +243,31 @@ export default {
         rental.applicationDate.toUpperCase().includes(searchTerm) ||
         user.user.toLowerCase().includes(searchTerm) ||
         user.user.toUpperCase().includes(searchTerm)
-      )
+      );
     },
 
     filteredByRentalStatus() {
       if (this.selectedRentalStatus === 'All') {
-        this.filteredRentals = this.currentRentals
+        this.filteredRentals = this.currentRentals;
       } else if (this.selectedRentalStatus === 'Approved') {
-        this.filteredRentals = this.approvedRentals
+        this.filteredRentals = this.approvedRentals;
       } else if (this.selectedRentalStatus === 'Pending') {
-        this.filteredRentals = this.pendingRentals
+        this.filteredRentals = this.pendingRentals;
       } else if (this.selectedRentalStatus === 'Rejected') {
-        this.filteredRentals = this.rejectedRentals
+        this.filteredRentals = this.rejectedRentals;
       } else if (this.selectedRentalStatus === 'Ended') {
-        this.filteredRentals = this.endedRentals
+        this.filteredRentals = this.endedRentals;
       }
+    },
+
+    openExtendRentalDialog(rental) {
+      this.selectedRental = rental;
+      this.extendRentalDialog = true;
+    },
+
+    handleClose() {
+      this.extendRentalDialog = false;
+      this.findAllRentals();
     },
 
     async deleteRental(rental) {
@@ -191,18 +279,18 @@ export default {
           cancel: true,
           persistent: true
         }).onOk(async () => {
-          const response = await RentalService.deleteRental(rental._id)
+          const response = await RentalService.deleteRental(rental._id);
           if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' })
-            this.fetchUserDetails()
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
+            this.findAllRentals();
           } else {
-            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' })
+            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
           }
         }).onCancel(() => {
           // No need to fetch user details again on cancel
-        })
+        });
       } else {
-        this.$q.notify({ type: 'negative', color: 'primary', message: 'Delete failed. You cannot delete an active or ended rental.' })
+        this.$q.notify({ type: 'negative', message: 'Delete failed. You cannot delete an active or ended rental.' });
       }
     },
 
@@ -210,30 +298,29 @@ export default {
       if (rental.status === 'Active') {
         this.$q.dialog({
           title: 'Confirm',
-          message: 'You are about to end this rental application, continue?',
+          message: 'You are about to terminate this rental application before the agreement end date. Do you wish to proceed?',
           color: 'primary',
           cancel: true,
           persistent: true
         }).onOk(async () => {
-          const response = await RentalService.endRental(rental._id)
+          const response = await RentalService.endRental(rental._id);
           if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Ended successful!' })
-            this.fetchUserDetails()
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Ended successful!' });
+            this.findAllRentals();
           } else {
-            this.$q.notify({ type: 'negative', message: 'End rental failed. Please try again.' })
+            this.$q.notify({ type: 'negative', message: 'End rental failed. Please try again.' });
           }
-        })
+        });
       } else {
-        this.$q.notify({ type: 'negative', color: 'primary', message: 'End rental failed. You can only end an active rental.' })
+        this.$q.notify({ type: 'negative', message: 'End rental failed. You can only end an active rental.' });
       }
     },
-
     viewUserTimeline(id) {
-      Helper.adminRentalDetails(id, this.$router)
-    },
+      Helper.adminRentalDetails(id, this.$router);
+    }
   },
   created() {
-    this.findAllRentals()
+    this.findAllRentals();
   }
-}
+};
 </script>

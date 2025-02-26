@@ -1,13 +1,14 @@
 <template>
   <q-page>
     <div class="q-pa-md row justify-center">
+
+
+      <!-- USER DETAILS -->
       <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
         <q-card-section>
           <div class="text-h6">User Details</div>
         </q-card-section>
-
         <q-separator />
-
         <q-card-section>
           <q-item>
             <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
@@ -15,14 +16,12 @@
               <q-input readonly v-model="userDetails.firstName" />
             </q-item-section>
           </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
             <q-item-section class="text-left text-subtitle1">
               <q-input readonly v-model="userDetails.lastName" />
             </q-item-section>
           </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">
               <span>Email
@@ -40,49 +39,79 @@
               <q-input readonly v-model="userDetails.email" />
             </q-item-section>
           </q-item>
-
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Gender</q-item-section>
+            <q-item-section class="text-left">
+              <q-input v-if="userDetails.gender" readonly v-model="userDetails.gender" />
+              <div v-else style="opacity: 90%;">Not specified</div>
+            </q-item-section>
+          </q-item>
           <q-item>
             <q-item-section class="text-left text-subtitle1">Phone</q-item-section>
             <q-item-section class="text-left">
               <q-input readonly v-model="userDetails.phone" />
             </q-item-section>
           </q-item>
-
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Username</q-item-section>
             <q-item-section class="text-left">
               <q-input readonly v-model="userDetails.username" />
             </q-item-section>
           </q-item>
-
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Date Created</q-item-section>
-            <q-item-section class="text-left">
-              <q-input readonly :label="formatDate(userDetails.dateCreated)" />
-              <!-- <q-input readonly :value="" placeholder="No date available" /> -->
-            </q-item-section>
-          </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Account Type</q-item-section>
             <q-item-section class="text-left">
               <q-select v-model="userDetails.userType" :options="userTypeOptions" emit-value map-options />
             </q-item-section>
           </q-item>
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Date Created</q-item-section>
+            <q-item-section class="text-left">
+              <div style="opacity: 90%;">{{ formatDate(userDetails.dateCreated) }}</div>
+            </q-item-section>
+          </q-item>
         </q-card-section>
+
+        <q-card-section>
+          <div class="text-h6">Student Info</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Registered student</q-item-section>
+            <q-item-section class="text-left">
+              <q-input readonly v-model="userDetails.studentInfo.isRegisteredStudent" />
+            </q-item-section>
+          </q-item>
+
+          <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
+              <q-item-section class="text-left">
+                <q-input readonly v-model="userDetails.studentInfo.studentNumber" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Registered Institution</q-item-section>
+              <q-item-section class="text-left">
+                <q-input readonly v-model="userDetails.studentInfo.registeredInstitution" />
+              </q-item-section>
+            </q-item>
+          </div>
+        </q-card-section>
+
         <q-card-section  class="row justify-between">
           <CustomButton label="Update Account Type" color="brown" text-color="white" @click="updateUserType" />
         </q-card-section>
       </q-card>
 
-      <q-card flat bordered class="col-md-4 col-11 q-ma-sm full-height">
+
+      <!-- USER HISTORY AND DOCUMENTS -->
+      <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
         <q-card-section>
           <div class="text-h6">Rental History</div>
         </q-card-section>
-
         <q-separator />
-
         <q-card-section v-if="myRentals.length > 0">
           <q-markup-table flat bordered>
             <thead>
@@ -92,13 +121,12 @@
                 <th class="text-left">Application Date</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
-
               </tr>
             </thead>
             <tbody>
               <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer text-uppercase"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
+                <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
@@ -189,7 +217,13 @@ export default {
 
   data() {
     return {
-      userDetails: {},
+      userDetails: {
+        studentInfo: {
+          isRegisteredStudent: '',
+          studentNumber: '',
+          registeredInstitution: ''
+        }
+      },
       myRentals: [],
       userTypeOptions: [
         { label: 'Admin', value: 'admin' },

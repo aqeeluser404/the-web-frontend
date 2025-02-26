@@ -31,10 +31,13 @@
               flat bordered
               class="q-ma-sm"
             >
-              <q-card-section class="column flex-center">
-                <div class="text-h6">{{ unit.unitType }} (<span class="text-brown">{{ unit.unitStatus }}</span>)</div>
-                <div class="text-caption">Unit Number {{ unit.unitNumber }}</div>
-              </q-card-section>
+            <q-card-section class="column flex-center">
+              <div class="text-h6">{{ unit.unitType }} <span class="text-brown">({{ unit.unitStatus }})</span></div>
+              <div class="text-caption">Unit {{ unit.unitNumber }} -
+                <span v-if="unit.genderAssignment">Assigned to {{ unit.genderAssignment.toLowerCase() }}s</span>
+                <span v-else>Unassigned</span>
+              </div>
+            </q-card-section>
               <q-card-section class="row justify-center">
                 <q-img
                   v-if="unit.images && unit.images.length > 0"

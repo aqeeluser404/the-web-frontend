@@ -70,15 +70,20 @@
               class="custom-button q-py-sm large-screen-only"
               label="Book Now" flat rounded />
             <q-btn
-              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])"
+              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
               to="/user/profile"
               class="custom-button q-py-sm large-screen-only"
               label="User Profile" flat rounded />
             <q-btn
-              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])"
+              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
               to="/user/applications"
               class="custom-button q-py-sm large-screen-only"
               label="Application History" flat rounded />
+            <q-btn
+              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
+              to="/user/call-log"
+              class="custom-button q-py-sm large-screen-only"
+              label="Log A Call" flat rounded />
             <q-btn
               v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
               to="/admin"
@@ -130,11 +135,14 @@
               <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')">
                 <q-item-section class="">Book Now</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/user/profile" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])">
+              <q-item clickable v-close-popup to="/user/profile" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
                 <q-item-section class="">User Profile</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/user/applications" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications'])">
+              <q-item clickable v-close-popup to="/user/applications" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
                 <q-item-section class="">Application History</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to='/user/call-log' v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
+                <q-item-section class="">Log A Call</q-item-section>
               </q-item>
 
               <q-item clickable v-close-popup to="/admin" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
@@ -154,7 +162,7 @@
       <!-- breadcrumbs -->
       <div v-if="isAdminRoute">
         <div class="text-black text-caption">
-          <q-toolbar inset class="">
+          <q-toolbar class="q-px-lg">
             <q-breadcrumbs flat active-color="black">
               <q-breadcrumbs-el v-if="$route.path.includes('/admin')" label="Admin" to="/admin" icon="home" />
 
@@ -165,6 +173,8 @@
 
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals')" label="Rental Administration" to="/admin/rentals" icon="eva-briefcase-outline" />
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details" icon="eva-briefcase" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration" icon="eva-settings-outline" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>

@@ -117,16 +117,6 @@ export default {
       this.$q.dialog({
         title: 'Confirm', message: `You are about to update this unit in the database, continue?`, color: 'primary', cancel: true, persistent: true
       }).onOk(async () => {
-        // const formData = new FormData()
-        // for (const key in this.unit) {
-        //   if (key !== 'images') {
-        //     formData.append(key, this.unit[key])
-        //   }
-        // }
-        // if (this.image1) formData.append('images', this.image1)
-        // if (this.image2) formData.append('images', this.image2)
-        // if (this.image3) formData.append('images', this.image3)
-
         const response = await UnitService.updateUnit(this.unit._id, updatedUnit)
         if (response) {
           this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Updated!' })
