@@ -94,7 +94,8 @@ class Helper {
   // COOKIE SECURITY FUNCTIONS
   static async checkCookie() {
     try {
-      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/check-token`, { withCredentials: true });
+      // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/check-token`, { withCredentials: true });
+      const response = await axios.get(`https://the-web-backend.onrender.com/check-token`, { withCredentials: true });
       return response.data.exists;
     } catch (error) {
       console.error('Error checking token existence:', error);
@@ -104,7 +105,8 @@ class Helper {
   static async getCookie(name) {
     try {
       if (name === 'token') {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/get-token`, { withCredentials: true });
+        // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/get-token`, { withCredentials: true });
+        const response = await axios.get(`https://the-web-backend.onrender.com/get-token`, { withCredentials: true });
         return response.data || null;
       } else {
         console.log(`Cookie ${name} not found`);
@@ -117,7 +119,8 @@ class Helper {
   }
   static async removeCookie(name) {
     try {
-      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/remove-token`, {}, { withCredentials: true });
+      // await axios.post(`${process.env.VUE_APP_API_BASE_URL}/remove-token`, {}, { withCredentials: true });
+      await axios.post(`https://the-web-backend.onrender.com/remove-token`, {}, { withCredentials: true });
     } catch (error) {
       console.error(`Error removing cookie ${name}:`, error);
     }
