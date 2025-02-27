@@ -185,6 +185,50 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- <q-footer class="bg-dark text-white">
+      <div id="contact-section" style="height: 100%; background-color: #333;" class="q-pa-xl">
+        <q-card flat class="bg-transparent text-white row justify-center constrain">
+          <q-card-section class="col-md-6 col-12">
+            <div class="text-h4 q-mb-md">Discuss with Our Team</div>
+            <div class="text-body2 q-mb-md">Founder and Managing Director</div>
+            <div class="text-body1 q-mb-md"><b>Wayne Louw</b></div>
+            <div class="column">
+              <a href="mailto:admin@the-web.co.za" class="q-mb-md" style="text-decoration: underline; color: white;">
+                <q-icon name="eva-email-outline" class="q-mr-sm" /> admin@the-web.co.za
+              </a>
+              <a href="tel:+27823433945" target="_blank" class="q-mb-md" style="text-decoration: underline; color: white;">
+                <q-icon name="eva-phone-outline" class="q-mr-sm" /> (+27) 82-343-3945
+              </a>
+              <a href="https://api.whatsapp.com/send/?phone=27823433945&text&type=phone_number&app_absent=0" target="_blank" style="text-decoration: underline; color: white;">
+                <q-icon name="eva-message-circle-outline" class="q-mr-sm" /> Send WhatsApp
+              </a>
+            </div>
+          </q-card-section>
+          <q-card-section class="col-md-6 col-12 bg-transparent">
+            <div class="text-h4 q-mb-md">Contact Us</div>
+            <div class="">
+              <q-form @submit="submitContactForm" style="width: 100%;">
+                <q-input filled label-color="white" color="brown" v-model="userContact.firstName" label="Your Name" stack-label class="q-mb-md" required
+                  style="border: 1px solid white;" input-style="color: white;" />
+                <q-input filled label-color="white" color="brown" v-model="userContact.email" label="Your Email" stack-label class="q-mb-md" required
+                  style="border: 1px solid white;" input-style="color: white;" />
+                <q-input filled label-color="white" color="brown" v-model="message" label="Message" type="textarea" stack-label class="q-mb-md" required
+                  style="border: 1px solid white;" input-style="color: white;" />
+                <div class="row justify-between flex-center">
+                  <label>
+                    <input type="checkbox" name="privacyPolicy" value="agree" required class="q-mr-sm">
+                    By submitting your data, you agree to our <span class="text-brown"><b>privacy policy</b></span>
+                  </label>
+                  <CustomButton v-if="$q.screen.gt.sm" type="submit" label="Send Message" color="brown" text-color="white" customStyle="width: 30%" />
+                  <CustomButton v-else type="submit" label="Send Message" class="q-mt-md" color="brown" text-color="white" customStyle="width: 100%" />
+                </div>
+              </q-form>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </q-footer> -->
   </q-layout>
 </template>
 
@@ -194,10 +238,17 @@ import logoBlack from '../assets/resources/logos/Logo2.png'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
+import EmailService from 'src/services/EmailService';
 
 export default {
   data() {
     return {
+      // userContact: {
+      //   firstName: '',
+      //   email: '',
+      // }, message: '',
+
+
       userDetails: {
         _id: '',
         username: '',
@@ -246,6 +297,27 @@ export default {
         });
       }
     },
+    // async submitContactForm() {
+    //   const checkbox = document.querySelector('input[name="privacyPolicy"]');
+    //   if (!checkbox.checked) {
+    //     this.$q.notify({ type: 'negative', message: 'You must agree to the privacy policy before submitting.' });
+    //     return;
+    //   }
+
+    //   try {
+    //     const response = await EmailService.GetInContact(this.userContact, this.message);
+    //     if (response) {
+    //       this.$q.notify({ type: 'positive', color: 'primary', message: 'Message sent successfully!' });
+    //       this.userContact.firstName = '';
+    //       this.userContact.email = '';
+    //       this.message = '';
+    //     } else {
+    //       this.$q.notify({ type: 'negative', message: 'Error sending message.' });
+    //     }
+    //   } catch (error) {
+    //     this.$q.notify({ type: 'negative', message: 'Error sending message.' });
+    //   }
+    // },
     async checkLoginStatus() {
       const isLoggedIn = await Helper.checkCookie()
       if (isLoggedIn) {
