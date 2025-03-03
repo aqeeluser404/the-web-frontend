@@ -2,6 +2,7 @@
 .thumbs.db
 node_modules
 .env
+.env.production
 .package-lock.json
 
 # Quasar core related directories

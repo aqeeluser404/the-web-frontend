@@ -29,8 +29,8 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to, from, next) => {
     try {
-      const response = await axios.get(`https://the-web-backend.onrender.com/health`)
-      // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/health`)
+      // const response = await axios.get(`https://the-web-backend.onrender.com/health`)
+      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/health`)
       if (response.status === 200) {
         if (to.path === '/verify-email')  {
           const token = to.query.token

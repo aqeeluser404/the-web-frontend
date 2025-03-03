@@ -52,7 +52,11 @@ module.exports = configure(function (/* ctx */) {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
         node: 'node20'
       },
-      env: env,
+      env: {
+        VUE_APP_API_BASE_URL: ctx.dev
+          ? 'http://localhost:5000' // Development
+          : 'https://the-web-backend.onrender.com', // Production
+      },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
