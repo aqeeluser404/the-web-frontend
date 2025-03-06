@@ -119,6 +119,27 @@
           </ul>
          Once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended.
         </q-card-section>
+
+        <q-card-section>
+          <div class="text-h6">Current Access Key</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="q-mb-sm">Use this key to grant family members or dependents access to shared accommodation within a designated unit.</div>
+          <ul>
+            <li v-if="currentAccessKey">
+              Copy to clipboard:
+              <span
+                style="text-transform: uppercase; cursor: pointer; color: brown;" @click="copyToClipboard(currentAccessKey)">
+                <b>{{ currentAccessKey }}</b>
+              </span>
+            </li>
+            <li v-else>
+              You have not utilized an access or reference key in your current application.
+            </li>
+          </ul>
+        </q-card-section>
+
         <q-card-section>
           <div class="text-h6">Your Documents</div>
         </q-card-section>
@@ -174,6 +195,7 @@ import EmailService from 'src/services/EmailService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AddDocumentComponent from 'src/components/user/AddDocumentComponent.vue';
 import RentalService from 'src/services/RentalService';
+import { copyToClipboard } from 'quasar';
 
 export default {
   data() {
@@ -191,7 +213,8 @@ export default {
       userGenderOptions: [
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' }
-      ]
+      ],
+      currentAccessKey: ''
     }
   },
   components: {
@@ -204,6 +227,14 @@ export default {
     validatePhone: Helper.validatePhone,
     validateUsername: Helper.validateUsername,
     validatePassword: Helper.validatePassword,
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
     async checkEditingDisabled() {
       if (!this.userDetails || !this.userDetails.rentals) {
         this.isEditingDisabled = false;
@@ -236,12 +267,6 @@ export default {
           }
         }
       }
-
-      // if (!this.userDetails.gender) {
-      //   this.$q.notify({ type: 'negative', message: `Please specify your gender.` })
-      //   return false
-      // }
-
       if (!this.validateEmail(details.email)) {
         this.$q.notify({ type: 'negative', message: 'Invalid email address.' });
         return false;
@@ -260,7 +285,7 @@ export default {
       try {
         const response = await EmailService.resendVerificationEmail(this.userDetails.email);
         if (response) {
-          this.$q.notify({ type: 'positive', message: 'Please check your email for verification link.' });
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Please check your email for verification link.' });
           this.fetchUserDetails();
         }
         this.message = 'Verification email resent successfully!';
@@ -321,6 +346,10 @@ export default {
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails();
       this.checkEditingDisabled();
+
+      const response = await RentalService.findMyRentals(this.userDetails._id)
+
+      this.currentAccessKey = response.find(rental => (rental.status === 'Pending' || rental.status === 'Active') && rental.accessKey)?.accessKey
     },
     viewDocument(document) {
       const url = Helper.getDocumentUrl(document);

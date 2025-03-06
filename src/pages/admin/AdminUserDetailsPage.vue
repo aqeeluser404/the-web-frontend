@@ -119,16 +119,18 @@
                 <th></th>
                 <th class="text-left">Status</th>
                 <th class="text-left">Application Date</th>
-                <th class="text-left">Start Date</th>
-                <th class="text-left">End Date</th>
+                <!-- <th class="text-left">Start Date</th>
+                <th class="text-left">End Date</th> -->
+                <th class="text-left">Access Key</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)">
+              <!-- <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)"> -->
+              <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer">
+                <!-- <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
                   </div>
@@ -142,6 +144,14 @@
                   </div>
                   <div v-else>
                     Being processed...
+                  </div>
+                </td> -->
+                <td class="text-left cursor-pointer">
+                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
+                    <b>{{ rental.accessKey }}</b>
+                  </div>
+                  <div v-else>
+                    N/A
                   </div>
                 </td>
 
@@ -240,6 +250,16 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
+
     async fetchUserDetails() {
       const encryptedId = this.$route.params.id;
       const decryptedBytes = AES.decrypt(decodeURIComponent(encryptedId), 'secret-key');
@@ -292,6 +312,9 @@ export default {
           return
         })
       }
+    },
+    viewUserTimeline(id) {
+      Helper.adminRentalDetails(id, this.$router);
     },
     OpenViewRentalDetailsDialog(rental) {
       this.viewRentalDetailsDialog = true

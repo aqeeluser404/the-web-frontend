@@ -26,9 +26,21 @@
         <li>Monthly price per occupant: R <span style="text-decoration: underline;">{{ unit.unitPrice }}.00</span></li>
         <li>Gender Assignment:
           <span v-if="unit.genderAssignment">This unit is currently assigned to <span style="text-decoration: underline;">{{ unit.genderAssignment.toLowerCase() }} occupants.</span></span>
-          <span v-else>This unit is currently <span style="text-decoration: underline;">unassigned.</span></span>
+          <span v-if="!unit.genderAssignment && !unit.accessKey.isShared">This unit is currently <span style="text-decoration: underline;">unassigned.</span></span>
+          <span v-if="unit.accessKey.isShared">This unit requires an <span style="text-decoration: underline;">access key.</span></span>
         </li>
       </ul>
+    </q-card-section>
+
+    <q-card-section v-if="!unit.accessKey.isShared && !unit.genderAssignment">
+      <div class="q-mb-sm"><b>Generate Shared Access Key</b></div>
+      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="true" label="Yes" />
+      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="false" label="No" />
+    </q-card-section>
+
+    <q-card-section v-if="unit.accessKey.isShared">
+      <div class="q-mb-sm"><b>Provide Shared Access Key</b></div>
+      <q-input filled label-color="black" color="brown" v-model="rentalDetails.accessKey" @input="setAccessKeyTrue" label="*" required style="border: 2px solid white;" />
     </q-card-section>
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'">
@@ -97,7 +109,9 @@ export default {
         user: "",
         unit: "",
         rentalStartDate: '',
-        rentalEndDate: ''
+        rentalEndDate: '',
+        accessKeyIsTrue: null,
+        accessKey: ''
       },
       nextAvailabilityDate: null,
       rentals: [],
@@ -121,48 +135,134 @@ export default {
       this.userDetails = await Helper.fetchUserDetails()
       this.nextAvailabilityDate = await this.nextAvailability()
     },
+    // async createRentalApplication(unit) {
+
+    //   // validation code
+    //   if (this.rentalDetails.rentalStartDate === '' || this.rentalDetails.rentalEndDate === '' ) {
+    //     this.$q.notify({ type: 'negative', color: 'red', message: 'Please specify your desired start and end dates.'})
+    //     return
+    //   }
+    //   this.rentalDetails.user = this.userDetails._id
+    //   this.rentalDetails.unit = unit._id
+
+    //   const userRentals = await RentalService.findMyRentals(this.userDetails._id)
+    //   const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status))
+    //   if (activeOrPendingRentals.length > 0) {
+    //     this.$q.notify({ type: 'negative', color: 'red', message: 'You have an active or pending rental application. Please complete it before creating a new one.'})
+    //     return
+    //   }
+    //   // check if user specified their gender
+    //   if (!this.userDetails.gender) {
+    //     this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure you have specified your gender before submitting your application.' })
+    //     return
+    //   }
+    //   // check if gender matches
+    //   if (!unit.genderAssignment) {
+    //     unit.genderAssignment = this.userDetails.gender;
+    //   } else if (unit.genderAssignment !== this.userDetails.gender) {
+    //     this.$q.notify({ type: 'negative', color: 'red', message: `This unit is only available for ${unit.genderAssignment}s.` })
+    //     return
+    //   }
+
+    //   if (this.userDetails.verification && this.userDetails.verification.isVerified === true) {
+    //     if (this.userDetails.documents && this.userDetails.documents.length === 3) {
+    //       const response = await RentalService.createRental(this.rentalDetails)
+    //       if (response) {
+    //         this.$q.notify({ type: 'positive', color: 'primary', message: 'Your application has been successfully submitted. Please check your application history to monitor the status of your application.' })
+    //         this.$emit('close')
+    //       }
+    //     } else {
+    //       this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure all required documentation is uploaded before proceeding with your application.' });
+    //     }
+    //   } else {
+    //     this.$q.notify({ type: 'negative', color: 'red', message: 'Please verify your email before proceeding with your application.' });
+    //   }
+
+    // },
+    setAccessKeyTrue() {
+      this.rentalDetails.accessKeyIsTrue = true;
+    },
     async createRentalApplication(unit) {
-      if (this.rentalDetails.rentalStartDate === '' || this.rentalDetails.rentalEndDate === '' ) {
-        this.$q.notify({ type: 'negative', color: 'red', message: 'Please specify your desired start and end dates.'})
-        return
-      }
-      this.rentalDetails.user = this.userDetails._id
-      this.rentalDetails.unit = unit._id
 
-      const userRentals = await RentalService.findMyRentals(this.userDetails._id)
-      const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status))
+      // Validation code
+      if (this.rentalDetails.rentalStartDate === '' || this.rentalDetails.rentalEndDate === '') {
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please specify your desired start and end dates.' });
+        return;
+      }
+
+      this.rentalDetails.user = this.userDetails._id;
+      this.rentalDetails.unit = unit._id;
+
+      const userRentals = await RentalService.findMyRentals(this.userDetails._id);
+      const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status));
       if (activeOrPendingRentals.length > 0) {
-        this.$q.notify({ type: 'negative', color: 'red', message: 'You have an active or pending rental application. Please complete it before creating a new one.'})
-        return
+        this.$q.notify({ type: 'negative', color: 'red', message: 'You have an active or pending rental application. Please complete it before creating a new one.' });
+        return;
       }
 
+      // Check if user specified their gender
       if (!this.userDetails.gender) {
-        this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure you have specified your gender before submitting your application.' })
-        return
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure you have specified your gender before submitting your application.' });
+        return;
       }
 
+      // Check if gender matches
       if (!unit.genderAssignment) {
         unit.genderAssignment = this.userDetails.gender;
       } else if (unit.genderAssignment !== this.userDetails.gender) {
-        this.$q.notify({ type: 'negative', color: 'red', message: `This unit is only available for ${unit.genderAssignment}s.` })
-        return
+        this.$q.notify({ type: 'negative', color: 'red', message: `This unit is only available for ${unit.genderAssignment}s.` });
+        return;
       }
 
+      // // Handle access key
+      // if (unit.accessKey.isShared) {
+      //   const assignedKeyLowerCase = unit.accessKey.assignedKey.toLowerCase();
+      //   const rentalKeyLowerCase = this.rentalDetails.accessKey.toLowerCase();
+
+      //   if (rentalKeyLowerCase !== assignedKeyLowerCase) {
+      //     this.$q.notify({ type: 'negative', color: 'red', message: 'Invalid access key.' });
+      //     return;
+      //   }
+      // }
+
+      // Handle access key
+      if (unit.accessKey.isShared) {
+        if (this.rentalDetails.accessKey.toLowerCase() !== unit.accessKey.assignedKey) {
+          this.$q.notify({ type: 'negative', color: 'red', message: 'Invalid access key.' });
+          return;
+        }
+      }
+
+      // Submit rental application
       if (this.userDetails.verification && this.userDetails.verification.isVerified === true) {
         if (this.userDetails.documents && this.userDetails.documents.length === 3) {
-          const response = await RentalService.createRental(this.rentalDetails)
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Your application has been successfully submitted. Please check your application history to monitor the status of your application.' })
-            this.$emit('close')
+          try {
+            const response = await RentalService.createRental(this.rentalDetails);
+            if (response.accessKey) {
+              this.$q.notify({
+                type: 'positive',
+                color: 'primary',
+                message: `Your application has been successfully submitted. Your access key is: ${response.accessKey}. Please share this key with others if needed.`,
+              });
+            } else {
+              this.$q.notify({
+                type: 'positive',
+                color: 'primary',
+                message: 'Your application has been successfully submitted.',
+              });
+            }
+            this.$emit('close');
+          } catch (error) {
+            this.$q.notify({ type: 'negative', color: 'red', message: error.message || 'There was an error submitting your application. Please try again.' });
           }
-        } else {
-          this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure all required documentation is uploaded before proceeding with your application.' });
         }
       } else {
         this.$q.notify({ type: 'negative', color: 'red', message: 'Please verify your email before proceeding with your application.' });
       }
 
+
     },
+
     async nextAvailability() {
 
       if (this.unit.currentOccupants >= this.unit.unitOccupants) {      // Check if the unit's capacity is full

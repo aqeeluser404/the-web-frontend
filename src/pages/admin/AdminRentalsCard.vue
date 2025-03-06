@@ -47,6 +47,7 @@
                 <th></th>
                 <th class="text-left">Application Date</th>
                 <th class="text-left">Applicant</th>
+                <th class="text-left">Access Key</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
@@ -60,7 +61,15 @@
               <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer">{{ rental.username }}</td>
+                <td class="text-left cursor-pointer" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
+                <td class="text-left cursor-pointer">
+                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
+                    <b>{{ rental.accessKey }}</b>
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
+                </td>
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
@@ -78,8 +87,8 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline; color: red;">
-                    <b>{{ formatDate(rental.earlyEndDate) }}</b>
+                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
+                    {{ formatDate(rental.earlyEndDate) }}
                   </div>
                   <div v-else>
                     N/A
@@ -152,6 +161,15 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
+
     async findAllRentals() {
       const response = await RentalService.findAllRentals();
 
@@ -161,7 +179,8 @@ export default {
         return {
           ...rental,
           unitType: unit.unitType,
-          username: user.username
+          username: user.username,
+          userId: user._id
         };
       }));
 
@@ -225,6 +244,10 @@ export default {
           }
         }
       });
+    },
+
+    viewUserDetails(id) {
+      Helper.adminUserDetails(id, this.$router);
     },
 
     filterBySearch() {
@@ -317,7 +340,8 @@ export default {
     },
     viewUserTimeline(id) {
       Helper.adminRentalDetails(id, this.$router);
-    }
+    },
+
   },
   created() {
     this.findAllRentals();

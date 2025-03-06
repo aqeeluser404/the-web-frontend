@@ -11,11 +11,7 @@
         </div>
       </q-banner>
 
-      <q-card
-        flat
-        bordered
-        class="q-ma-sm"
-      >
+      <q-card flat bordered class="q-ma-sm">
         <q-expansion-item
           class="text-subtitle1"
           v-for="(units, floorIndex) in allUnits"
@@ -25,30 +21,32 @@
           :default-opened="floorIndex === 0"
         >
           <q-list class="row justify-center">
-            <q-card
-              v-for="unit in units"
-              :key="unit._id"
-              flat bordered
-              class="q-ma-sm"
-            >
-            <q-card-section class="column flex-center">
-              <div class="text-h6">{{ unit.unitType }} <span class="text-brown">({{ unit.unitStatus }})</span></div>
-              <div class="text-caption">Unit {{ unit.unitNumber }} -
-                <span v-if="unit.genderAssignment">Assigned to {{ unit.genderAssignment.toLowerCase() }}s</span>
-                <span v-else>Unassigned</span>
-              </div>
-            </q-card-section>
-              <q-card-section class="row justify-center">
-                <q-img
-                  v-if="unit.images && unit.images.length > 0"
-                  :src="getImageUrl(unit.images[0].imageUrl)"
-                  class="image"
-                />
+            <q-card v-for="unit in units" :key="unit._id" flat bordered class="q-ma-sm">
+              <q-card-section class="column flex-center">
+                <div class="text-h6">{{ unit.unitType }} <span class="text-brown">({{ unit.unitStatus }})</span></div>
+                <div class="text-caption" v-if="!unit.accessKey.isShared">Unit {{ unit.unitNumber }} -
+                  <span v-if="unit.genderAssignment">Assigned to {{ unit.genderAssignment.toLowerCase() }}s</span>
+                  <span v-else>Unassigned</span>
+                </div>
+                <div class="text-caption" v-else>Unit {{ unit.unitNumber }} -
+                  <span>Shared Access Key needed</span>
+                </div>
               </q-card-section>
-              <q-card-section class="row justify-between">
+              <q-card-section class="row justify-center">
+                <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+              </q-card-section>
+
+
+              <q-card-section v-if="!hasOngoingRentals" class="row justify-between">
                 <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
                 <CustomButton color="brown" label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
               </q-card-section>
+
+              <q-card-section v-else class="row justify-between">
+                <CustomButton label="View More" customStyle="width: 100%" color="white" text-color="black" @click="openUnitDetails(unit)" />
+              </q-card-section>
+
+
             </q-card>
           </q-list>
         </q-expansion-item>
@@ -93,7 +91,10 @@ export default {
   },
   computed: {
     hasRejectedRentals() {
-      return this.myRentals.some(rental => rental.status === 'Rejected')
+      return this.myRentals.some(rental => rental.status === 'Rejected');
+    },
+    hasOngoingRentals() {
+      return this.myRentals.some(rental => rental.status === 'Pending' || rental.status === 'Active');
     }
   },
   methods: {

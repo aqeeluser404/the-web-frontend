@@ -28,18 +28,25 @@
       </q-item>
     </q-card-section> -->
 
-    <q-card-section class="row justify-between">
+    <q-card-section class="column justify-between">
       <div v-if="rental.status === 'Active'">Application Status: <span style="color: green;"><b>{{ rental.status }}</b></span></div>
       <div v-if="rental.status === 'Pending'">Application Status: <span style="color: black;"><b>{{ rental.status }}</b></span></div>
       <div v-if="rental.status === 'Rejected'">Application Status: <span style="color: red;"><b>{{ rental.status }}</b></span></div>
       <div v-if="rental.status === 'Ended'">Application Status: <span style="color: brown;"><b>{{ rental.status }}</b></span></div>
 
+      <div v-if="rental.accessKey">Access or Reference key:
+        <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click="copyToClipboard(currentAccessKey)">
+          <b>{{ rental.accessKey }}</b>
+        </span>
+      </div>
     </q-card-section>
+
+
 
     <q-separator />
 
     <q-card-section>
-      <div class="q-mb-sm"><b>Rental Dates</b></div>
+      <div class="q-mb-sm"><b>Application Dates</b></div>
       <ul>
         <li>Start Date: {{ formatDate(rental.rentalStartDate) }}</li>
         <li>End Date: {{ formatDate(rental.rentalEndDate) }}</li>
@@ -68,6 +75,7 @@
 import CustomButton from '../elements/CustomButton.vue';
 import Helper from 'src/services/utils'
 import UnitService from 'src/services/UnitService';
+import { copyToClipboard } from 'quasar';
 
 export default {
   name: "AdminViewUserRentalComponent",
@@ -89,6 +97,15 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
     formatDate: Helper.formatDate,
+
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
 
     async getUnitDetails() {
       this.unit = await UnitService.getByIdUnit(this.rental.unit)

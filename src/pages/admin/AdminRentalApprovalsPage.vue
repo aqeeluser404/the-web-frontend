@@ -37,7 +37,16 @@
               title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all" side="right"
             >
               <div class="q-mb-md">
-                <span style="text-decoration: underline;">Applicant has applied for a {{rental.unitType}} unit.</span>
+                <span style="text-decoration: underline;">Rental Details</span>
+              </div>
+              <div class="">
+                Applicant has applied for a <b>{{rental.unitType}}</b> unit.
+              </div>
+              <div class="q-mb-md" v-if="rental.accessKey">
+                <span style="">This user is sharing a access key.</span>
+              </div>
+              <div class="q-mb-md" v-if="rental.accessKey">
+                Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
               </div>
               <ul>
                 <li>
@@ -52,6 +61,9 @@
                 <li v-if="rental.rentalEndDate">
                   End Date: {{ formatDate(rental.rentalEndDate) }}
                 </li>
+                <!-- <li v-if="rental.accessKey">
+                  Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
+                </li> -->
               </ul>
             </q-timeline-entry>
 
@@ -165,6 +177,15 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
 
     openRentalApprovalDialog() {
       this.rentalDialog = true;

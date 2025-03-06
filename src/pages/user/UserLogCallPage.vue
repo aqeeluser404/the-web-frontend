@@ -81,6 +81,7 @@ export default {
       callTypeOptions: [
         { label: 'Complaint', value: 'Complaint' },
         { label: 'Cleaning', value: 'Cleaning' },
+        { label: 'Lease Termination', value: 'Lease Termination' },
         { label: 'Maintenance', value: 'Maintenance' },
         { label: 'Lease Extension', value: 'Lease Extension' },
         { label: 'Rent Payment Issue', value: 'Rent Payment Issue' },

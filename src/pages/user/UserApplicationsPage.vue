@@ -39,7 +39,7 @@
               <tr>
                 <th></th>
                 <th class="text-left">Application Date</th>
-                <th class="text-left">Applicant</th>
+                <th class="text-left">Access Key</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
@@ -52,8 +52,16 @@
             <tbody v-for="(rental, index) in rentals" :key="rental._id">
               <tr>
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                <!-- <td class="text-left cursor-pointer">{{ rental._id }}</td> -->
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer">{{ userDetails.username }}</td>
+                <td class="text-left cursor-pointer">
+                  <div v-if="rental.accessKey" @click="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
+                    <b>{{ rental.accessKey }}</b>
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
+                </td>
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
@@ -71,8 +79,8 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline; color: red;">
-                    <b>{{ formatDate(rental.earlyEndDate) }}</b>
+                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
+                    {{ formatDate(rental.earlyEndDate) }}
                   </div>
                   <div v-else>
                     N/A
@@ -129,6 +137,14 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
     async findMyRentals() {
       const response = await RentalService.findMyRentals(this.userDetails._id)
       this.rentals = await Promise.all(response.map(async rental => {

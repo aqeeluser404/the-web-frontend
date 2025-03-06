@@ -51,10 +51,10 @@
                 <td class="text-left cursor-pointer">{{ user.username }}</td>
                 <td class="text-left cursor-pointer">{{ user.email }}</td>
                 <td class="text-left cursor-pointer" v-if="user.rentals.length > 0">
-                  <b>This user has {{ user.rentals.length }} approved rental(s)</b>
+                  <b>This user has {{ user.rentals.length }} applications(s)</b>
                 </td>
                 <td class="text-left cursor-pointer" v-else>
-                  This user has no approved rentals
+                  This user has no applications
                 </td>
                 <td class="text-left cursor-pointer" :class="{ 'admin-user': user.userType === 'admin'}">{{ user.userType }}</td>
                 <td class="text-center cursor-pointer">
