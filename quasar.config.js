@@ -54,8 +54,8 @@ module.exports = configure(function (ctx) {
       },
       env: {
         VUE_APP_API_BASE_URL: ctx.dev
-          ? 'http://localhost:5000' // Development
-          : 'https://the-web-backend.onrender.com', // Production
+            ? process.env.VUE_APP_API_BASE_URL_DEV // Development
+            : process.env.VUE_APP_API_BASE_URL_PROD // Production
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
