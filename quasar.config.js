@@ -53,9 +53,7 @@ module.exports = configure(function (ctx) {
         node: 'node20'
       },
       env: {
-        VUE_APP_API_BASE_URL: ctx.dev
-            ? process.env.VUE_APP_API_BASE_URL_DEV // Development
-            : process.env.VUE_APP_API_BASE_URL_PROD // Production
+        VUE_APP_API_BASE_URL: process.env.VUE_APP_API_BASE_URL,
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
