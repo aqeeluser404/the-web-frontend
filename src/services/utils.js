@@ -82,13 +82,25 @@ class Helper {
     return phonePattern.test(phone);
   }
   static validateUsername(username) {
-    const usernamePattern = /^[a-zA-Z0-9]{3,15}$/;
+    const usernamePattern = /^[a-zA-Z0-9-_]{3,15}$/;
     return usernamePattern.test(username);
   }
   static validatePassword(password) {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // Updated regular expression explanation:
+    // ^: Start of string
+    // (?=.*[a-z]): At least one lowercase letter
+    // (?=.*[A-Z]): At least one uppercase letter
+    // (?=.*\d): At least one numeric digit
+    // (?=.*[@$!%*?&]): At least one special character
+    // [A-Za-z\d@$!%*?&]{8,}: Minimum of 8 characters in total
+    // $: End of string
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-])[A-Za-z\d@$!%*?&-]{8,}$/;
+
+    // Validate the password using the updated pattern
     return passwordPattern.test(password);
   }
+
+
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // COOKIE SECURITY FUNCTIONS
