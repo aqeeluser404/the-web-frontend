@@ -57,6 +57,15 @@ class RentalService {
       Logger.error(error)
     }
   }
+  static async verifyAndSavePayer(rentalId, payerData) {
+    const ENDPOINT = `/rentals/${rentalId}/payer`
+    try {
+      const response = await axiosInstance.put(ENDPOINT, payerData)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
   static async endRental(rentalId) {
     const ENDPOINT = `/admin/rentals/${rentalId}/end`
     try {

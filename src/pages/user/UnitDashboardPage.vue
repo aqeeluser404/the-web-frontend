@@ -1,16 +1,15 @@
 <template>
   <q-page>
-    <div class="q-pa-md">
-      <!-- Banner for rejected rentals -->
-      <q-banner v-if="hasRejectedRentals" class="bg-red text-white" @click="goToRentalHistory">
-        <div class="row justify-center items-center" style="cursor: pointer;">
-          <div>
-            <q-icon name="warning" class="q-mr-sm" size="32px" />
-            <span>You have a rejected rental. Click here to view your rental history and cancel.</span>
-          </div>
+    <!-- Banner for rejected rentals -->
+    <q-banner v-if="hasRejectedRentals" class="bg-red text-white" @click="goToRentalHistory">
+      <div class="row justify-center items-center" style="cursor: pointer;">
+        <div>
+          <q-icon name="warning" class="q-mr-sm" size="32px" />
+          <span>You have a rejected rental. Click here to view your rental history and cancel.</span>
         </div>
-      </q-banner>
-
+      </div>
+    </q-banner>
+    <div class="q-pa-md">
       <q-card flat bordered class="q-ma-sm">
         <q-expansion-item
           class="text-subtitle1"

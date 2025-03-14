@@ -1,7 +1,16 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
+    <!-- Banner for rejected rentals -->
+    <q-banner v-if="addPayerInformation" class="bg-brown text-white full-width" @click="openAddPayer">
+      <div class="row justify-center items-center" style="cursor: pointer;">
+        <div>
+          <q-icon name="warning" class="q-mr-sm" size="32px" />
+          <span>You have successfully created your application. Click here to add your payer information.</span>
+        </div>
+      </div>
+    </q-banner>
 
+    <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-9 col-12 q-ma-sm">
 
         <q-card-section class="row justify-center">
@@ -91,6 +100,7 @@
                 <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">
                   <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <CustomButton v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat color="green" text-color="green" customStyle="width: 15%" icon="eva-bar-chart-outline" @click="openAddPayer" />
                   <!-- <CustomButton v-if="rental.status === 'Active'" flat color="brown" text-color="green" customStyle="width: 15%" icon="eva-email-outline" @click.stop="openRequestUser(rental)" /> -->
                 </td>
                 <!-- <td class="text-left cursor-pointer" v-else>
@@ -111,6 +121,10 @@
     <q-dialog v-model="requestDialog">
       <UserRequestComponent :rental="selectedRental" @close="handleDialogClose" />
     </q-dialog>
+
+    <q-dialog v-model="addPayerDialog">
+      <AddPayerComponent :rental="addPayerRental" @close="handleDialogClose" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -120,6 +134,7 @@ import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserRequestComponent from 'src/components/user/UserRequestComponent.vue';
+import AddPayerComponent from 'src/components/user/AddPayerComponent.vue';
 
 export default {
   data() {
@@ -127,12 +142,29 @@ export default {
       rentals: [],
       userDetails: {},
       requestDialog: false,
+      addPayerDialog: false,
+      addPayerRental: null,
       selectedRental: null
     }
   },
   components: {
     CustomButton,
-    UserRequestComponent
+    UserRequestComponent,
+    AddPayerComponent
+  },
+  computed: {
+    addPayerInformation() {
+      // Find the rental that requires payer information
+      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending' && rental.payerData.isValidated === false);
+      this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
+      return !!rentalNeedingPayer; // Return true if such a rental exists
+    },
+    viewPayerInformation() {
+      // Find the rental that requires payer information
+      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
+      this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
+      return !!rentalNeedingPayer; // Return true if such a rental exists
+    }
   },
   methods: {
     formatDate: Helper.formatDate,
@@ -186,9 +218,13 @@ export default {
       this.selectedRental = rental,
       this.requestDialog = true
     },
+    openAddPayer() {
+      this.addPayerDialog = true
+    },
     handleDialogClose() {
       this.selectedRental = false
       this.requestDialog = false
+      this.addPayerDialog = false
       this.fetchUserDetails()
     },
   },
