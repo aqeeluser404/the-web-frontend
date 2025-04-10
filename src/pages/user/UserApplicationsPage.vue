@@ -48,8 +48,8 @@
               <tr>
                 <th></th>
                 <th class="text-left">Application Date</th>
-                <!-- <th class="text-left">Application ID</th> -->
-                <th class="text-left">Access Key</th>
+                <th class="text-left">Application ID</th>
+                <!-- <th class="text-left">Access Key</th> -->
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
@@ -64,15 +64,15 @@
               <tr>
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <!-- <td class="text-left cursor-pointer">{{ rental._id }}</td> -->
-                <td class="text-left cursor-pointer">
+                <td class="text-left cursor-pointer" style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></td>
+                <!-- <td class="text-left cursor-pointer">
                   <div v-if="rental.accessKey" @click="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
                     <b>{{ rental.accessKey }}</b>
                   </div>
                   <div v-else>
                     N/A
                   </div>
-                </td>
+                </td> -->
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
@@ -98,7 +98,7 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}</td>
-                <td class="text-left cursor-pointer">{{ rental.unitNumber }}</td>
+                <td class="text-center cursor-pointer">{{ rental.unitNumber }}</td>
                 <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
                 <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">

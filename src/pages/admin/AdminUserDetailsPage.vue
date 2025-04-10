@@ -180,7 +180,7 @@
             >
               <q-card-section>
                 <q-img
-                  src="resources/elements/document.png"
+                  :src="documentLogo"
                   class="document"
                 />
               </q-card-section>
@@ -214,6 +214,7 @@
 </template>
 
 <script>
+import documentLogo from '../../assets/resources/elements/document.png'
 import AES from 'crypto-js/aes';
 import Utf8 from 'crypto-js/enc-utf8';
 import Helper from 'src/services/utils';
@@ -240,7 +241,8 @@ export default {
         { label: 'User', value: 'user' },
       ],
 
-      viewRentalDetailsDialog: false, selectedRental: null
+      viewRentalDetailsDialog: false, selectedRental: null,
+      documentLogo
     }
   },
   components: {

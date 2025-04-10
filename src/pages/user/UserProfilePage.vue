@@ -152,7 +152,7 @@
             >
               <q-card-section>
                 <q-img
-                  src="resources/elements/document.png"
+                  :src="documentLogo"
                   class="document"
                 />
               </q-card-section>
@@ -189,6 +189,7 @@
 </template>
 
 <script>
+import documentLogo from '../../assets/resources/elements/document.png'
 import UserService from 'src/services/UserService';
 import Helper from 'src/services/utils';
 import EmailService from 'src/services/EmailService';
@@ -214,7 +215,8 @@ export default {
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' }
       ],
-      currentAccessKey: ''
+      currentAccessKey: '',
+      documentLogo
     }
   },
   components: {
