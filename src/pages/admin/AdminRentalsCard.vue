@@ -47,7 +47,8 @@
                 <th></th>
                 <th class="text-left">Application Date</th>
                 <th class="text-left">Applicant</th>
-                <th class="text-left">Access Key</th>
+                <!-- <th class="text-left">Access Key</th> -->
+                <th class="text-left">Application ID</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
@@ -62,14 +63,15 @@
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
                 <td class="text-left cursor-pointer" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
-                <td class="text-left cursor-pointer">
+                <td class="text-left cursor-pointer" style="text-transform: uppercase; cursor: pointer; color: brown;">{{ rental._id }}</td>
+                <!-- <td class="text-left cursor-pointer">
                   <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
                     <b>{{ rental.accessKey }}</b>
                   </div>
                   <div v-else>
                     N/A
                   </div>
-                </td>
+                </td> -->
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}

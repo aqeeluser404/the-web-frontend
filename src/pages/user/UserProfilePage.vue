@@ -152,7 +152,7 @@
             >
               <q-card-section>
                 <q-img
-                  src="src/assets/resources/elements/document.png"
+                  src="resources/elements/document.png"
                   class="document"
                 />
               </q-card-section>

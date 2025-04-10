@@ -48,11 +48,13 @@
               <tr>
                 <th></th>
                 <th class="text-left">Application Date</th>
+                <!-- <th class="text-left">Application ID</th> -->
                 <th class="text-left">Access Key</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
                 <th class="text-left">Rental Price</th>
+                <th class="text-left">Unit Number</th>
                 <th class="text-left">Unit Type</th>
                 <th class="text-left">Status</th>
                 <th class="text-left">Actions</th>
@@ -61,8 +63,8 @@
             <tbody v-for="(rental, index) in rentals" :key="rental._id">
               <tr>
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <!-- <td class="text-left cursor-pointer">{{ rental._id }}</td> -->
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
+                <!-- <td class="text-left cursor-pointer">{{ rental._id }}</td> -->
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.accessKey" @click="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
                     <b>{{ rental.accessKey }}</b>
@@ -95,7 +97,8 @@
                     N/A
                   </div>
                 </td>
-                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td>
+                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}</td>
+                <td class="text-left cursor-pointer">{{ rental.unitNumber }}</td>
                 <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td>
                 <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}" style=""><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
                 <td class="text-left cursor-pointer">
@@ -183,7 +186,8 @@ export default {
         const unit = await UnitService.getByIdUnit(rental.unit)
         return {
           ...rental,
-          unitType: unit.unitType
+          unitType: unit.unitType,
+          unitNumber: unit.unitNumber
         }
       }))
     },
