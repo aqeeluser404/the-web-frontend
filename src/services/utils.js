@@ -35,67 +35,63 @@ class Helper {
   }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
-  // GETTING DATA FUNCTIONS
-  // static getImageUrl(imagePath) {
-  //   try {
-  //       const baseUrl = 'https://the-web.co.za/get-file.php?file='; // Update to point to the public endpoint
-  //       if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
-  //           return `${baseUrl}${encodeURIComponent(imagePath.imageUrl)}`;
-  //       }
-  //       if (typeof imagePath === 'string') {
-  //           return `${baseUrl}${encodeURIComponent(imagePath)}`;
-  //       }
-  //       console.error('Invalid image path:', imagePath);
-  //       return `${baseUrl}default.jpg`; // Default image
-  //   } catch (error) {
-  //       console.error('Error generating image URL:', error);
-  //       return `${baseUrl}default.jpg`; // Default image
-  //   }
-  // }
-  // static getDocumentUrl(documentPath) {
-  //   try {
-  //       const baseUrl = 'https://the-web.co.za/get-file.php?file='; // Update to point to the public endpoint
-  //       if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
-  //           return `${baseUrl}${encodeURIComponent(documentPath.documentUrl)}`;
-  //       }
-  //       if (typeof documentPath === 'string') {
-  //           return `${baseUrl}${encodeURIComponent(documentPath)}`;
-  //       }
-  //       console.error('Invalid document path:', documentPath);
-  //       return `${baseUrl}default-document.pdf`; // Default document
-  //   } catch (error) {
-  //       console.error('Error generating document URL:', error);
-  //       return `${baseUrl}default-document.pdf`; // Default document
-  //   }
-  // }
   static getImageUrl(imagePath) {
     try {
-      if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string' && imagePath.imageUrl.startsWith('https://ik.imagekit.io')) {
-        return imagePath.imageUrl;
+      const imageKitBase = 'https://ik.imagekit.io/';
+      const webBase = 'https://the-web.co.za/get-file.php?file=';
+      const defaultImage = 'default.jpg';
+
+      // Helper function to try both URLs
+      const tryBothUrls = (path) => {
+        if (path.startsWith(imageKitBase)) {
+          return path; // Already has imageKit URL
+        }
+        // Try imageKit first, then fallback to web
+        return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
+      };
+
+      if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
+        return tryBothUrls(imagePath.imageUrl);
       }
-      if (typeof imagePath === 'string' && imagePath.startsWith('https://ik.imagekit.io')) {
-        return imagePath;
+      if (typeof imagePath === 'string') {
+        return tryBothUrls(imagePath);
       }
+
       console.error('Invalid image path:', imagePath);
-      return 'https://ik.imagekit.io/default.jpg';
+      return `${imageKitBase}${defaultImage}`; // Default image
     } catch (error) {
       console.error('Error generating image URL:', error);
-      return 'https://ik.imagekit.io/default.jpg';
+      return `${imageKitBase}default.jpg`; // Default image
     }
   }
+
   static getDocumentUrl(documentPath) {
     try {
-      if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string' && documentPath.documentUrl.startsWith('https://ik.imagekit.io')) {
-        return documentPath.documentUrl;
+      const imageKitBase = 'https://ik.imagekit.io/';
+      const webBase = 'https://the-web.co.za/get-file.php?file=';
+      const defaultDocument = 'default-document.pdf';
+
+      // Helper function to try both URLs
+      const tryBothUrls = (path) => {
+        if (path.startsWith(imageKitBase)) {
+          return path; // Already has imageKit URL
+        }
+        // Try imageKit first, then fallback to web
+        return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
+      };
+
+      if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
+        return tryBothUrls(documentPath.documentUrl);
       }
-      if (typeof documentPath === 'string' && documentPath.startsWith('https://ik.imagekit.io')) {
-        return documentPath;
+      if (typeof documentPath === 'string') {
+        return tryBothUrls(documentPath);
       }
+
       console.error('Invalid document path:', documentPath);
-      return 'https://ik.imagekit.io/default-document.pdf';
+      return `${imageKitBase}${defaultDocument}`; // Default document
     } catch (error) {
       console.error('Error generating document URL:', error);
-      return 'https://ik.imagekit.io/default-document.pdf';
+      return `${imageKitBase}default-document.pdf`; // Default document
     }
   }
 
