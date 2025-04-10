@@ -39,7 +39,7 @@
               <div class="q-mb-md">
                 <span style="text-decoration: underline;">Rental Details</span>
               </div>
-              <div class="">
+              <div class="q-mb-md">
                 Applicant has applied for a <b>{{rental.unitType}}</b> unit.
               </div>
               <div class="q-mb-md" v-if="rental.accessKey">
@@ -47,6 +47,9 @@
               </div>
               <div class="q-mb-md" v-if="rental.accessKey">
                 Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
+              </div>
+              <div class="q-mb-md">
+                Application ID: <span style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></span>
               </div>
               <ul>
                 <li>
