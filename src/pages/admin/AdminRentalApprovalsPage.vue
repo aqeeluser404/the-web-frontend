@@ -39,18 +39,26 @@
               <div class="q-mb-md">
                 <span style="text-decoration: underline;">Rental Details</span>
               </div>
+
+
+              <div class="q-mb-md" >
+                <div>
+                  Applicant has applied for a <b>{{rental.unitType}}</b> unit.
+                </div>
+                <div v-if="rental.accessKey">
+                  <span style="">This user is sharing a access key.</span>
+                </div>
+              </div>
+
               <div class="q-mb-md">
-                Applicant has applied for a <b>{{rental.unitType}}</b> unit.
+                <div v-if="rental.accessKey">
+                  Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
+                </div>
+                <div>
+                  Application ID: <span style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></span>
+                </div>
               </div>
-              <div class="q-mb-md" v-if="rental.accessKey">
-                <span style="">This user is sharing a access key.</span>
-              </div>
-              <div class="q-mb-md" v-if="rental.accessKey">
-                Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
-              </div>
-              <div class="q-mb-md">
-                Application ID: <span style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></span>
-              </div>
+
               <ul>
                 <li>
                   <span>Unit Number:</span> {{ rental.unitNumber }}
