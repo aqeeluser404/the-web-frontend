@@ -351,6 +351,7 @@ export default {
     },
     handleLogout() {
       Helper.removeCookie('token')
+      this.$router.push('/')
     },
     async logout() {
       this.$q.dialog({
