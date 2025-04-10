@@ -139,13 +139,13 @@ export default {
             formData.append(key, this.unit[key])
           }
         }
-        // if (this.image1) formData.append('images', this.image1)
-        // if (this.image2) formData.append('images', this.image2)
-        // if (this.image3) formData.append('images', this.image3)
+        if (this.image1) formData.append('images', this.image1)
+        if (this.image2) formData.append('images', this.image2)
+        if (this.image3) formData.append('images', this.image3)
 
-        if (this.image1) formData.append('images[]', this.image1);
-        if (this.image2) formData.append('images[]', this.image2);
-        if (this.image3) formData.append('images[]', this.image3);
+        // if (this.image1) formData.append('images[]', this.image1);
+        // if (this.image2) formData.append('images[]', this.image2);
+        // if (this.image3) formData.append('images[]', this.image3);
 
         const response = await UnitService.createUnit(formData)
         if (response) {
