@@ -36,6 +36,38 @@ class Helper {
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // GETTING DATA FUNCTIONS
+  // static getImageUrl(imagePath) {
+  //   try {
+  //       const baseUrl = 'https://the-web.co.za/get-file.php?file='; // Update to point to the public endpoint
+  //       if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
+  //           return `${baseUrl}${encodeURIComponent(imagePath.imageUrl)}`;
+  //       }
+  //       if (typeof imagePath === 'string') {
+  //           return `${baseUrl}${encodeURIComponent(imagePath)}`;
+  //       }
+  //       console.error('Invalid image path:', imagePath);
+  //       return `${baseUrl}default.jpg`; // Default image
+  //   } catch (error) {
+  //       console.error('Error generating image URL:', error);
+  //       return `${baseUrl}default.jpg`; // Default image
+  //   }
+  // }
+  // static getDocumentUrl(documentPath) {
+  //   try {
+  //       const baseUrl = 'https://the-web.co.za/get-file.php?file='; // Update to point to the public endpoint
+  //       if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
+  //           return `${baseUrl}${encodeURIComponent(documentPath.documentUrl)}`;
+  //       }
+  //       if (typeof documentPath === 'string') {
+  //           return `${baseUrl}${encodeURIComponent(documentPath)}`;
+  //       }
+  //       console.error('Invalid document path:', documentPath);
+  //       return `${baseUrl}default-document.pdf`; // Default document
+  //   } catch (error) {
+  //       console.error('Error generating document URL:', error);
+  //       return `${baseUrl}default-document.pdf`; // Default document
+  //   }
+  // }
   static getImageUrl(imagePath) {
     try {
       if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string' && imagePath.imageUrl.startsWith('https://ik.imagekit.io')) {
@@ -119,7 +151,7 @@ class Helper {
       if (name === 'token') {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/get-token`, { withCredentials: true });
         // const response = await axios.get(`https://the-web-backend.onrender.com/get-token`, { withCredentials: true });
-        return response.data || null;
+        return response.data.token || response.data || null;
       } else {
         console.log(`Cookie ${name} not found`);
         return null;

@@ -233,34 +233,50 @@ export default {
         }
       }
 
-      // Submit rental application
-      if (this.userDetails.verification && this.userDetails.verification.isVerified === true) {
-        if (this.userDetails.documents && this.userDetails.documents.length === 3) {
-          try {
-            const response = await RentalService.createRental(this.rentalDetails);
-            if (response.accessKey) {
-              this.$q.notify({
-                type: 'positive',
-                color: 'primary',
-                message: `Your application has been successfully submitted. Your access key is: ${response.accessKey}. Please share this key with others if needed.`,
-              });
-            } else {
-              this.$q.notify({
-                type: 'positive',
-                color: 'primary',
-                message: 'Your application has been successfully submitted.',
-              });
-            }
-            this.$emit('close');
-          } catch (error) {
-            this.$q.notify({ type: 'negative', color: 'red', message: error.message || 'There was an error submitting your application. Please try again.' });
-          }
-        }
-      } else {
-        this.$q.notify({ type: 'negative', color: 'red', message: 'Please verify your email before proceeding with your application.' });
+      // Email verification check
+      if (!this.userDetails.verification || this.userDetails.verification.isVerified !== true) {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          message: 'Please verify your email before proceeding with your application.'
+        });
+        return;
       }
 
+      // Document check
+      if (!this.userDetails.documents || this.userDetails.documents.length < 3) {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          message: 'Please ensure all required documentation is uploaded before proceeding with your application.'
+        });
+        return;
+      }
 
+      // Submit rental application
+      try {
+        const response = await RentalService.createRental(this.rentalDetails);
+        if (response.accessKey) {
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: `Your application has been successfully submitted. Your access key is: ${response.accessKey}`,
+          });
+        } else {
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Your application has been successfully submitted.',
+          });
+        }
+        this.$emit('close');
+      } catch (error) {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          message: error.message || 'There was an error submitting your application. Please try again.'
+        });
+      }
     },
 
     async nextAvailability() {

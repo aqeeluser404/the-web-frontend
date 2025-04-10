@@ -2,6 +2,7 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import axios from 'axios'
+import axiosInstance from 'src/services/axiosInstance'
 
 /*
  * If not building with SSR mode, you can
@@ -29,8 +30,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to, from, next) => {
     try {
-      // const response = await axios.get(`https://the-web-backend.onrender.com/health`)
-      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/health`)
+      const response = await axiosInstance.get('/health')
       if (response.status === 200) {
         if (to.path === '/verify-email')  {
           const token = to.query.token

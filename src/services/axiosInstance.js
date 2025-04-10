@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   config => {
-    if (config.url.includes('/admin/units')) {
+    if (config.method === 'post' && config.url.includes('/admin/units')) {
       config.headers['Content-Type'] = 'multipart/form-data'
     }
     return config
