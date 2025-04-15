@@ -95,6 +95,56 @@ class Helper {
     }
   }
 
+  // static getImageUrl(imagePath) {
+  //   try {
+  //     const webBase = 'https://the-web.co.za/get-file.php?file=';
+  //     const defaultImage = 'images/default.jpg';
+
+  //     if (imagePath && typeof imagePath === 'object' && imagePath.imageUrl) {
+  //       return Helper.normalizeImagePath(imagePath.imageUrl, webBase, defaultImage);
+  //     }
+  //     if (typeof imagePath === 'string') {
+  //       return Helper.normalizeImagePath(imagePath, webBase, defaultImage);
+  //     }
+
+  //     console.error('Invalid image path:', imagePath);
+  //     return `${webBase}${encodeURIComponent(defaultImage)}`;
+  //   } catch (error) {
+  //     console.error('Error generating image URL:', error);
+  //     return `${webBase}images/default.jpg`;
+  //   }
+  // }
+
+  // static normalizeImagePath(path, webBase, defaultPath) {
+  //   if (path.startsWith('http')) {
+  //     return path;
+  //   }
+  //   if (path.startsWith('images/') || path.startsWith('documents/')) {
+  //     return `${webBase}${encodeURIComponent(path)}`;
+  //   }
+  //   return `${webBase}${encodeURIComponent(defaultPath)}`;
+  // }
+
+  // static getDocumentUrl(documentPath) {
+  //   try {
+  //     const webBase = 'https://the-web.co.za/get-file.php?file=';
+  //     const defaultDocument = 'documents/default.pdf';
+
+  //     if (documentPath && typeof documentPath === 'object' && documentPath.documentUrl) {
+  //       return this.normalizeImagePath(documentPath.documentUrl, webBase, defaultDocument);
+  //     }
+  //     if (typeof documentPath === 'string') {
+  //       return this.normalizeImagePath(documentPath, webBase, defaultDocument);
+  //     }
+
+  //     console.error('Invalid document path:', documentPath);
+  //     return `${webBase}${encodeURIComponent(defaultDocument)}`;
+  //   } catch (error) {
+  //     console.error('Error generating document URL:', error);
+  //     return `${webBase}documents/default.pdf`;
+  //   }
+  // }
+
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // VALIDATION FUNCTION
   static validateText(text) {
@@ -127,8 +177,6 @@ class Helper {
     // Validate the password using the updated pattern
     return passwordPattern.test(password);
   }
-
-
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // COOKIE SECURITY FUNCTIONS
