@@ -164,17 +164,7 @@ class Helper {
     return usernamePattern.test(username);
   }
   static validatePassword(password) {
-    // Updated regular expression explanation:
-    // ^: Start of string
-    // (?=.*[a-z]): At least one lowercase letter
-    // (?=.*[A-Z]): At least one uppercase letter
-    // (?=.*\d): At least one numeric digit
-    // (?=.*[@$!%*?&]): At least one special character
-    // [A-Za-z\d@$!%*?&]{8,}: Minimum of 8 characters in total
-    // $: End of string
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-])[A-Za-z\d@$!%*?&-]{8,}$/;
-
-    // Validate the password using the updated pattern
     return passwordPattern.test(password);
   }
 

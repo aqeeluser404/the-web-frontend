@@ -34,7 +34,7 @@
         column flex-center
         "
       >
-        <q-card-section>
+        <q-card-section class="animation-container">
           <div class="text-brown"><b>Feature Rich</b></div>
           <div class="text-h3 q-mb-md">World-Class Amenities</div>
           <div>Designed around the needs of its residents, The Web strikes the perfect balance between lifestyle and academic amenities.</div>

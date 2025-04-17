@@ -159,8 +159,7 @@ export default {
       if (!this.validatePassword(details.password)) {
         this.$q.notify({
           type: 'negative',
-          message: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
-        });
+          message: 'Password must be 8-64 characters, with at least 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&).'        });
         return false;
       }
       return true
