@@ -2,7 +2,37 @@
   <q-page>
     <!-- hero -->
     <div style="height: 100vh;" class="bg-grey">
-       <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" />
+       <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
+       <q-carousel
+        animated
+        v-model="currentSlide"
+        infinite
+        autoplay
+        :autoplay-interval="5000"
+        transition-prev="slide-right"
+        transition-next="slide-left"
+        transition-duration="1800"
+        height="100vh"
+        arrows
+        navigation
+        control-color="white"
+        class="fullscreen-carousel"
+      >
+        <q-carousel-slide
+          v-for="card in heroCards"
+          :key="card._id"
+          :name="card._id"
+          class="column no-wrap flex-center"
+        >
+          <q-img
+            :src="card.imageUrl"
+            :alt="'Room ' + card._id"
+            class="hero-image"
+            fit="cover"
+          />
+        </q-carousel-slide>
+      </q-carousel>
+
     </div>
 
     <!-- hero - BANNER -->
@@ -24,7 +54,7 @@
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- amenities -->
-    <div id="amenities-section" class="row justify-between" style="height: 100%; background-color: #333;">
+    <div id="amenities-section" class="row justify-between slide-container" style="height: 100%; background-color: #333;">
       <q-card flat class="
         bg-transparent
         text-white
@@ -34,7 +64,7 @@
         column flex-center
         "
       >
-        <q-card-section class="animation-container">
+        <q-card-section class="fade-in-scale">
           <div class="text-brown"><b>Feature Rich</b></div>
           <div class="text-h3 q-mb-md">World-Class Amenities</div>
           <div>Designed around the needs of its residents, The Web strikes the perfect balance between lifestyle and academic amenities.</div>
@@ -54,26 +84,60 @@
           <CustomButton v-else color="brown" customStyle="width: 100%" text-color="white" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
         </q-card-section>
       </q-card>
-      <div class="col-md-5 col-12">
-        <q-img src="~src/assets/resources/home/amenities/About2.png" alt="hero image" class="side-image"/>
+      <div class="col-md-5 col-12 slide-in-right">
+        <q-img src="~src/assets/resources/home/outside3.jpg" alt="hero image" class="side-image"/>
       </div>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- images -->
-    <div id="images-section" style="height: 100%; background-color: #333;">
+    <!-- <div id="images-section" style="height: 100%; background-color: #333;">
       <q-list class="row justify-around">
         <div class="bg-transparent col-md-4 col-12" flat v-for="card in cards" :key="card._id">
           <q-img :src="card.imageUrl" :alt="card.title" />
         </div>
       </q-list>
+    </div> -->
+
+    <div id="images-section" style="height: 100vh;" class="bg-grey">
+       <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
+       <q-carousel
+        animated
+        v-model="currentSlide2"
+        infinite
+        autoplay
+        :autoplay-interval="5000"
+        transition-prev="slide-right"
+        transition-next="slide-left"
+        transition-duration="1800"
+        height="100vh"
+        arrows
+        navigation
+        control-color="white"
+        class="fullscreen-carousel"
+      >
+        <q-carousel-slide
+          v-for="card in unitCards"
+          :key="card._id"
+          :name="card._id"
+          class="column no-wrap flex-center"
+        >
+          <q-img
+            :src="card.imageUrl"
+            :alt="'Room ' + card._id"
+            class="hero-image"
+            fit="cover"
+          />
+        </q-carousel-slide>
+      </q-carousel>
+
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- academics -->
-    <div id="academics-section" style="height: 100%;" class="row justify-between">
-      <div class="col-md-5 col-12 row justify-center">
-        <q-img src="~src/assets/resources/home/academics/Students.png" alt="hero image" class="side-image"/>
+    <div id="academics-section" style="height: 100%; padding: 72px 0;" class="row justify-between">
+      <div class="col-md-5 col-12 row justify-center slide-in-left">
+        <q-img src="~src/assets/resources/home/rooftop.png" alt="hero image" class="side-image"/>
       </div>
 
       <q-card flat class="
@@ -84,7 +148,7 @@
         column flex-center
         "
       >
-        <q-card-section>
+        <q-card-section class="fade-in-scale">
           <div class="text-brown"><b>Space to Thrive</b></div>
           <div class="text-h3 q-mb-md">Academic Excellence</div>
           <div>At the heart of this purpose-built student development is an environment that facilitates both private and collaborative studying. The Web has it all, from an expansive study centre with tailor-made solo study pods, and multi-purpose boardrooms for group work, these facilities are geared for the demanding needs of future business and thought leaders.</div>
@@ -105,26 +169,42 @@
     </div>
 
     <!-- academics - section 2 -->
-    <div style="height: 100%; background-color: #333;">
-      <q-card flat class="bg-transparent text-white text-body1 text-left q-pa-lg">
+    <!-- <div style="height: 100%; background-color: #333;">
+      <q-card flat class="bg-transparent text-white text-body1 q-pa-lg">
 
-        <q-card-section class="row">
-          <div class="text-h3 q-mb-xl">Enhancing a Quaint Suburb of Stellenbosch</div>
+        <q-card-section class="row fade-up ">
+          <div class="text-h3 q-mb-xl text-center">Enhancing a Quaint Suburb of Stellenbosch</div>
           <div>
             Paramount to The Web's vision, is to ultimately enhance this quaint suburb by making it more pedestrian-friendly and in doing so, create a café culture atmosphere along its beautiful tree-lined streets.
             <br>In a Stellenbosch first, over R35 million has been raised and earmarked by a group of developers in the area to build towards this vision and amplify the suburb, as well as improve its accessibility to campus. The funds will be allocated to 11 projects that range from major security enhancements, to local area infrastructure upgrades for all who reside in the area.
             <br><br>This desirable location, well on its way becoming the next Stellies student hub, has likeminded developers already taking advantage of The Web's entrance into the area by purchasing existing houses in the precinct for further student development.
           </div>
         </q-card-section>
+      </q-card>
+    </div> -->
 
-        <q-card-section class="row">
-          <q-img src="~src/assets/resources/home/academics/Home1.png" />
+    <!-- academics - section 2  -->
+    <div class="q-pa-xl" style="height: 100%; background-color: #222;">
+      <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
+        <q-card-section>
+          <div class="text-h4">Enhancing a Quaint Suburb of Stellenbosch</div>
+        </q-card-section>
+        <q-card-section class="">
+          <div class="col-md-6">
+            Paramount to The Web's vision, is to ultimately enhance this quaint suburb by making it more pedestrian-friendly and in doing so, create a café culture atmosphere along its beautiful tree-lined streets.
+          </div>
+          <div class="col-md-6">
+            In a Stellenbosch first, over R35 million has been raised and earmarked by a group of developers in the area to build towards this vision and amplify the suburb, as well as improve its accessibility to campus. The funds will be allocated to 11 projects that range from major security enhancements, to local area infrastructure upgrades for all who reside in the area.
+          </div>
+          <div class="col-md-6">
+            This desirable location, well on its way becoming the next Stellies student hub, has likeminded developers already taking advantage of The Web's entrance into the area by purchasing existing houses in the precinct for further student development.
+          </div>
         </q-card-section>
       </q-card>
     </div>
 
     <!-- academics - section 3 -->
-    <div class="row justify-between" style="height: 100%;">
+    <div class="row justify-between" style="height: 100%; padding: 72px 0;">
       <q-card flat class="
         bg-transparent
         text-body1
@@ -133,7 +213,7 @@
         column flex-center
         "
       >
-        <q-card-section>
+        <q-card-section class="fade-in-scale">
           <div class="text-brown"><b>Perfectly Position</b></div>
           <div class="text-h3 q-mb-md">The Jewel in the Stellenbosch Crown</div>
           <div class="q-mb-md">
@@ -146,15 +226,15 @@
           <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Secure your spot" @click="openUnitDash" />
         </q-card-section>
       </q-card>
-      <div class="col-md-5 col-12 row justify-center">
-        <q-img src="~src/assets/resources/home/academics/Happy-Students.png" class="side-image"/>
+      <div class="col-md-5 col-12 row justify-center slide-in-right">
+        <q-img src="~src/assets/resources/home/outside3.jpg" class="side-image"/>
       </div>
     </div>
 
     <!-- academics - section 4 -->
     <div class="row justify-between" style="height: 100%; background-color: #333;">
-      <div class="col-md-5 col-12">
-        <q-img src="~src/assets/resources/home/academics/Residential.png" class="side-image"/>
+      <div class="col-md-5 col-12 slide-in-left">
+        <q-img src="~src/assets/resources/home/Residential.png" class="side-image"/>
       </div>
       <q-card flat style="" class="
         bg-transparent
@@ -165,7 +245,7 @@
         column flex-center
         "
       >
-        <q-card-section>
+        <q-card-section class="fade-in-scale">
           <div class="text-brown"><b>Rent in A</b></div>
           <div class="text-h3 q-mb-md">Residential College</div>
           <div>A residential college is a private residence which is aligned with the academic and support functions of the university and serves to holistically support the student towards personal and academic achievement.</div>
@@ -175,7 +255,7 @@
 
     <!-- academics - section 5 -->
     <div class="q-pa-xl" style="height: 100%; background-color: #222;">
-      <q-card flat class="bg-transparent text-white text-body1 text-center constrain">
+      <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
         <q-card-section>
           <div class="text-h4">The Web's Amenities Foster an Environment Ideal for Academic Success</div>
         </q-card-section>
@@ -201,19 +281,19 @@
         "
       >
         <q-card-section class="text-h4">Need more answers? Read our FAQs</q-card-section>
-        <q-card-section>
+        <!-- <q-card-section>
           <CustomButton color="brown" text-color="white" label="View FAQs" to="/frequently-asked-questions" style="border: 2px solid white;" />
-        </q-card-section>
+        </q-card-section> -->
       </div>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- units card -->
     <div id="units-section" class="q-py-xl" style="height: 100%; background-color: #222;">
-      <q-card-section>
+      <q-card-section class=" fade-up">
         <div class="text-h4 text-center text-white">Unit Specifications</div>
       </q-card-section>
-      <q-list class="row justify-center q-pa-sm">
+      <q-list class="row justify-center q-pa-sm  fade-up">
         <q-card class="q-pa-md bg-transparent col-md-3 col-12" flat v-for="unitType in unitTypes" :key="unitType._id">
           <q-img class="" :src="unitType.imageUrl" />
           <div class="text-white text-center text-h6">{{ unitType.label }}</div>
@@ -222,9 +302,9 @@
     </div>
 
     <!-- units card - section 2 -->
-    <div class="row justify-between" style="height: 100%;">
-      <div class="col-md-6 col-12 row justify-center">
-        <q-img src="~src/assets/resources/home/unit-types/7.png" class="side-image"/>
+    <div class="row justify-between" style="height: 100%; padding: 72px 0;">
+      <div class="col-md-6 col-12 row justify-center slide-in-left">
+        <q-img src="~src/assets/resources/home/dinning.png" class="side-image"/>
       </div>
       <q-card flat class="
         bg-transparent
@@ -234,7 +314,7 @@
         column flex-center
         "
       >
-        <q-card-section>
+        <q-card-section class="fade-in-scale">
           <div class="text-brown"><b>Living Spaces</b></div>
           <div class="text-h3 q-mb-md">Expertly Designed</div>
           <div class="q-mb-lg">Architects Boogertman & Partners have spent countless hours configuring each of the living spaces at The Web. Ergonomically designed units all feature a kitchenette, private bathroom, study desk, and open-plan living spaces with premium fittings and fixtures.</div>
@@ -303,6 +383,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
 import Helper from 'src/services/utils'
 
+// interior carousel images
 import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
 import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
 import Room3 from 'src/assets/resources/home/images/Room_3.jpg';
@@ -313,6 +394,13 @@ import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
 import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
 import Bathroom from 'src/assets/resources/home/images/Bathroom.jpg';
 
+// hero carousel images
+import home1 from 'src/assets/resources/home/outside1.jpg';
+import home2 from 'src/assets/resources/home/outside2.png';
+import home3 from 'src/assets/resources/home/outside3.jpg';
+import home4 from 'src/assets/resources/home/rooftop.png';
+
+// unit images
 import StudioPatio from 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png';
 import StudioBalconyB from 'src/assets/resources/home/unit-types/B3-Studio-768x689.png';
 import StudioPatioB from 'src/assets/resources/home/unit-types/B4-StudioBalcony-768x689.png';
@@ -322,13 +410,21 @@ import StudioPatioC from 'src/assets/resources/home/unit-types/C-StudioPatio-768
 import SharedStudio from 'src/assets/resources/home/unit-types/E-Shared-768x689.png';
 import TwoBed from 'src/assets/resources/home/unit-types/F-2-Bed-768x689.png';
 
-
 export default {
   name: 'Homepage',
 
   data() {
     return {
-      cards: [
+      currentSlide: 1,
+      heroCards: [
+        { _id: 1, imageUrl: home1 },
+        { _id: 2, imageUrl: home2 },
+        { _id: 3, imageUrl: home3 },
+        { _id: 4, imageUrl: home4 },
+      ],
+
+      currentSlide2: 1,
+      unitCards: [
         { _id: 1, imageUrl: Room1 },
         { _id: 2, imageUrl: Room2 },
         { _id: 3, imageUrl: Room3 },
@@ -339,6 +435,7 @@ export default {
         { _id: 8, imageUrl: Room12 },
         { _id: 9, imageUrl: Bathroom },
       ],
+
       unitTypes: [
         { _id: 2, imageUrl: StudioPatio, label: 'Studio Patio' },
         { _id: 3, imageUrl: StudioBalconyB, label: 'Studio Balcony B' },
@@ -408,11 +505,90 @@ export default {
 </script>
 
 <style lang="sass">
+
+.fade-in-scale
+  transform: scale(0.8)
+  // opacity: 0
+  animation: fade-in linear forwards
+  animation-timeline: view()
+  animation-range: 150px 600px
+
+@keyframes fade-in
+  from
+    transform: scale(0.8)
+    // opacity: 0
+  to
+    transform: scale(1)
+    opacity: 1
+
+body
+  overflow-x: hidden
+
+.slide-in-left
+  transform: translateX(-500px)
+  // opacity: 0
+  animation: slide-left linear forwards
+  animation-timeline: view()
+  animation-range: 150px 600px
+
+@keyframes slide-left
+  from
+    transform: translateX(-500px)
+    // opacity: 0
+  to
+    transform: translateX(0)
+    opacity: 1
+
+
+.slide-in-right
+  transform: translateX(500px)
+  // opacity: 0
+  animation: slide-right linear forwards
+  animation-timeline: view()
+  animation-range: 150px 600px
+
+@keyframes slide-right
+  from
+    transform: translateX(500px)
+    // opacity: 0
+  to
+    transform: translateX(0)
+    opacity: 1
+
+.fade-up
+  transform: translateY(150px)
+  // opacity: 0
+  animation: fade-up ease-out forwards
+  animation-timeline: view()
+  animation-range: 150px 500px
+
+@keyframes fade-up
+  from
+    transform: translateY(150px)
+    // opacity: 0
+  to
+    transform: translateY(0)
+    opacity: 1
+
 .hero-image
   width: 100%
   height: 100vh
   object-fit: cover
   @media (max-width: 1024px)
+
+.fullscreen-carousel
+  margin: 0 !important
+  padding: 0 !important
+
+.q-carousel__slide
+  padding: 0 !important
+
+.q-carousel__navigation-inner
+  padding-bottom: 20px
+
+.q-carousel__arrow
+  color: white
+  font-size: 2rem
 
 .side-image
   object-fit: cover

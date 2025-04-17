@@ -143,6 +143,7 @@ export default {
         if (this.image2) formData.append('images', this.image2)
         if (this.image3) formData.append('images', this.image3)
 
+        // PHP VERSION
         // if (this.image1) formData.append('images[]', this.image1);
         // if (this.image2) formData.append('images[]', this.image2);
         // if (this.image3) formData.append('images[]', this.image3);

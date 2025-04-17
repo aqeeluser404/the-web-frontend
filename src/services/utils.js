@@ -95,6 +95,7 @@ class Helper {
     }
   }
 
+  // PHP VERSION
   // static getImageUrl(imagePath) {
   //   try {
   //     const webBase = 'https://the-web.co.za/get-file.php?file=';
