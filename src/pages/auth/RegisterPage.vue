@@ -35,6 +35,11 @@
               <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
             </q-card-section>
 
+            <q-card-section v-if="user.studentInfo.isRegisteredStudent === true" class="row justify-between q-py-none">
+              <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
+              <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
+            </q-card-section>
+
             <q-card-section v-if="user.studentInfo.isRegisteredStudent === true" class="row justify-center q-py-none">
               <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.studentInfo.studentNumber" label="Student Number *" />
             </q-card-section>
@@ -86,24 +91,10 @@ export default {
         studentInfo: {
           isRegisteredStudent: true,
           studentNumber: '' ,
-          registeredInstitution: ''
+          registeredInstitution: '',
+          hasBursary: false
         }
       },
-
-      // user: {
-      //   firstName: 'Test',
-      //   lastName: 'User',
-      //   email: 'test@example.com',
-      //   phone: '1234567890',
-      //   username: 'testuser',
-      //   password: 'Password123',
-      //   gender: 'Male',
-      //   studentInfo: {
-      //     isRegisteredStudent: true,
-      //     studentNumber: '12345',
-      //     registeredInstitution: 'Test University'
-      //   }
-      // },
 
       userGenderOptions: [
         { label: 'Male', value: 'Male' },
@@ -179,6 +170,7 @@ export default {
             isRegisteredStudent: this.user.studentInfo.isRegisteredStudent,
             studentNumber: this.user.studentInfo.studentNumber,
             registeredInstitution: this.user.studentInfo.registeredInstitution,
+            hasBursary: this.user.studentInfo.hasBursary
           }
         }
         if (this.validateFields()) {

@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <!-- Banner for rejected rentals -->
-    <q-banner v-if="addPayerInformation" class="bg-brown text-white full-width" @click="openAddPayer">
+    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false" class="bg-brown text-white full-width" @click="openAddPayer">
       <div class="row justify-center items-center" style="cursor: pointer;">
         <div>
           <q-icon name="warning" class="q-mr-sm" size="32px" />
@@ -9,6 +9,8 @@
         </div>
       </div>
     </q-banner>
+
+
 
     <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-9 col-12 q-ma-sm">
@@ -124,7 +126,6 @@
     <q-dialog v-model="requestDialog">
       <UserRequestComponent :rental="selectedRental" @close="handleDialogClose" />
     </q-dialog>
-
     <q-dialog v-model="addPayerDialog">
       <AddPayerComponent :rental="addPayerRental" @close="handleDialogClose" />
     </q-dialog>
@@ -143,7 +144,14 @@ export default {
   data() {
     return {
       rentals: [],
-      userDetails: {},
+      userDetails: {
+        studentInfo: {
+          isRegisteredStudent: false, // Default value for boolean
+          studentNumber: null,        // Null for non-existent or undefined
+          registeredInstitution: '',  // Empty string works for text fields
+          hasBursary: false
+        }
+      },
       requestDialog: false,
       addPayerDialog: false,
       addPayerRental: null,
@@ -162,12 +170,12 @@ export default {
       this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
       return !!rentalNeedingPayer; // Return true if such a rental exists
     },
-    viewPayerInformation() {
-      // Find the rental that requires payer information
-      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
-      this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
-      return !!rentalNeedingPayer; // Return true if such a rental exists
-    }
+    // viewPayerInformation() {
+    //   // Find the rental that requires payer information
+    //   const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
+    //   this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
+    //   return !!rentalNeedingPayer; // Return true if such a rental exists
+    // }
   },
   methods: {
     formatDate: Helper.formatDate,

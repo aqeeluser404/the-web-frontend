@@ -79,6 +79,10 @@
             </q-item>
           </div>
           <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+            <q-item class="row justify-between">
+              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
+              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
+            </q-item>
             <q-item>
               <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
               <q-item-section class="text-left">
@@ -160,7 +164,7 @@
                 <div class="text-caption wrap-text limit-text">{{ document.documentUrl.split('/').pop() }}</div>
                 <div class="row justify-between q-my-md">
                   <CustomButton flat @click="viewDocument(document.documentUrl)" label="Open" color="white" text-color="black" customStyle="width: 45%"  />
-                  <CustomButton :disable="isEditingDisabled" flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  />
+                  <!-- <CustomButton :disable="isEditingDisabled" flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  /> -->
                 </div>
               </q-card-section>
             </q-card>
@@ -205,7 +209,8 @@ export default {
         studentInfo: {
           isRegisteredStudent: '',
           studentNumber: '',
-          registeredInstitution: ''
+          registeredInstitution: '',
+          hasBursary: ''
         }
       },
       selectedGender: '',
@@ -302,13 +307,15 @@ export default {
         return {
           isRegisteredStudent: this.userDetails.studentInfo.isRegisteredStudent,
           studentNumber: this.userDetails.studentInfo.studentNumber,
-          registeredInstitution: this.userDetails.studentInfo.registeredInstitution
+          registeredInstitution: this.userDetails.studentInfo.registeredInstitution,
+          hasBursary: this.userDetails.studentInfo.hasBursary
         };
       } else {
         return {
           isRegisteredStudent: this.userDetails.studentInfo.isRegisteredStudent,
           studentNumber: '',
-          registeredInstitution: ''
+          registeredInstitution: '',
+          hasBursary: false
         };
       }
     },
