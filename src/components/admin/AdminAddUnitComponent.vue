@@ -43,23 +43,11 @@ export default {
       },
       image1: null, image2: null, image3: null,
 
-      // floorLevelOptions: [
-      //   { label: 'Ground Floor', value: 'Ground Floor' },
-      //   { label: 'First Floor', value: 'First Floor' },
-      //   { label: 'Second Floor', value: 'Second Floor' },
-      // ],
-
       floorLevelOptions: [
         { label: 'First Floor', value: 'First Floor' },
         { label: 'Second Floor', value: 'Second Floor' },
         { label: 'Third Floor', value: 'Third Floor' },
       ],
-
-      // unitTypeOptions: [
-      //   { label: 'Shared', value: 'Shared' },
-      //   { label: 'Deluxe', value: 'Deluxe' },
-      //   { label: 'Studio', value: 'Studio' },
-      // ],
 
       unitOccupantsOptions: [
         { label: '1', value: 1 },
@@ -79,7 +67,6 @@ export default {
     CustomButton
   },
   async mounted() {
-    // Fetch the latest unit number for the default floor level (if any)
     if (this.unit.floorLevel) {
       await this.fetchLatestUnitNumber(this.unit.floorLevel);
     }

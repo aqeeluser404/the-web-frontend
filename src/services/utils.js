@@ -35,63 +35,55 @@ class Helper {
   }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
+  // GET IMAGES
   static getImageUrl(imagePath) {
     try {
       const imageKitBase = 'https://ik.imagekit.io/';
       const webBase = 'https://the-web.co.za/get-file.php?file=';
       const defaultImage = 'default.jpg';
 
-      // Helper function to try both URLs
       const tryBothUrls = (path) => {
         if (path.startsWith(imageKitBase)) {
-          return path; // Already has imageKit URL
+          return path;
         }
-        // Try imageKit first, then fallback to web
         return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
       };
-
       if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
         return tryBothUrls(imagePath.imageUrl);
       }
       if (typeof imagePath === 'string') {
         return tryBothUrls(imagePath);
       }
-
       console.error('Invalid image path:', imagePath);
-      return `${imageKitBase}${defaultImage}`; // Default image
+      return `${imageKitBase}${defaultImage}`;
     } catch (error) {
       console.error('Error generating image URL:', error);
-      return `${imageKitBase}default.jpg`; // Default image
+      return `${imageKitBase}default.jpg`;
     }
   }
-
   static getDocumentUrl(documentPath) {
     try {
       const imageKitBase = 'https://ik.imagekit.io/';
       const webBase = 'https://the-web.co.za/get-file.php?file=';
       const defaultDocument = 'default-document.pdf';
 
-      // Helper function to try both URLs
       const tryBothUrls = (path) => {
         if (path.startsWith(imageKitBase)) {
-          return path; // Already has imageKit URL
+          return path;
         }
-        // Try imageKit first, then fallback to web
         return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
       };
-
       if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
         return tryBothUrls(documentPath.documentUrl);
       }
       if (typeof documentPath === 'string') {
         return tryBothUrls(documentPath);
       }
-
       console.error('Invalid document path:', documentPath);
-      return `${imageKitBase}${defaultDocument}`; // Default document
+      return `${imageKitBase}${defaultDocument}`;
     } catch (error) {
       console.error('Error generating document URL:', error);
-      return `${imageKitBase}default-document.pdf`; // Default document
+      return `${imageKitBase}default-document.pdf`;
     }
   }
 
@@ -205,6 +197,7 @@ class Helper {
     }
   }
 
+  // ------------------------------------------------------------------------------------------------------------------------------------------------
   // DATA RETRIEVAL
   static async fetchUserDetails() {
     try {
@@ -214,7 +207,6 @@ class Helper {
       throw error
     }
   }
-
   static adminRentalDetails(id, router) {
     if (!id) {
       Logger.error("Invalid Rental ID");
@@ -242,7 +234,6 @@ class Helper {
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // AUTHENTICATED ROUTE FUNCTIONS
-
   static async beforeRouteEnterUser(to, from, next) {
     try {
       const isLoggedIn = await Helper.checkCookie();
@@ -278,9 +269,9 @@ class Helper {
     try {
       const isLoggedIn = await Helper.checkCookie();
       if (!isLoggedIn) {
-        next(false); // Prevent navigation if no token
+        next(false);
       } else {
-        next(); // Allow navigation if token exists
+        next();
       }
     } catch (error) {
       console.error('Error fetching token or user details:', error);
