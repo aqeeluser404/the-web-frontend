@@ -66,7 +66,7 @@
 
 
     <q-card-section>
-      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" />
+      <CustomButton label="Close" @click="$emit('close')" />
     </q-card-section>
   </q-card>
 </template>

@@ -21,6 +21,17 @@ class UnitService {
       Logger.error(error);
     }
   }
+  // PHP VERSION
+  // static async updateUnit(unitId, formData) {
+  //   const ENDPOINT = `/admin/units/${unitId}`;
+  //   try {
+  //     const response = await axiosInstance.post(ENDPOINT, formData);
+  //     return response;
+  //   } catch (error) {
+  //     Logger.error(error);
+  //     throw error;
+  //   }
+  // }
   static async getAllUnits() {
     const ENDPOINT = "/units"
     try {

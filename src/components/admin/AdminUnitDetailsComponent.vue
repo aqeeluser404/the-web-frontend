@@ -1,5 +1,6 @@
 <template>
   <q-card style="width: 650px;">
+
     <q-card-section>
       <div class="text-h6">{{ unit.unitType }} Details</div>
     </q-card-section>
@@ -9,13 +10,59 @@
         <q-img
           v-if="unit.images && unit.images.length > 0"
           :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
-          class="q-mb-md product-image"
+          class="q-mb-md product-image cursor-zoom-in"
           :ratio="1"
+          @click="showImageDialog = true"
         />
-        <button class="nav-button left" @click="prevImage">‹</button>
-        <button class="nav-button right" @click="nextImage">›</button>
+        <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
+        <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
       </div>
     </q-card-section>
+    <q-dialog v-model="showImageDialog" @show="logImageInfo">
+      <q-card flat borderless class="image-dialog-card">
+
+        <q-btn icon="close" flat round dense v-close-popup class="close-button" />
+
+        <q-card-section class="dialog-image-section row justify-center flex-center">
+          <img
+            v-if="currentDialogImageUrl"
+            :src="currentDialogImageUrl"
+            class="enlarged-image"
+            style="object-fit: contain"
+          />
+          <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
+          <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- PHP VERSION -->
+    <!-- <q-card-section>
+      <q-file
+        filled
+        v-model="newImage1"
+        label="New Image (First View)"
+        label-color="black"
+        color="black"
+        accept="image/*"
+      />
+      <q-file
+        filled
+        v-model="newImage2"
+        label="New Image (Second View)"
+        label-color="black"
+        color="black"
+        accept="image/*"
+      />
+      <q-file
+        filled
+        v-model="newImage3"
+        label="New Image (Third View)"
+        label-color="black"
+        color="black"
+        accept="image/*"
+      />
+    </q-card-section> -->
 
     <q-card-section>
       <q-item>
@@ -69,7 +116,7 @@
       </q-item>
     </q-card-section>
     <q-card-section class="row justify-between">
-      <CustomButton label="Update Unit" customStyle="width: 45%" color="brown" text-color="white" @click="updateUnit" />
+      <CustomButton label="Update Unit" customStyle="width: 45%" @click="updateUnit" />
       <CustomButton label="Close" customStyle="width: 45%" color="white" text-color="black" @click="$emit('close')" />
     </q-card-section>
   </q-card>
@@ -91,10 +138,24 @@ export default {
   data() {
     return {
       currentImageIndex: 0,
+      showImageDialog: false,
+
+      // PHP VERSION
+      // newImage1: null, newImage2: null, newImage3: null,
     }
   },
   components: {
     CustomButton
+  },
+  computed: {
+    currentDialogImageUrl() {
+      if (!this.unit.images || !this.unit.images.length) return null;
+      const image = this.unit.images[this.currentImageIndex];
+      if (!image || !image.imageUrl) return null;
+
+      const url = this.getImageUrl(image.imageUrl);
+      return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    }
   },
   methods: {
     getImageUrl: Helper.getImageUrl,
@@ -129,18 +190,63 @@ export default {
       })
     },
 
+    // PHP VERSION
+    // async updateUnit() {
+    //   if (!this.unit.floorLevel || !this.unit.unitType ||
+    //       !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
+    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
+    //     return;
+    //   }
+
+    //   this.$q.dialog({
+    //     title: 'Confirm',
+    //     message: `You are about to update this unit in the database, continue?`,
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(async () => {
+    //     const formData = new FormData();
+
+    //     formData.append('floorLevel', this.unit.floorLevel);
+    //     formData.append('unitType', this.unit.unitType);
+    //     formData.append('unitOccupants', this.unit.unitOccupants);
+    //     formData.append('unitDescription', this.unit.unitDescription);
+    //     formData.append('unitPrice', this.unit.unitPrice);
+    //     formData.append('genderAssignment', this.unit.genderAssignment || '');
+
+    //     if (this.newImage1) formData.append('images[]', this.newImage1);
+    //     if (this.newImage2) formData.append('images[]', this.newImage2);
+    //     if (this.newImage3) formData.append('images[]', this.newImage3);
+
+    //     try {
+    //       await UnitService.updateUnit(this.unit._id, formData);
+
+    //       this.$q.notify({
+    //         type: 'positive',
+    //         message: 'Unit updated successfully!'
+    //       });
+    //       this.$emit('close');
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: error.response?.data?.message || 'Update failed. Please try again.'
+    //       });
+    //     }
+    //   }).onCancel(() => {
+    //     return;
+    //   });
+    // },
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length;
     },
     prevImage() {
       this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length;
     },
-
   }
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .wrap-text
   white-space: pre-wrap
 
@@ -150,22 +256,74 @@ export default {
   height: 340px
   overflow: hidden
   border-radius: 4px
-  background: #f5f5f5  // Optional: Add background color for empty space
+  background: #f5f5f5
 
 .nav-button
   position: absolute
   top: 50%
   transform: translateY(-50%)
-  background: rgba(0, 0, 0, 0.5)
+  background: rgba(0, 0, 0, 0.2)
   color: white
-  border: none
-  padding: 10px
-  cursor: pointer
+  z-index: 2
+  width: 48px
+  height: 48px
+  font-size: 24px
+  &.left
+    left: 24px
+  &.right
+    right: 24px
 
-.nav-button.left
-  left: 10px
+.cursor-zoom-in
+  cursor: zoom-in
 
-.nav-button.right
-  right: 10px
+/* Dialog fixes */
+.image-dialog-card
+  background: rgba(0, 0, 0, 0.9)
+  max-width: 100vw
+  max-height: 92vh
+  width: 100vw
+  height: 92vh
+  display: flex
+  flex-direction: column
+  margin: 0
+  overflow: hidden
 
+.dialog-image-section
+  flex: 1
+  display: flex
+  justify-content: center
+  align-items: center
+  position: relative
+  padding: 0
+  margin: 0
+
+.enlarged-image
+  max-width: calc(100vw - 100px)
+  max-height: calc(100vh - 100px)
+  width: auto
+  height: auto
+  object-fit: contain
+
+.close-button
+  position: fixed
+  right: 62px
+  top: 62px
+  z-index: 2
+  background: transparent
+  color: white
+
+.dialog-nav
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+  background: transparent
+  color: white
+  z-index: 2
+  width: 48px
+  height: 48px
+  font-size: 24px
+  &.left
+    left: 24px
+  &.right
+    right: 24px
 </style>

@@ -78,11 +78,13 @@
               <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
             </q-item>
           </div>
-          <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+          <div>
             <q-item class="row justify-between">
               <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
               <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
             </q-item>
+          </div>
+          <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
             <q-item>
               <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
               <q-item-section class="text-left">
@@ -99,7 +101,7 @@
         </q-card-section>
 
         <q-card-section  class="row justify-between">
-          <CustomButton label="Save" customStyle="width: 45%" color="brown" text-color="white" @click="updateUser" />
+          <CustomButton label="Save" customStyle="width: 45%" @click="updateUser" />
           <CustomButton label="Verify Email" customStyle="width: 45%" color="white" text-color="black" @click="resendVerificationEmail" v-if="userDetails && userDetails.verification && !userDetails.verification.isVerified" />
         </q-card-section>
       </q-card>
@@ -121,7 +123,7 @@
             <li>South African Identity Document (ID) or Passport</li>
             <li>Three Months' Bank Statements</li>
           </ul>
-         Once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended.
+         Once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended. <br><br><b>Note:</b> Applicants with a bursary are exempt from credit score verification.
         </q-card-section>
 
         <q-card-section>
@@ -180,7 +182,7 @@
           </q-card>
         </q-card-section>
         <q-card-section class="row justify-between">
-          <CustomButton :disable="isEditingDisabled" label="Add Document" customStyle="width: 45%" color="brown" text-color="white" @click="openAddDocumentDialog" />
+          <CustomButton :disable="isEditingDisabled" label="Add Document" customStyle="width: 45%" @click="openAddDocumentDialog" />
           <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
         </q-card-section>
       </q-card>
@@ -315,7 +317,7 @@ export default {
           isRegisteredStudent: this.userDetails.studentInfo.isRegisteredStudent,
           studentNumber: '',
           registeredInstitution: '',
-          hasBursary: false
+          hasBursary: this.userDetails.studentInfo.hasBursary
         };
       }
     },

@@ -43,7 +43,7 @@
               v-if="$route.path === '/'"
               @click="scrollToSection('images-section')"
               class="custom-button q-py-sm large-screen-only"
-              label="Images" flat rounded />
+              label="Gallery" flat rounded />
 
             <q-btn
               v-if="$route.path === '/'"
@@ -95,7 +95,6 @@
               v-if="!isLoggedIn"
               label="Login"
               to="/auth/login"
-              color="brown"
               class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
@@ -103,7 +102,6 @@
               v-else
               label="Logout"
               @click="logout"
-              color="brown"
               class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }"
             />
@@ -119,7 +117,7 @@
                 <q-item-section class="" @click="scrollToSection('amenities-section')">Amenities</q-item-section>
               </q-item>
               <q-item clickable v-close-popup v-if="$route.path === '/'">
-                <q-item-section class="" @click="scrollToSection('images-section')">Images</q-item-section>
+                <q-item-section class="" @click="scrollToSection('images-section')">Gallery</q-item-section>
               </q-item>
               <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('academics-section')">Academics</q-item-section>
@@ -189,7 +187,7 @@
 </template>
 
 <script>
-import theWebLogo from '../assets/resources/logos/navLogo.png'
+import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
@@ -206,7 +204,7 @@ export default {
       isLoggedIn: false,
       burgerMenuShown: false,
 
-      logoSrc: theWebLogo,
+      logoSrc: weblogo3d,
     }
   },
   components: {

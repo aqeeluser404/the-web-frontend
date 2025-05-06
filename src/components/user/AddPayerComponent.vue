@@ -20,20 +20,6 @@
       </ul>
     </q-card-section>
 
-    <!-- <q-card-section class="wrap-text">
-      <div class="q-mb-md"><b>The Web Bank Details</b></div>
-      <ul>
-        <li><b>Bank Name:</b> Standard Bank</li>
-        <li><b>Account Name:</b> The Web Solutions</li>
-        <li><b>Account Number:</b> 123456789</li>
-        <li><b>Branch Code:</b> 051001</li>
-        <li><b>SWIFT Code:</b> SBZAZAJJ</li>
-        <li><b>Reference:</b> [Your Invoice Number or Full Name]</li>
-      </ul>
-      <div>Please ensure you use the correct reference number for accurate allocation of your payment.</div>
-    </q-card-section> -->
-
-
     <q-card-section class="q-gutter-md">
       <!-- First Name -->
       <q-input
@@ -99,8 +85,6 @@
         v-if="!rental.payerData.isValidated"
         label="Score Payer Information"
         customStyle="width: 45%"
-        color="brown"
-        text-color="white"
         @click="verifyPayer"
       />
       <CustomButton

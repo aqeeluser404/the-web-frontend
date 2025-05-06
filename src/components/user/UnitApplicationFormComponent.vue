@@ -1,5 +1,6 @@
 <template>
   <q-card style="width: 650px;">
+
     <q-card-section>
       <div class="text-h6">Application Form</div>
     </q-card-section>
@@ -9,13 +10,31 @@
         <q-img
           v-if="unit.images && unit.images.length > 0"
           :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
-          class="q-mb-md product-image"
+          class="q-mb-md product-image cursor-zoom-in"
           :ratio="1"
+          @click="showImageDialog = true"
         />
-        <button class="nav-button left" @click="prevImage">‹</button>
-        <button class="nav-button right" @click="nextImage">›</button>
+        <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
+        <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
       </div>
     </q-card-section>
+    <q-dialog v-model="showImageDialog" @show="logImageInfo">
+      <q-card flat borderless class="image-dialog-card">
+
+        <q-btn icon="close" flat round dense v-close-popup class="close-button" />
+
+        <q-card-section class="dialog-image-section row justify-center flex-center">
+          <img
+            v-if="currentDialogImageUrl"
+            :src="currentDialogImageUrl"
+            class="enlarged-image"
+            style="object-fit: contain"
+          />
+          <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
+          <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <q-card-section class="wrap-text">
       <div v-if="unit.unitStatus !== 'Occupied'"><b>You are applying for the {{ unit.unitType }} unit.</b><br><br>{{ unit.unitDescription }}</div>
@@ -82,7 +101,7 @@
 
     <q-card-section class="row justify-between">
       <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
-      <CustomButton label="Apply" v-if="unit.unitStatus !== 'Occupied'" color="brown" customStyle="width: 45%" @click="createRentalApplication(unit)" />
+      <CustomButton label="Apply" v-if="unit.unitStatus !== 'Occupied'" customStyle="width: 45%" @click="createRentalApplication(unit)" />
     </q-card-section>
   </q-card>
 </template>
@@ -115,15 +134,27 @@ export default {
       },
       nextAvailabilityDate: null,
       rentals: [],
-      minDate: new Date().toISOString().split('T')[0]   // Today's date
+      minDate: new Date().toISOString().split('T')[0],   // Today's date
+      showImageDialog: false
     }
   },
   components: {
     CustomButton
   },
+  computed: {
+    currentDialogImageUrl() {
+      if (!this.unit.images || !this.unit.images.length) return null;
+      const image = this.unit.images[this.currentImageIndex];
+      if (!image || !image.imageUrl) return null;
+
+      const url = this.getImageUrl(image.imageUrl);
+      return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    }
+  },
   methods: {
     getImageUrl: Helper.getImageUrl,
     formatDate: Helper.formatDate,
+
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length;
     },
@@ -203,6 +234,11 @@ export default {
       // Check if user specified their gender
       if (!this.userDetails.gender) {
         this.$q.notify({ type: 'negative', color: 'red', message: 'Please ensure you have specified your gender before submitting your application.' });
+        return;
+      }
+
+      if (!this.userDetails.studentInfo.hasBursary) {
+        this.$q.notify({ type: 'negative', color: 'red', message: 'Please indicate whether you have a bursary to proceed.' });
         return;
       }
 
@@ -315,7 +351,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .wrap-text
   white-space: pre-wrap
 
@@ -325,23 +361,74 @@ export default {
   height: 340px
   overflow: hidden
   border-radius: 4px
-  background: #f5f5f5  // Optional: Add background color for empty space
+  background: #f5f5f5
 
 .nav-button
   position: absolute
   top: 50%
   transform: translateY(-50%)
-  background: rgba(0, 0, 0, 0.5)
+  background: rgba(0, 0, 0, 0.2)
   color: white
-  border: none
-  padding: 10px
-  cursor: pointer
+  z-index: 2
+  width: 48px
+  height: 48px
+  font-size: 24px
+  &.left
+    left: 24px
+  &.right
+    right: 24px
 
-.nav-button.left
-  left: 10px
+.cursor-zoom-in
+  cursor: zoom-in
 
+/* Dialog fixes */
+.image-dialog-card
+  background: rgba(0, 0, 0, 0.9)
+  max-width: 100vw
+  max-height: 92vh
+  width: 100vw
+  height: 92vh
+  display: flex
+  flex-direction: column
+  margin: 0
+  overflow: hidden
 
-.nav-button.right
-  right: 10px
+.dialog-image-section
+  flex: 1
+  display: flex
+  justify-content: center
+  align-items: center
+  position: relative
+  padding: 0
+  margin: 0
 
+.enlarged-image
+  max-width: calc(100vw - 100px)
+  max-height: calc(100vh - 100px)
+  width: auto
+  height: auto
+  object-fit: contain
+
+.close-button
+  position: fixed
+  right: 62px
+  top: 62px
+  z-index: 2
+  background: transparent
+  color: white
+
+.dialog-nav
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+  background: transparent
+  color: white
+  z-index: 2
+  width: 48px
+  height: 48px
+  font-size: 24px
+  &.left
+    left: 24px
+  &.right
+    right: 24px
 </style>

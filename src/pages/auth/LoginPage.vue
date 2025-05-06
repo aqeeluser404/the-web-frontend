@@ -1,29 +1,57 @@
 <template>
   <q-page>
-    <q-img src="" alt="Hero Image" style="width: 100%; height: 100vh;" >
-      <div class="absolute-full column justify-center items-start text-black">
-        <q-card bordered flat class="column q-pa-lg constrain" style="">
-          <div class="row justify-center">
-            <p class="q-mb-md text-h6">RETURNING CUSTOMER</p>
-          </div>
-          <br>
-          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" style="min-width: 280px;">
-            <q-input filled label-color=black color="black" v-model="user.usernameOrEmail" label="Username or Email *" />
-            <q-input filled label-color=black color="black" v-model="user.password" label="Password *" type="password" />
+    <div class="background-wrapper">
+      <q-img
+        src="~src/assets/resources/login/outside3.jpg"
+        alt="Hero Image"
+        class="blurred-background"
+      />
+    </div>
 
-            <div class="q-my-none column text-right" style="transform: translateY(-1px);">
-              <router-link to="/forgot-password" style="text-decoration: underline; color: black;">
+    <div class="absolute-full column justify-center items-start text-black">
+      <q-card bordered flat class="row constrain q-col-gutter-md">
+
+        <!-- Left -->
+        <div class="column justify-center q-pa-lg col-md-6 col-12">
+          <router-link to="/" style="text-decoration: none; color: black;">
+            <q-icon name="eva-arrow-back-outline" size="24px" color="black" />
+          </router-link>
+          <br />
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md"
+            style="min-width: 280px;"
+          >
+            <q-input
+              filled
+              label-color="black"
+              color="black"
+              v-model="user.usernameOrEmail"
+              label="Username or Email *"
+            />
+            <q-input
+              filled
+              label-color="black"
+              color="black"
+              v-model="user.password"
+              label="Password *"
+              type="password"
+            />
+
+            <div
+              class="q-my-md q-mb-xl column text-left"
+              style="transform: translateY(-1px);"
+            >
+              <router-link to="/forgot-password" style="text-decoration: none; color: black;">
                 Forgot password?
               </router-link>
-              <router-link to="/" style="text-decoration: underline; color: black;">
-                Go Back
-              </router-link>
+
             </div>
-            <div class="">
+
+            <div>
               <CustomButton
                 label="Sign In"
-                color="brown"
-                text-color="white"
                 class="q-mb-md"
               />
               <CustomButton
@@ -34,23 +62,50 @@
               />
             </div>
           </q-form>
-        </q-card>
+        </div>
 
-        <q-card flat class="constrain">
-
-        </q-card>
-
-        <!-- <div class="text-right q-my-none" style="transform: translateY(-1px);">
-              <router-link to="/forgot-password" style="text-decoration: underline; color: black;">
-                Forgot password?
-              </router-link>
-            </div> -->
-      </div>
-    </q-img>
+        <!-- Right -->
+        <div class="column q-pa-lg col-md-6 col-12 bg-black items-center justify-center right-section">
+          <!-- <q-icon name="account_circle" size="125px" color="white" /> -->
+          <img :src="logoSrc" alt="logo" class="" >
+        </div>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
+
+<style scoped lang="sass">
+.right-section
+  display: flex
+  @media (max-width: 600px)
+    display: none
+
+.background-wrapper
+  position: fixed
+  width: 100%
+  height: 100vh
+  overflow: hidden
+  z-index: -1
+
+.blurred-background
+  width: 100%
+  height: 100%
+  object-fit: cover
+  filter: blur(8px)
+  transform: scale(1.1)
+
+.constrain
+  max-width: 750px
+  height: 450px
+  width: 90%
+  background: rgba(255, 255, 255, 0.85)
+  backdrop-filter: blur(2px)
+
+</style>
+
 <script>
+  import theWeb3d from '../../assets/resources/logos/web3dlogo.png'
   import UserService from 'src/services/UserService'
   import CustomButton from 'src/components/elements/CustomButton.vue'
 
@@ -62,7 +117,8 @@
         user: {
           usernameOrEmail: '',
           password: ''
-        }
+        },
+        logoSrc: theWeb3d,
       }
     },
     components: {
@@ -99,4 +155,5 @@
     }
   }
 </script>
+
 

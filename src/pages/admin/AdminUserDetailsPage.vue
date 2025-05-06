@@ -84,6 +84,13 @@
             </q-item-section>
           </q-item>
 
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Bursary student</q-item-section>
+            <q-item-section class="text-left">
+              <q-input readonly v-model="userDetails.studentInfo.hasBursary" />
+            </q-item-section>
+          </q-item>
+
           <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
             <q-item>
               <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
@@ -101,7 +108,7 @@
         </q-card-section>
 
         <q-card-section  class="row justify-between">
-          <CustomButton label="Update Account Type" color="brown" text-color="white" @click="updateUserType" />
+          <CustomButton label="Update Account Type" @click="updateUserType" />
         </q-card-section>
       </q-card>
 

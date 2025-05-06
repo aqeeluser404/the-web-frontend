@@ -9,7 +9,8 @@
           :key="floorIndex"
           :label="`${floorLabels[floorIndex]} (${units.length} items)`"
           expand-separator
-          :default-opened="floorIndex === 0"
+          v-model="expanded[floorIndex]"
+          @show="handleExpansion(floorIndex)"
         >
           <q-list class="row justify-center">
             <q-card
@@ -19,8 +20,22 @@
               class="q-ma-sm"
             >
               <q-card-section class="column flex-center">
-                <div class="text-h6">{{ unit.unitType }} (<span class="text-brown">{{ unit.unitStatus }}</span>)</div>
-                <div class="text-caption">Unit Number {{ unit.unitNumber }}</div>
+                <div class="text-h6">
+
+                  <!-- unit number -->
+                  Unit {{ unit.unitNumber }}
+
+                  <!-- available status -->
+                  (<span v-if="unit.unitStatus === 'Available'" :class="{ 'available-unit': unit.unitStatus === 'Available'}">
+                    {{ unit.unitStatus }}
+                  </span>
+                  <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied'}">
+                    {{ unit.unitStatus }}
+                  </span>)
+                </div>
+                <!-- shared + bed count -->
+                <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants - unit.currentOccupants }}/{{ unit.unitOccupants }} Beds</div>
+
               </q-card-section>
               <q-card-section class="row justify-center">
                 <q-img
@@ -31,7 +46,7 @@
               </q-card-section>
               <q-card-section class="row justify-between">
                 <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
-                <CustomButton label="Delete " customStyle="width: 40%" color="brown" text-color="white" @click="deleteUnit(unit)" />
+                <CustomButton label="Delete " customStyle="width: 40%" @click="deleteUnit(unit)" />
               </q-card-section>
             </q-card>
           </q-list>
@@ -53,7 +68,7 @@
           </ul>
         </q-card-section>
         <q-card-section>
-          <CustomButton color="brown" text-color="white" label="Add New" @click="openAddUnitsDialog" />
+          <CustomButton color="black" text-color="white" label="Add New" @click="openAddUnitsDialog" />
         </q-card-section>
       </q-card>
     </div>
@@ -80,12 +95,15 @@ export default {
     return {
       units: [],
       allUnits: [],
-      floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
+      // floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
+      floorLabels: ['First Floor', 'Second Floor', 'Third Floor'],
 
       addUnitsDialog: false,
 
       selectedUnit: null,
       updateDetailsDialog: false,
+
+      expanded: [true, false, false]
     };
   },
   components: {
@@ -103,9 +121,13 @@ export default {
 
       const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
 
-      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor');
-      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor');
-      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor');
+      // const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor')
+      // const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
+      // const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
+
+      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
+      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
+      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor')
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
     },
@@ -142,6 +164,9 @@ export default {
       this.addUnitsDialog = false;
       this.findAllUnits();
     },
+    handleExpansion(expandedIndex) {
+      this.expanded = this.expanded.map((_, index) => index === expandedIndex)
+    }
   },
   created() {
     this.findAllUnits();

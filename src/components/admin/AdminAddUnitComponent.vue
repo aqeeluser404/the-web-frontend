@@ -9,7 +9,7 @@
     <q-card-section class="q-gutter-md">
       <q-input filled v-model="unit.unitNumber" label-color="black" color="black" label="Unit Number *" readonly />
       <q-select filled v-model="unit.floorLevel" label-color="black" color="black" label="Floor Level *" :options="floorLevelOptions" emit-value map-options />
-      <q-select filled v-model="unit.unitType" label-color="black" color="black" label="Unit Type *" :options="unitTypeOptions" emit-value map-options />
+      <!-- <q-select filled v-model="unit.unitType" label-color="black" color="black" label="Unit Type *" :options="unitTypeOptions" emit-value map-options /> -->
       <q-select filled v-model="unit.unitOccupants" label-color="black" color="black" label="Unit Occupants *" :options="unitOccupantsOptions" emit-value map-options />
       <q-input filled v-model="unit.unitPrice" label-color="black" color="black" label="Unit Price *" type="number" prefix="R" :rules="[val => val > 0] || 'Price must be positive'" />
       <q-file filled v-model="image1" label="Image (First View) * " label-color="black" color="black" accept="image/*" name="image1" id="image1" />
@@ -35,7 +35,7 @@ export default {
       unit: {
         unitNumber: 'Loading...',
         floorLevel: '',
-        unitType: '',
+        unitType: 'Shared',
         unitOccupants: '',
         unitDescription: 'This unit features a well-appointed kitchen area, (x) modern bathrooms, (x) spacious lounges, and ample parking for (x) vehicles.',
         unitPrice: '',
@@ -43,17 +43,23 @@ export default {
       },
       image1: null, image2: null, image3: null,
 
+      // floorLevelOptions: [
+      //   { label: 'Ground Floor', value: 'Ground Floor' },
+      //   { label: 'First Floor', value: 'First Floor' },
+      //   { label: 'Second Floor', value: 'Second Floor' },
+      // ],
+
       floorLevelOptions: [
-        { label: 'Ground Floor', value: 'Ground Floor' },
         { label: 'First Floor', value: 'First Floor' },
         { label: 'Second Floor', value: 'Second Floor' },
+        { label: 'Third Floor', value: 'Third Floor' },
       ],
 
-      unitTypeOptions: [
-        { label: 'Shared', value: 'Shared' },
-        { label: 'Deluxe', value: 'Deluxe' },
-        { label: 'Studio', value: 'Studio' },
-      ],
+      // unitTypeOptions: [
+      //   { label: 'Shared', value: 'Shared' },
+      //   { label: 'Deluxe', value: 'Deluxe' },
+      //   { label: 'Studio', value: 'Studio' },
+      // ],
 
       unitOccupantsOptions: [
         { label: '1', value: 1 },
@@ -93,32 +99,70 @@ export default {
         // Filter units by the selected floor level
         const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
 
-        if (filteredUnits.length > 0) {
+        // Determine the floor prefix based on floor level
+        let floorPrefix;
+        const floorName = (floorLevel || '').toString().toLowerCase().trim();
 
-          // Extract and sort unit numbers as integers
-          const unitNumbers = filteredUnits
-            .map(u => parseInt(u.unitNumber))
-            .sort((a, b) => a - b);
-
-          // Find the first missing number in the sequence
-          let firstMissing = 1;
-          for (const num of unitNumbers) {
-            if (num > firstMissing) {
-              break; // Gap found
-            }
-            firstMissing = num + 1;
-          }
-          this.unit.unitNumber = firstMissing.toString();
-          } else {
-          this.unit.unitNumber = '1'; // Start at 1 if no units exist
+        if (floorName === 'first floor') {
+          floorPrefix = '1';
+        } else if (floorName === 'second floor') {
+          floorPrefix = '2';
+        } else if (floorName === 'third floor') {
+          floorPrefix = '3';
+        } else {
+          // For numeric floors or other names, try to determine prefix
+          const floorNum = parseInt(floorName);
+          floorPrefix = !isNaN(floorNum) ? (floorNum + 1).toString() : '1';
         }
-        //   // Find the maximum unit number for the selected floor
-        //   const maxUnitNumber = Math.max(...filteredUnits.map(u => parseInt(u.unitNumber)));
-        //   this.unit.unitNumber = (maxUnitNumber + 1).toString();
-        // } else {
-        //   // If no units exist for the selected floor, start at 1
-        //   this.unit.unitNumber = '1';
-        // }
+
+        // Default starting number for this floor (e.g., 101, 201, etc.)
+        const defaultStartNumber = parseInt(floorPrefix + '01');
+
+        if (filteredUnits.length === 0) {
+          // No units exist for this floor, start with default
+          this.unit.unitNumber = defaultStartNumber.toString();
+          return;
+        }
+
+        // Process existing unit numbers
+        const unitNumbers = filteredUnits
+          .map(u => {
+            const unitNumStr = u.unitNumber?.toString() || '';
+            if (unitNumStr.startsWith(floorPrefix)) {
+              const num = parseInt(unitNumStr);
+              return isNaN(num) ? 0 : num;
+            }
+            return 0;
+          })
+          .filter(num => num >= defaultStartNumber) // Only numbers in our new format
+          .sort((a, b) => a - b);
+
+        if (unitNumbers.length === 0) {
+          // No valid unit numbers found, use default
+          this.unit.unitNumber = defaultStartNumber.toString();
+          return;
+        }
+
+        // Find the first available number in sequence
+        let nextNumber = defaultStartNumber;
+        for (const num of unitNumbers) {
+          if (num > nextNumber) break;
+          nextNumber = num + 1;
+        }
+
+        // Ensure we don't go beyond floor numbering (e.g., 199 for floor 1)
+        const maxNumberForFloor = parseInt(floorPrefix + '99');
+        if (nextNumber > maxNumberForFloor) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Maximum unit numbers reached for this floor'
+          });
+          this.unit.unitNumber = 'Error';
+          return;
+        }
+
+        this.unit.unitNumber = nextNumber.toString();
+
       } catch (error) {
         console.error('Error fetching units:', error);
         this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });

@@ -14,7 +14,7 @@
           </q-item>
         </q-card-section>
         <q-card-section class="row justify-between">
-          <CustomButton label="Initiate Call" color="brown" text-color="white" @click="initiateCall" />
+          <CustomButton label="Initiate Call" @click="initiateCall" />
         </q-card-section>
       </q-card>
 

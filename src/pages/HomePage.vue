@@ -1,9 +1,9 @@
 <template>
   <q-page>
-    <!-- hero -->
-    <div style="height: 100vh;" class="bg-grey">
-       <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
-       <q-carousel
+
+    <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <div style="margin: 4%; margin-top: 0;" class="bg-grey">
+      <q-carousel
         animated
         v-model="currentSlide"
         infinite
@@ -12,7 +12,7 @@
         transition-prev="slide-right"
         transition-next="slide-left"
         transition-duration="1800"
-        height="100vh"
+        :height="$q.screen.lt.sm ? 'auto' : '100vh'"
         arrows
         navigation
         control-color="white"
@@ -32,29 +32,27 @@
           />
         </q-carousel-slide>
       </q-carousel>
-
     </div>
 
-    <!-- hero - BANNER -->
-    <div style="height: 100%;">
+    <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <div style="height: 100%; margin: 4% 0;">
       <div flat class="
-        bg-transparent
-        bg-brown
+        bg-black
         text-white
         row justify-between
         q-pa-lg
         "
       >
-        <q-card-section class="text-h4">Attention Students! Looking to rent in 2025?</q-card-section>
+        <q-card-section class="text-h4">Attention Students! Looking to rent in 2026?</q-card-section>
         <q-card-section>
-          <CustomButton color="brown" text-color="white" label="Visit the Unit Rental List" @click="openUnitDash" style="border: 2px solid white;" />
+          <CustomButton color="white" text-color="black" label="Visit the Unit Rental List" @click="openUnitDash" style="border: 2px solid black;" />
         </q-card-section>
       </div>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- amenities -->
-    <div id="amenities-section" class="row justify-between slide-container" style="height: 100%; background-color: #333;">
+    <div id="amenities-section" class="row justify-between slide-container" style="height: 100%; margin: 4% 0; background-color: #333;">
       <q-card flat class="
         bg-transparent
         text-white
@@ -65,7 +63,7 @@
         "
       >
         <q-card-section class="fade-in-scale">
-          <div class="text-brown"><b>Feature Rich</b></div>
+          <div class="text-white"><b>Feature Rich</b></div>
           <div class="text-h3 q-mb-md">World-Class Amenities</div>
           <div>Designed around the needs of its residents, The Web strikes the perfect balance between lifestyle and academic amenities.</div>
           <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
@@ -80,8 +78,8 @@
             <li><span class="q-mr-sm">✔️</span> High-speed Wi-Fi throughout</li>
             <li><span class="q-mr-sm">✔️</span> Secure car, motorbike & bicycle parking</li>
           </ul>
-          <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="brown" text-color="white" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
-          <CustomButton v-else color="brown" customStyle="width: 100%" text-color="white" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
+          <!-- <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="white" text-color="black" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
+          <CustomButton v-else color="white" text-color="black"  customStyle="width: 100%" label="Make an Enquiry" @click="scrollToSection('contact-section')" /> -->
         </q-card-section>
       </q-card>
       <div class="col-md-5 col-12 slide-in-right">
@@ -91,15 +89,8 @@
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- images -->
-    <!-- <div id="images-section" style="height: 100%; background-color: #333;">
-      <q-list class="row justify-around">
-        <div class="bg-transparent col-md-4 col-12" flat v-for="card in cards" :key="card._id">
-          <q-img :src="card.imageUrl" :alt="card.title" />
-        </div>
-      </q-list>
-    </div> -->
 
-    <div id="images-section" style="height: 100vh;" class="bg-grey">
+    <div id="images-section" style="margin: 4% 0" class="bg-grey">
        <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
        <q-carousel
         animated
@@ -110,7 +101,7 @@
         transition-prev="slide-right"
         transition-next="slide-left"
         transition-duration="1800"
-        height="100vh"
+        :height="$q.screen.lt.sm ? 'auto' : '100vh'"
         arrows
         navigation
         control-color="white"
@@ -130,12 +121,100 @@
           />
         </q-carousel-slide>
       </q-carousel>
-
     </div>
+
+    <!-- units card -->
+    <div id="units-section" class="q-py-xl" style="height: 100%; margin:  4% 0; background-color: #222;">
+      <q-card-section class=" fade-up">
+        <div class="text-h4 text-center text-white">Unit Specifications</div>
+      </q-card-section>
+
+      <div class="q-pa-md">
+
+        <BedStatsComponentBlack />
+
+        <q-card flat class="q-ma-sm bg-transparent text-white">
+          <q-expansion-item
+            class="text-subtitle1"
+            v-for="(units, floorIndex) in allUnits"
+            :key="floorIndex"
+            :label="`${floorLabels[floorIndex]} (${units.length} items)`"
+            expand-separator
+            v-model="expanded[floorIndex]"
+            @show="handleExpansion(floorIndex)"
+          >
+            <q-list class="row justify-center">
+              <q-card v-for="unit in units" :key="unit._id" flat class="q-ma-sm bg-transparent hover-scale" @click="openUnitDetails(unit)" style="cursor: pointer;">
+                <q-card-section class="column flex-center">
+                  <div class="text-h6">
+
+                    Unit {{ unit.unitNumber }}
+
+                    (<span v-if="unit.unitStatus === 'Available'" :class="{ 'available-unit': unit.unitStatus === 'Available'}">
+                      {{ unit.unitStatus }}
+                    </span>
+                    <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied'}">
+                      {{ unit.unitStatus }}
+                    </span>)
+                  </div>
+
+                  <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants - unit.currentOccupants }}/{{ unit.unitOccupants }} Beds</div>
+                </q-card-section>
+                <q-card-section class="row justify-center">
+                  <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+                </q-card-section>
+              </q-card>
+            </q-list>
+          </q-expansion-item>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- <div id="units-section" class="q-py-xl" style="height: 100%; margin:  4% 0;">
+      <q-card-section class=" fade-up">
+        <div class="text-h4 text-center">Unit Specifications</div>
+      </q-card-section>
+      <div class="q-pa-md">
+        <BedStatsComponent />
+        <q-card flat class="q-ma-sm">
+          <q-expansion-item
+            class="text-subtitle1"
+            v-for="(units, floorIndex) in allUnits"
+            :key="floorIndex"
+            :label="`${floorLabels[floorIndex]} (${units.length} items)`"
+            expand-separator
+            :default-opened="floorIndex === 0"
+          >
+            <q-list class="row justify-center">
+              <q-card v-for="unit in units" :key="unit._id" flat class="q-ma-sm bg-transparent hover-scale" @click="openUnitDetails(unit)" style="cursor: pointer;">
+                <q-card-section class="column flex-center">
+                  <div class="text-h6">
+
+                    Unit {{ unit.unitNumber }}
+
+                    (<span v-if="unit.unitStatus === 'Available'" :class="{ 'available-unit': unit.unitStatus === 'Available'}">
+                      {{ unit.unitStatus }}
+                    </span>
+                    <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied'}">
+                      {{ unit.unitStatus }}
+                    </span>)
+                  </div>
+
+                  <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants }} Beds</div>
+                </q-card-section>
+                <q-card-section class="row justify-center">
+                  <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+                </q-card-section>
+              </q-card>
+            </q-list>
+          </q-expansion-item>
+        </q-card>
+      </div>
+    </div> -->
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- academics -->
-    <div id="academics-section" style="height: 100%; padding: 72px 0;" class="row justify-between">
+    <div id="academics-section" style="height: 100%; margin:  4% 0; " class="row justify-between">
       <div class="col-md-5 col-12 row justify-center slide-in-left">
         <q-img src="~src/assets/resources/home/rooftop.png" alt="hero image" class="side-image"/>
       </div>
@@ -149,7 +228,7 @@
         "
       >
         <q-card-section class="fade-in-scale">
-          <div class="text-brown"><b>Space to Thrive</b></div>
+          <div class="text-black"><b>Space to Thrive</b></div>
           <div class="text-h3 q-mb-md">Academic Excellence</div>
           <div>At the heart of this purpose-built student development is an environment that facilitates both private and collaborative studying. The Web has it all, from an expansive study centre with tailor-made solo study pods, and multi-purpose boardrooms for group work, these facilities are geared for the demanding needs of future business and thought leaders.</div>
           <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
@@ -162,29 +241,12 @@
             <li><span class="q-mr-sm">✔️</span> Print & copy facilities</li>
             <li><span class="q-mr-sm">✔️</span> Conference facilities</li>
           </ul>
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Rent in 2025" @click="openUnitDash" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Rent in 2025" @click="openUnitDash" />
         </q-card-section>
       </q-card>
     </div>
 
-    <!-- academics - section 2 -->
-    <!-- <div style="height: 100%; background-color: #333;">
-      <q-card flat class="bg-transparent text-white text-body1 q-pa-lg">
-
-        <q-card-section class="row fade-up ">
-          <div class="text-h3 q-mb-xl text-center">Enhancing a Quaint Suburb of Stellenbosch</div>
-          <div>
-            Paramount to The Web's vision, is to ultimately enhance this quaint suburb by making it more pedestrian-friendly and in doing so, create a café culture atmosphere along its beautiful tree-lined streets.
-            <br>In a Stellenbosch first, over R35 million has been raised and earmarked by a group of developers in the area to build towards this vision and amplify the suburb, as well as improve its accessibility to campus. The funds will be allocated to 11 projects that range from major security enhancements, to local area infrastructure upgrades for all who reside in the area.
-            <br><br>This desirable location, well on its way becoming the next Stellies student hub, has likeminded developers already taking advantage of The Web's entrance into the area by purchasing existing houses in the precinct for further student development.
-          </div>
-        </q-card-section>
-      </q-card>
-    </div> -->
-
     <!-- academics - section 2  -->
-    <div class="q-pa-xl" style="height: 100%; background-color: #222;">
+    <div class="q-pa-xl" style="height: 100%; margin: 2% 0; background-color: #222;">
       <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
         <q-card-section>
           <div class="text-h4">Enhancing a Quaint Suburb of Stellenbosch</div>
@@ -204,7 +266,7 @@
     </div>
 
     <!-- academics - section 3 -->
-    <div class="row justify-between" style="height: 100%; padding: 72px 0;">
+    <div class="row justify-between" style="height: 100%; margin: 4% 0;">
       <q-card flat class="
         bg-transparent
         text-body1
@@ -214,7 +276,7 @@
         "
       >
         <q-card-section class="fade-in-scale">
-          <div class="text-brown"><b>Perfectly Position</b></div>
+          <div class="text-black"><b>Perfectly Position</b></div>
           <div class="text-h3 q-mb-md">The Jewel in the Stellenbosch Crown</div>
           <div class="q-mb-md">
             Nestled in a desirable pocket of Stellenbosch and a mere 750m from the University, The Web is perfectly poised to become an instant hit with students and one of Stellenbosch’s most sought-after new developments.
@@ -222,8 +284,6 @@
           <div class="q-mb-lg">
             With Stellenbosch’s student population rapidly growing over the past decade, The Web is set to become the ultimate choice for students seeking quality and convenience in their home away from home.
           </div>
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Secure your spot"  @click="openUnitDash" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Secure your spot" @click="openUnitDash" />
         </q-card-section>
       </q-card>
       <div class="col-md-5 col-12 row justify-center slide-in-right">
@@ -232,7 +292,7 @@
     </div>
 
     <!-- academics - section 4 -->
-    <div class="row justify-between" style="height: 100%; background-color: #333;">
+    <div class="row justify-between" style="height: 100%; margin: 4% 0; background-color: #333;">
       <div class="col-md-5 col-12 slide-in-left">
         <q-img src="~src/assets/resources/home/Residential.png" class="side-image"/>
       </div>
@@ -246,7 +306,7 @@
         "
       >
         <q-card-section class="fade-in-scale">
-          <div class="text-brown"><b>Rent in A</b></div>
+          <div class="text-white"><b>Rent in A</b></div>
           <div class="text-h3 q-mb-md">Residential College</div>
           <div>A residential college is a private residence which is aligned with the academic and support functions of the university and serves to holistically support the student towards personal and academic achievement.</div>
         </q-card-section>
@@ -254,7 +314,7 @@
     </div>
 
     <!-- academics - section 5 -->
-    <div class="q-pa-xl" style="height: 100%; background-color: #222;">
+    <div class="q-pa-xl" style="height: 100%; margin: 4% 0; background-color: #222;">
       <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
         <q-card-section>
           <div class="text-h4">The Web's Amenities Foster an Environment Ideal for Academic Success</div>
@@ -271,38 +331,22 @@
     </div>
 
     <!-- academics - BANNER -->
-    <div style="height: 100%;">
+    <div style="height: 100%; margin: 4% 0;">
       <div flat class="
-        bg-transparent
-        bg-brown
+        bg-black
         text-white
         row justify-between
         q-pa-lg
         "
       >
         <q-card-section class="text-h4">Need more answers? Read our FAQs</q-card-section>
-        <!-- <q-card-section>
-          <CustomButton color="brown" text-color="white" label="View FAQs" to="/frequently-asked-questions" style="border: 2px solid white;" />
-        </q-card-section> -->
       </div>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
-    <!-- units card -->
-    <div id="units-section" class="q-py-xl" style="height: 100%; background-color: #222;">
-      <q-card-section class=" fade-up">
-        <div class="text-h4 text-center text-white">Unit Specifications</div>
-      </q-card-section>
-      <q-list class="row justify-center q-pa-sm  fade-up">
-        <q-card class="q-pa-md bg-transparent col-md-3 col-12" flat v-for="unitType in unitTypes" :key="unitType._id">
-          <q-img class="" :src="unitType.imageUrl" />
-          <div class="text-white text-center text-h6">{{ unitType.label }}</div>
-        </q-card>
-      </q-list>
-    </div>
 
     <!-- units card - section 2 -->
-    <div class="row justify-between" style="height: 100%; padding: 72px 0;">
+    <div class="row justify-between" style="height: 100%; margin: 4% 0;">
       <div class="col-md-6 col-12 row justify-center slide-in-left">
         <q-img src="~src/assets/resources/home/dinning.png" class="side-image"/>
       </div>
@@ -315,11 +359,9 @@
         "
       >
         <q-card-section class="fade-in-scale">
-          <div class="text-brown"><b>Living Spaces</b></div>
+          <div class="text-black"><b>Living Spaces</b></div>
           <div class="text-h3 q-mb-md">Expertly Designed</div>
           <div class="q-mb-lg">Architects Boogertman & Partners have spent countless hours configuring each of the living spaces at The Web. Ergonomically designed units all feature a kitchenette, private bathroom, study desk, and open-plan living spaces with premium fittings and fixtures.</div>
-          <CustomButton v-if="$q.screen.gt.sm" color="brown" text-color="white" customStyle="width: 25%" label="Make an enquiry" @click="scrollToSection('contact-section')" />
-          <CustomButton v-else color="brown" text-color="white" customStyle="width: 100%" label="Make an enquiry" @click="scrollToSection('contact-section')" />
         </q-card-section>
       </q-card>
     </div>
@@ -333,7 +375,7 @@
         <q-card-section class="col-md-6 col-12">
           <div class="text-h4 q-mb-md">Discuss with Our Team</div>
 
-          <div class="text-body2 q-mb-md">Founder and Managing Director</div>
+          <!-- <div class="text-body2 q-mb-md">Founder and Managing Director</div> -->
           <div class="text-body1 q-mb-md"><b>Wayne Louw</b></div>
 
           <div class="column">
@@ -365,16 +407,25 @@
               <div class="row justify-between flex-center">
                 <label>
                   <input type="checkbox" name="privacyPolicy" value="agree" required class="q-mr-sm">
-                  By submitting your data, you agree to our <span class="text-brown"><b>privacy policy</b></span>
+                  By submitting your data, you agree to our <span class="text-white">privacy policy</span>
                 </label>
-                <CustomButton v-if="$q.screen.gt.sm" type="submit" label="Send Message" color="brown" text-color="white" customStyle="width: 30%" />
-                <CustomButton v-else type="submit" label="Send Message" class="q-mt-md" color="brown" text-color="white" customStyle="width: 100%" />
+                <CustomButton v-if="$q.screen.gt.sm" type="submit" label="Send Message" color="white" text-color="black" customStyle="width: 30%" />
+                <CustomButton v-else type="submit" label="Send Message" class="q-mt-md" color="white" text-color="black" customStyle="width: 100%" />
               </div>
             </q-form>
         </div>
         </q-card-section>
       </q-card>
     </div>
+    <CustomButton customStyle="width: 180px" label="Secure your spot"  @click="openUnitDash" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000"/>
+
+    <!-- Dialogs -->
+    <q-dialog v-model="detailsDialog">
+      <UnitDetailsComponent :unit="selectedUnit" @close="detailsDialog = false" />
+    </q-dialog>
+    <q-dialog v-model="applyDialog">
+      <UnitApplicationFormComponent :unit="selectedUnit" @close="handleDialogClose" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -410,11 +461,28 @@ import StudioPatioC from 'src/assets/resources/home/unit-types/C-StudioPatio-768
 import SharedStudio from 'src/assets/resources/home/unit-types/E-Shared-768x689.png';
 import TwoBed from 'src/assets/resources/home/unit-types/F-2-Bed-768x689.png';
 
+import UnitService from 'src/services/UnitService'
+import UnitDetailsComponent from 'src/components/user/UnitDetailsComponent.vue'
+import UnitApplicationFormComponent from 'src/components/user/UnitApplicationFormComponent.vue'
+import RentalService from 'src/services/RentalService'
+import BedStatsComponentBlack from 'src/components/user/BedStatsComponentBlack.vue'
+import BedStatsComponent from 'src/components/user/BedStatsComponent.vue'
+
 export default {
   name: 'Homepage',
 
   data() {
     return {
+      units: [],
+      detailsDialog: false,
+      applyDialog: false,
+      selectedUnit: null,
+      myRentals: [],
+      allUnits: [],
+      // floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
+      floorLabels: ['First Floor', 'Second Floor', 'Third Floor'],
+      expanded: [true, false, false],
+
       currentSlide: 1,
       heroCards: [
         { _id: 1, imageUrl: home1 },
@@ -453,10 +521,64 @@ export default {
     }
   },
   components: {
-    CustomButton
+    CustomButton,
+    BedStatsComponentBlack,
+    BedStatsComponent,
+    UnitDetailsComponent,
+    UnitApplicationFormComponent
+  },
+  computed: {
+    hasOngoingRentals() {
+      return this.myRentals.some(rental => rental.status === 'Pending' || rental.status === 'Active');
+    }
   },
 
   methods: {
+    getImageUrl: Helper.getImageUrl,
+    capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    async fetchMyRentals() {
+      const user = await Helper.fetchUserDetails()
+      this.myRentals = await RentalService.findMyRentals(user._id)
+    },
+
+    handleExpansion(expandedIndex) {
+      this.expanded = this.expanded.map((_, index) => index === expandedIndex)
+    },
+
+    async fetchUnits() {
+      const response = await UnitService.getAllUnits()
+      this.units = response
+
+      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+
+      // const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor')
+      // const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
+      // const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
+
+      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
+      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
+      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor')
+
+      this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits]
+
+      this.fetchMyRentals()
+    },
+    openUnitDetails(unit) {
+      this.selectedUnit = unit,
+      this.detailsDialog = true
+    },
+    openApplicationForm(unit) {
+      this.selectedUnit = unit,
+      this.applyDialog = true
+    },
+    handleDialogClose() {
+      this.applyDialog = false
+      this.fetchUnits()
+    },
+    goToRentalHistory() {
+      this.$router.push({ path: '/user/applications' })
+    },
     scrollToSection(sectionId) {
       const element = document.getElementById(sectionId);
       if (element) {
@@ -500,7 +622,10 @@ export default {
         this.$q.notify({ type: 'negative', message: 'Please login to continue.' })
       }
     }
-  }
+  },
+  created() {
+    this.fetchUnits()
+  },
 }
 </script>
 
@@ -570,11 +695,16 @@ body
     transform: translateY(0)
     opacity: 1
 
+.hover-scale:hover
+  transform: scale(1.05)
+  transition: transform 0.3s ease
+
 .hero-image
   width: 100%
   height: 100vh
   object-fit: cover
-  @media (max-width: 1024px)
+  @media (max-width: 600px)
+    height: 340px
 
 .fullscreen-carousel
   margin: 0 !important

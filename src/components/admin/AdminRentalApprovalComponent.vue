@@ -64,8 +64,8 @@
 
     <q-card-section class="justify-between row">
       <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
-      <CustomButton v-if="isApproved === true" label="Approve" color="brown" text-color="white" @click="approveRental" customStyle="width: 45%" />
-      <CustomButton v-if="isApproved === false" label="Not Approve" color="brown" text-color="white" @click="rejectRental" customStyle="width: 45%" />
+      <CustomButton v-if="isApproved === true" label="Approve" @click="approveRental" customStyle="width: 45%" />
+      <CustomButton v-if="isApproved === false" label="Not Approve" @click="rejectRental" customStyle="width: 45%" />
     </q-card-section>
   </q-card>
 </template>

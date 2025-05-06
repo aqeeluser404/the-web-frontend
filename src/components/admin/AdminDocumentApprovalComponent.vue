@@ -30,7 +30,7 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <CustomButton label="Close" color="brown" text-color="white" @click="$emit('close')" customStyle="width: 100%" />
+      <CustomButton label="Close" @click="$emit('close')" customStyle="width: 100%" />
     </q-card-section>
   </q-card>
 </template>

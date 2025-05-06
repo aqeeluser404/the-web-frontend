@@ -1,27 +1,43 @@
 <template>
   <q-page>
-    <q-img src="" alt="Hero Image" style="width: 100%; height: 100vh;" >
-      <div class="absolute-full column justify-center items-center text-black">
-        <q-card>
+    <div class="background-wrapper">
+      <q-img src="~src/assets/resources/login/outside3.jpg" alt="Hero Image" class="blurred-background"/>
+    </div>
+    <div class="absolute-full column justify-center items-center text-black">
+      <q-card>
+        <q-card-section class="column items-center">
+          <div class="text-h6">Verify Email</div>
+        </q-card-section>
 
-          <q-card-section class="column items-center">
-            <div class="text-h6">Verify Email</div>
-          </q-card-section>
+        <q-card-section>
+          <CustomButton v-if="success" label="Home" to="/" />
+          <CustomButton v-if="!success" label="Resend Verification" to="/resend-verification" icon="eva-email-outline" />
+        </q-card-section>
 
-          <q-card-section>
-            <CustomButton v-if="success" label="Home" to="/" color="black" text-color="white" />
-            <CustomButton v-if="!success" label="Resend Verification" to="/resend-verification" color="brown" text-color="white" icon="eva-email-outline" />
-          </q-card-section>
-
-          <q-card-section v-if="message" class="column items-center">
-            <div>{{ message }}</div>
-          </q-card-section>
-
-        </q-card>
-      </div>
-    </q-img>
+        <q-card-section v-if="message" class="column items-center">
+          <div>{{ message }}</div>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
+
+<style scoped lang="sass">
+.background-wrapper
+  position: fixed
+  width: 100%
+  height: 100vh
+  overflow: hidden
+  z-index: -1
+
+.blurred-background
+  width: 100%
+  height: 100%
+  object-fit: cover
+  filter: blur(8px)
+  transform: scale(1.1)
+</style>
+
 
 <script>
 import EmailService from 'src/services/EmailService'

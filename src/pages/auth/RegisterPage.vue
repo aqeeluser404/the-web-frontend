@@ -1,14 +1,25 @@
 <template>
-  <q-page class="">
-    <div class="q-ma-xl row justify-center">
+  <q-page>
+    <div class="background-wrapper">
+      <q-img
+        src="~src/assets/resources/login/outside3.jpg"
+        alt="Hero Image"
+        class="blurred-background"
+      />
+    </div>
 
-
+      <div class="absolute-full q-ma-xl row justify-center">
         <q-card class="q-pa-lg bg-white" style="max-width: 100%;">
-          <div class="row justify-center">
+          <!-- <div class="row justify-center">
             <p class="q-mb-md text-h6">CREATE A NEW ACCOUNT</p>
-          </div>
-          <br>
-          <div class="q-gutter-lg">
+          </div> -->
+
+          <div class="q-gutter-lg  q-mb-xl ">
+            <q-card-section>
+              <router-link to="/auth/login" style="text-decoration: none; color: black;">
+                <q-icon name="eva-arrow-back-outline" size="24px" color="black" />
+              </router-link>
+            </q-card-section>
             <q-card-section class="row justify-around  q-py-none">
               <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.firstName" label="First Name *" />
               <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.lastName" label="Last Name *" />
@@ -35,7 +46,7 @@
               <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
             </q-card-section>
 
-            <q-card-section v-if="user.studentInfo.isRegisteredStudent === true" class="row justify-between q-py-none">
+            <q-card-section class="row justify-between q-py-none">
               <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
               <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
             </q-card-section>
@@ -48,27 +59,42 @@
               <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.studentInfo.registeredInstitution" label="Registered Institution *" />
             </q-card-section>
           </div>
-
           <br>
-
           <div class="q-gutter-sm">
-            <q-card-section class="row justify-start q-py-none">
-              <router-link to="/auth/login" class="" style="text-decoration: underline; color: black;">
+            <!-- <q-card-section class="row justify-start q-py-none">
+              <router-link to="/auth/login" class="" style="text-decoration: none; color: black;">
                 Already a member, login instead?
               </router-link>
-            </q-card-section>
+            </q-card-section> -->
+            <!-- <br /> -->
+            <!-- <q-card-section class="row justify-start q-py-none">
+              <p>By signing up, you acknowledge and agree to The Webs’s Terms of Service.</p>
+            </q-card-section> -->
             <q-card-section class="row justify-start q-py-none">
-              <p class="text-caption">By signing up, you acknowledge and agree to The Webs’s Terms of Service.</p>
-            </q-card-section>
-            <q-card-section class="row justify-start q-py-none">
-              <CustomButton color="brown" label="Create your account" @click="onSubmit" />
+              <CustomButton label="Create your account" @click="onSubmit" />
             </q-card-section>
           </div>
         </q-card>
-    </div>
+      </div>
   </q-page>
 </template>
 
+<style lang="sass">
+.background-wrapper
+  position: fixed
+  width: 100%
+  height: 100vh
+  overflow: hidden
+  z-index: -1
+
+.blurred-background
+  width: 100%
+  height: 100%
+  object-fit: cover
+  filter: blur(8px)
+  transform: scale(1.1)
+
+</style>
 
 <script>
 import UserService from 'src/services/UserService'

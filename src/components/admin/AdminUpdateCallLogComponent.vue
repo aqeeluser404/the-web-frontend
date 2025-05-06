@@ -40,7 +40,7 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <CustomButton label="Update Call Log" customStyle="width: 45%" color="brown" text-color="white" @click="updateUserType" />
+      <CustomButton label="Update Call Log" customStyle="width: 45%" @click="updateUserType" />
       <CustomButton label="Close" customStyle="width: 45%" color="white" text-color="black" @click="$emit('close')" />
     </q-card-section>
 

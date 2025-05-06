@@ -1,27 +1,42 @@
 <template>
   <q-page>
-    <q-img src="" alt="Hero Image" style="width: 100%; height: 100vh;" >
-      <div class="absolute-full column justify-center items-center text-black">
-        <q-card>
+    <div class="background-wrapper">
+      <q-img src="~src/assets/resources/login/outside3.jpg" alt="Hero Image" class="blurred-background"/>
+    </div>
+    <div class="absolute-full column justify-center items-center text-black">
+      <q-card>
+        <q-card-section class="column items-center">
+          <div class="text-h6">Reset Password</div>
+        </q-card-section>
 
-          <q-card-section>
-            <div class="text-h6">Reset Password</div>
-          </q-card-section>
+        <q-card-section>
+          <q-input filled v-model="password" label="Enter your new password *" type="password" style="width: 100%;" class="q-mb-md"/>
+          <CustomButton @click="ResetPassword" icon="eva-email-outline" type="password" label="Change Password" />
+        </q-card-section>
 
-          <q-card-section>
-            <q-input filled v-model="password" label="Enter your new password *" style="width: 100%;" class="q-mb-md"/>
-            <CustomButton color="brown" @click="ResetPassword" icon="eva-email-outline" label="Change Password" />
-          </q-card-section>
-
-          <q-card-section v-if="message" class="column items-center">
-            <div>{{ message }}</div>
-          </q-card-section>
-
-        </q-card>
-      </div>
-    </q-img>
+        <q-card-section v-if="message" class="column items-center">
+          <div>{{ message }}</div>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
+
+<style scoped lang="sass">
+.background-wrapper
+  position: fixed
+  width: 100%
+  height: 100vh
+  overflow: hidden
+  z-index: -1
+
+.blurred-background
+  width: 100%
+  height: 100%
+  object-fit: cover
+  filter: blur(8px)
+  transform: scale(1.1)
+</style>
 
 <script>
 import CustomButton from 'src/components/elements/CustomButton.vue';

@@ -32,7 +32,7 @@
           </ul>
           <div>
             If your application is rejected, you will be notified via email and site notifications. To avoid rejection, please ensure that you have provided all the necessary documents and information. Rejection may occur if <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false information is submitted. In such cases, you will be required to cancel the rejected application and reapply by re-uploading the documents during the rejection phase.
-          </div><br>
+          </div>
 
         </q-card-section>
 
@@ -170,12 +170,12 @@ export default {
       this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
       return !!rentalNeedingPayer; // Return true if such a rental exists
     },
-    // viewPayerInformation() {
-    //   // Find the rental that requires payer information
-    //   const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
-    //   this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
-    //   return !!rentalNeedingPayer; // Return true if such a rental exists
-    // }
+    viewPayerInformation() {
+      // Find the rental that requires payer information
+      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
+      this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
+      return !!rentalNeedingPayer; // Return true if such a rental exists
+    }
   },
   methods: {
     formatDate: Helper.formatDate,
