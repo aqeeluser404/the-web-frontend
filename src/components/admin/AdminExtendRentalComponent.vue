@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
+  <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Extend Rental End Date</div>
     </q-card-section>

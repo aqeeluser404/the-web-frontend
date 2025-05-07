@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
+  <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Verify Payer Score</div>
     </q-card-section>
@@ -190,7 +190,7 @@ export default {
         } else {
           this.$q.notify({
             type: 'negative',
-            message: `Payer verification was unsuccessful. Credit score: ${response.score}/80. Kindly review the provided information for accuracy.`
+            message: `Payer verification was unsuccessful. Kindly review the provided information for accuracy and try again.`
           });
         }
       } catch (error) {
@@ -204,7 +204,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Add your custom styles here */
-</style>

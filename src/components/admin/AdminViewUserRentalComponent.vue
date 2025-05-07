@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650%;">
+  <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Rental Details</div>
     </q-card-section>

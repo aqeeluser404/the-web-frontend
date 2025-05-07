@@ -1,6 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
-
+  <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Unit {{ unit.unitNumber }} Details</div>
     </q-card-section>
@@ -60,6 +59,7 @@
 <script>
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
+import RentalService from 'src/services/RentalService'
 
 export default {
   name: 'UnitDetailsComponent',
@@ -104,7 +104,14 @@ export default {
     async gotoApply() {
       const isLoggedIn = await Helper.checkCookie()
       if (isLoggedIn) {
-          this.$router.push({
+        const user = await Helper.fetchUserDetails()
+        const userRentals = await RentalService.findMyRentals(user._id);
+        const activeOrPendingRentals = userRentals.filter(rental => ['Pending', 'Active'].includes(rental.status));
+        if (activeOrPendingRentals.length > 0) {
+          this.$q.notify({ type: 'negative', color: 'red', message: 'You have an active or pending rental application. Please complete it before creating a new one.' });
+          return;
+        }
+        this.$router.push({
           path: '/units/apply',
           query: { applyForUnit: this.unit._id }
         });
@@ -152,9 +159,9 @@ export default {
 .image-dialog-card
   background: rgba(0, 0, 0, 0.9)
   max-width: 100vw
-  max-height: 92vh
+  max-height: 100vh
   width: 100vw
-  height: 92vh
+  height: 94vh
   display: flex
   flex-direction: column
   margin: 0

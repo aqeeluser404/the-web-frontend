@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
+  <q-card class="component-card">
 
     <q-card-section>
       <div class="text-h6">Application Form</div>
@@ -237,8 +237,12 @@ export default {
         return;
       }
 
-      if (!this.userDetails.studentInfo.hasBursary) {
-        this.$q.notify({ type: 'negative', color: 'red', message: 'Please indicate whether you have a bursary to proceed.' });
+      if (typeof this.userDetails.studentInfo?.hasBursary !== 'boolean') {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          message: 'Please indicate whether you have a bursary to proceed.'
+        });
         return;
       }
 

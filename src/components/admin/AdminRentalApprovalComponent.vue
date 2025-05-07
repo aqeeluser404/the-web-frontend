@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: 650px;">
+  <q-card class="component-card">
     <q-card-section class="row justify-center">
       <div class="text-h6">Approve Rental?</div>
     </q-card-section>
