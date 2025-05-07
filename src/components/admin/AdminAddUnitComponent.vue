@@ -82,11 +82,8 @@ export default {
     async fetchLatestUnitNumber(floorLevel) {
       try {
         const units = await UnitService.getAllUnits();
-
-        // Filter units by the selected floor level
         const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
 
-        // Determine the floor prefix based on floor level
         let floorPrefix;
         const floorName = (floorLevel || '').toString().toLowerCase().trim();
 
@@ -97,21 +94,15 @@ export default {
         } else if (floorName === 'third floor') {
           floorPrefix = '3';
         } else {
-          // For numeric floors or other names, try to determine prefix
           const floorNum = parseInt(floorName);
           floorPrefix = !isNaN(floorNum) ? (floorNum + 1).toString() : '1';
         }
-
         // Default starting number for this floor (e.g., 101, 201, etc.)
         const defaultStartNumber = parseInt(floorPrefix + '01');
-
         if (filteredUnits.length === 0) {
-          // No units exist for this floor, start with default
           this.unit.unitNumber = defaultStartNumber.toString();
           return;
         }
-
-        // Process existing unit numbers
         const unitNumbers = filteredUnits
           .map(u => {
             const unitNumStr = u.unitNumber?.toString() || '';
@@ -121,23 +112,18 @@ export default {
             }
             return 0;
           })
-          .filter(num => num >= defaultStartNumber) // Only numbers in our new format
+          .filter(num => num >= defaultStartNumber)
           .sort((a, b) => a - b);
 
         if (unitNumbers.length === 0) {
-          // No valid unit numbers found, use default
           this.unit.unitNumber = defaultStartNumber.toString();
           return;
         }
-
-        // Find the first available number in sequence
         let nextNumber = defaultStartNumber;
         for (const num of unitNumbers) {
           if (num > nextNumber) break;
           nextNumber = num + 1;
         }
-
-        // Ensure we don't go beyond floor numbering (e.g., 199 for floor 1)
         const maxNumberForFloor = parseInt(floorPrefix + '99');
         if (nextNumber > maxNumberForFloor) {
           this.$q.notify({
@@ -147,9 +133,7 @@ export default {
           this.unit.unitNumber = 'Error';
           return;
         }
-
         this.unit.unitNumber = nextNumber.toString();
-
       } catch (error) {
         console.error('Error fetching units:', error);
         this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });

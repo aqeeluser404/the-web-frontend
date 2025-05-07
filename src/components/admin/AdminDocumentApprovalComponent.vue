@@ -14,7 +14,7 @@
         >
           <q-card-section>
             <q-img
-              src="src/assets/resources/elements/document.png"
+              :src="documentLogo"
               class="document"
             />
           </q-card-section>
@@ -36,11 +36,17 @@
 </template>
 
 <script>
+import documentLogo from 'src/assets/resources/elements/document.png'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import Helper from 'src/services/utils'
 
 export default {
   name: 'AdminDocumentApprovalComponent',
+  data() {
+    return {
+      documentLogo
+    }
+  },
   components: { CustomButton },
   props: {
     documents: {

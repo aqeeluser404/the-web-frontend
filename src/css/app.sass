@@ -1,7 +1,14 @@
+// ========================================================================================
 // app global css in Sass form
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap')
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap')
 @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css')
+
+
+
+
+// ========================================================================================
+// script css styles
 
 .admin-page
   background-color: #f5f1e9
@@ -13,7 +20,10 @@
 .occupied-unit
   color: red
 
-// =========================================
+
+
+
+// ========================================================================================
 // component styles
 .custom-button .q-btn__content
   text-transform: none
@@ -21,7 +31,7 @@
   align-items: center
   justify-content: center
 
-.round-btn                        // for icons
+.round-btn
   width: fit-content
   height: fit-content
   background: $primary
@@ -31,12 +41,16 @@
   width: 100%
   max-width: 600px
   margin: 0 auto
-  @media (min-width: 1024px)  // for big screen
+  @media (min-width: 1024px) // for big screen
     max-width: 550px
 
-// =========================================
+
+
+
+// ========================================================================================
 // container styles
-.list-container-nowrap                   // for nowrap
+
+.list-container-nowrap
   flex: 1 1 30%
   max-width: 30%
   box-sizing: border-box
@@ -55,8 +69,11 @@
     height: 100%
 
 
-// =========================================
+
+
+// ========================================================================================
 // screen styles
+
 .small-screen-only
   @media (max-width: 1024px)
     display: block
@@ -78,8 +95,11 @@
   margin: 0 auto
 
 
-// =========================================
+
+
+// ========================================================================================
 // images styles
+
 .image
   width: 350px
   height: 350px
@@ -101,19 +121,21 @@
   max-width: 100%
   object-fit: contain
 
-// =========================================
+
+
+
+// ========================================================================================
 // element styles
+
 .cursor-pointer
   cursor: pointer
 
 
 
 
-
-
-
-// =========================================
+// ========================================================================================
 // header code
+
 .header-transparent
   background-color: rgba(255, 255, 255, 0)
 
@@ -127,13 +149,6 @@
 .transparent-black
   color: black
 
-
-
-
-
-
-
-
 .constrain-sunglasses
   max-width: 1024px
   margin: 0 auto
@@ -142,8 +157,6 @@
   max-width: 1024px
 
 p
-  // margin: 0
-  // padding: 0
   line-height: 1.1
 
 .noise-overlay
@@ -157,9 +170,11 @@ p
   opacity: 0.02
   z-index: 999
 
-// ================================================================= // MISC
 
 
+
+// =================================================================
+// MISC
 
 .dark-overlay
   position: fixed
@@ -209,7 +224,10 @@ p
 
 
 
-// ================================================================= // FONTS
+
+// =================================================================
+// FONTS
+
 .text-uppercase
   text-transform: uppercase
 .text-capitalize
@@ -270,11 +288,6 @@ p
   font-weight: 400
   font-style: normal
 
-// .anton-regular
-//   font-family: "Poppins", sans-serif
-//   font-weight: 700
-//   font-style: normal
-
 .caveat
   font-family: "Caveat", cursive
   font-optical-sizing: auto
@@ -282,8 +295,10 @@ p
   font-style: normal
 
 
-// ================================================================= // IMAGES
 
+
+// =================================================================
+// IMAGES
 
 .image-rounded
   border-radius: 5%
