@@ -136,8 +136,8 @@
             <li v-if="currentAccessKey">
               Copy to clipboard:
               <span
-                style="text-transform: uppercase; cursor: pointer; color: brown;" @click="copyToClipboard(currentAccessKey)">
-                <b>{{ currentAccessKey }}</b>
+                class="id" @click="copyToClipboard(currentAccessKey)">
+                {{ currentAccessKey }}
               </span>
             </li>
             <li v-else>

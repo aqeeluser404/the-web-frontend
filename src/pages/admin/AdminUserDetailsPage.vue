@@ -135,27 +135,18 @@
               <!-- <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)"> -->
               <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
-                <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <!-- <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalStartDate !== null">
-                    {{ formatDate(rental.rentalStartDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
+                <td class="text-left cursor-pointer text-uppercase" :class="
+                    { 'pending-status': rental.status === 'Pending'},
+                    { 'active-status': rental.status === 'Active'},
+                    { 'rejected-status': rental.status === 'Rejected'},
+                    { 'ended-status': rental.status === 'Ended'}"
+                  >
+                    {{ capitalizeFirstLetter(rental.status) }}
                 </td>
+                <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalEndDate !== null">
-                    {{ formatDate(rental.rentalEndDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
-                </td> -->
-                <td class="text-left cursor-pointer">
-                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
-                    <b>{{ rental.accessKey }}</b>
+                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" class="id" >
+                    {{ rental.accessKey }}
                   </div>
                   <div v-else>
                     N/A

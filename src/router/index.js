@@ -28,45 +28,83 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  // Router.beforeEach(async (to, from, next) => {
+  //   try {
+  //     const response = await axiosInstance.get('/health')
+  //     if (response.status === 200) {
+  //       if (to.path === '/verify-email')  {
+  //         const token = to.query.token
+  //         if (token) {
+  //           next()
+  //         } else {
+  //           next(({ path: '/404'}))
+  //         }
+  //       } else if (to.path === '/resend-verification') {
+  //         if (from.path === '/verify-email') {
+  //           next()
+  //         } else {
+  //           next(({ path: '/404'}))
+  //         }
+  //       } else if (to.path === '/reset-password') {
+  //         const token = to.query.token
+  //         if (token) {
+  //           next()
+  //         } else {
+  //           next(({ path: '/404'}))
+  //         }
+  //       } else if (to.path === '/404') {
+  //         next('/');
+  //       } else {
+  //         next();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     // If the server is offline or an error occurs
+  //     if (to.path !== '/404') {
+  //       next('/404');
+  //     } else {
+  //       next();
+  //     }
+  //   }
+  // })
+
   Router.beforeEach(async (to, from, next) => {
     try {
-      const response = await axiosInstance.get('/health')
+      const response = await axiosInstance.get('/health');
       if (response.status === 200) {
-        if (to.path === '/verify-email')  {
-          const token = to.query.token
-          if (token) {
-            next()
-          } else {
-            next(({ path: '/404'}))
+        switch (to.path) {
+          case '/verify-email':
+          case '/reset-password': {
+            const token = to.query.token;
+            if (token) {
+              next();
+            } else {
+              next({ path: '/404' });
+            }
+            break;
           }
-        } else if (to.path === '/resend-verification') {
-          if (from.path === '/verify-email') {
-            next()
-          } else {
-            next(({ path: '/404'}))
-          }
-        } else if (to.path === '/reset-password') {
-          const token = to.query.token
-          if (token) {
-            next()
-          } else {
-            next(({ path: '/404'}))
-          }
-        } else if (to.path === '/404') {
-          next('/');
-        } else {
-          next();
+
+          case '/resend-verification':
+            if (from.path === '/verify-email') {
+              next();
+            } else {
+              next({ path: '/404' });
+            }
+            break;
+
+          case '/404':
+            next('/');
+            break;
+
+          default:
+            next();
         }
       }
     } catch (error) {
       // If the server is offline or an error occurs
-      if (to.path !== '/404') {
-        next('/404');
-      } else {
-        next();
-      }
+      next(to.path !== '/404' ? '/404' : undefined);
     }
-  })
+  });
 
   return Router
 })

@@ -196,13 +196,14 @@ p
   width: fit-content
   margin: auto
 
+
+// ONLINE STATUSES
 .green-dot
   height: 10px
   width: 10px
   background-color: #00FF00
   border-radius: 50%
   display: inline-block
-
 .red-dot
   height: 10px
   width: 10px
@@ -210,20 +211,45 @@ p
   border-radius: 50%
   display: inline-block
 
+// USER TYPE
 .admin-user
   color: black
   font-weight: bold
 
+// RENTAL STATUSES
+.pending-status
+  color: yellow
+  font-weight: bold
 .active-status
   color: green
   font-weight: bold
-
-.ended-status
+.rejected-status
   color: brown
   font-weight: bold
+.ended-status
+  color: grey
+  font-weight: bold
 
+// IDENTIFIER
+.id
+  color: black
+  font-weight: bold
+  text-transform: uppercase;
+  cursor: pointer;
 
-
+// CALL LOGS
+.callLog-opened
+  color: yellow
+  font-weight: bold
+.callLog-assigned
+  color: blue
+  font-weight: bold
+.callLog-resolved
+  color: green
+  font-weight: bold
+.callLog-closed
+  color: grey
+  font-weight: bold
 
 // =================================================================
 // FONTS
@@ -311,3 +337,17 @@ p
 
 .border
   border: 1px solid lightgrey
+
+
+
+
+// =================================================================
+// ANIMATION HOVERS
+
+.hover-effect
+  transition: background-color 0.3s ease, color 0.3s ease
+
+.hover-effect:hover
+  // background-color: rgba(0, 0, 0, 0.1)
+  color: rgba(0, 0, 0, 0.8)
+  text-decoration: underline

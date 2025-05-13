@@ -117,13 +117,9 @@ export default {
       const onlineUsers = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn).length;
       const offlineUsers = this.users.length - onlineUsers;
 
-      const data = {
-        labels: ['Online', 'Offline'],
-        datasets: [{
-          data: [onlineUsers, offlineUsers],
-          backgroundColor: ['#4CAF50', '#F44336']
-        }]
-      };
+      // Labels now include counts
+      const labels = [`Online (${onlineUsers})`, `Offline (${offlineUsers})`];
+      const data = [onlineUsers, offlineUsers];
 
       if (this.userPieChart) {
         this.userPieChart.destroy();
@@ -132,7 +128,13 @@ export default {
       const ctx = this.$refs.userPieChart.getContext('2d');
       this.userPieChart = new Chart(ctx, {
         type: 'pie',
-        data: data,
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: ['#4CAF50', '#F44336']
+          }]
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -142,6 +144,13 @@ export default {
             },
             tooltip: {
               enabled: true
+            }
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const selectedStatus = index === 0 ? 'Online' : 'Offline';
+              this.filterUsersByChart(selectedStatus);
             }
           }
         }
@@ -167,6 +176,16 @@ export default {
       );
     },
 
+    filterUsersByChart(selectedStatus) {
+      if (selectedStatus === 'Online') {
+        this.filteredUsers = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn);
+      } else {
+        this.filteredUsers = this.users.filter(user => !user.loginInfo || !user.loginInfo.isLoggedIn);
+      }
+      this.selectedUser = selectedStatus; // Sync filter dropdown
+    },
+
+
     filteredByUserType() {
       if (this.selectedUser === 'All') {
         this.filteredUsers = this.allUsers;
@@ -174,8 +193,11 @@ export default {
         this.filteredUsers = this.adminUsers;
       } else if (this.selectedUser === 'User') {
         this.filteredUsers = this.regularUsers;
+      } else {
+        this.filterUsersByChart(this.selectedUser); // Handle chart selection
       }
     },
+
 
     async deleteUser(user) {
       if (user.userType === 'admin') {

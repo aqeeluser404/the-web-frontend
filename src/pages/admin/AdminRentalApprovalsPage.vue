@@ -52,10 +52,10 @@
 
               <div class="q-mb-md">
                 <div v-if="rental.accessKey">
-                  Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
+                  Access Key: <span class="id" @click.stop="copyToClipboard(rental.accessKey)">{{ rental.accessKey }}</span>
                 </div>
                 <div>
-                  Application ID: <span style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></span>
+                  Application ID: <span class="id">{{ rental._id }}</span>
                 </div>
               </div>
 

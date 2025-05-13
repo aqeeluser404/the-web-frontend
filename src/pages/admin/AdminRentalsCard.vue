@@ -14,11 +14,11 @@
           </div>
         </q-card-section>
         <q-card-section class="row justify-center">
-          <q-toggle
+          <!-- <q-toggle
             v-model="showAllStatuses"
             label="Show All Statuses"
             @update:model-value="updateChart"
-          />
+          /> -->
         </q-card-section>
       </q-card>
 
@@ -62,8 +62,8 @@
               <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
-                <td class="text-left cursor-pointer" style="text-transform: uppercase; cursor: pointer; color: brown;"><b>{{ rental._id }}</b></td>
+                <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
+                <td class="text-left cursor-pointer id">{{ rental._id }}</td>
                 <!-- <td class="text-left cursor-pointer">
                   <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
                     <b>{{ rental.accessKey }}</b>
@@ -98,7 +98,14 @@
                 </td>
                 <!-- <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td> -->
                 <!-- <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td> -->
-                <td class="text-left cursor-pointer text-uppercase"  :class="{ 'active-status': rental.status === 'Active'}, { 'ended-status': rental.status === 'Ended'}"><b>{{ capitalizeFirstLetter(rental.status) }}</b></td>
+                <td class="text-left cursor-pointer text-uppercase" :class="
+                    { 'pending-status': rental.status === 'Pending'},
+                    { 'active-status': rental.status === 'Active'},
+                    { 'rejected-status': rental.status === 'Rejected'},
+                    { 'ended-status': rental.status === 'Ended'}"
+                  >
+                    {{ capitalizeFirstLetter(rental.status) }}
+                </td>
                 <td class="text-left cursor-pointer">
                   <CustomButton v-if="rental.status === 'Ended'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
                   <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-file-text-outline" @click.stop="openExtendRentalDialog(rental)" />
@@ -151,7 +158,7 @@ export default {
       selectedRental: null,
       rentalStatus: ['All', 'Approved', 'Pending', 'Rejected', 'Ended'],
       selectedRentalStatus: 'All',
-      showAllStatuses: false,
+      showAllStatuses: true,
       pieChart: null
     };
   },
@@ -201,7 +208,7 @@ export default {
     updateChart() {
       const statusData = this.showAllStatuses
         ? {
-            Approved: this.approvedRentals.length,
+            Active: this.approvedRentals.length,
             Pending: this.pendingRentals.length,
             Rejected: this.rejectedRentals.length,
             Ended: this.endedRentals.length
@@ -211,7 +218,8 @@ export default {
             Ended: this.endedRentals.length
           };
 
-      const labels = Object.keys(statusData);
+      // Labels now include count in brackets
+      const labels = Object.keys(statusData).map(status => `${status} (${statusData[status]})`);
       const data = Object.values(statusData);
 
       if (this.pieChart) {
@@ -227,8 +235,8 @@ export default {
             data: data,
             backgroundColor: [
               '#4CAF50', // Green for Approved/Active
-              '#F44336', // Red for Rejected
               '#FFC107', // Yellow for Pending
+              '#F44336', // Red for Rejected
               '#9E9E9E'  // Grey for Ended
             ]
           }]
@@ -242,6 +250,13 @@ export default {
             },
             tooltip: {
               enabled: true
+            }
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const selectedStatus = Object.keys(statusData)[index];
+              this.filterRentalsByChart(selectedStatus);
             }
           }
         }
@@ -271,17 +286,27 @@ export default {
       );
     },
 
+    filterRentalsByChart(selectedStatus) {
+      this.selectedRentalStatus = selectedStatus; // Sync dropdown filter
+
+      if (selectedStatus === 'Approved') {
+        this.filteredRentals = this.approvedRentals;
+      } else if (selectedStatus === 'Pending') {
+        this.filteredRentals = this.pendingRentals;
+      } else if (selectedStatus === 'Rejected') {
+        this.filteredRentals = this.rejectedRentals;
+      } else if (selectedStatus === 'Ended') {
+        this.filteredRentals = this.endedRentals;
+      } else {
+        this.filteredRentals = this.currentRentals;
+      }
+    },
+
     filteredByRentalStatus() {
       if (this.selectedRentalStatus === 'All') {
         this.filteredRentals = this.currentRentals;
-      } else if (this.selectedRentalStatus === 'Approved') {
-        this.filteredRentals = this.approvedRentals;
-      } else if (this.selectedRentalStatus === 'Pending') {
-        this.filteredRentals = this.pendingRentals;
-      } else if (this.selectedRentalStatus === 'Rejected') {
-        this.filteredRentals = this.rejectedRentals;
-      } else if (this.selectedRentalStatus === 'Ended') {
-        this.filteredRentals = this.endedRentals;
+      } else {
+        this.filterRentalsByChart(this.selectedRentalStatus);
       }
     },
 

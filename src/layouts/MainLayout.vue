@@ -90,6 +90,13 @@
               class="custom-button q-py-sm large-screen-only"
               icon="eva-pie-chart-outline" label="Admin" flat rounded />
 
+            <!-- PHP CODE -->
+            <!-- <q-btn
+              v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
+              @click="downloadData()"
+              class="custom-button q-py-sm large-screen-only"
+              icon="eva-cloud-download-outline"  flat rounded /> -->
+
             <!-- authentication -->
             <CustomButton
               v-if="!isLoggedIn"
@@ -192,6 +199,7 @@ import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
+import ExportDataService from 'src/services/ExportDataService'
 
 export default {
   data() {
@@ -304,6 +312,42 @@ export default {
         this.$q.notify({ type: 'negative', message: 'Please login to continue.' })
       }
     },
+    // PHP CODE
+    // async downloadData() {
+    //   this.$q.dialog({
+    //     title: 'Download Data',
+    //     message: 'You are about to export all data. Would you like to proceed?',
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(async () => {
+    //     try {
+    //       const today = new Date().toISOString().split('T')[0];
+
+    //       const response = await ExportDataService.exportData();
+
+    //       if (!response || !response.data) {
+    //         throw new Error('Invalid response from server');
+    //       }
+
+    //       const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = `mongo_export_${today}.xlsx`;
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Export failed: ' + (error.message || 'Please try again')
+    //       });
+    //     }
+    //   });
+    // }
   }
 }
 </script>
