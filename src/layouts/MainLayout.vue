@@ -169,7 +169,7 @@
         </div>
       </q-toolbar>
 
-      <MaintenanceBanner class="full-width" />
+      <!-- <MaintenanceBanner class="full-width" /> -->
 
       <!-- breadcrumbs -->
       <div v-if="isAdminRoute">
@@ -207,7 +207,9 @@ import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
-import ExportDataService from 'src/services/ExportDataService'
+
+// PHP CODE
+// import ExportDataService from 'src/services/ExportDataService'
 
 export default {
   data() {
