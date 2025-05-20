@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <q-page>
     <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
@@ -260,10 +260,10 @@ export default {
     this.getAllCallLogs()
   }
 }
-</script>
+</script> -->
 
 <!-- PHP VERSION -->
-<!-- <template>
+<template>
   <q-page>
     <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
@@ -644,4 +644,4 @@ export default {
     this.getAllCallLogs()
   }
 }
-</script> -->
+</script>

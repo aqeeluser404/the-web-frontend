@@ -36,107 +36,107 @@ class Helper {
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // GET IMAGES
-  static getImageUrl(imagePath) {
-    try {
-      const imageKitBase = 'https://ik.imagekit.io/';
-      const webBase = 'https://the-web.co.za/get-file.php?file=';
-      const defaultImage = 'default.jpg';
-
-      const tryBothUrls = (path) => {
-        if (path.startsWith(imageKitBase)) {
-          return path;
-        }
-        return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
-      };
-      if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
-        return tryBothUrls(imagePath.imageUrl);
-      }
-      if (typeof imagePath === 'string') {
-        return tryBothUrls(imagePath);
-      }
-      console.error('Invalid image path:', imagePath);
-      return `${imageKitBase}${defaultImage}`;
-    } catch (error) {
-      console.error('Error generating image URL:', error);
-      return `${imageKitBase}default.jpg`;
-    }
-  }
-  static getDocumentUrl(documentPath) {
-    try {
-      const imageKitBase = 'https://ik.imagekit.io/';
-      const webBase = 'https://the-web.co.za/get-file.php?file=';
-      const defaultDocument = 'default-document.pdf';
-
-      const tryBothUrls = (path) => {
-        if (path.startsWith(imageKitBase)) {
-          return path;
-        }
-        return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
-      };
-      if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
-        return tryBothUrls(documentPath.documentUrl);
-      }
-      if (typeof documentPath === 'string') {
-        return tryBothUrls(documentPath);
-      }
-      console.error('Invalid document path:', documentPath);
-      return `${imageKitBase}${defaultDocument}`;
-    } catch (error) {
-      console.error('Error generating document URL:', error);
-      return `${imageKitBase}default-document.pdf`;
-    }
-  }
-
-  // PHP VERSION
   // static getImageUrl(imagePath) {
   //   try {
+  //     const imageKitBase = 'https://ik.imagekit.io/';
   //     const webBase = 'https://the-web.co.za/get-file.php?file=';
-  //     const defaultImage = 'images/default.jpg';
+  //     const defaultImage = 'default.jpg';
 
-  //     if (imagePath && typeof imagePath === 'object' && imagePath.imageUrl) {
-  //       return Helper.normalizeImagePath(imagePath.imageUrl, webBase, defaultImage);
+  //     const tryBothUrls = (path) => {
+  //       if (path.startsWith(imageKitBase)) {
+  //         return path;
+  //       }
+  //       return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
+  //     };
+  //     if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
+  //       return tryBothUrls(imagePath.imageUrl);
   //     }
   //     if (typeof imagePath === 'string') {
-  //       return Helper.normalizeImagePath(imagePath, webBase, defaultImage);
+  //       return tryBothUrls(imagePath);
   //     }
-
   //     console.error('Invalid image path:', imagePath);
-  //     return `${webBase}${encodeURIComponent(defaultImage)}`;
+  //     return `${imageKitBase}${defaultImage}`;
   //   } catch (error) {
   //     console.error('Error generating image URL:', error);
-  //     return `${webBase}images/default.jpg`;
+  //     return `${imageKitBase}default.jpg`;
   //   }
   // }
-
-  // static normalizeImagePath(path, webBase, defaultPath) {
-  //   if (path.startsWith('http')) {
-  //     return path;
-  //   }
-  //   if (path.startsWith('images/') || path.startsWith('documents/')) {
-  //     return `${webBase}${encodeURIComponent(path)}`;
-  //   }
-  //   return `${webBase}${encodeURIComponent(defaultPath)}`;
-  // }
-
   // static getDocumentUrl(documentPath) {
   //   try {
+  //     const imageKitBase = 'https://ik.imagekit.io/';
   //     const webBase = 'https://the-web.co.za/get-file.php?file=';
-  //     const defaultDocument = 'documents/default.pdf';
+  //     const defaultDocument = 'default-document.pdf';
 
-  //     if (documentPath && typeof documentPath === 'object' && documentPath.documentUrl) {
-  //       return this.normalizeImagePath(documentPath.documentUrl, webBase, defaultDocument);
+  //     const tryBothUrls = (path) => {
+  //       if (path.startsWith(imageKitBase)) {
+  //         return path;
+  //       }
+  //       return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
+  //     };
+  //     if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
+  //       return tryBothUrls(documentPath.documentUrl);
   //     }
   //     if (typeof documentPath === 'string') {
-  //       return this.normalizeImagePath(documentPath, webBase, defaultDocument);
+  //       return tryBothUrls(documentPath);
   //     }
-
   //     console.error('Invalid document path:', documentPath);
-  //     return `${webBase}${encodeURIComponent(defaultDocument)}`;
+  //     return `${imageKitBase}${defaultDocument}`;
   //   } catch (error) {
   //     console.error('Error generating document URL:', error);
-  //     return `${webBase}documents/default.pdf`;
+  //     return `${imageKitBase}default-document.pdf`;
   //   }
   // }
+
+  // PHP VERSION
+  static getImageUrl(imagePath) {
+    try {
+      const webBase = 'https://the-web.co.za/get-file.php?file=';
+      const defaultImage = 'images/default.jpg';
+
+      if (imagePath && typeof imagePath === 'object' && imagePath.imageUrl) {
+        return Helper.normalizeImagePath(imagePath.imageUrl, webBase, defaultImage);
+      }
+      if (typeof imagePath === 'string') {
+        return Helper.normalizeImagePath(imagePath, webBase, defaultImage);
+      }
+
+      console.error('Invalid image path:', imagePath);
+      return `${webBase}${encodeURIComponent(defaultImage)}`;
+    } catch (error) {
+      console.error('Error generating image URL:', error);
+      return `${webBase}images/default.jpg`;
+    }
+  }
+
+  static normalizeImagePath(path, webBase, defaultPath) {
+    if (path.startsWith('http')) {
+      return path;
+    }
+    if (path.startsWith('images/') || path.startsWith('documents/')) {
+      return `${webBase}${encodeURIComponent(path)}`;
+    }
+    return `${webBase}${encodeURIComponent(defaultPath)}`;
+  }
+
+  static getDocumentUrl(documentPath) {
+    try {
+      const webBase = 'https://the-web.co.za/get-file.php?file=';
+      const defaultDocument = 'documents/default.pdf';
+
+      if (documentPath && typeof documentPath === 'object' && documentPath.documentUrl) {
+        return this.normalizeImagePath(documentPath.documentUrl, webBase, defaultDocument);
+      }
+      if (typeof documentPath === 'string') {
+        return this.normalizeImagePath(documentPath, webBase, defaultDocument);
+      }
+
+      console.error('Invalid document path:', documentPath);
+      return `${webBase}${encodeURIComponent(defaultDocument)}`;
+    } catch (error) {
+      console.error('Error generating document URL:', error);
+      return `${webBase}documents/default.pdf`;
+    }
+  }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // VALIDATION FUNCTION

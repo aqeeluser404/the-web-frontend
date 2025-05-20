@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <q-page>
     <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
@@ -167,10 +167,10 @@ export default {
     this.fetchUserDetails();
   }
 }
-</script>
+</script> -->
 
 <!-- PHP VERSION -->
-<!-- <template>
+<template>
   <q-page>
     <div class="q-pa-md constrain">
       <q-card class="col-md-4 col-12 stats-card q-ma-sm full-height">
@@ -573,4 +573,4 @@ export default {
     flex-direction: column
     align-items: center
     justify-content: center
-</style> -->
+</style>

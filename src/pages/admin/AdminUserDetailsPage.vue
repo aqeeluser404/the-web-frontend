@@ -170,7 +170,7 @@
         </q-card-section>
 
         <!-- PHP CODE -->
-        <!-- <q-card-section>
+        <q-card-section>
           <div class="text-h6">Call Log History</div>
         </q-card-section>
         <q-separator />
@@ -206,7 +206,7 @@
           <q-item>
             <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
           </q-item>
-        </q-card-section> -->
+        </q-card-section>
 
         <q-card-section>
           <div class="text-h6">Applicant Documents</div>
@@ -267,7 +267,7 @@ export default {
   data() {
     return {
       // PHP CODE
-      // myCallLogs: [],
+      myCallLogs: [],
       userDetails: {
         studentInfo: {
           isRegisteredStudent: '',
@@ -303,9 +303,9 @@ export default {
     },
 
     // PHP CODE
-    // async getAllMyCallLogs() {
-    //   this.myCallLogs = await CallLogService.findMyCallLogs(this.userDetails._id);
-    // },
+    async getAllMyCallLogs() {
+      this.myCallLogs = await CallLogService.findMyCallLogs(this.userDetails._id);
+    },
     async fetchUserDetails() {
       const encryptedId = this.$route.params.id;
       const decryptedBytes = AES.decrypt(decodeURIComponent(encryptedId), 'secret-key');
@@ -317,8 +317,9 @@ export default {
       }
       this.userDetails = await UserService.findUserById(decryptedId)
       this.fetchRentalDetails()
+
       // PHP CODE
-      // this.getAllMyCallLogs()
+      this.getAllMyCallLogs()
     },
     async fetchRentalDetails() {
       this.myRentals = await RentalService.findMyRentals(this.userDetails._id)

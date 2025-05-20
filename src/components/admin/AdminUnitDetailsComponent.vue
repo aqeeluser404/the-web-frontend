@@ -30,7 +30,7 @@
     <q-card-section>
 
       <!-- PHP VERSION -->
-      <!-- <q-item>
+      <q-item>
         <q-item-section class="text-left text-subtitle1">Cover Image</q-item-section>
         <q-item-section class="text-left text-subtitle1">
           <q-file v-model="newImage1" label="Upload Cover Image" label-color="black" color="black" accept="image/*">
@@ -59,7 +59,7 @@
             </template>
           </q-file>
         </q-item-section>
-      </q-item> -->
+      </q-item>
 
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit ID </q-item-section>
@@ -145,7 +145,7 @@ export default {
       showImageDialog: false,
 
       // PHP VERSION
-      // newImage1: null, newImage2: null, newImage3: null,
+      newImage1: null, newImage2: null, newImage3: null,
     }
   },
   components: {
@@ -164,82 +164,82 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
 
-    async updateUnit() {
-      const updatedUnit = {
-        unitNumber: this.unit.unitNumber,
-        floorLevel: this.unit.floorLevel,
-        unitType: this.unit.unitType,
-        unitOccupants: this.unit.unitOccupants,
-        currentOccupants: this.unit.currentOccupants,
-        unitDescription: this.unit.unitDescription,
-        unitPrice: this.unit.unitPrice,
-        images: this.unit.images
-      }
-      if (this.unit.unitNumber === '' || this.unit.floorLevel === '' || this.unit.unitType === '' || this.unit.unitOccupants === '' || this.unit.unitDescription === '' || this.unit.unitPrice === '') {
-        this.$q.notify({ type: 'negative', message: 'Please fill in all fields' })
-        return
-      }
-      this.$q.dialog({
-        title: 'Confirm', message: `You are about to update this unit in the database, continue?`, color: 'primary', cancel: true, persistent: true
-      }).onOk(async () => {
-        const response = await UnitService.updateUnit(this.unit._id, updatedUnit)
-        if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Updated!' })
-          this.$emit('close')
-        } else {
-          this.$q.notify({ type: 'negative', message: 'Failed to update unit. Please try again.' })
-        }
-      }).onCancel(() => {
-        return
-      })
-    },
-
-    // PHP VERSION
     // async updateUnit() {
-    //   if (!this.unit.floorLevel || !this.unit.unitType ||
-    //     !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
-    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
-    //     return;
+    //   const updatedUnit = {
+    //     unitNumber: this.unit.unitNumber,
+    //     floorLevel: this.unit.floorLevel,
+    //     unitType: this.unit.unitType,
+    //     unitOccupants: this.unit.unitOccupants,
+    //     currentOccupants: this.unit.currentOccupants,
+    //     unitDescription: this.unit.unitDescription,
+    //     unitPrice: this.unit.unitPrice,
+    //     images: this.unit.images
     //   }
-
+    //   if (this.unit.unitNumber === '' || this.unit.floorLevel === '' || this.unit.unitType === '' || this.unit.unitOccupants === '' || this.unit.unitDescription === '' || this.unit.unitPrice === '') {
+    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' })
+    //     return
+    //   }
     //   this.$q.dialog({
-    //     title: 'Confirm',
-    //     message: `You are about to update this unit in the database, continue?`,
-    //     color: 'primary',
-    //     cancel: true,
-    //     persistent: true
+    //     title: 'Confirm', message: `You are about to update this unit in the database, continue?`, color: 'primary', cancel: true, persistent: true
     //   }).onOk(async () => {
-    //     const formData = new FormData();
-
-    //     formData.append('floorLevel', this.unit.floorLevel);
-    //     formData.append('unitType', this.unit.unitType);
-    //     formData.append('unitOccupants', this.unit.unitOccupants);
-    //     formData.append('unitDescription', this.unit.unitDescription);
-    //     formData.append('unitPrice', this.unit.unitPrice);
-    //     formData.append('genderAssignment', this.unit.genderAssignment || '');
-
-    //     if (this.newImage1) formData.append('images[]', this.newImage1);
-    //     if (this.newImage2) formData.append('images[]', this.newImage2);
-    //     if (this.newImage3) formData.append('images[]', this.newImage3);
-
-    //     try {
-    //       await UnitService.updateUnit(this.unit._id, formData);
-
-    //       this.$q.notify({
-    //         type: 'positive',
-    //         message: 'Unit updated successfully!'
-    //       });
-    //       this.$emit('close');
-    //     } catch (error) {
-    //       this.$q.notify({
-    //         type: 'negative',
-    //         message: error.response?.data?.message || 'Update failed. Please try again.'
-    //       });
+    //     const response = await UnitService.updateUnit(this.unit._id, updatedUnit)
+    //     if (response) {
+    //       this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Updated!' })
+    //       this.$emit('close')
+    //     } else {
+    //       this.$q.notify({ type: 'negative', message: 'Failed to update unit. Please try again.' })
     //     }
     //   }).onCancel(() => {
-    //     return;
-    //   });
+    //     return
+    //   })
     // },
+
+    // PHP VERSION
+    async updateUnit() {
+      if (!this.unit.floorLevel || !this.unit.unitType ||
+        !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
+        this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
+        return;
+      }
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to update this unit in the database, continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        const formData = new FormData();
+
+        formData.append('floorLevel', this.unit.floorLevel);
+        formData.append('unitType', this.unit.unitType);
+        formData.append('unitOccupants', this.unit.unitOccupants);
+        formData.append('unitDescription', this.unit.unitDescription);
+        formData.append('unitPrice', this.unit.unitPrice);
+        formData.append('genderAssignment', this.unit.genderAssignment || '');
+
+        if (this.newImage1) formData.append('images[]', this.newImage1);
+        if (this.newImage2) formData.append('images[]', this.newImage2);
+        if (this.newImage3) formData.append('images[]', this.newImage3);
+
+        try {
+          await UnitService.updateUnit(this.unit._id, formData);
+
+          this.$q.notify({
+            type: 'positive',
+            message: 'Unit updated successfully!'
+          });
+          this.$emit('close');
+        } catch (error) {
+          this.$q.notify({
+            type: 'negative',
+            message: error.response?.data?.message || 'Update failed. Please try again.'
+          });
+        }
+      }).onCancel(() => {
+        return;
+      });
+    },
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length;
     },

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Address Call Log</div>
@@ -98,10 +98,10 @@ export default {
   }
 }
 
-</script>
+</script> -->
 
 <!-- PHP VERSION -->
-<!-- <template>
+<template>
   <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Address Call Log</div>
@@ -396,4 +396,4 @@ export default {
     }
   }
 }
-</script> -->
+</script>
