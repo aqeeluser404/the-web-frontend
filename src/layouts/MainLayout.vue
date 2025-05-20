@@ -231,8 +231,8 @@ export default {
   },
   computed: {
     headerHeight() {
-      // return this.isAdminRoute ? '20vh' : '10vh';
-      return this.isAdminRoute ? '20vh' : '23vh';
+      return this.isAdminRoute ? '20vh' : '10vh';
+      // return this.isAdminRoute ? '20vh' : '23vh';
     },
     isAdminRoute() {
       return this.$route.path.startsWith('/admin')
