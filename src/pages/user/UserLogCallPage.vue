@@ -170,16 +170,15 @@ export default {
 </script>
 
 <!-- PHP VERSION -->
-
 <!-- <template>
   <q-page>
-    <div class="q-pa-md  constrain">
-
-      <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
-        <q-card-section class="row justify-center">
+    <div class="q-pa-md constrain">
+      <q-card class="col-md-4 col-12 stats-card q-ma-sm full-height">
+        <q-card-section class="row stats-header justify-center">
           <div class="text-h6">Log a call</div>
+          <q-separator class="q-my-sm" style="width: 100%;" />
         </q-card-section>
-        <q-separator />
+
         <q-card-section>
           <div class="row q-gutter-sm justify-center">
             <q-btn
@@ -326,29 +325,36 @@ export default {
       </q-card>
 
       <q-dialog v-model="otherDialog">
-        <q-card style="min-width: 350px">
+        <q-card class="component-card">
           <q-card-section>
             <div class="text-h6">Specify Call Type</div>
           </q-card-section>
 
+          <q-separator />
+
           <q-card-section>
-            <q-input
-              v-model="customCallType"
-              label="Please describe your issue"
-              autofocus
-              @keyup.enter="initiateCustomCall"
-            />
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Please describe your issue</q-item-section>
+              <q-item-section>
+                <q-input
+                  v-model="customCallType"
+                  label="Other"
+                  autofocus
+                  @keyup.enter="initiateCustomCall"
+                />
+              </q-item-section>
+            </q-item>
           </q-card-section>
 
           <q-card-section class="row justify-between">
-            <CustomButton customStyle="width: 30%;" color="white" text-color="primary" label="Cancel" v-close-popup />
             <CustomButton
-              customStyle="width: 40%;"
+              customStyle="width: 45%"
               label="Initiate Call"
-
               @click="initiateCustomCall"
               :disabled="!customCallType"
             />
+            <CustomButton customStyle="width: 45%" color="white" text-color="primary" label="Cancel" v-close-popup />
+
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -397,8 +403,14 @@ export default {
     CustomButton,
   },
   watch: {
+    otherDialog(newVal) {
+      if (!newVal && this.callLog.callType === 'Other -') {
+        this.callLog.callType = '';
+      }
+    },
     'callLog.callType'(newVal) {
       if (newVal === 'Other -') {
+        this.callLog.callType = '';
         this.otherDialog = true;
       }
     },
@@ -548,4 +560,17 @@ export default {
 .q-icon
   margin-bottom: 5px
 
+.stats-card
+  border-radius: 8px
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+
+.stats-header
+  background-color: #f5f5f5
+  border-top-left-radius: 8px
+  border-top-right-radius: 8px
+  @media (max-width: 600px)
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
 </style> -->

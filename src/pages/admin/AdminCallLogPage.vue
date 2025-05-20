@@ -263,7 +263,6 @@ export default {
 </script>
 
 <!-- PHP VERSION -->
-
 <!-- <template>
   <q-page>
     <div class="q-pa-md row justify-center">
@@ -340,6 +339,8 @@ export default {
                 <td class="text-left cursor-pointer">
                   <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click="deleteCallLog(callLog)" />
                   <CustomButton v-if="callLog.status !== 'Closed'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click="openUpdateCallLogDialog(callLog)" />
+                  <CustomButton v-if="callLog.status === 'Assigned'" @click="sendEmailToVendor(callLog)" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-email-outline" />
+                  <CustomButton v-if="callLog.status === 'Resolved'" @click="closeCallLog(callLog._id)" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" />
                 </td>
               </tr>
             </tbody>
@@ -372,6 +373,7 @@ import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserService from 'src/services/UserService';
 import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLogComponent.vue';
+import EmailService from 'src/services/EmailService';
 
 export default {
   data() {
@@ -438,24 +440,41 @@ export default {
     },
 
     filterBySearch() {
-      if (this.search === '') {
-        this.selectedCallLogStatus = 'All',
-        this.filteredByCallLogStatus()
-        return
+      const searchTerm = this.search.toLowerCase();
+
+      // If search is empty, reset filter to selected status
+      if (!searchTerm) {
+        this.selectedCallLogStatus = 'All';
+        this.filteredByCallLogStatus();
+        return;
       }
-      const searchTerm = this.search.toLowerCase()
-      this.filteredCallLogs = this.filteredCallLogs.filter(callLog =>
-        callLog.username.toLowerCase().includes(searchTerm) ||
-        callLog.username.toUpperCase().includes(searchTerm) ||
-        callLog.callType.toLowerCase().includes(searchTerm) ||
-        callLog.callType.toUpperCase().includes(searchTerm) ||
-        // callLog.description.toLowerCase().includes(searchTerm) ||
-        // callLog.description.toUpperCase().includes(searchTerm) ||
-        callLog.createdAt.toLowerCase().includes(searchTerm) ||
-        callLog.createdAt.toUpperCase().includes(searchTerm) ||
-        callLog.status.toLowerCase().includes(searchTerm) ||
-        callLog.status.toUpperCase().includes(searchTerm)
-      )
+
+      // Use the full filtered list based on selected status
+      const baseList = this.selectedCallLogStatus === 'All'
+        ? this.callLogs  // your original list of all call logs
+        : this.filteredCallLogs;
+
+      this.filteredCallLogs = baseList.filter(callLog => {
+        const logNumber = callLog.logNumber?.toLowerCase() || '';
+        const vendorType = callLog.vendorInfo?.vendorType?.toLowerCase() || '';
+        const username = callLog.username?.toLowerCase() || '';
+        const callType = callLog.callType?.toLowerCase() || '';
+        const createdAt = callLog.createdAt?.toLowerCase() || '';
+        const closedAt = callLog.closedAt?.toLowerCase() || '';
+        const status = callLog.status?.toLowerCase() || '';
+        // const description = callLog.description?.toLowerCase() || '';
+
+        return (
+          logNumber.includes(searchTerm) ||
+          vendorType.includes(searchTerm) ||
+          username.includes(searchTerm) ||
+          callType.includes(searchTerm) ||
+          createdAt.includes(searchTerm) ||
+          closedAt.includes(searchTerm) ||
+          status.includes(searchTerm)
+          // || description.includes(searchTerm)
+        );
+      });
     },
 
     updateChart() {
@@ -483,7 +502,7 @@ export default {
           datasets: [{
             data: data,
             backgroundColor: [
-            '#FFC107', // Orange for Opened
+            '#CC5500', // Orange for Opened
             '#007BFF', // Blue for Assigned
             '#28A745', // Green for Resolved
             '#6C757D'  // Grey for Closed
@@ -539,7 +558,7 @@ export default {
       // }
       this.$q.dialog({
         title: 'Confirm',
-        message: `You are about to delete this call log, continue?`,
+        message: `You are about to delete this call log. This action is irreversible and will permanently remove the entry from the associated user and the database, leaving no record behind. Proceed with caution. Do you wish to continue?`,
         color: 'primary',
         cancel: true,
         persistent: true
@@ -550,6 +569,62 @@ export default {
           await this.getAllCallLogs()
         } else {
           this.$q.notify({ type: 'negative', message: 'Delete call log failed. Please try again.' });
+        }
+      }).onCancel(() => {});
+    },
+
+    async sendEmailToVendor(callLog) {
+
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to notify this vendor about the issue recorded in this call log. Continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await EmailService.SendVendorEmail(callLog.user, callLog._id);
+
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Notification has been sent successfully.'
+          });
+          await this.getAllCallLogs()
+        } catch (error) {
+          console.error(error);
+          this.$q.notify({ type: 'negative', message: 'Failed to send this call log notification.' });
+        }
+      }).onCancel(() => {});
+    },
+
+    async closeCallLog(callLogId) {
+      const updatedCallLog = {
+        status: 'Closed',
+        closedAt: new Date()
+        // do not spread this.callLog directly
+      };
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to close this call log. Please note that this action will permanently archive the entry, disabling vendor assignments and further modifications. Do you wish to proceed?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await CallLogService.updateCallLog(callLogId, updatedCallLog);
+
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Call log marked as been closed.'
+          });
+          await this.getAllCallLogs()
+        } catch (error) {
+          console.error(error);
+          this.$q.notify({ type: 'negative', message: 'Failed to resolve call log.' });
         }
       }).onCancel(() => {});
     },

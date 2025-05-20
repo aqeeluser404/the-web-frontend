@@ -366,8 +366,10 @@ export default {
       const url = Helper.getDocumentUrl(document);
       window.open(url, '_blank');
     },
-    async deleteDocument(documentId) {
-      const response = await UserService.removeUserDoc(this.userDetails._id, documentId);
+    async deleteDocument(fileId) {
+      // console.log(this.userDetails._id)
+      // console.log(fileId)
+      const response = await UserService.removeUserDoc(this.userDetails._id, fileId);
       if (response) {
         this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
         this.fetchUserDetails();

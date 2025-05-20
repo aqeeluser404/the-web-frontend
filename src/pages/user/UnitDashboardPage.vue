@@ -51,8 +51,8 @@
               </q-card-section>
 
               <q-card-section v-if="!hasOngoingRentals" class="row justify-between">
-                <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
                 <CustomButton label="Apply" customStyle="width: 40%" @click="openApplicationForm(unit)" />
+                <CustomButton label="View More" customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
               </q-card-section>
 
               <q-card-section v-else class="row justify-between">

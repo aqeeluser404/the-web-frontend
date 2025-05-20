@@ -1,11 +1,23 @@
 <template>
-  <q-card style="width: 400px;">
+  <q-card class="component-card">
     <q-card-section>
       <div class="text-h6">Add New Document</div>
     </q-card-section>
 
+    <q-separator />
+
     <q-card-section>
-      <q-file v-model="file" label="Document" accept="*/*" name="document" id="document" filled />
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Attach your document</q-item-section>
+        <q-item-section>
+          <q-file v-model="file" label="Upload your document" accept="*/*" name="document" id="document">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+
     </q-card-section>
 
     <q-card-section class="row justify-between">
@@ -54,7 +66,8 @@ export default {
             this.$q.notify({ type: 'negative', message: 'An error occurred. Please try again.' });
           }
         } else {
-          this.$q.notify({ type: 'negative', message: 'You cannot have more than 3 documents saved. Please ensure only your ID, proof of address, and bank statement are attached.' });        }
+          this.$q.notify({ type: 'negative', message: 'You cannot have more than 3 documents saved. Please ensure only your ID, proof of address, and bank statement are attached.' });
+        }
       } else {
         this.$q.notify({ type: 'negative', message: 'Please attach your file.' });
       }

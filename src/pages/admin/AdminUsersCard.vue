@@ -2,80 +2,93 @@
   <q-page>
     <div class="q-pa-md row justify-center">
 
-      <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
-        <!-- Pie Chart Section -->
+      <!-- NEW LOGIN COUNT BAR CHART SECTION -->
+      <!-- <q-card flat bordered class="col-md-11 col-12 q-ma-sm">
         <q-card-section class="row justify-center">
-          <div class="text-h6">User Online Status</div>
+          <div class="text-h6">User Login Activity</div>
         </q-card-section>
         <q-separator />
-        <q-card-section class="row justify-center">
-          <div style="width: 300px; height: 300px;">
-            <canvas ref="userPieChart"></canvas>
+        <q-card-section class="row justify-center ">
+          <div style="width: 100%; height: 300px;">
+            <canvas ref="loginBarChart"></canvas>
           </div>
         </q-card-section>
-      </q-card>
+      </q-card> -->
 
-      <!-- USER TABLE -->
-      <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
-        <q-card-section class="row justify-center">
-          <div class="text-h6">Registered Users</div>
-        </q-card-section>
-        <q-card-section class="row justify-between">
-          <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch" class="col-12 col-md-9" />
-          <q-select
-            v-model="selectedUser"
-            :options="userSelectors"
-            label="User filters"
-            @update:model-value="filteredByUserType"
-            class="col-12 col-md-2"
-          />
-        </q-card-section>
-        <q-card-section>
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Creation Date</th>
-                <th class="text-left">Username</th>
-                <th class="text-left">Email</th>
-                <th class="text-left">Approved Applications</th>
-                <th class="text-left">Type</th>
-                <th class="text-left">Online</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody v-for="(user, index) in filteredUsers" :key="user._id">
-              <tr @click="viewUserDetails(user._id)">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer">{{ formatDate(user.dateCreated) }}</td>
-                <td class="text-left cursor-pointer">{{ user.username }}</td>
-                <td class="text-left cursor-pointer">{{ user.email }}</td>
-                <td class="text-left cursor-pointer" v-if="user.rentals.length > 0">
-                  <b>This user has {{ user.rentals.length }} applications(s)</b>
-                </td>
-                <td class="text-left cursor-pointer" v-else>
-                  This user has no applications
-                </td>
-                <td class="text-left cursor-pointer" :class="{ 'admin-user': user.userType === 'admin'}">{{ user.userType }}</td>
-                <td class="text-center cursor-pointer">
-                  <span v-if="user.loginInfo && user.loginInfo.isLoggedIn" class="green-dot"></span>
-                  <span v-else class="red-dot"></span>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteUser(user)" />
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
-      </q-card>
+      <div class="row justify-center full-height" style="width: 100%;">
+        <!-- Pie Chart Section -->
+        <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
+          <q-card-section class="row justify-center">
+            <div class="text-h6">User Online Status</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="row justify-center">
+            <div style="width: 300px; height: 300px;">
+              <canvas ref="userPieChart"></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <!-- USER TABLE -->
+        <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
+          <q-card-section class="row justify-center">
+            <div class="text-h6">Registered Users</div>
+          </q-card-section>
+          <q-card-section class="row justify-between">
+            <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
+              class="col-12 col-md-9" />
+            <q-select v-model="selectedUser" :options="userSelectors" label="User filters"
+              @update:model-value="filteredByUserType" class="col-12 col-md-2" />
+          </q-card-section>
+          <q-card-section>
+            <q-markup-table flat bordered>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left">Username</th>
+                  <th class="text-left">User/Tenant ID</th>
+                  <th class="text-left">Email</th>
+                  <th class="text-left">Approved Applications</th>
+                  <th class="text-left">Type</th>
+                  <th class="text-left">Online</th>
+                  <th class="text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody v-for="(user, index) in filteredUsers" :key="user._id">
+                <tr @click="viewUserDetails(user._id)">
+                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                  <td class="text-left cursor-pointer">{{ user.username }}</td>
+                  <td class="text-left cursor-pointer id">{{ user._id }}</td>
+                  <td class="text-left cursor-pointer">{{ user.email }}</td>
+                  <td class="text-left cursor-pointer" v-if="user.rentals.length > 0">
+                    <b>This user has {{ user.rentals.length }} applications(s)</b>
+                  </td>
+                  <td class="text-left cursor-pointer" v-else>
+                    This user has no applications
+                  </td>
+                  <td class="text-left cursor-pointer" :class="{ 'admin-user': user.userType === 'admin' }">{{
+                    user.userType }}</td>
+                  <td class="text-center cursor-pointer">
+                    <span v-if="user.loginInfo && user.loginInfo.isLoggedIn" class="green-dot"></span>
+                    <span v-else class="red-dot"></span>
+                  </td>
+                  <td class="text-left cursor-pointer">
+                    <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                      @click.stop="deleteUser(user)" />
+                  </td>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
-Chart.register(PieController, ArcElement, Tooltip, Legend);
+import { Chart, PieController, ArcElement, Tooltip, Legend, BarController, BarElement, CategoryScale, LinearScale } from 'chart.js';
+Chart.register(PieController, ArcElement, Tooltip, Legend, BarController, BarElement, CategoryScale, LinearScale);
 
 import UserService from 'src/services/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
@@ -94,7 +107,8 @@ export default {
       regularUsers: [],
       userSelectors: ['All', 'Admin', 'User'],
       selectedUser: 'All',
-      userPieChart: null
+      userPieChart: null,
+      loginBarChart: null
     };
   },
   components: {
@@ -111,13 +125,154 @@ export default {
       this.regularUsers = regularUsersTemp;
       this.filteredUsers = this.allUsers;
       this.updateUserChart();
+      // this.updateLoginBarChart();
     },
+
+    // updateLoginBarChart() {
+    //   // Sort users by login count (descending) and take top 10
+    //   const sortedUsers = [...this.users]
+    //     .sort((a, b) => {
+    //       const aCount = a.loginInfo?.loginCount || 0;
+    //       const bCount = b.loginInfo?.loginCount || 0;
+    //       return bCount - aCount;
+    //     })
+    //     .slice(0, 10);
+
+    //   const labels = sortedUsers.map(user => user.username);
+    //   const data = sortedUsers.map(user => user.loginInfo?.loginCount || 0);
+
+    //   if (this.loginBarChart) {
+    //     this.loginBarChart.destroy();
+    //   }
+
+    //   const ctx = this.$refs.loginBarChart.getContext('2d');
+    //   this.loginBarChart = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: {
+    //       labels: labels,
+    //       datasets: [{
+    //         label: 'Login Count',
+    //         data: data,
+    //         backgroundColor: '#2196F3',
+    //         borderColor: '#0D47A1',
+    //         borderWidth: 1,
+    //         borderRadius: 4, // Rounded corners for bars
+    //       }]
+    //     },
+    //     options: {
+    //       responsive: true,
+    //       maintainAspectRatio: false,
+    //       layout: {
+    //         padding: {
+    //           top: 20,
+    //           right: 20,
+    //           bottom: 20,
+    //           left: 20
+    //         }
+    //       },
+    //       scales: {
+    //         y: {
+    //           beginAtZero: true,
+    //           title: {
+    //             display: true,
+    //             text: 'Number of Logins',
+    //             font: {
+    //               family: "'Roboto', sans-serif",
+    //               size: 12,
+    //               weight: 'bold'
+    //             }
+    //           },
+    //           ticks: {
+    //             font: {
+    //               family: "'Roboto', sans-serif",
+    //               size: 10
+    //             }
+    //           },
+    //           grid: {
+    //             display: true,
+    //             color: 'rgba(0, 0, 0, 0.05)'
+    //           }
+    //         },
+    //         x: {
+    //           title: {
+    //             display: true,
+    //             text: 'Users',
+    //             font: {
+    //               family: "'Roboto', sans-serif",
+    //               size: 12,
+    //               weight: 'bold'
+    //             }
+    //           },
+    //           ticks: {
+    //             font: {
+    //               family: "'Roboto', sans-serif",
+    //               size: 10
+    //             },
+    //             maxRotation: 45, // Rotate labels for better fit
+    //             minRotation: 45,
+    //             autoSkip: true,
+    //             maxTicksLimit: 10 // Limit number of labels on small screens
+    //           },
+    //           grid: {
+    //             display: false
+    //           }
+    //         }
+    //       },
+    //       plugins: {
+    //         legend: {
+    //           labels: {
+    //             font: {
+    //               family: "'Roboto', sans-serif",
+    //               size: 12
+    //             },
+    //             boxWidth: 12,
+    //             padding: 20
+    //           }
+    //         },
+    //         tooltip: {
+    //           backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    //           titleFont: {
+    //             family: "'Roboto', sans-serif",
+    //             size: 12,
+    //             weight: 'bold'
+    //           },
+    //           bodyFont: {
+    //             family: "'Roboto', sans-serif",
+    //             size: 12
+    //           },
+    //           padding: 10,
+    //           callbacks: {
+    //             afterLabel: (context) => {
+    //               const user = sortedUsers[context.dataIndex];
+    //               return `Last login: ${user.loginInfo?.lastLogin ? this.formatDate(user.loginInfo.lastLogin) : 'Never'}`;
+    //             }
+    //           }
+    //         }
+    //       },
+    //       onClick: (event, elements) => {
+    //         if (elements.length > 0) {
+    //           const index = elements[0].index;
+    //           const userId = sortedUsers[index]._id;
+    //           this.viewUserDetails(userId);
+    //         }
+    //       },
+    //       // Adjust chart size based on screen width
+    //       aspectRatio: window.innerWidth < 600 ? 1.5 : 2.5
+    //     }
+    //   });
+
+    //   // Add responsive behavior
+    //   window.addEventListener('resize', () => {
+    //     if (this.loginBarChart) {
+    //       this.loginBarChart.resize();
+    //     }
+    //   });
+    // },
 
     updateUserChart() {
       const onlineUsers = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn).length;
       const offlineUsers = this.users.length - onlineUsers;
 
-      // Labels now include counts
       const labels = [`Online (${onlineUsers})`, `Offline (${offlineUsers})`];
       const data = [onlineUsers, offlineUsers];
 
@@ -156,7 +311,6 @@ export default {
         }
       });
     },
-
     filterBySearch() {
       if (this.search === '') {
         this.selectedUser = 'All';
@@ -204,13 +358,13 @@ export default {
         this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this user has admin authority.' });
         return;
       }
-      if (user.rentals && user.rentals.length > 0) {
-        this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this user is tied to a previous rental record.' });
-        return;
-      }
+      // if (user.rentals && user.rentals.length > 0) {
+      //   this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this user is tied to a previous rental record.' });
+      //   return;
+      // }
       this.$q.dialog({
         title: 'Confirm',
-        message: 'You are about to delete this user, continue?',
+        message: `You are about to delete this user. This action is irreversible and will permanently remove all associated rentals (whether active or inactive), call logs, and their data from the database, leaving no record behind. Proceed with caution. Do you wish to continue?`,
         color: 'primary',
         cancel: true,
         persistent: true
@@ -222,7 +376,7 @@ export default {
         } else {
           this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
 
     viewUserDetails(id) {
@@ -234,3 +388,7 @@ export default {
   }
 };
 </script>
+
+<style>
+/* Add any additional styling you need */
+</style>

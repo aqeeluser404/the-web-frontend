@@ -136,6 +136,11 @@
                 <q-item-section class="" @click="scrollToSection('contact-section')">Contact</q-item-section>
               </q-item>
 
+              <!-- PHP CODE -->
+              <!-- <q-item clickable v-close-popup v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+                <q-item-section class="" @click="downloadData()">Download Data</q-item-section>
+              </q-item> -->
+
               <!-- authentication -->
               <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')">
                 <q-item-section class="">Book Now</q-item-section>
@@ -163,6 +168,8 @@
           </q-btn-dropdown>
         </div>
       </q-toolbar>
+
+      <MaintenanceBanner class="full-width" />
 
       <!-- breadcrumbs -->
       <div v-if="isAdminRoute">
@@ -194,6 +201,7 @@
 </template>
 
 <script>
+import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 
 import UserService from 'src/services/UserService'
@@ -217,10 +225,12 @@ export default {
   },
   components: {
     CustomButton,
+    MaintenanceBanner
   },
   computed: {
     headerHeight() {
-      return this.isAdminRoute ? '20vh' : '10vh';
+      // return this.isAdminRoute ? '20vh' : '10vh';
+      return this.isAdminRoute ? '20vh' : '23vh';
     },
     isAdminRoute() {
       return this.$route.path.startsWith('/admin')

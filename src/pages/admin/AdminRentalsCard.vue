@@ -107,9 +107,9 @@
                     {{ capitalizeFirstLetter(rental.status) }}
                 </td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton v-if="rental.status === 'Ended'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-file-text-outline" @click.stop="openExtendRentalDialog(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-close-outline" @click.stop="endRental(rental)" />
+                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
                 </td>
               </tr>
             </tbody>
@@ -235,9 +235,9 @@ export default {
             data: data,
             backgroundColor: [
               '#4CAF50', // Green for Approved/Active
-              '#FFC107', // Yellow for Pending
+              '#CC5500', // Yellow for Pending
               '#F44336', // Red for Rejected
-              '#9E9E9E'  // Grey for Ended
+              '#6C757D'  // Grey for Ended
             ]
           }]
         },
@@ -268,23 +268,29 @@ export default {
     },
 
     filterBySearch() {
+      const searchTerm = this.search.toLowerCase();
+
+      const base = this.selectedRentalStatus === 'All'
+        ? this.currentRentals
+        : this.filteredRentals;
+
       if (this.search === '') {
-        this.selectedRentalStatus = 'All';
         this.filteredByRentalStatus();
         return;
       }
-      const searchTerm = this.search.toLowerCase();
-      this.filteredRentals = this.filteredRentals.filter(rental =>
-        rental.username.toLowerCase().includes(searchTerm) ||
-        rental.username.toUpperCase().includes(searchTerm) ||
-        rental.unitType.toLowerCase().includes(searchTerm) ||
-        rental.unitType.toUpperCase().includes(searchTerm) ||
-        rental.applicationDate.toLowerCase().includes(searchTerm) ||
-        rental.applicationDate.toUpperCase().includes(searchTerm) ||
-        user.user.toLowerCase().includes(searchTerm) ||
-        user.user.toUpperCase().includes(searchTerm)
+
+      this.filteredRentals = base.filter(rental =>
+        rental.username?.toLowerCase().includes(searchTerm) ||
+        rental.unitType?.toLowerCase().includes(searchTerm) ||
+        rental.status?.toLowerCase().includes(searchTerm) ||
+        rental.applicationDate?.toLowerCase().includes(searchTerm) ||
+        rental.rentalStartDate?.toLowerCase().includes(searchTerm) ||
+        rental.rentalEndDate?.toLowerCase().includes(searchTerm) ||
+        rental.earlyEndDate?.toLowerCase().includes(searchTerm) ||
+        rental._id?.toLowerCase().includes(searchTerm)
       );
     },
+
 
     filterRentalsByChart(selectedStatus) {
       this.selectedRentalStatus = selectedStatus; // Sync dropdown filter
@@ -321,27 +327,21 @@ export default {
     },
 
     async deleteRental(rental) {
-      if (rental.status === 'Pending' || rental.status === 'Rejected') {
-        this.$q.dialog({
-          title: 'Confirm',
-          message: 'You are about to delete this rental application, continue?',
-          color: 'primary',
-          cancel: true,
-          persistent: true
-        }).onOk(async () => {
-          const response = await RentalService.deleteRental(rental._id);
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
-            this.findAllRentals();
-          } else {
-            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
-          }
-        }).onCancel(() => {
-          // No need to fetch user details again on cancel
-        });
-      } else {
-        this.$q.notify({ type: 'negative', message: 'Delete failed. You cannot delete an active or ended rental.' });
-      }
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to delete this rental application. This action is irreversible and will permanently remove the entry from the associated user, unit rented history and the database, leaving no record behind. Proceed with caution. Do you wish to continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        const response = await RentalService.deleteRental(rental._id);
+        if (response) {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
+          this.findAllRentals();
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
+        }
+      }).onCancel(() => {});
     },
 
     async endRental(rental) {

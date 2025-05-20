@@ -133,23 +133,35 @@ export default {
     },
 
     async deleteUnit(unit) {
-      if (unit.rentedHistory.length !== 0) {
-        this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this unit is tied to a previous rental record.' })
-        return
+      // Check if there are active or pending rentals
+      const hasActiveRentals = unit.rentedHistory.some(rental => rental.status !== 'Ended');
+
+      if (hasActiveRentals) {
+        this.$q.notify({
+          type: 'negative',
+          message: 'This unit cannot be deleted as it still has active or pending rentals.'
+        });
+        return;
       }
+
+      // Proceed with deletion confirmation
       this.$q.dialog({
-        title: 'Confirm', message: `You are about to remove this unit from the database, continue?`, color: 'primary', cancel: true, persistent: true
+        title: 'Confirm',
+        message: `You are about to delete this unit entry. This action is irreversible. However, it will not remove the entry from the associated rental application, which must be manually deleted. Proceed with caution. Do you wish to continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
       }).onOk(async () => {
-        const response = await UnitService.deleteUnit(unit._id)
+        const response = await UnitService.deleteUnit(unit._id);
         if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Deleted!' })
-          this.findAllUnits()
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Deleted!' });
+          this.findAllUnits();
         } else {
-          this.$q.notify({ type: 'negative', message: 'Failed to delete unit. Please try again.' })
+          this.$q.notify({ type: 'negative', message: 'Failed to delete unit. Please try again.' });
         }
       }).onCancel(() => {
-        return
-      })
+        return;
+      });
     },
     openAddUnitsDialog() {
       this.addUnitsDialog = true;

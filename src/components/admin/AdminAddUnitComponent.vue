@@ -6,16 +6,75 @@
 
     <q-separator />
 
-    <q-card-section class="q-gutter-md">
-      <q-input filled v-model="unit.unitNumber" label-color="black" color="black" label="Unit Number *" readonly />
-      <q-select filled v-model="unit.floorLevel" label-color="black" color="black" label="Floor Level *" :options="floorLevelOptions" emit-value map-options />
-      <!-- <q-select filled v-model="unit.unitType" label-color="black" color="black" label="Unit Type *" :options="unitTypeOptions" emit-value map-options /> -->
-      <q-select filled v-model="unit.unitOccupants" label-color="black" color="black" label="Unit Occupants *" :options="unitOccupantsOptions" emit-value map-options />
-      <q-input filled v-model="unit.unitPrice" label-color="black" color="black" label="Unit Price *" type="number" prefix="R" :rules="[val => val > 0] || 'Price must be positive'" />
-      <q-file filled v-model="image1" label="Image (First View) * " label-color="black" color="black" accept="image/*" name="image1" id="image1" />
-      <q-file filled v-model="image2" label="Image (Second View) * " label-color="black" color="black" accept="image/*" name="image2" id="image2" />
-      <q-file filled v-model="image3" label="Image (Third View) * " label-color="black" color="black" accept="image/*" name="image3" id="image3" />
-      <q-input filled v-model="unit.unitDescription" label-color="black" color="black" label="Unit Description *" type="textarea" stack-label />
+    <q-card-section>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-input v-model="unit.unitNumber" readonly />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Floor Level *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-select v-model="unit.floorLevel" :options="floorLevelOptions" emit-value map-options />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Unit Occupants *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-select v-model="unit.unitOccupants" :options="unitOccupantsOptions" emit-value map-options />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Unit Price *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-input v-model="unit.unitPrice" type="number" prefix="R"
+            :rules="[val => val > 0 || 'Price must be positive']" />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Cover Image *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="image1" label="Upload Cover Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Second Image *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="image2" label="Upload Second Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Third Image *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="image3" label="Upload Third Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Unit Description *</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-input v-model="unit.unitDescription" type="textarea" />
+        </q-item-section>
+      </q-item>
     </q-card-section>
 
     <q-card-section>

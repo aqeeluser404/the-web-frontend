@@ -13,14 +13,18 @@
             <q-timeline-entry
               title="Account Creation" icon="eva-people" side="right" color="orange" :subtitle="formatDate(rental.userDateCreated)"
             >
-              <div class="q-mb-md" style="text-decoration: underline;">Applicant Details</div>
-              <ul>
-                <li>First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}</li>
-                <li>Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}</li>
-                <li>Username: {{ rental.userUsername }}</li>
-                <li>Phone: {{ rental.userPhone }}</li>
-                <li>Email: {{ rental.userEmail }}</li>
-              </ul>
+              <q-card-section>
+                <div class="q-mb-md"><b>Applicant Information</b></div>
+                <ul>
+                  <li>User/Tenant ID: <span class="id-underlined">{{ rental.userId }}</span></li>
+                  <li>First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}</li>
+                  <li>Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}</li>
+                  <li>Gender: {{ rental.userGender }}</li>
+                  <li>Username: {{ rental.userUsername }}</li>
+                  <li>Phone: {{ rental.userPhone }}</li>
+                  <li>Email: {{ rental.userEmail }}</li>
+                </ul>
+              </q-card-section>
             </q-timeline-entry>
 
             <!-- Account verification -->
@@ -36,46 +40,71 @@
             <q-timeline-entry
               title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all" side="right"
             >
-              <div class="q-mb-md">
-                <span style="text-decoration: underline;">Rental Details</span>
-              </div>
-
-
-              <div class="q-mb-md" >
-                <div>
-                  Applicant has applied for a <b>{{rental.unitType}}</b> unit.
+              <q-card-section>
+                <div class="q-mb-md">
+                  <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a bursary)</span> <span
+                    v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
                 </div>
-                <div v-if="rental.accessKey">
-                  <span style="">This user is sharing a access key.</span>
+                <ul v-if="rental.userHasBursary">
+                  <li>The applicant has a bursary, so a credit score is not required.</li>
+                </ul>
+                <div v-else class="q-mb-md">
+                  <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
+                    <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
+                      rental.payerData.score }}/80)</span></li>
+                    <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
+                    <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
+                    <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
+                    <li v-if="rental.payerData.idNumber">ID Number: {{ rental.payerData.idNumber }}</li>
+                    <li v-if="rental.payerData.bankName">Bank Name: {{ rental.payerData.bankName }}</li>
+                    <li v-if="rental.payerData.salary">Salary: R {{ rental.payerData.salary }}</li>
+                  </ul>
+                  <div v-else>
+                    <span>Not scored yet.</span>
+                  </div>
                 </div>
-              </div>
+              </q-card-section>
 
-              <div class="q-mb-md">
-                <div v-if="rental.accessKey">
-                  Access Key: <span class="id" @click.stop="copyToClipboard(rental.accessKey)">{{ rental.accessKey }}</span>
-                </div>
-                <div>
-                  Application ID: <span class="id">{{ rental._id }}</span>
-                </div>
-              </div>
+              <q-card-section>
+                <div class="q-mb-md"><b>Rental Information</b></div>
+                <ul>
+                  <li>Application ID: <span class="id-underlined">{{ rental._id }}</span></li>
+                  <li>
+                    <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
+                  </li>
+                  <li v-if="rental.rentalStartDate">
+                    Start Date: {{ formatDate(rental.rentalStartDate) }}
+                  </li>
+                  <li v-if="rental.rentalEndDate">
+                    End Date: {{ formatDate(rental.rentalEndDate) }}
+                  </li>
+                  <li v-if="rental.earlyEndDate">
+                    Early End Date: {{ formatDate(rental.earlyEndDate) }}
+                  </li>
+                  <li>
+                    Monthly Payment: R {{ rental.rentalPrice }}.00
+                  </li>
+                </ul>
+              </q-card-section>
 
-              <ul>
-                <li>
-                  <span>Unit Number:</span> {{ rental.unitNumber }}
-                </li>
-                <li>
-                  <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
-                </li>
-                <li v-if="rental.rentalStartDate">
-                  Start Date: {{ formatDate(rental.rentalStartDate) }}
-                </li>
-                <li v-if="rental.rentalEndDate">
-                  End Date: {{ formatDate(rental.rentalEndDate) }}
-                </li>
-                <!-- <li v-if="rental.accessKey">
-                  Access Key: <span style="text-transform: uppercase; cursor: pointer; color: brown;" @click.stop="copyToClipboard(rental.accessKey)"><b>{{ rental.accessKey }}</b></span>
-                </li> -->
-              </ul>
+              <q-card-section>
+                <div class="q-mb-md"><b>Unit Information</b></div>
+                <ul>
+                  <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
+                  <li v-if="rental.accessKey">
+                    This user is sharing this unit with family or acquaintances.
+                  </li>
+                  <li v-else>
+                    This user is not sharing this unit with family or acquaintances.
+                  </li>
+                  <li>Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span></li>
+
+                  <li>
+                    <span>Unit Number:</span> {{ rental.unitNumber }}
+                  </li>
+                </ul>
+              </q-card-section>
+
             </q-timeline-entry>
 
             <!-- Documents upload -->
@@ -228,6 +257,7 @@ export default {
         unitNumber: unit.unitNumber,
         unitPrice: unit.unitPrice,
         unitType: unit.unitType,
+        unitId: unit._id,
 
         userId: user._id,
         userUsername: user.username,
@@ -235,9 +265,12 @@ export default {
         userLastName: user.lastName,
         userEmail: user.email,
         userPhone: user.phone,
+        userGender: user.gender,
         userDateCreated: user.dateCreated,
         userVerified: user.verification.isVerified,
-        userDocuments: user.documents
+        userDocuments: user.documents,
+
+        userHasBursary: user.studentInfo.hasBursary,
       };
 
       // console.log(this.rental.userDocuments)

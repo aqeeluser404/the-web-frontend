@@ -68,6 +68,16 @@ class EmailService {
       Logger.error('Error sending message: ', error.message)
     }
   }
+  // PHP VERSION
+  static async RentalActionReminder(userId, message) {
+    const ENDPOINT = '/rental-action-reminder'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId, message})
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
   static async RejectedRental(userId, message) {
     const ENDPOINT = '/rejected-rental'
     try {
@@ -81,6 +91,16 @@ class EmailService {
     const ENDPOINT = `/extended-date/${userId}`
     try {
       const response = await axiosInstance.post(ENDPOINT, message )
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
+  // PHP VERSION
+  static async SendVendorEmail(userId, callLogId) {
+    const ENDPOINT = '/send-vendor-email'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId, callLogId })
       return response.data
     } catch (error) {
       Logger.error('Error sending message: ', error.message)

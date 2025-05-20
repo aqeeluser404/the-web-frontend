@@ -51,17 +51,6 @@
       </ul>
     </q-card-section>
 
-    <q-card-section v-if="!unit.accessKey.isShared && !unit.genderAssignment">
-      <div class="q-mb-sm"><b>Generate Shared Access Key</b></div>
-      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="true" label="Yes" />
-      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="false" label="No" />
-    </q-card-section>
-
-    <q-card-section v-if="unit.accessKey.isShared">
-      <div class="q-mb-sm"><b>Provide Shared Access Key</b></div>
-      <q-input filled label-color="black" color="brown" v-model="rentalDetails.accessKey" @input="setAccessKeyTrue" label="*" required style="border: 2px solid white;" />
-    </q-card-section>
-
     <q-card-section v-if="unit.unitStatus !== 'Occupied'">
       <div class="q-mb-sm"><b>Confirm your information</b></div>
       <ul>
@@ -70,6 +59,17 @@
         <li>Phone Number: {{ userDetails.phone }}</li>
         <li>Email Address: {{ userDetails.email }}</li>
       </ul>
+    </q-card-section>
+
+    <q-card-section v-if="!unit.accessKey.isShared && !unit.genderAssignment">
+      <div class="q-mb-sm"><b>Generate Shared Access Key</b></div>
+      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="true" label="Yes" />
+      <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="false" label="No" />
+    </q-card-section>
+
+    <q-card-section v-if="unit.accessKey.isShared">
+      <div class="q-mb-sm"><b>Provide Shared Access Key</b></div>
+      <q-input v-model="rentalDetails.accessKey" @input="setAccessKeyTrue" label="*" required style="border: 2px solid white;" />
     </q-card-section>
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'" >
@@ -100,8 +100,8 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
       <CustomButton label="Apply" v-if="unit.unitStatus !== 'Occupied'" customStyle="width: 45%" @click="createRentalApplication(unit)" />
+      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
     </q-card-section>
   </q-card>
 </template>

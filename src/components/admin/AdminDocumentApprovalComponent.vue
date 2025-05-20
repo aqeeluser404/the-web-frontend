@@ -1,7 +1,7 @@
 <template>
   <q-card class="component-card">
-    <q-card-section class="row justify-center">
-      <div class="text-h6">Documents</div>
+    <q-card-section class="">
+      <div class="text-h6">Document Approval</div>
     </q-card-section>
 
     <q-separator />
@@ -30,13 +30,13 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <CustomButton label="Close" @click="$emit('close')" customStyle="width: 100%" />
+      <CustomButton color="white" text-color="black" label="Close" @click="$emit('close')" customStyle="width: 100%" />
     </q-card-section>
   </q-card>
 </template>
 
 <script>
-import documentLogo from 'src/assets/resources/elements/document.png'
+import documentLogo from '../../assets/resources/elements/document.png'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import Helper from 'src/services/utils'
 

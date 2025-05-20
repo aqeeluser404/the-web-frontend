@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <!-- Banner for rejected rentals -->
-    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false" class="bg-brown text-white full-width" @click="openAddPayer">
+    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false" class="bg-black text-white full-width" @click="openAddPayer">
       <div class="row justify-center items-center" style="cursor: pointer;">
         <div>
           <q-icon name="warning" class="q-mr-sm" size="32px" />
@@ -100,13 +100,9 @@
                     {{ capitalizeFirstLetter(rental.status) }}
                 </td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat color="green" text-color="green" customStyle="width: 15%" icon="eva-bar-chart-outline" @click="openAddPayer" />
-                  <!-- <CustomButton v-if="rental.status === 'Active'" flat color="brown" text-color="green" customStyle="width: 15%" icon="eva-email-outline" @click.stop="openRequestUser(rental)" /> -->
+                  <CustomButton v-if="rental.status === 'Pending'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <CustomButton v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click="openAddPayer" />
                 </td>
-                <!-- <td class="text-left cursor-pointer" v-else>
-                  N/A
-                </td> -->
               </tr>
             </tbody>
           </q-markup-table>
@@ -185,15 +181,24 @@ export default {
         })
     },
     async findMyRentals() {
-      const response = await RentalService.findMyRentals(this.userDetails._id)
+      const response = await RentalService.findMyRentals(this.userDetails._id);
+
       this.rentals = await Promise.all(response.map(async rental => {
-        const unit = await UnitService.getByIdUnit(rental.unit)
-        return {
-          ...rental,
-          unitType: unit.unitType,
-          unitNumber: unit.unitNumber
+        try {
+          const unit = await UnitService.getByIdUnit(rental.unit);
+          return {
+            ...rental,
+            unitType: unit?.unitType || 'Unknown',
+            unitNumber: unit?.unitNumber || 'N/A'
+          };
+        } catch (error) {
+          return {
+            ...rental,
+            unitType: 'Unknown',
+            unitNumber: 'N/A'
+          };
         }
-      }))
+      }));
     },
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()

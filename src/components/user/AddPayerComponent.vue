@@ -12,18 +12,18 @@
       </div>
       <div><b>Scoring Criteria</b></div>
       <ul>
-        <li><b>ID Validation:</b> 30 points if the ID number is valid</li>
-        <li><b>First Name:</b> 10 points if the first name is valid</li>
-        <li><b>Last Name:</b> 10 points if the last name is valid</li>
-        <li><b>Monthly Salary:</b> 20 points if the salary is within a reasonable range (R2000 - R100,000)</li>
-        <li><b>Bank Name:</b> 10 points if the bank name is valid</li>
+        <li>First Name: 10 points if the first name is valid</li>
+        <li>Last Name: 10 points if the last name is valid</li>
+        <li>Email: 10 points if the last name is valid</li>
+        <li>ID Number: 30 points if the ID number is valid</li>
+        <li>Bank Name: 10 points if the bank name is valid</li>
+        <li>Salary: Up to 20 points for R2 000 – R100 000</li>
       </ul>
     </q-card-section>
 
     <q-card-section class="q-gutter-md">
       <!-- First Name -->
       <q-input
-        filled
         label-color="black"
         color="black"
         v-model="rental.payerData.firstName"
@@ -32,7 +32,6 @@
       />
       <!-- Last Name -->
       <q-input
-        filled
         label-color="black"
         color="black"
         v-model="rental.payerData.lastName"
@@ -41,7 +40,6 @@
       />
       <!-- Email -->
       <q-input
-        filled
         label-color="black"
         color="black"
         v-model="rental.payerData.email"
@@ -50,32 +48,29 @@
       />
       <!-- ID Number -->
       <q-input
-        filled
         label-color="black"
         color="black"
         v-model="rental.payerData.idNumber"
         label="ID Number *"
         :disable="rental.payerData.isValidated"
       />
+      <!-- Bank Selection -->
+      <q-select
+        label="Select Bank *"
+        v-model="rental.payerData.bankName"
+        :options="banks"
+        label-color="black"
+        color="black"
+        :disable="rental.payerData.isValidated"
+      />
       <!-- Monthly Salary -->
       <q-input
-        filled
         label-color="black"
         color="black"
         v-model="rental.payerData.salary"
         label="Monthly Salary *"
         type="number"
         prefix="R"
-        :disable="rental.payerData.isValidated"
-      />
-      <!-- Bank Selection -->
-      <q-select
-        filled
-        label="Select Bank *"
-        v-model="rental.payerData.bankName"
-        :options="banks"
-        label-color="black"
-        color="black"
         :disable="rental.payerData.isValidated"
       />
     </q-card-section>

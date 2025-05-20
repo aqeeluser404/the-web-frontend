@@ -7,8 +7,14 @@
     <q-separator />
 
     <q-card-section>
-      <div class="q-mb-sm"><b>Please select the new end date</b></div>
-      <q-input v-model="rentalExtension" label="Extended lease" type="date" :min="formattedEndDate" />
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">New Date</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-input  v-model="rentalExtension" type="date" :min="formattedEndDate" />
+        </q-item-section>
+      </q-item>
+      <!-- <div class="q-mb-sm"><b>Please select the new end date</b></div>
+      <q-input v-model="rentalExtension" label="Extended lease" type="date" :min="formattedEndDate" /> -->
     </q-card-section>
 
     <q-card-section class="row justify-between">
@@ -67,22 +73,22 @@ export default {
       }
 
       this.$q.dialog({
-          title: 'Confirm', message: `You are about to extend this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
-        }).onOk(async () => {
-          const response = await RentalService.updateRental(this.rental._id, updatedRental)
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Extended!' })
+        title: 'Confirm', message: `You are about to extend this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
+      }).onOk(async () => {
+        const response = await RentalService.updateRental(this.rental._id, updatedRental)
+        if (response) {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Extended!' })
 
-            // Send email to user
-            await EmailService.SendExtendedDate(this.rental.user, { message })
+          // Send email to user
+          await EmailService.SendExtendedDate(this.rental.user, { message })
 
-            this.$emit('close')
-          } else {
-            this.$q.notify({ type: 'negative', message: 'Extension for rental failed. Please try again.' })
-          }
-        }).onCancel(() => {
-          return
-        })
+          this.$emit('close')
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Extension for rental failed. Please try again.' })
+        }
+      }).onCancel(() => {
+        return
+      })
 
     }
   },

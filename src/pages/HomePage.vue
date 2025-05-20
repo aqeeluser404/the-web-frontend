@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <!-- <MaintenanceBanner /> -->
 
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <div style="margin: 4%; margin-top: 0;" class="bg-grey">
@@ -430,6 +431,7 @@
 </template>
 
 <script>
+import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
 import Helper from 'src/services/utils'
@@ -525,7 +527,8 @@ export default {
     BedStatsComponentBlack,
     BedStatsComponent,
     UnitDetailsComponent,
-    UnitApplicationFormComponent
+    UnitApplicationFormComponent,
+    MaintenanceBanner
   },
   computed: {
     hasOngoingRentals() {

@@ -7,13 +7,8 @@
     <q-separator />
     <q-card-section>
       <div class="image-container">
-        <q-img
-          v-if="unit.images && unit.images.length > 0"
-          :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
-          class="q-mb-md product-image cursor-zoom-in"
-          :ratio="1"
-          @click="showImageDialog = true"
-        />
+        <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
+          class="q-mb-md product-image cursor-zoom-in" :ratio="1" @click="showImageDialog = true" />
         <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
         <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
       </div>
@@ -24,47 +19,55 @@
         <q-btn icon="close" flat round dense v-close-popup class="close-button" />
 
         <q-card-section class="dialog-image-section row justify-center flex-center">
-          <img
-            v-if="currentDialogImageUrl"
-            :src="currentDialogImageUrl"
-            class="enlarged-image"
-            style="object-fit: contain"
-          />
+          <img v-if="currentDialogImageUrl" :src="currentDialogImageUrl" class="enlarged-image"
+            style="object-fit: contain" />
           <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
           <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
         </q-card-section>
       </q-card>
     </q-dialog>
 
-    <!-- PHP VERSION -->
-    <!-- <q-card-section>
-      <q-file
-        filled
-        v-model="newImage1"
-        label="New Image (First View)"
-        label-color="black"
-        color="black"
-        accept="image/*"
-      />
-      <q-file
-        filled
-        v-model="newImage2"
-        label="New Image (Second View)"
-        label-color="black"
-        color="black"
-        accept="image/*"
-      />
-      <q-file
-        filled
-        v-model="newImage3"
-        label="New Image (Third View)"
-        label-color="black"
-        color="black"
-        accept="image/*"
-      />
-    </q-card-section> -->
-
     <q-card-section>
+
+      <!-- PHP VERSION -->
+      <!-- <q-item>
+        <q-item-section class="text-left text-subtitle1">Cover Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage1" label="Upload Cover Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Second Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage2" label="Upload Second Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Third Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage3" label="Upload Third Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item> -->
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Unit ID </q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-input v-model="unit._id" readonly />
+        </q-item-section>
+      </q-item>
+
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit Number</q-item-section>
         <q-item-section class="text-left text-subtitle1">
@@ -77,7 +80,6 @@
           <q-input readonly v-model="unit.floorLevel" />
         </q-item-section>
       </q-item>
-
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit Status</q-item-section>
         <q-item-section class="text-left text-subtitle1">
@@ -105,16 +107,18 @@
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit Price</q-item-section>
         <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitPrice" type="number" prefix="R" :rules="[val => val > 0] || 'Price must be positive'" />
+          <q-input v-model="unit.unitPrice" type="number" prefix="R"
+            :rules="[val => val > 0 || 'Price must be positive']" />
         </q-item-section>
       </q-item>
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit Description</q-item-section>
         <q-item-section class="text-left text-subtitle1">
-          <q-input type="textarea" stack-label v-model="unit.unitDescription" />
+          <q-input type="textarea" v-model="unit.unitDescription" />
         </q-item-section>
       </q-item>
     </q-card-section>
+
     <q-card-section class="row justify-between">
       <CustomButton label="Update Unit" customStyle="width: 45%" @click="updateUnit" />
       <CustomButton label="Close" customStyle="width: 45%" color="white" text-color="black" @click="$emit('close')" />
@@ -193,7 +197,7 @@ export default {
     // PHP VERSION
     // async updateUnit() {
     //   if (!this.unit.floorLevel || !this.unit.unitType ||
-    //       !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
+    //     !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
     //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
     //     return;
     //   }

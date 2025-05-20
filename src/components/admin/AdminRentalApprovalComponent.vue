@@ -1,14 +1,19 @@
 <template>
   <q-card class="component-card">
-    <q-card-section class="row justify-center">
-      <div class="text-h6">Approve Rental?</div>
+    <q-card-section class="">
+      <div class="text-h6">Review and Validate Information</div>
     </q-card-section>
+
     <q-separator />
+
+
     <q-card-section>
-      <div class="q-mb-md"><b>Applicant Details</b></div>
+      <div class="q-mb-md"><b>Applicant Information</b></div>
       <ul>
+        <li>User/Tenant ID: <span class="id-underlined">{{ rental.userId }}</span></li>
         <li>First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}</li>
         <li>Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}</li>
+        <li>Gender: {{ rental.userGender }}</li>
         <li>Username: {{ rental.userUsername }}</li>
         <li>Phone: {{ rental.userPhone }}</li>
         <li>Email: {{ rental.userEmail }}</li>
@@ -16,8 +21,34 @@
     </q-card-section>
 
     <q-card-section>
-      <div class="q-mb-md"><b>Rental Details</b></div>
+      <div class="q-mb-md">
+        <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a bursary)</span> <span
+          v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
+      </div>
+      <ul v-if="rental.userHasBursary">
+        <li>The applicant has a bursary, so a credit score is not required.</li>
+      </ul>
+      <div v-else class="q-mb-md">
+        <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
+          <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score:{{
+            rental.payerData.score }}/80)</span></li>
+          <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
+          <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
+          <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
+          <li v-if="rental.payerData.idNumber">ID Number: {{ rental.payerData.idNumber }}</li>
+          <li v-if="rental.payerData.bankName">Bank Name: {{ rental.payerData.bankName }}</li>
+          <li v-if="rental.payerData.salary">Salary: R {{ rental.payerData.salary }}</li>
+        </ul>
+        <div v-else>
+          <span>Not scored yet.</span>
+        </div>
+      </div>
+    </q-card-section>
+
+    <q-card-section>
+      <div class="q-mb-md"><b>Rental Information</b></div>
       <ul>
+        <li>Application ID: <span class="id-underlined">{{ rental._id }}</span></li>
         <li>
           <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
         </li>
@@ -27,45 +58,52 @@
         <li v-if="rental.rentalEndDate">
           End Date: {{ formatDate(rental.rentalEndDate) }}
         </li>
+        <li v-if="rental.earlyEndDate">
+          Early End Date: {{ formatDate(rental.earlyEndDate) }}
+        </li>
+        <li>
+          Monthly Payment: R {{ rental.rentalPrice }}.00
+        </li>
       </ul>
     </q-card-section>
 
     <q-card-section>
-      <div class="q-mb-md"><b>Unit Details</b></div>
+      <div class="q-mb-md"><b>Unit Information</b></div>
       <ul>
-        <li>
-          <span>Unit number:</span> {{ rental.unitNumber }}
+        <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
+        <li v-if="rental.accessKey">
+          This user is sharing this unit with family or acquaintances.
         </li>
-        <li>
-          Unit Type: {{ rental.unitType }} unit
+        <li v-else>
+          This user is not sharing this unit with family or acquaintances.
         </li>
+        <li>Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span></li>
+
         <li>
-          Monthly Rent: R {{ rental.rentalPrice }}.00
+          <span>Unit Number:</span> {{ rental.unitNumber }}
         </li>
       </ul>
     </q-card-section>
 
-    <!-- <q-card-section v-if="unitDetails.unitStatus !== 'Occupied'" >
-      <div class="q-mb-md"><b>Set the rental period</b></div>
-      <q-input v-model="rental.rentalStartDate" label="Rental Start Date" type="date" :min="minDate" />
-      <q-input v-model="rental.rentalEndDate" label="Rental End Date" type="date" :min="rental.rentalStartDate || minDate" />
-    </q-card-section> -->
-
     <q-card-section>
-      <q-radio v-model="isApproved" :val="true" label="Approve" />
-      <q-radio v-model="isApproved" :val="false" label="Not Approve" />
+      <q-radio v-model="isApproved" :val="true" label="Approved" />
+      <q-radio v-model="isApproved" :val="false" label="Declined" />
     </q-card-section>
 
     <q-card-section v-if="isApproved === false">
-      <q-input filled label-color="black" color="brown" v-model="message" label="Message" type="textarea" stack-label required
+      <q-input label-color="black" color="brown" v-model="message" label="Message" type="textarea" stack-label required
         style="border: 2px solid white;">
       </q-input>
     </q-card-section>
 
-    <q-card-section class="justify-between row">
-      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
+    <q-card-section class="justify-between row" v-if="isApproved !== null">
       <CustomButton v-if="isApproved === true" label="Approve" @click="approveRental" customStyle="width: 45%" />
       <CustomButton v-if="isApproved === false" label="Not Approve" @click="rejectRental" customStyle="width: 45%" />
+      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 45%" />
+    </q-card-section>
+
+    <q-card-section v-else>
+      <CustomButton label="Close" color="white" text-color="black" @click="$emit('close')" customStyle="width: 100%" />
     </q-card-section>
   </q-card>
 </template>
