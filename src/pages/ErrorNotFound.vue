@@ -1,29 +1,22 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
-    <div>
-      <div style="font-size: 30vh">
-        404
-      </div>
-
-      <div class="text-h2" style="opacity:.4">
-        Oops. Nothing here...
-      </div>
-
-      <q-btn
-        class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
-        to="/"
-        label="Go Home"
-        no-caps
-      />
-    </div>
+  <div class="fullscreen flex flex-center column">
+    <div class="q-mt-md text-h6">Oops... This page doesn't exist.</div>
+    <div class="q-mt-sm">You may have taken a wrong turn.</div>
+    <CustomButton
+      class="q-mt-md"
+      label="Try Again"
+      customStyle="width: 250px"
+      to="/"
+    />
   </div>
 </template>
 
-<script setup>
-defineOptions({
-  name: 'ErrorNotFound'
-});
+<script>
+import CustomButton from 'src/components/elements/CustomButton.vue';
+
+export default {
+  components: {
+    CustomButton
+  }
+};
 </script>
