@@ -52,9 +52,13 @@ module.exports = configure(function (ctx) {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
         node: 'node20'
       },
+
+      // inject into build process
       env: {
-        VUE_APP_API_BASE_URL: process.env.VUE_APP_API_BASE_URL
+        VUE_APP_API_BASE_URL: process.env.VUE_APP_API_BASE_URL,
+        VUE_APP_SERVER_CHECK: process.env.VUE_APP_SERVER_CHECK
       },
+
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,

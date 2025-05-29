@@ -6,6 +6,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/HomePage.vue') },
+
+      { path: "/loading", component: () => import("src/pages/LoadingPage.vue"), },
+      { path: "/quick-load", component: () => import("src/pages/QuickLoadingPage.vue"), },
+
       { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
 
       // user authority routes--------------------------------------------------------------------------------------------------------------------

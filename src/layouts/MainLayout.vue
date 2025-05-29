@@ -7,7 +7,9 @@
         $route.path !== '/verify-email' &&
         $route.path !== '/resend-verification' &&
         $route.path !== '/reset-password' &&
-        $route.path !== '/forgot-password'
+        $route.path !== '/forgot-password' &&
+        $route.path !== '/loading' &&
+        $route.path !== '/quick-load'
         // $route.path !== '/admin/dashboard'
       "
     >
