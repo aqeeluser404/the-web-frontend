@@ -223,7 +223,7 @@ export default {
   name: 'LoadingPage',
 
   mounted() {
-    const redirectTimeout = this.$route.query.retry ? 5000 : 3000
+    const redirectTimeout = this.$route.query.retry ? 50000 : 3000
     setTimeout(() => {
       this.$router.replace(this.$route.query.redirect || '/')
     }, redirectTimeout)
