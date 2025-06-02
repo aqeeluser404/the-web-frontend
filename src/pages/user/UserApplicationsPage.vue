@@ -13,7 +13,7 @@
 
 
     <div class="q-pa-md row justify-center">
-      <q-card flat bordered class="col-md-9 col-12 q-ma-sm">
+      <q-card flat bordered class="col-md-11 col-12 q-ma-sm">
 
         <q-card-section class="row justify-center">
           <div class="text-h6">Rental Information</div>
@@ -54,7 +54,8 @@
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
-                <th class="text-left">Rental Price</th>
+                <th class="text-left">Parking</th>
+                <th class="text-left">Total Monthly Price</th>
                 <th class="text-left">Unit Number</th>
                 <th class="text-left">Status</th>
                 <th class="text-left">Actions</th>
@@ -89,7 +90,15 @@
                     N/A
                   </div>
                 </td>
-                <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}</td>
+                <td class="text-left cursor-pointer">
+                  <div v-if="rental.parking?.hasParking">
+                    Yes (Added Fee: R{{ Number(rental.parking?.fee).toFixed(2) }})
+                  </div>
+                  <div v-else>
+                    No
+                  </div>
+                </td>
+                <td class="text-left cursor-pointer">R {{ Number(rental.rentalPrice).toFixed(2) }}</td>
                 <td class="text-center cursor-pointer">{{ rental.unitNumber }}</td>
                 <td class="text-left cursor-pointer text-uppercase" :class="
                     { 'pending-status': rental.status === 'Pending'},
@@ -189,13 +198,13 @@ export default {
           return {
             ...rental,
             unitType: unit?.unitType || 'Unknown',
-            unitNumber: unit?.unitNumber || 'N/A'
+            unitNumber: unit?.unitNumber || 'N/A',
           };
         } catch (error) {
           return {
             ...rental,
             unitType: 'Unknown',
-            unitNumber: 'N/A'
+            unitNumber: 'N/A',
           };
         }
       }));

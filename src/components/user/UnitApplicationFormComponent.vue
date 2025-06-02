@@ -42,7 +42,7 @@
       <ul>
         <li v-if="unit.unitStatus !== 'Occupied'">Unit Availability: {{ unit.unitOccupants - unit.currentOccupants }} spots remaining.</li>
         <li v-if="nextAvailabilityDate !== null">Next Available Date: {{ formatDate(nextAvailabilityDate) }}</li>
-        <li>Monthly price per occupant: R <span style="text-decoration: underline;">{{ unit.unitPrice }}.00</span></li>
+        <li>Monthly price per occupant: R <span style="text-decoration: underline;">{{ Number(unit.unitPrice).toFixed(2) }}</span></li>
         <li>Gender Assignment:
           <span v-if="unit.genderAssignment">This unit is currently assigned to <span style="text-decoration: underline;">{{ unit.genderAssignment.toLowerCase() }} occupants.</span></span>
           <span v-if="!unit.genderAssignment && !unit.accessKey.isShared">This unit is currently <span style="text-decoration: underline;">unassigned.</span></span>
@@ -70,6 +70,22 @@
     <q-card-section v-if="unit.accessKey.isShared">
       <div class="q-mb-sm"><b>Provide Shared Access Key</b></div>
       <q-input v-model="rentalDetails.accessKey" @input="setAccessKeyTrue" label="*" required style="border: 2px solid white;" />
+    </q-card-section>
+
+    <q-card-section v-if="unit.unitStatus !== 'Occupied'">
+      <div class="q-mb-sm"><b>Would you like to add parking to your application?</b></div>
+
+      <q-radio
+        v-model="rentalDetails.parking.hasParking"
+        :val="true"
+        :label="`Include Parking (R ${rentalDetails.parking.fee.toFixed(2)} added to monthly payment)`"
+      />
+      <br>
+      <q-radio
+        v-model="rentalDetails.parking.hasParking"
+        :val="false"
+        label="I don't need parking"
+      />
     </q-card-section>
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'" >
@@ -130,7 +146,11 @@ export default {
         rentalStartDate: '',
         rentalEndDate: '',
         accessKeyIsTrue: null,
-        accessKey: ''
+        accessKey: '',
+        parking: {
+          hasParking: false,
+          fee: 750.0
+        }
       },
       nextAvailabilityDate: null,
       rentals: [],

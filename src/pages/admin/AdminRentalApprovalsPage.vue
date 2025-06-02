@@ -66,6 +66,36 @@
               </q-card-section>
 
               <q-card-section>
+                <div class="q-mb-md">
+                  <b>Parking Information</b><br>
+                </div>
+                <ul v-if="rental.parking?.hasParking">
+                  <li>Accounting for Parking Fees in Monthly Pricing (Fee: R{{ Number(rental.parking.fee).toFixed(2) }})</li>
+                </ul>
+                <ul v-else>
+                  <li>Parking Not Included</li>
+                </ul>
+              </q-card-section>
+
+              <q-card-section>
+                <div class="q-mb-md"><b>Unit Information</b></div>
+                <ul>
+                  <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
+                  <li v-if="rental.accessKey">
+                    This user is sharing this unit with family or acquaintances.
+                  </li>
+                  <li v-else>
+                    This user is not sharing this unit with family or acquaintances.
+                  </li>
+                  <li>Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span></li>
+                  <li>Unit Number: {{ rental.unitNumber }}</li>
+                  <li>
+                    Unit Price: R {{ Number(rental.unitPrice).toFixed(2) }}
+                  </li>
+                </ul>
+              </q-card-section>
+
+              <q-card-section>
                 <div class="q-mb-md"><b>Rental Information</b></div>
                 <ul>
                   <li>Application ID: <span class="id-underlined">{{ rental._id }}</span></li>
@@ -81,26 +111,11 @@
                   <li v-if="rental.earlyEndDate">
                     Early End Date: {{ formatDate(rental.earlyEndDate) }}
                   </li>
-                  <li>
-                    Monthly Payment: R {{ rental.rentalPrice }}.00
-                  </li>
-                </ul>
-              </q-card-section>
-
-              <q-card-section>
-                <div class="q-mb-md"><b>Unit Information</b></div>
-                <ul>
-                  <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
-                  <li v-if="rental.accessKey">
-                    This user is sharing this unit with family or acquaintances.
+                  <li v-if="rental.parking?.hasParking">
+                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (R {{ Number(rental.unitPrice).toFixed(2) }} + R {{ Number(rental.parking.fee).toFixed(2) }})
                   </li>
                   <li v-else>
-                    This user is not sharing this unit with family or acquaintances.
-                  </li>
-                  <li>Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span></li>
-
-                  <li>
-                    <span>Unit Number:</span> {{ rental.unitNumber }}
+                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }}
                   </li>
                 </ul>
               </q-card-section>
