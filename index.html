@@ -9,16 +9,75 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
 
-    <!-- <link rel="icon" type="image/png" sizes="128x128" href="icons/favicon-128x128.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-    <link rel="icon" type="image/ico" href="favicon.ico"> -->
+    <!-- Favicon Setup -->
+    <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png">
+    <link rel="manifest" href="/icon/site.webmanifest">
 
-    <link rel="icon" type="image/png" sizes="128x128" href="web3dlogo1.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="web3dlogo1.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="web3dlogo1.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="web3dlogo1.png">
+    <!-- Canonical Link -->
+    <link rel="canonical" href="https://www.the-web.co.za">
+
+    <!-- Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "The Web | Student Housing in Stellenbosch, Secure & Affordable Rentals",
+      "url": "https://www.the-web.co.za",
+      "description": "The Web offers affordable student rentals with study lounges, high-speed Wi-Fi, and social spaces, perfect for students seeking secure accommodation.",
+      "image": "https://www.the-web.co.za/assets/outside3.jpg",
+      "logo": "https://www.the-web.co.za/icon/favicon-512x512.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "ERF 3223",
+        "addressLocality": "Idasvallei",
+        "addressRegion": "Western Cape",
+        "postalCode": "7602",
+        "addressCountry": "South Africa"
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "ZAR",
+        "price": "2500",
+        "availability": "https://schema.org/InStock"
+      },
+      "brand": {
+        "@type": "Brand",
+        "name": "The Web",
+        "logo": "https://www.the-web.co.za/icon/favicon-512x512.png"
+      }
+    }
+    </script>
+
+    <!-- Structured Data for FAQs (Boosts SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What amenities does The Web Student Housing offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Web provides high-speed Wi-Fi, study lounges, resort-style pools, and social courtyards."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does student housing cost at The Web?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our housing starts from under ZAR 3000 per month, including top-tier amenities for students."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <!-- quasar:entry-point -->

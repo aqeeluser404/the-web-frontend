@@ -1,8 +1,8 @@
 {
   "name": "the-web-quasar",
   "version": "0.0.1",
-  "description": "A Flat Renting App",
-  "productName": "The Web",
+  "description": "The Web offers modern student housing with high-speed Wi-Fi, social spaces, and academic-friendly amenities.",
+  "productName": "The Web | Student Housing in Stellenbosch, Secure & Affordable Rentals",
   "author": "Aqeel <aqeelhanslo@gmail.com>",
   "private": true,
   "scripts": {

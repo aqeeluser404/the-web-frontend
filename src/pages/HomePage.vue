@@ -470,6 +470,21 @@ import RentalService from 'src/services/RentalService'
 import BedStatsComponentBlack from 'src/components/user/BedStatsComponentBlack.vue'
 import BedStatsComponent from 'src/components/user/BedStatsComponent.vue'
 
+
+// SPECIFIC PAGE SEO ============================================================================================
+import { useMeta } from 'quasar'
+
+useMeta({
+  title: 'The Web | Student Housing in Stellenbosch, Secure & Affordable Rentals',
+  meta: [
+    { name: 'description', content: 'The Web offers modern student housing with high-speed Wi-Fi, social spaces, and academic-friendly amenities.' },
+    { name: 'keywords', content: 'student housing, student rentals, The Web, university apartments, study-friendly housing' },
+    { property: 'og:title', content: 'The Web | Student Housing Designed for Success' },
+    { property: 'og:image', content: 'https://www.the-web.co.za/assets/outside3.jpg' },
+    { property: 'og:description', content: 'Designed around the needs of its residents, The Web offers social courtyards, study lounges, high-speed Wi-Fi, resort-style pools, and 24/7 security.' }
+  ]
+});
+
 export default {
   name: 'Homepage',
 
@@ -519,7 +534,7 @@ export default {
       userContact: {
         firstName: '',
         email: '',
-      }, message: ''
+      }, message: '',
     }
   },
   components: {
