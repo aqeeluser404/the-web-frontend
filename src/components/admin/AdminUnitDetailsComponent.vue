@@ -71,7 +71,7 @@
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit Number</q-item-section>
         <q-item-section class="text-left text-subtitle1">
-          <q-input readonly v-model="unit.unitNumber" />
+          <q-input v-model="unit.unitNumber" />
         </q-item-section>
       </q-item>
       <q-item>
@@ -211,6 +211,7 @@ export default {
       }).onOk(async () => {
         const formData = new FormData();
 
+        formData.append('unitNumber', this.unit.unitNumber);
         formData.append('floorLevel', this.unit.floorLevel);
         formData.append('unitType', this.unit.unitType);
         formData.append('unitOccupants', this.unit.unitOccupants);

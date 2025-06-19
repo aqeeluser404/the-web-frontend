@@ -25,13 +25,41 @@ class Helper {
   }
   static sortByProperty(array, property, order = 'asc') {
     if (!array || !Array.isArray(array)) return [];
+
     return array.slice().sort((a, b) => {
-      const valueA = a[property]
-      const valueB = b[property]
+      const valueA = (a[property] ?? '').toString();
+      const valueB = (b[property] ?? '').toString();
+
+      // Special handling for unit numbers (with or without dashes)
+      if (property === 'unitNumber') {
+        // Parse the numbers (e.g., "1-02" becomes [1, 2], "101" becomes [1, 1])
+        const parseUnitNumber = (str) => {
+          if (str.includes('-')) {
+            const [floor, unit] = str.split('-');
+            return [parseInt(floor || 0), parseInt(unit || 0)];
+          }
+          // Handle old format numbers (e.g., 101, 201)
+          const num = parseInt(str) || 0;
+          const floor = Math.floor(num / 100);
+          const unit = num % 100;
+          return [floor, unit];
+        };
+
+        const [floorA, unitA] = parseUnitNumber(valueA);
+        const [floorB, unitB] = parseUnitNumber(valueB);
+
+        // First compare by floor, then by unit number
+        if (floorA !== floorB) {
+          return order === 'asc' ? floorA - floorB : floorB - floorA;
+        }
+        return order === 'asc' ? unitA - unitB : unitB - unitA;
+      }
+
+      // Default sorting for other properties
       if (valueA < valueB) return order === 'asc' ? -1 : 1;
       if (valueA > valueB) return order === 'asc' ? 1 : -1;
       return 0;
-    })
+    });
   }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -255,6 +283,24 @@ class Helper {
       } else {
         const user = await UserService.FindUserByToken()
         if (user && user.userType === 'admin') {
+          next();
+        } else {
+          next({ path: '/' });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching token or user details:', error);
+      next({ path: '/' });
+    }
+  }
+  static async beforeRouteEnterVendor(to, from, next) {
+    try {
+      const isLoggedIn = await Helper.checkCookie();
+      if (!isLoggedIn) {
+        next({ path: '/' });
+      } else {
+        const user = await UserService.FindUserByToken()
+        if (user && user.userType === 'vendor') {
           next();
         } else {
           next({ path: '/' });

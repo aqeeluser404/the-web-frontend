@@ -65,7 +65,7 @@
 
             <!-- dashboards -->
             <q-btn
-              v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')"
+              v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user' || userDetails.userType == 'vendor')"
               @click="openDash"
               class="custom-button q-py-sm large-screen-only"
               label="Book Now" flat rounded />
@@ -89,6 +89,12 @@
               to="/admin"
               class="custom-button q-py-sm large-screen-only"
               icon="eva-pie-chart-outline" label="Admin" flat rounded />
+
+            <q-btn
+              v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'"
+              to="/vendor"
+              class="custom-button q-py-sm large-screen-only"
+              icon="eva-pie-chart-outline" label="Vendor" flat rounded />
 
             <!-- PHP CODE -->
             <q-btn
@@ -142,7 +148,7 @@
               </q-item>
 
               <!-- authentication -->
-              <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user')">
+              <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user' || userDetails.userType == 'vendor')">
                 <q-item-section class="">Book Now</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/user/profile" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
@@ -157,6 +163,9 @@
 
               <q-item clickable v-close-popup to="/admin" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
                 <q-item-section class="">Admin Dashboard</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/vendor" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'">
+                <q-item-section class="">Vendor Dashboard</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
                 <q-item-section class="">Login</q-item-section>
@@ -187,6 +196,18 @@
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details" icon="eva-briefcase" />
 
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration" icon="eva-settings-outline" />
+            </q-breadcrumbs>
+          </q-toolbar>
+        </div>
+      </div>
+
+      <!-- breadcrumbs -->
+      <div v-if="isVendorRoute">
+        <div class="text-black text-caption">
+          <q-toolbar class="q-px-lg">
+            <q-breadcrumbs flat active-color="black">
+              <q-breadcrumbs-el v-if="$route.path.includes('/vendor')" label="Vendor" to="/vendor" icon="home" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/vendor/call-log')" label="Call Log Administration" icon="eva-settings-outline" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>
@@ -230,10 +251,13 @@ export default {
   computed: {
     headerHeight() {
       // return this.isAdminRoute ? '20vh' : '10vh';
-      return this.isAdminRoute ? '34vh' : '23vh';
+      return (this.isAdminRoute || this.isVendorRoute) ? '34vh' : '23vh';
     },
     isAdminRoute() {
       return this.$route.path.startsWith('/admin')
+    },
+    isVendorRoute() {
+      return this.$route.path.startsWith('/vendor')
     },
   },
   mounted() {

@@ -30,7 +30,7 @@ class CallLogService {
     }
   }
   static async findAllCallLogs() {
-    const ENDPOINT = "/admin/call-logs"
+    const ENDPOINT = "/call-logs"
     try {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
@@ -39,7 +39,7 @@ class CallLogService {
     }
   }
   static async updateCallLog(callLogId, callLogDetails) {
-    const ENDPOINT = `/admin/call-log/${callLogId}`
+    const ENDPOINT = `/call-log/${callLogId}`
     try {
       const response = await axiosInstance.put(ENDPOINT, callLogDetails)
       return response.data

@@ -11,6 +11,15 @@ class UserService {
       Logger.error(error)
     }
   }
+  static async createUser(user) {
+    const ENDPOINT = "/admin/users"
+    try {
+      const response = await axiosInstance.post(ENDPOINT, user)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
   static async login(usernameOrEmail, password) {
     const ENDPOINT = "/auth/login";
     try {

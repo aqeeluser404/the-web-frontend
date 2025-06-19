@@ -109,7 +109,7 @@
     </q-card-section>
 
     <q-card-section v-if="isApproved === false">
-      <q-input label-color="black" color="brown" v-model="message" label="Message" type="textarea" stack-label required
+      <q-input label-color="black" v-model="message" label="Message" type="textarea" stack-label required
         style="border: 2px solid white;">
       </q-input>
     </q-card-section>

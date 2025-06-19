@@ -1,7 +1,9 @@
 <template>
   <q-page>
     <div class="q-pa-md row justify-center">
-
+      <BedGraphComponent />
+    </div>
+    <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
         <!-- Pie Chart Section -->
         <q-card-section class="row justify-center">
@@ -21,7 +23,6 @@
           /> -->
         </q-card-section>
       </q-card>
-
       <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
         <!-- Table Section -->
         <q-card-section class="row justify-center">
@@ -131,9 +132,13 @@
 </template>
 
 <script>
-import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
-Chart.register(PieController, ArcElement, Tooltip, Legend);
-
+import { Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
+  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
+ } from 'chart.js';
+Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
+  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
+);
+import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
 import UserService from 'src/services/UserService';
@@ -159,12 +164,12 @@ export default {
       rentalStatus: ['All', 'Approved', 'Pending', 'Rejected', 'Ended'],
       selectedRentalStatus: 'All',
       showAllStatuses: true,
-      pieChart: null
     };
   },
   components: {
     CustomButton,
-    AdminExtendRentalComponent
+    AdminExtendRentalComponent,
+    BedGraphComponent
   },
   methods: {
     formatDate: Helper.formatDate,
@@ -249,7 +254,16 @@ export default {
               position: 'bottom'
             },
             tooltip: {
-              enabled: true
+              callbacks: {
+                label: function (tooltipItem) {
+                  const dataset = tooltipItem.chart.data.datasets[0];
+                  const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                  const value = dataset.data[tooltipItem.dataIndex];
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  // const label = tooltipItem.chart.data.labels[tooltipItem.dataIndex] || '';
+                  return `${percentage}%`;
+                }
+              }
             }
           },
           onClick: (event, elements) => {

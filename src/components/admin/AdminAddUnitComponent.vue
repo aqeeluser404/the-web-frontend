@@ -156,34 +156,47 @@ export default {
           const floorNum = parseInt(floorName);
           floorPrefix = !isNaN(floorNum) ? (floorNum + 1).toString() : '1';
         }
-        // Default starting number for this floor (e.g., 101, 201, etc.)
-        const defaultStartNumber = parseInt(floorPrefix + '01');
+
+        // Default starting number for this floor (e.g., 1-01, 2-01, etc.)
+        const defaultStartNumber = `${floorPrefix}-01`;
+
         if (filteredUnits.length === 0) {
-          this.unit.unitNumber = defaultStartNumber.toString();
+          this.unit.unitNumber = defaultStartNumber;
           return;
         }
+
         const unitNumbers = filteredUnits
           .map(u => {
             const unitNumStr = u.unitNumber?.toString() || '';
-            if (unitNumStr.startsWith(floorPrefix)) {
-              const num = parseInt(unitNumStr);
+            // Handle both formats (with dash and without)
+            if (unitNumStr.includes('-')) {
+              const [prefix, num] = unitNumStr.split('-');
+              if (prefix === floorPrefix) {
+                const numValue = parseInt(num);
+                return isNaN(numValue) ? 0 : numValue;
+              }
+            } else if (unitNumStr.startsWith(floorPrefix)) {
+              const num = parseInt(unitNumStr.substring(floorPrefix.length));
               return isNaN(num) ? 0 : num;
             }
             return 0;
           })
-          .filter(num => num >= defaultStartNumber)
+          .filter(num => num > 0) // Filter out invalid numbers
           .sort((a, b) => a - b);
 
         if (unitNumbers.length === 0) {
-          this.unit.unitNumber = defaultStartNumber.toString();
+          this.unit.unitNumber = defaultStartNumber;
           return;
         }
-        let nextNumber = defaultStartNumber;
+
+        // Find the next available number (starting from 1)
+        let nextNumber = 1;
         for (const num of unitNumbers) {
           if (num > nextNumber) break;
           nextNumber = num + 1;
         }
-        const maxNumberForFloor = parseInt(floorPrefix + '99');
+
+        const maxNumberForFloor = 99;
         if (nextNumber > maxNumberForFloor) {
           this.$q.notify({
             type: 'negative',
@@ -192,13 +205,77 @@ export default {
           this.unit.unitNumber = 'Error';
           return;
         }
-        this.unit.unitNumber = nextNumber.toString();
+
+        // Format the number with leading zero if needed
+        const formattedNumber = nextNumber.toString().padStart(2, '0');
+        this.unit.unitNumber = `${floorPrefix}-${formattedNumber}`;
       } catch (error) {
         console.error('Error fetching units:', error);
         this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });
         this.unit.unitNumber = 'Error';
       }
     },
+    // async fetchLatestUnitNumber(floorLevel) {
+    //   try {
+    //     const units = await UnitService.getAllUnits();
+    //     const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
+
+    //     let floorPrefix;
+    //     const floorName = (floorLevel || '').toString().toLowerCase().trim();
+
+    //     if (floorName === 'first floor') {
+    //       floorPrefix = '1';
+    //     } else if (floorName === 'second floor') {
+    //       floorPrefix = '2';
+    //     } else if (floorName === 'third floor') {
+    //       floorPrefix = '3';
+    //     } else {
+    //       const floorNum = parseInt(floorName);
+    //       floorPrefix = !isNaN(floorNum) ? (floorNum + 1).toString() : '1';
+    //     }
+    //     // Default starting number for this floor (e.g., 101, 201, etc.)
+    //     const defaultStartNumber = parseInt(floorPrefix + '01');
+    //     if (filteredUnits.length === 0) {
+    //       this.unit.unitNumber = defaultStartNumber.toString();
+    //       return;
+    //     }
+    //     const unitNumbers = filteredUnits
+    //       .map(u => {
+    //         const unitNumStr = u.unitNumber?.toString() || '';
+    //         if (unitNumStr.startsWith(floorPrefix)) {
+    //           const num = parseInt(unitNumStr);
+    //           return isNaN(num) ? 0 : num;
+    //         }
+    //         return 0;
+    //       })
+    //       .filter(num => num >= defaultStartNumber)
+    //       .sort((a, b) => a - b);
+
+    //     if (unitNumbers.length === 0) {
+    //       this.unit.unitNumber = defaultStartNumber.toString();
+    //       return;
+    //     }
+    //     let nextNumber = defaultStartNumber;
+    //     for (const num of unitNumbers) {
+    //       if (num > nextNumber) break;
+    //       nextNumber = num + 1;
+    //     }
+    //     const maxNumberForFloor = parseInt(floorPrefix + '99');
+    //     if (nextNumber > maxNumberForFloor) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Maximum unit numbers reached for this floor'
+    //       });
+    //       this.unit.unitNumber = 'Error';
+    //       return;
+    //     }
+    //     this.unit.unitNumber = nextNumber.toString();
+    //   } catch (error) {
+    //     console.error('Error fetching units:', error);
+    //     this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });
+    //     this.unit.unitNumber = 'Error';
+    //   }
+    // },
     addUnit() {
       if (this.unit.unitNumber === '' || this.unit.floorLevel === '' || this.unit.unitType === '' || this.unit.unitOccupants === '' || this.unit.unitDescription === '' || this.unit.unitPrice === '') {
         this.$q.notify({ type: 'negative', message: 'Please fill in all fields' })

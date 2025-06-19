@@ -23,7 +23,7 @@ export default {
     },
     label: {
       type: String,
-      required: true
+      default: ''
     },
     color: {
       type: String,
@@ -42,7 +42,7 @@ export default {
       default: 'custom-button q-px-lg q-py-sm'
     },
     customStyle: {
-      type: String,
+      type: [String, Object],
       default: 'width: 100%;'
     },
     to: {
@@ -52,6 +52,11 @@ export default {
     clickHandler: {
       type: Function,
       default: null
+    }
+  },
+  computed: {
+    normalizedStyle() {
+      return typeof this.customStyle === 'object' ? this.customStyle : { style: this.customStyle };
     }
   },
   methods: {

@@ -26,6 +26,11 @@
             <div style="width: 300px; height: 300px;">
               <canvas ref="userPieChart"></canvas>
             </div>
+
+          </q-card-section>
+
+          <q-card-section>
+            <CustomButton color="black" text-color="white" label="Add New User" @click="openAddNewUsersDialog" />
           </q-card-section>
         </q-card>
 
@@ -83,6 +88,9 @@
         </q-card>
       </div>
     </div>
+    <q-dialog v-model="addUsersDialog">
+      <AdminAddUserComponent @close="handleClose" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -93,6 +101,7 @@ Chart.register(PieController, ArcElement, Tooltip, Legend, BarController, BarEle
 import UserService from 'src/services/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
+import AdminAddUserComponent from 'src/components/admin/AdminAddUserComponent.vue';
 
 export default {
   name: "AdminUsersCard",
@@ -108,11 +117,13 @@ export default {
       userSelectors: ['All', 'Admin', 'User'],
       selectedUser: 'All',
       userPieChart: null,
-      loginBarChart: null
+      loginBarChart: null,
+      addUsersDialog: false,
     };
   },
   components: {
-    CustomButton
+    CustomButton,
+    AdminAddUserComponent
   },
   methods: {
     formatDate: Helper.formatDate,
@@ -297,8 +308,20 @@ export default {
             legend: {
               position: 'bottom'
             },
+            // tooltip: {
+            //   enabled: true
+            // }
             tooltip: {
-              enabled: true
+              callbacks: {
+                label: function (tooltipItem) {
+                  const dataset = tooltipItem.chart.data.datasets[0];
+                  const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                  const value = dataset.data[tooltipItem.dataIndex];
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  // const label = tooltipItem.chart.data.labels[tooltipItem.dataIndex] || '';
+                  return `${percentage}%`;
+                }
+              }
             }
           },
           onClick: (event, elements) => {
@@ -381,7 +404,17 @@ export default {
 
     viewUserDetails(id) {
       Helper.adminUserDetails(id, this.$router);
-    }
+    },
+
+    openAddNewUsersDialog() {
+      this.addUsersDialog = true
+    },
+    handleClose() {
+      // this.updateDetailsDialog = false
+      // this.addUnitsDialog = false;
+      this.addUsersDialog = false
+      this.findAllUsers();
+    },
   },
   created() {
     this.findAllUsers();

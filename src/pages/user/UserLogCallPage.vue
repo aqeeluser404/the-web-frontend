@@ -193,14 +193,13 @@ export default {
               @click="callLog.callType = option.value"
               style="border: 1px solid;"
             >
-              <q-tooltip>{{ option.label }}</q-tooltip>
             </q-btn>
           </div>
         </q-card-section>
 
         <q-card-section class="row justify-center">
           <CustomButton
-            label="Initiate Call"
+            label="Log Call"
             @click="initiateCall"
             :disabled="!callLog.callType"
             customStyle="width: 250px; @media (max-width: 600px) { width: 100% !important; }"
@@ -573,4 +572,9 @@ export default {
     flex-direction: column
     align-items: center
     justify-content: center
+
+.custom-button
+  &:hover
+    background-color: black !important
+    color: white !important
 </style>
