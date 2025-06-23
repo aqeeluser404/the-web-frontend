@@ -22,7 +22,6 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-
       'axios',
     ],
 
@@ -54,6 +53,14 @@ module.exports = configure(function (ctx) {
       },
       env: {
         VUE_APP_API_BASE_URL: process.env.VUE_APP_API_BASE_URL
+      },
+      html: {
+        minify: {
+          minifyJS: true,
+          minifyCSS: true,
+          collapseWhitespace: true,
+          removeComments: true
+        }
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'

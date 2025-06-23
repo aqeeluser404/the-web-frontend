@@ -1,0 +1,19 @@
+User-agent: *
+# Block sensitive areas
+Disallow: /admin/
+Disallow: /user/
+Disallow: /vendor/
+Disallow: /units/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /resend-verification
+Disallow: /frequently-asked-questions
+
+# Allow the homepage (and only that)
+Allow: /
+
+# Optional: Add sitemap reference
+Sitemap: https://the-web.co.za/sitemap.xml

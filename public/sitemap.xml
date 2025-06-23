@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.the-web.co.za/</loc>
+    <loc>https://the-web.co.za/</loc>
     <priority>1.0</priority>
+  </url>
+
+  <!-- Auth pages (lower priority) -->
+  <url>
+    <loc>https://the-web.co.za/auth/login</loc>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://the-web.co.za/auth/register</loc>
+    <priority>0.3</priority>
   </url>
 </urlset>
