@@ -41,7 +41,7 @@
         </q-item-section>
       </q-item>
       <q-item>
-        <q-item-section class="text-left text-subtitle1">Second Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">First Image</q-item-section>
         <q-item-section class="text-left text-subtitle1">
           <q-file v-model="newImage2" label="Upload Second Image" label-color="black" color="black" accept="image/*">
             <template v-slot:prepend>
@@ -51,16 +51,55 @@
         </q-item-section>
       </q-item>
       <q-item>
-        <q-item-section class="text-left text-subtitle1">Third Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">Second Image</q-item-section>
         <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage3" label="Upload Third Image" label-color="black" color="black" accept="image/*">
+          <q-file v-model="newImage3" label="Upload Second Image" label-color="black" color="black" accept="image/*">
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>
           </q-file>
         </q-item-section>
       </q-item>
-
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Third Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage4" label="Upload Third Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Fourth Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage5" label="Upload Fourth Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Fifth Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage6" label="Upload Fifth Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">Sixth Image</q-item-section>
+        <q-item-section class="text-left text-subtitle1">
+          <q-file v-model="newImage7" label="Upload Sixth Image" label-color="black" color="black" accept="image/*">
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </q-item-section>
+      </q-item>
       <q-item>
         <q-item-section class="text-left text-subtitle1">Unit ID </q-item-section>
         <q-item-section class="text-left text-subtitle1">
@@ -145,7 +184,13 @@ export default {
       showImageDialog: false,
 
       // PHP VERSION
-      newImage1: null, newImage2: null, newImage3: null,
+      newImage1: null,
+      newImage2: null,
+      newImage3: null,
+      newImage4: null,
+      newImage5: null,
+      newImage6: null,
+      newImage7: null
     }
   },
   components: {
@@ -222,6 +267,10 @@ export default {
         if (this.newImage1) formData.append('images[]', this.newImage1);
         if (this.newImage2) formData.append('images[]', this.newImage2);
         if (this.newImage3) formData.append('images[]', this.newImage3);
+        if (this.newImage4) formData.append('images[]', this.newImage4);
+        if (this.newImage5) formData.append('images[]', this.newImage5);
+        if (this.newImage6) formData.append('images[]', this.newImage6);
+        if (this.newImage7) formData.append('images[]', this.newImage6);
 
         try {
           await UnitService.updateUnit(this.unit._id, formData);
