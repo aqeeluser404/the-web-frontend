@@ -15,19 +15,26 @@
     </div>
 
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <div style="height: 100%; margin: 4% 0;">
+    <div style="height: 100%;">
       <div flat class="
         bg-black
         text-white
         row justify-between
         q-pa-lg
         ">
-        <q-card-section class="text-h4">Attention Students! Looking to rent in 2026?</q-card-section>
+        <q-card-section class="text-h4">Ready for Move-in, 2026</q-card-section>
         <q-card-section>
           <CustomButton color="white" text-color="black" label="Visit the Unit Rental List" @click="openUnitDash"
             style="border: 2px solid black;" />
         </q-card-section>
       </div>
+    </div>
+
+    <div style="height: 100%; background-color: #222;" class="text-white row justify-between q-pa-lg">
+      <q-card-section>
+        <div class="text-h4 q-mb-md">Welcome to The Web - 1 Old Helshoogte Road, Idas Valley, Stellenbosch, 7600</div>
+        <div>Discover a first-of-its-kind student residence nestled between the Banhoek and Simonsberg Mountains.</div>
+      </q-card-section>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
@@ -43,35 +50,35 @@
         column flex-center
         ">
         <q-card-section class="fade-in-scale">
-          <div class="text-white"><b>Feature Rich</b></div>
-          <div class="text-h3 q-mb-md">World-Class Amenities</div>
-          <div>Designed around the needs of its residents, The Web strikes the perfect balance between lifestyle and
-            academic amenities.</div>
+          <!-- <div class="text-white"><b></b></div> -->
+          <div class="text-h3 q-mb-md">The Web - A Place to Live, Learn & Belong</div>
+          <div>Imagine a fully furnished, premium student residence with:</div>
           <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
-            <li><span class="q-mr-sm">✔️</span> Social courtyard</li>
-            <li><span class="q-mr-sm">✔️</span> Resort-style swimming pool</li>
-            <li><span class="q-mr-sm">✔️</span> Woodfire braai areas & firepit</li>
-            <li><span class="q-mr-sm">✔️</span> Outdoor undercover lounge</li>
-            <li><span class="q-mr-sm">✔️</span> Restaurant & coffee shop</li>
-            <li><span class="q-mr-sm">✔️</span> Themed professional kitchens per floor</li>
-            <li><span class="q-mr-sm">✔️</span> Backup power to common areas</li>
-            <li><span class="q-mr-sm">✔️</span> 24hr security with biometric access</li>
-            <li><span class="q-mr-sm">✔️</span> High-speed Wi-Fi throughout</li>
-            <li><span class="q-mr-sm">✔️</span> Secure car, motorbike & bicycle parking</li>
+            <li><span class="q-mr-sm">✔️</span> Secure 24-hour access in a gated setting</li>
+            <li><span class="q-mr-sm">✔️</span> Modern finishes throughout</li>
+            <li><span class="q-mr-sm">✔️</span> Carefully screened shared rooms offering semi-private comfort</li>
+            <li><span class="q-mr-sm">✔️</span> Flexible options ranging from single to duo suites with elegant
+              Soji-style screens</li>
+            <li><span class="q-mr-sm">✔️</span> Communal spaces for collaboration, study, and socialising</li>
+            <li><span class="q-mr-sm">✔️</span> A stunning fourth-floor rooftop deck designed for socialising,
+              entertainment, and braais — complete with 360-degree panoramic views of the Banhoek and Simonsberg
+              mountain ranges</li>
+            <li><span class="q-mr-sm">✔️</span> Proximity to Stellenbosch University, shopping, cafés, and scenic trails
+            </li>
           </ul>
           <!-- <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="white" text-color="black" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
           <CustomButton v-else color="white" text-color="black"  customStyle="width: 100%" label="Make an Enquiry" @click="scrollToSection('contact-section')" /> -->
         </q-card-section>
       </q-card>
       <div class="col-md-5 col-12 slide-in-right">
-        <q-img src="~src/assets/resources/home/outside3.jpg" alt="hero image" class="side-image" />
+        <q-img src="~src/assets/resources/home/slider/3.jpg" alt="hero image" class="side-image" />
       </div>
     </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- images -->
 
-    <div id="images-section" style="margin: 4% 0" class="bg-grey">
+    <div id="images-section" style="margin: 4%; margin-top: 0;" class="bg-grey">
       <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
       <q-carousel animated v-model="currentSlide2" infinite autoplay :autoplay-interval="5000"
         transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
@@ -209,25 +216,32 @@
     <div class="q-pa-xl" style="height: 100%; margin: 2% 0; background-color: #222;">
       <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
         <q-card-section>
-          <div class="text-h4">Enhancing a Quaint Suburb of Stellenbosch</div>
+          <div class="text-h4">A New Landmark with Deep Roots</div>
         </q-card-section>
         <q-card-section class="">
           <div class="col-md-6">
-            Paramount to The Web's vision, is to ultimately enhance this quaint suburb by making it more
-            pedestrian-friendly and in doing so, create a café culture atmosphere along its beautiful tree-lined
-            streets.
+            Located on a historic farm landscape granted in 1683 and honoured as a Grade I heritage area since 1976,
+            Idas Valley is steeped in stories of early French Huguenot pioneers, Cape Dutch architecture, and
+            generations of local communities.
           </div>
           <div class="col-md-6">
-            In a Stellenbosch first, over R35 million has been raised and earmarked by a group of developers in the area
-            to build towards this vision and amplify the suburb, as well as improve its accessibility to campus. The
-            funds will be allocated to 11 projects that range from major security enhancements, to local area
-            infrastructure upgrades for all who reside in the area.
+            From the original homesteads built by Samuel Johannes Cats in the late 1700s to the surrounding werf
+            complexes at Rustenburg and Ida Minor , this valley has preserved its authentic charm and continues to
+            inspire collective heritage conservation.
           </div>
           <div class="col-md-6">
-            This desirable location, well on its way becoming the next Stellies student hub, has likeminded developers
-            already taking advantage of The Web's entrance into the area by purchasing existing houses in the precinct
-            for further student development.
+            Today, Idas Valley is more than history — it’s a vibrant, tight-knit community shaped by local culture,
+            schools, artisans, and the natural landscape under shared custodianship.
           </div>
+        </q-card-section>
+        <br>
+        <q-card-section>
+          <div class="text-h4">A Life Surrounded by Heritage & Nature</div>
+        </q-card-section>
+        <q-card-section>
+          Wake up to mountain vistas and the valley’s legacy of Cape Dutch architecture <br>
+          Take breaks exploring local hiking, e‑bike, and trail routes in the Idas Valley Nature Area <br>
+          Connect with a dynamic community deeply rooted in culture, craftsmanship, and heritage <br>
         </q-card-section>
       </q-card>
     </div>
@@ -242,20 +256,18 @@
         column flex-center
         ">
         <q-card-section class="fade-in-scale">
-          <div class="text-black"><b>Perfectly Position</b></div>
-          <div class="text-h3 q-mb-md">The Jewel in the Stellenbosch Crown</div>
-          <div class="q-mb-md">
-            Nestled in a desirable pocket of Stellenbosch and a mere 750m from the University, The Web is perfectly
-            poised to become an instant hit with students and one of Stellenbosch’s most sought-after new developments.
-          </div>
-          <div class="q-mb-lg">
-            With Stellenbosch’s student population rapidly growing over the past decade, The Web is set to become the
-            ultimate choice for students seeking quality and convenience in their home away from home.
-          </div>
+          <div class="text-h3 q-mb-md">Why The Web Stands Out</div>
+
+          <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
+            <li><span class="q-mr-sm">✔️</span> Heritage-infused location: Built upon centuries of protected heritage and evolving local narratives</li>
+            <li><span class="q-mr-sm">✔️</span> Contemporary design: Stunning finishes, smart layouts, and curated privacy solutions</li>
+            <li><span class="q-mr-sm">✔️</span> Community connection: Shape your journey in a neighbourhood that thrives on collaboration and legacy</li>
+            <li><span class="q-mr-sm">✔️</span> Lifestyle integration: Seamless access to university, nature, culture, and essential services</li>
+          </ul>
         </q-card-section>
       </q-card>
       <div class="col-md-5 col-12 row justify-center slide-in-right">
-        <q-img src="~src/assets/resources/home/outside3.jpg" class="side-image" />
+        <q-img src="~src/assets/resources/home/slider/4.jpg" class="side-image" />
       </div>
     </div>
 
@@ -394,6 +406,35 @@
           </div>
         </q-card-section>
       </q-card>
+
+      <br><br>
+      <q-card flat class="bg-transparent text-white row justify-center">
+        <l-map :zoom="15" :center="[ -33.92599, 18.89250 ]" style="height: 700px; width: 100%;">
+          <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+          <l-marker :lat-lng="[ -33.92099, 18.89850 ]">
+            <l-popup>The Web</l-popup>
+          </l-marker>
+
+          <l-marker :lat-lng="[ -33.93410, 18.87510 ]">
+            <l-popup>BUCO Hardware</l-popup>
+          </l-marker>
+
+          <l-marker :lat-lng="[ -33.93080, 18.88020 ]">
+            <l-popup>PEP Home Thohoyandou Sanlam</l-popup>
+          </l-marker>
+
+
+          <!-- <l-marker :lat-lng="[ -33.93278, 18.86417 ]">
+            <l-popup>Stellenbosch University</l-popup>
+          </l-marker>
+
+          <l-marker :lat-lng="[ -33.93500, 18.86150 ]">
+            <l-popup>Pick n Pay (Bird St)</l-popup>
+          </l-marker> -->
+        </l-map>
+
+      </q-card>
     </div>
     <CustomButton customStyle="width: 180px" label="Secure your spot" @click="openUnitDash"
       style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" />
@@ -409,27 +450,53 @@
 </template>
 
 <script>
+import 'leaflet/dist/leaflet.css';
+import {
+  LMap,
+  LTileLayer,
+  LMarker,
+  LPopup
+} from '@vue-leaflet/vue-leaflet';
+
+
+
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
 import Helper from 'src/services/utils'
 
 // interior carousel images
-import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
-import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
-import Room3 from 'src/assets/resources/home/images/Room_3.jpg';
-import Room8 from 'src/assets/resources/home/images/Room_8.jpg';
-import Room9 from 'src/assets/resources/home/images/Room_9.jpg';
-import Room10 from 'src/assets/resources/home/images/Room_10.jpg';
-import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
-import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
-import Bathroom from 'src/assets/resources/home/images/Bathroom.jpg';
+// import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
+// import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
+// import Room3 from 'src/assets/resources/home/images/Room_3.jpg';
+// import Room8 from 'src/assets/resources/home/images/Room_8.jpg';
+// import Room9 from 'src/assets/resources/home/images/Room_9.jpg';
+// import Room10 from 'src/assets/resources/home/images/Room_10.jpg';
+// import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
+// import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
+// import Bathroom from 'src/assets/resources/home/images/Bathroom.jpg';
+
+import g1 from 'src/assets/resources/home/gallery/g1.jpg';
+import g5 from 'src/assets/resources/home/gallery/g5.jpg';
+import g8 from 'src/assets/resources/home/gallery/g8.jpg';
+import g9 from 'src/assets/resources/home/gallery/g9.jpg';
+import g10 from 'src/assets/resources/home/gallery/g10.jpg';
+import g11 from 'src/assets/resources/home/gallery/g11.jpg';
+import g13 from 'src/assets/resources/home/gallery/g13.jpg';
+import g14 from 'src/assets/resources/home/gallery/g14.jpg';
+import g15 from 'src/assets/resources/home/gallery/g15.jpg';
+import g17 from 'src/assets/resources/home/gallery/g17.jpg';
+import g18 from 'src/assets/resources/home/gallery/g18.jpg';
+import g19 from 'src/assets/resources/home/gallery/g19.jpg';
+import g20 from 'src/assets/resources/home/gallery/g20.jpg';
+import g22 from 'src/assets/resources/home/gallery/g22.jpg';
+import g21 from 'src/assets/resources/home/gallery/g21.jpg';
 
 // hero carousel images
-import home1 from 'src/assets/resources/home/outside1.jpg';
-import home2 from 'src/assets/resources/home/outside2.png';
-import home3 from 'src/assets/resources/home/outside3.jpg';
-import home4 from 'src/assets/resources/home/rooftop.png';
+import home1 from 'src/assets/resources/home/slider/1.jpg';
+import home2 from 'src/assets/resources/home/slider/2.jpg';
+import home3 from 'src/assets/resources/home/slider/3.jpg';
+import home4 from 'src/assets/resources/home/slider/4.jpg';
 
 // unit images
 import StudioPatio from 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png';
@@ -535,16 +602,34 @@ export default {
       ],
 
       currentSlide2: 1,
+      // unitCards: [
+      //   { _id: 1, imageUrl: Room1 },
+      //   { _id: 2, imageUrl: Room2 },
+      //   { _id: 3, imageUrl: Room3 },
+      //   { _id: 4, imageUrl: Room8 },
+      //   { _id: 5, imageUrl: Room9 },
+      //   { _id: 6, imageUrl: Room10 },
+      //   { _id: 7, imageUrl: Room11 },
+      //   { _id: 8, imageUrl: Room12 },
+      //   { _id: 9, imageUrl: Bathroom },
+      // ],
       unitCards: [
-        { _id: 1, imageUrl: Room1 },
-        { _id: 2, imageUrl: Room2 },
-        { _id: 3, imageUrl: Room3 },
-        { _id: 4, imageUrl: Room8 },
-        { _id: 5, imageUrl: Room9 },
-        { _id: 6, imageUrl: Room10 },
-        { _id: 7, imageUrl: Room11 },
-        { _id: 8, imageUrl: Room12 },
-        { _id: 9, imageUrl: Bathroom },
+        { _id: 2, imageUrl: g5 },
+        // { _id: 1, imageUrl: g1 },
+
+        // { _id: 3, imageUrl: g8 },
+        // { _id: 4, imageUrl: g9 },
+        { _id: 5, imageUrl: g10 },
+        // { _id: 6, imageUrl: g11 },
+        { _id: 7, imageUrl: g13 },
+        { _id: 8, imageUrl: g14 },
+        // { _id: 9, imageUrl: g15 },
+        { _id: 10, imageUrl: g17 },
+        { _id: 11, imageUrl: g18 },
+        { _id: 12, imageUrl: g19 },
+        { _id: 13, imageUrl: g20 },
+        // { _id: 14, imageUrl: g22 },
+        { _id: 15, imageUrl: g21 },
       ],
 
       unitTypes: [
@@ -569,7 +654,12 @@ export default {
     BedStatsComponent,
     UnitDetailsComponent,
     UnitApplicationFormComponent,
-    MaintenanceBanner
+    MaintenanceBanner,
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup
+
   },
   computed: {
     hasOngoingRentals() {

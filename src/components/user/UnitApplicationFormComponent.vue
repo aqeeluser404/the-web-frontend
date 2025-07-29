@@ -74,7 +74,6 @@
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'">
       <div class="q-mb-sm"><b>Would you like to add parking to your application?</b></div>
-
       <q-radio
         v-model="rentalDetails.parking.hasParking"
         :val="true"
@@ -86,6 +85,12 @@
         :val="false"
         label="I don't need parking"
       />
+    </q-card-section>
+
+    <q-card-section>
+      <div class="q-mb-sm"><b>Digital Signature</b></div>
+      <p>Please sign below to confirm your application:</p>
+      <SignaturePad @save="handleSignatureSave" />
     </q-card-section>
 
     <q-card-section v-if="unit.unitStatus !== 'Occupied'" >
@@ -127,6 +132,7 @@
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import RentalService from 'src/services/RentalService';
+import SignaturePad from '../elements/SignaturePad.vue';
 
 export default {
   name: 'UnitApplicationForm',
@@ -152,6 +158,8 @@ export default {
           fee: 750.0
         }
       },
+
+      signatureData: null,
       nextAvailabilityDate: null,
       rentals: [],
       minDate: new Date().toISOString().split('T')[0],   // Today's date
@@ -159,7 +167,7 @@ export default {
     }
   },
   components: {
-    CustomButton
+    CustomButton, SignaturePad
   },
   computed: {
     currentDialogImageUrl() {
@@ -233,6 +241,23 @@ export default {
     setAccessKeyTrue() {
       this.rentalDetails.accessKeyIsTrue = true;
     },
+
+    handleSignatureSave(signature) {
+      this.signatureData = signature;
+    },
+
+    base64ToFile(dataUrl, filename) {
+      const arr = dataUrl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    },
+
     async createRentalApplication(unit) {
 
       // Validation code
@@ -313,9 +338,31 @@ export default {
         return;
       }
 
+      // Signature check
+      if (!this.signatureData || this.signatureData === '') {
+        this.$q.notify({
+          type: 'negative',
+          message: 'Please provide your digital signature by clicking Save.'
+        });
+        return;
+      }
+      const formData = new FormData()
+      for (const key in this.rentalDetails) {
+        if (key !== 'signature') {
+          formData.append(key, this.rentalDetails[key])
+        }
+      }
+      if (this.signatureData) {
+        const signatureFile = this.base64ToFile(
+        this.signatureData,
+        `${this.userDetails.firstName}${this.userDetails.lastName}_Signed_${Date.now()}.png`
+      );
+        formData.append('signatureImage[]', signatureFile);
+      }
+
       // Submit rental application
       try {
-        const response = await RentalService.createRental(this.rentalDetails);
+        const response = await RentalService.createRental(formData);
         if (response.accessKey) {
           this.$q.notify({
             type: 'positive',

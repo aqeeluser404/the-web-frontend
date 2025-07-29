@@ -270,7 +270,7 @@ export default {
         if (this.newImage4) formData.append('images[]', this.newImage4);
         if (this.newImage5) formData.append('images[]', this.newImage5);
         if (this.newImage6) formData.append('images[]', this.newImage6);
-        if (this.newImage7) formData.append('images[]', this.newImage6);
+        if (this.newImage7) formData.append('images[]', this.newImage7);
 
         try {
           await UnitService.updateUnit(this.unit._id, formData);
