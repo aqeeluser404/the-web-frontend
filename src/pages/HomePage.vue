@@ -1,359 +1,484 @@
 <template>
   <q-page>
-    <!-- <MaintenanceBanner /> -->
+
+
 
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <div style="margin: 4%; margin-top: 0;" class="bg-grey">
+    <div style="margin-top: 0;" class="bg-grey">
       <q-carousel animated v-model="currentSlide" infinite autoplay :autoplay-interval="5000"
         transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
-        :height="$q.screen.lt.sm ? 'auto' : '100vh'" arrows navigation control-color="white"
-        class="fullscreen-carousel">
+        :height="$q.screen.lt.sm ? 'auto' : '100vh'" control-color="white" class="fullscreen-carousel">
         <q-carousel-slide v-for="card in heroCards" :key="card._id" :name="card._id" class="column no-wrap flex-center">
           <q-img :src="card.imageUrl" :alt="'Room ' + card._id" class="hero-image" fit="cover" />
         </q-carousel-slide>
       </q-carousel>
     </div>
 
+
+
+    <!-- Read to move in Banner -->
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <div style="height: 100%;">
       <div flat class="
         bg-black
         text-white
         row justify-between
-        q-pa-lg
+        q-pa-xl
         ">
-        <q-card-section class="text-h4">Ready for Move-in, 2026</q-card-section>
+        <q-card-section class="text-h4">
+          <div class="text-h4">Reserve Now For 2026 Move-in</div>
+        </q-card-section>
         <q-card-section>
-          <CustomButton color="white" text-color="black" label="Visit the Unit Rental List" @click="openUnitDash"
-            style="border: 2px solid black;" />
+          <CustomButton color="black" text-color="white" label="Visit the Unit Rental List " to="/units/apply"
+            style="border: 2px solid white;" />
         </q-card-section>
       </div>
     </div>
 
-    <div style="height: 100%; background-color: #222;" class="text-white row justify-between q-pa-lg">
-      <q-card-section>
-        <div class="text-h4 q-mb-md">Welcome to The Web - 1 Old Helshoogte Road, Idas Valley, Stellenbosch, 7600</div>
-        <div>Discover a first-of-its-kind student residence nestled between the Banhoek and Simonsberg Mountains.</div>
-      </q-card-section>
-    </div>
 
-    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+
+    <!-- Welcome banner -->
+    <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <q-parallax :src="parallax" :speed="0.6" :height="$q.screen.gt.sm ? 600 : 900"
+      :style="`height: ${$q.screen.gt.sm ? 600 : 900}px; background-position: center 30% !important; background-size: cover !important;`">
+      <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(34, 34, 34, 0.8);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        " class="text-white text-start column justify-center q-pa-xl">
+        <q-card-section class="">
+          <div class="text-h5">The Future of Student Living — Only at The-WEB</div>
+          <br>
+          <div class="text-caption">
+            Modern. Purpose-Built. Perfectly Positioned.
+          </div>
+          <br>
+          <div class="text-body1 q-mb-lg">
+            The-WEB, a premium private student residence redefining accommodation in Stellenbosch. Rising as a striking
+            four-storey landmark, The-WEB offers 24 luxurious, fully furnished apartments, crowned by a 360-degree
+            panoramic rooftop deck with breathtaking views of the Banhoek and Simonsberg mountains. <br><br>
+            As a green building, it features backup solar power and natural spring borehole water on tap, ensuring
+            uninterrupted living. Students enjoy world-class amenities, including high-speed Wi-Fi, on-site laundry,
+            stylish social lounges, communal study areas, dedicated gaming and entertainment spaces, a braai area and
+            swimming pool, a tranquil Zen garden, and secure on-site parking. For peace of mind, The-Web offers 24-hour
+            security with advanced access control and CCTV. <br><br>
+            Located within walking distance of Stellenbosch University’s central campus and the Simonsrust Convenience
+            Centre. Added convenience comes with direct access to the Stellenbosch University shuttle route, making
+            getting around effortless.
+            <br><br>
+            <span class="text-caption">Choose the lifestyle option that suits you best: from R6 250 to R12 000 per
+              month</span>
+          </div>
+        </q-card-section>
+      </div>
+    </q-parallax>
+
+
+
     <!-- amenities -->
-    <div id="amenities-section" class="row justify-between slide-container"
-      style="height: 100%; margin: 4% 0; background-color: #333;">
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <div style="height: 120px; background-color: #333;"></div>
+    <div id="amenities-section" class="row justify-around" style="height: 100%; background-color: #333;">
       <q-card flat class="
         bg-transparent
         text-white
         text-body1
         q-pa-lg
-        col-md-7 col-12
-        column flex-center
-        ">
+        col-md-4 col-12
+        " style="max-width: 600px; width: 100%;">
         <q-card-section class="fade-in-scale">
-          <!-- <div class="text-white"><b></b></div> -->
-          <div class="text-h3 q-mb-md">The Web - A Place to Live, Learn & Belong</div>
-          <div>Imagine a fully furnished, premium student residence with:</div>
-          <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
-            <li><span class="q-mr-sm">✔️</span> Secure 24-hour access in a gated setting</li>
-            <li><span class="q-mr-sm">✔️</span> Modern finishes throughout</li>
-            <li><span class="q-mr-sm">✔️</span> Carefully screened shared rooms offering semi-private comfort</li>
-            <li><span class="q-mr-sm">✔️</span> Flexible options ranging from single to duo suites with elegant
-              Soji-style screens</li>
-            <li><span class="q-mr-sm">✔️</span> Communal spaces for collaboration, study, and socialising</li>
-            <li><span class="q-mr-sm">✔️</span> A stunning fourth-floor rooftop deck designed for socialising,
-              entertainment, and braais — complete with 360-degree panoramic views of the Banhoek and Simonsberg
-              mountain ranges</li>
-            <li><span class="q-mr-sm">✔️</span> Proximity to Stellenbosch University, shopping, cafés, and scenic trails
-            </li>
+          <div class="text-body1">
+            <b>⸻&nbsp;&nbsp;&nbsp;AMENITIES&nbsp;&nbsp;&nbsp;⸻</b>
+          </div>
+          <br>
+          <div class="text-h3">What's inside The-WEB?</div>
+          <br>
+          <ul class="q-mb-lg custom-list">
+            <li><span class="q-mr-sm">⛰</span> 360° panoramic views</li>
+            <li><span class="q-mr-sm">📚</span> Communal Study areas</li>
+            <li><span class="q-mr-sm">🎮</span> Entertainment area</li>
+            <li><span class="q-mr-sm">🔥</span> Braai & swimming pool</li>
+            <li><span class="q-mr-sm">🌿</span> Tranquil Zen garden</li>
+            <li><span class="q-mr-sm">🧺</span> Smart laundry facilities</li>
+            <li><span class="q-mr-sm">🔋</span> Backup power & water</li>
+            <li><span class="q-mr-sm">🛡️</span> 24/7 Security</li>
+            <li><span class="q-mr-sm">💧</span> Pure spring water on tap</li>
+            <li><span class="q-mr-sm">🚐</span> University shuttle route</li>
           </ul>
-          <!-- <CustomButton v-if="$q.screen.gt.sm" customStyle="width: 25%" color="white" text-color="black" label="Make an Enquiry" @click="scrollToSection('contact-section')" />
-          <CustomButton v-else color="white" text-color="black"  customStyle="width: 100%" label="Make an Enquiry" @click="scrollToSection('contact-section')" /> -->
+          <br>
+          <div class="text-body2">
+            Live where your lifestyle is supported, not limited.
+          </div>
         </q-card-section>
       </q-card>
-      <div class="col-md-5 col-12 slide-in-right">
-        <q-img src="~src/assets/resources/home/slider/3.jpg" alt="hero image" class="side-image" />
+
+
+      <div style="margin-top: 0; background-color: #333;" class="col-md-7 col-12 full-height">
+        <q-carousel style="background-color: #333;" animated v-model="currentSlide4" infinite autoplay
+          :autoplay-interval="5000" transition-prev="slide-right" transition-next="slide-left"
+          transition-duration="1800" height="600px" arrows control-color="white" class="">
+          <q-carousel-slide v-for="card in amenitiesCards" :key="card._id" :name="card._id"
+            class="column no-wrap flex-center">
+            <q-img :src="card.imageUrl" :alt="'Room ' + card._id" class="hero-image cursor-pointer" fit="cover"
+              @click="openImageDialog(card.imageUrl)" />
+          </q-carousel-slide>
+        </q-carousel>
+      </div>
+    </div>
+    <div style="height: 120px; background-color: #333;"></div>
+    <ImageDialog v-model="showImageDialog" :imageUrl="currentDialogImageUrl" />
+
+
+
+
+    <!-- map -->
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <div style="background-color: #333" class="q-px-lg">
+      <div class="map-container full-width row justify-center ">
+        <img src="~src/assets/resources/home/map/version1.png" alt="Map" style="background-color: #333" />
+        <div class="marker marker-1" data-label="The-WEB"></div>
+        <div class="marker marker-2" data-label="450m, 6min walk, 2min drive"></div>
+        <div class="marker marker-3" data-label="1.5 km, 22min walk, 5min drive"></div>
+        <div class="marker marker-4" data-label="2.1 km, 27min walk, 5min drive"></div>
+        <div class="marker marker-5" data-label="4.1km, 53min walk, 11min drive"></div>
+        <div class="marker marker-6" data-label="160m, 2min walk, 1min drive"></div>
+        <div class="marker marker-7" data-label="4.1km, 53min walk, 11min drive"></div>
+      </div>
+    </div>
+    <div style="height: 120px; background-color: #333;"></div>
+
+
+
+    <!-- Floor Levels q-pa-xl -->
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <div style="height: 60px; background-color: #121212;"></div>
+    <div id="units-section" class="q-py-xl dark-wrapper text-white">
+      <div class="full-width text-center">
+        <div class="text-h4 q-mb-md">Rooms</div>
+        <div class="text-body1 q-pa-md">
+          We offer three elevated room types from stylish screened studios <br> to premium balcony units each designed
+          to meet the needs of modern students.
+        </div>
+      </div>
+      <div class="q-px-md q-pt-sm">
+        <br>
+        <div class="row  justify-center constrain">
+          <div class="col-md-4 col-12">
+            <q-card flat class="text-white q-pa-md text-center q-ma-sm" style="background-color: #222;">
+              <div class="text-h6 q-mb-sm">
+                <span class="q-mr-sm"
+                  style="filter: invert(70%) sepia(95%) saturate(4%) hue-rotate(7deg) brightness(105%) contrast(102%);">
+                  🕸️
+                </span>
+                <!-- The Pinnacle -->
+                Helshoogte
+              </div>
+              <p class="text-body2">Top-tier spacious room with private balcony, premium finishes, and the best views.
+                Limited availability.</p>
+            </q-card>
+          </div>
+          <div class="col-md-4 col-12">
+            <q-card flat class="text-white q-pa-md text-center q-ma-sm" style="background-color: #222;">
+              <div class="text-h6 q-mb-sm">
+                <span class="q-mr-sm"
+                  style="filter: invert(71%) sepia(72%) saturate(825%) hue-rotate(1deg) brightness(107%) contrast(104%);">
+                  🕸️
+                </span>
+                <!-- The Core -->
+                Botmaskop
+              </div>
+              <p class="text-body2">Sleek single room with modern, minimalist premium finishes and efficient layout.</p>
+            </q-card>
+          </div>
+          <div class="col-md-4 col-12">
+            <q-card flat class="text-white q-pa-md text-center q-ma-sm" style="background-color: #222;">
+              <div class="text-h6 q-mb-sm">
+                <span class="q-mr-sm"
+                  style="filter: invert(86%) sepia(32%) saturate(1%) hue-rotate(314deg) brightness(81%) contrast(106%);">
+                  🕸️
+                </span>
+                <!-- The Strand -->
+                Banhoek
+              </div>
+              <p class="text-body2">Optimized layout with semi-private feel and bold value including all premium
+                finishes.</p>
+            </q-card>
+          </div>
+        </div>
+        <div class="text-body2 q-my-lg text-center">
+          <b>All rooms include: </b> High-speed Wi-Fi, built-in storage, study desks, and secure access
+        </div>
+      </div>
+      <br><br><br><br><br><br>
+      <UnitCardComponentBlack />
+    </div>
+    <div style="height: 90px; background-color: #121212;"></div>
+
+
+
+    <!-- LOCATION -->
+    <!-- <div style="height: 30px; background-color: white;"></div> -->
+    <div id="location-section">
+      <div style="margin-top: 0;" :style="$q.screen.gt.sm ? 'padding: 10em' : 'padding: 0'">
+        <q-carousel animated v-model="currentSlide3" infinite autoplay :autoplay-interval="5000"
+          transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
+          :height="$q.screen.lt.sm ? 'auto' : '100vh'" arrows control-color="white" class="fullscreen-carousel">
+          <q-carousel-slide v-for="card in locationCards" :key="card._id" :name="card._id"
+            class="column no-wrap flex-center">
+            <q-img :src="card.imageUrl" :alt="'Room ' + card._id" class="hero-image" fit="cover" />
+          </q-carousel-slide>
+        </q-carousel>
+      </div>
+
+      <q-card flat class="bg-transparent text-body1 row justify-center full-width q-px-lg">
+        <q-card-section class="fade-in-scale constrain">
+          <div class="text-body1 text-center">
+            <b>⸻&nbsp;&nbsp;&nbsp;LOCATION&nbsp;&nbsp;&nbsp;⸻</b>
+          </div>
+          <br>
+          <div class="text-h3 text-center" style="line-height: 1.25;">Where Campus Meets Lifestyle <br>And Nature Meets
+            Culture</div>
+          <br>
+          <div class="text-body2 text-center q-mb-lg" style="line-height: 1.69;">
+            <span class="text-body1"><b>1 Old Helshoogte Road, Idas Valley, Stellenbosch</b></span>
+            <br><br>
+            The-WEB is more than just centrally located it's at the intersection of <br> Student life, nature, sport,
+            and
+            heritage.
+            Nestled in Idas Valley, it places you minutes away from everything that matters.
+          </div>
+          <br>
+          <!-- 2x2 Grid: Four Blocks -->
+          <div class="row justify-around q-mt-lg">
+            <!-- Block 1 -->
+            <div class="col-md-6 col-12 full-height">
+              <div class="text-h4 q-mb-md">Within walking or easy <br> cycling distance</div>
+              <ul class="q-mb-lg custom-list">
+                <li><span class="q-mr-sm">✔️</span> Stellenbosch University main campus</li>
+                <li><span class="q-mr-sm">✔️</span> Spar Convenience Centre for groceries and daily needs</li>
+                <li><span class="q-mr-sm">✔️</span> Trendy cafés, takeaways, and student hangouts</li>
+                <li><span class="q-mr-sm">✔️</span> University Shuttle Service access point</li>
+                <li>
+                  <span class="q-mr-sm">✔️</span> Jan S Marais Park - perfect for:
+                  <ul class="q-mt-xs" style="list-style: disc; padding-left: 1.5rem; margin-top: 0.25rem;">
+                    <li>Outdoor study sessions</li>
+                    <li>Picnics</li>
+                  </ul>
+                </li>
+                <li><span class="q-mr-sm">✔️</span> Coetzenburg high-performance sports precinct</li>
+              </ul>
+            </div>
+
+            <!-- Block 2 -->
+            <div class="col-md-5 col-12 full-height">
+              <div class="text-h4 q-mb-md">Weekend escapes</div>
+              <div class="text-body1 q-mb-lg">
+                Surrounded by award-winning wine farm <br> that includes:
+              </div>
+              <ul class="q-mb-lg custom-list">
+                <li><span class="q-mr-sm">🍷</span> Tokara</li>
+                <li><span class="q-mr-sm">🍷</span> Delaire Graff</li>
+                <li><span class="q-mr-sm">🍷</span> Rustenberg</li>
+                <li><span class="q-mr-sm">🍷</span> Lanzerac</li>
+                <li><span class="q-mr-sm">🍷</span> Glenelly Estate</li>
+              </ul>
+              <div class="text-body2 q-mt-lg">
+                Ideal for long lunches, scenic views, and the perfect <br> break from the
+                books
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="row justify-around q-mt-lg">
+            <!-- Block 3 -->
+            <div class="col-md-6 col-12 full-height">
+              <div class="text-h4 q-mb-md">Surrounded by nature and adventure</div>
+              <div class="text-body1 q-mb-lg">
+                Explore breathtaking natural reserves <br> and trails nearby:
+              </div>
+              <ul class="q-mb-lg custom-list">
+                <li><span class="q-mr-sm">✔️</span> Idas Valley Nature Reserve right in your backyard
+                </li>
+                <li><span class="q-mr-sm">✔️</span> Incredible views of the Simonsberg and Jonkershoek mountain ranges
+                </li>
+                <li>
+                  <span class="q-mr-sm">✔️</span> Jonkershoek Nature Reserve - world renowned for:
+                  <ul class="q-mt-xs" style="list-style: disc; padding-left: 1.5rem; margin-top: 0.25rem;">
+                    <li>Mountain biking</li>
+                    <li>Hiking</li>
+                    <li>Trail running</li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="q-mr-sm">✔️</span> Network of cycling and hiking trails through:
+                  <ul class="q-mt-xs" style="list-style: disc; padding-left: 1.5rem; margin-top: 0.25rem;">
+                    <li>Pine forests, fynbos, and
+                      mountain passes</li>
+                    <li>Perfect for beginners and advanced riders</li>
+                    <li>Guided tours available</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Block 4 -->
+            <div class="col-md-5 col-12 full-height">
+              <div class="text-h4 q-mb-md">Sporting excellence nearby</div>
+              <ul class="q-mb-lg custom-list">
+                <li><span class="q-mr-sm">✔️</span>
+                  Idas Valley Sports Ground:
+                  <ul class="q-mt-xs" style="list-style: disc; padding-left: 1.5rem; margin-top: 0.25rem;">
+                    <li>Home to Stellenbosch FC and the Federico</li>
+                    <li>Coppini Tennis Foundation</li>
+                  </ul>
+                </li>
+                <li><span class="q-mr-sm">✔️</span>
+                  Lentelus Sports Ground:
+                  <ul class="q-mt-xs" style="list-style: disc; padding-left: 1.5rem; margin-top: 0.25rem;">
+                    <li>Historic home of Maties Football Club</li>
+                  </ul>
+                </li>
+                <li><span class="q-mr-sm">✔️</span> Community tennis courts</li>
+                <li><span class="q-mr-sm">✔️</span> Rugby fields</li>
+                <li><span class="q-mr-sm">✔️</span> And running routes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="text-body2 text-center q-mt-lg">
+            At The-WEB, you don't just live near campus — you live at the heart of a lifestyle.
+            <br>Mountains. Markets. Matches. Moments. It's all right here.
+          </div>
+        </q-card-section>
+      </q-card>
+
+    </div>
+    <div style="height: 120px; background-color: white;"></div>
+
+
+
+    <!-- A New Landmark with Deep Roots -->
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <q-parallax :src="parallax2" :speed="1" :height="$q.screen.gt.sm ? 700 : 1200"
+      :style="`height: ${$q.screen.gt.sm ? 700 : 1200}px; background-position: center 30% !important; background-size: cover !important;`">
+      <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(34, 34, 34, 0.6);
+      " class="text-white text-center column justify-center items-center">
+        <q-card-section class="constrain q-px-lg" style="max-width: 1024px">
+          <div class="text-h4">A New Landmark with Deep Roots</div>
+          <br><br>
+          <div class="text-body1">
+            Idas Valley, granted in 1683 and recognized as a Grade I heritage site since 1976, is rich in history — from
+            French Huguenot pioneers and Cape Dutch architecture to the original homesteads of Samuel Johannes Cats.
+            Surrounded by historic werf complexes like Rustenburg and Ida Minor, the valley preserves its charm while
+            embracing a vibrant, close-knit community shaped by local culture, schools, artisans, and the natural
+            landscape.
+          </div>
+          <br><br>
+          <div class="text-h4">A Life Surrounded by Heritage & Nature</div>
+          <br><br>
+          <div class="text-body1">
+            Wake up to mountain vistas and the valley's legacy of Cape Dutch architecture <br>
+            Take breaks exploring local hiking, e‑bike, and trail routes in the Idas Valley Nature Area <br>
+            Connect with a dynamic community deeply rooted in culture, craftsmanship, and heritage
+          </div>
+        </q-card-section>
+      </div>
+    </q-parallax>
+
+
+
+    <!-- Why Choose The WEB? -->
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <div style="height: 120px; background-color: white;"></div>
+    <div class="row justify-around" style="height: 100%;">
+      <q-card flat class="
+        bg-transparent
+        text-body1
+        q-pa-lg
+        col-md-4 col-12
+        " style="max-width: 600px; width: 100%;">
+        <q-card-section class="fade-in-scale">
+          <div class="text-body1">
+            <b>⸻&nbsp;&nbsp;&nbsp;REDEFINE STUDENT LIVING&nbsp;&nbsp;&nbsp;⸻</b>
+          </div>
+          <br>
+          <div class="text-h3">Why Choose The-WEB?</div>
+          <br>
+          <div class="text-body1 q-mb-lg">
+            At The-WEB, you don't just live near campus — you live at the heart of a lifestyle.
+            <br>Mountains. Markets. Matches. Moments. It's all right here.
+          </div>
+          <ul class="q-mb-lg custom-list">
+            <li><span class="q-mr-sm">✔️</span> Purpose-built for students</li>
+            <li><span class="q-mr-sm">✔️</span> Architectural edge with Modern minimalist inspiration</li>
+            <li><span class="q-mr-sm">✔️</span> Secure, modern, connected</li>
+            <li><span class="q-mr-sm">✔️</span> Community-driven living</li>
+            <li><span class="q-mr-sm">✔️</span> Affordable luxury</li>
+          </ul>
+          <div class="text-body2">
+            Whether you're first-year or finishing your thesis, The-WEB adapts to your <br>academic rhythm and personal
+            style.
+          </div>
+        </q-card-section>
+      </q-card>
+      <div class="col-md-7 col-12 row justify-center slide-in-right">
+        <q-img src="~src/assets/resources/home/slider/4.jpg" class="side-image" />
+      </div>
+    </div>
+    <div style="height: 120px; background-color: white;"></div>
+
+
+
+    <!-- FAQs Banner -->
+    <!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
+    <div style="height: 100%;">
+      <div flat class="
+        bg-black
+        text-white
+        row justify-between
+        q-pa-xl
+        ">
+        <q-card-section class="text-h4">Need more answers? Read our FAQs</q-card-section>
+        <q-card-section class="text-h4">
+          <CustomButton customStyle="width: 180px" color="black" text-color="white" label="Read FAQS"
+            to="/frequently-asked-questions" style="border: 2px solid white;" />
+        </q-card-section>
       </div>
     </div>
 
-    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
-    <!-- images -->
 
-    <div id="images-section" style="margin: 4%; margin-top: 0;" class="bg-grey">
-      <!-- <q-img src="~src/assets/resources/home/hero/Location2.png" alt="hero image" class="hero-image" /> -->
+
+    <!-- Attraction Slide -->
+    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
+    <div id="images-section" style="margin-top: 0;" :style="$q.screen.gt.sm ? 'padding: 10em' : 'padding: 0'">
       <q-carousel animated v-model="currentSlide2" infinite autoplay :autoplay-interval="5000"
         transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
-        :height="$q.screen.lt.sm ? 'auto' : '100vh'" arrows navigation control-color="white"
-        class="fullscreen-carousel">
-        <q-carousel-slide v-for="card in unitCards" :key="card._id" :name="card._id" class="column no-wrap flex-center">
+        :height="$q.screen.lt.sm ? 'auto' : '100vh'" arrows control-color="white" class="fullscreen-carousel">
+        <q-carousel-slide v-for="card in advertCards" :key="card._id" :name="card._id"
+          class="column no-wrap flex-center">
           <q-img :src="card.imageUrl" :alt="'Room ' + card._id" class="hero-image" fit="cover" />
         </q-carousel-slide>
       </q-carousel>
     </div>
 
-    <!-- units card -->
-    <div id="units-section" class="q-py-xl" style="height: 100%; margin:  4% 0; background-color: #222;">
-      <q-card-section class=" fade-up">
-        <div class="text-h4 text-center text-white">Unit Specifications</div>
-      </q-card-section>
 
-      <div class="q-pa-md">
-
-        <BedStatsComponentBlack />
-
-        <q-card flat class="q-ma-sm bg-transparent text-white">
-          <q-expansion-item class="text-subtitle1" v-for="(units, floorIndex) in allUnits" :key="floorIndex"
-            :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator
-            v-model="expanded[floorIndex]" @show="handleExpansion(floorIndex)">
-            <q-list class="row justify-center">
-              <q-card v-for="unit in units" :key="unit._id" flat class="q-ma-sm bg-transparent hover-scale"
-                @click="openUnitDetails(unit)" style="cursor: pointer;">
-                <q-card-section class="column flex-center">
-                  <div class="text-h6">
-
-                    Unit {{ unit.unitNumber }}
-
-                    (<span v-if="unit.unitStatus === 'Available'"
-                      :class="{ 'available-unit': unit.unitStatus === 'Available' }">
-                      {{ unit.unitStatus }}
-                    </span>
-                    <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied' }">
-                      {{ unit.unitStatus }}
-                    </span>)
-                  </div>
-
-                  <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants - unit.currentOccupants }}/{{
-                    unit.unitOccupants }} Beds</div>
-                </q-card-section>
-                <q-card-section class="row justify-center">
-                  <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[0].imageUrl)"
-                    class="image" />
-                </q-card-section>
-              </q-card>
-            </q-list>
-          </q-expansion-item>
-        </q-card>
-      </div>
-    </div>
-
-    <!-- <div id="units-section" class="q-py-xl" style="height: 100%; margin:  4% 0;">
-      <q-card-section class=" fade-up">
-        <div class="text-h4 text-center">Unit Specifications</div>
-      </q-card-section>
-      <div class="q-pa-md">
-        <BedStatsComponent />
-        <q-card flat class="q-ma-sm">
-          <q-expansion-item
-            class="text-subtitle1"
-            v-for="(units, floorIndex) in allUnits"
-            :key="floorIndex"
-            :label="`${floorLabels[floorIndex]} (${units.length} items)`"
-            expand-separator
-            :default-opened="floorIndex === 0"
-          >
-            <q-list class="row justify-center">
-              <q-card v-for="unit in units" :key="unit._id" flat class="q-ma-sm bg-transparent hover-scale" @click="openUnitDetails(unit)" style="cursor: pointer;">
-                <q-card-section class="column flex-center">
-                  <div class="text-h6">
-
-                    Unit {{ unit.unitNumber }}
-
-                    (<span v-if="unit.unitStatus === 'Available'" :class="{ 'available-unit': unit.unitStatus === 'Available'}">
-                      {{ unit.unitStatus }}
-                    </span>
-                    <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied'}">
-                      {{ unit.unitStatus }}
-                    </span>)
-                  </div>
-
-                  <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants }} Beds</div>
-                </q-card-section>
-                <q-card-section class="row justify-center">
-                  <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
-                </q-card-section>
-              </q-card>
-            </q-list>
-          </q-expansion-item>
-        </q-card>
-      </div>
-    </div> -->
-
-    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
-    <!-- academics -->
-    <div id="academics-section" style="height: 100%; margin:  4% 0; " class="row justify-between">
-      <div class="col-md-5 col-12 row justify-center slide-in-left">
-        <q-img src="~src/assets/resources/home/rooftop.png" alt="hero image" class="side-image" />
-      </div>
-
-      <q-card flat class="
-        bg-transparent
-        text-body1
-        q-pa-lg
-        col-md-7 col-12
-        column flex-center
-        ">
-        <q-card-section class="fade-in-scale">
-          <div class="text-black"><b>Space to Thrive</b></div>
-          <div class="text-h3 q-mb-md">Academic Excellence</div>
-          <div>At the heart of this purpose-built student development is an environment that facilitates both private
-            and collaborative studying. The Web has it all, from an expansive study centre with tailor-made solo study
-            pods, and multi-purpose boardrooms for group work, these facilities are geared for the demanding needs of
-            future business and thought leaders.</div>
-          <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
-            <li><span class="q-mr-sm">✔️</span> Study centre</li>
-            <li><span class="q-mr-sm">✔️</span> High-speed Wi-Fi throughout</li>
-            <li><span class="q-mr-sm">✔️</span> Multiple study zones</li>
-            <li><span class="q-mr-sm">✔️</span> Meeting rooms</li>
-            <li><span class="q-mr-sm">✔️</span> Outdoor study pods</li>
-            <li><span class="q-mr-sm">✔️</span> Zen courtyard</li>
-            <li><span class="q-mr-sm">✔️</span> Print & copy facilities</li>
-            <li><span class="q-mr-sm">✔️</span> Conference facilities</li>
-          </ul>
-        </q-card-section>
-      </q-card>
-    </div>
-
-    <!-- academics - section 2  -->
-    <div class="q-pa-xl" style="height: 100%; margin: 2% 0; background-color: #222;">
-      <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
-        <q-card-section>
-          <div class="text-h4">A New Landmark with Deep Roots</div>
-        </q-card-section>
-        <q-card-section class="">
-          <div class="col-md-6">
-            Located on a historic farm landscape granted in 1683 and honoured as a Grade I heritage area since 1976,
-            Idas Valley is steeped in stories of early French Huguenot pioneers, Cape Dutch architecture, and
-            generations of local communities.
-          </div>
-          <div class="col-md-6">
-            From the original homesteads built by Samuel Johannes Cats in the late 1700s to the surrounding werf
-            complexes at Rustenburg and Ida Minor , this valley has preserved its authentic charm and continues to
-            inspire collective heritage conservation.
-          </div>
-          <div class="col-md-6">
-            Today, Idas Valley is more than history — it’s a vibrant, tight-knit community shaped by local culture,
-            schools, artisans, and the natural landscape under shared custodianship.
-          </div>
-        </q-card-section>
-        <br>
-        <q-card-section>
-          <div class="text-h4">A Life Surrounded by Heritage & Nature</div>
-        </q-card-section>
-        <q-card-section>
-          Wake up to mountain vistas and the valley’s legacy of Cape Dutch architecture <br>
-          Take breaks exploring local hiking, e‑bike, and trail routes in the Idas Valley Nature Area <br>
-          Connect with a dynamic community deeply rooted in culture, craftsmanship, and heritage <br>
-        </q-card-section>
-      </q-card>
-    </div>
-
-    <!-- academics - section 3 -->
-    <div class="row justify-between" style="height: 100%; margin: 4% 0;">
-      <q-card flat class="
-        bg-transparent
-        text-body1
-        q-pa-lg
-        col-md-7 col-12
-        column flex-center
-        ">
-        <q-card-section class="fade-in-scale">
-          <div class="text-h3 q-mb-md">Why The Web Stands Out</div>
-
-          <ul class="q-mb-lg" style="list-style-type: none; padding-left: 0; line-height: 2;">
-            <li><span class="q-mr-sm">✔️</span> Heritage-infused location: Built upon centuries of protected heritage and evolving local narratives</li>
-            <li><span class="q-mr-sm">✔️</span> Contemporary design: Stunning finishes, smart layouts, and curated privacy solutions</li>
-            <li><span class="q-mr-sm">✔️</span> Community connection: Shape your journey in a neighbourhood that thrives on collaboration and legacy</li>
-            <li><span class="q-mr-sm">✔️</span> Lifestyle integration: Seamless access to university, nature, culture, and essential services</li>
-          </ul>
-        </q-card-section>
-      </q-card>
-      <div class="col-md-5 col-12 row justify-center slide-in-right">
-        <q-img src="~src/assets/resources/home/slider/4.jpg" class="side-image" />
-      </div>
-    </div>
-
-    <!-- academics - section 4 -->
-    <div class="row justify-between" style="height: 100%; margin: 4% 0; background-color: #333;">
-      <div class="col-md-5 col-12 slide-in-left">
-        <q-img src="~src/assets/resources/home/Residential.png" class="side-image" />
-      </div>
-      <q-card flat style="" class="
-        bg-transparent
-        text-white
-        text-body1
-        q-pa-lg
-        col-md-7 col-12
-        column flex-center
-        ">
-        <q-card-section class="fade-in-scale">
-          <div class="text-white"><b>Rent in A</b></div>
-          <div class="text-h3 q-mb-md">Residential College</div>
-          <div>A residential college is a private residence which is aligned with the academic and support functions of
-            the university and serves to holistically support the student towards personal and academic achievement.
-          </div>
-        </q-card-section>
-      </q-card>
-    </div>
-
-    <!-- academics - section 5 -->
-    <div class="q-pa-xl" style="height: 100%; margin: 4% 0; background-color: #222;">
-      <q-card flat class="bg-transparent text-white text-body1 text-center constrain fade-up">
-        <q-card-section>
-          <div class="text-h4">The Web's Amenities Foster an Environment Ideal for Academic Success</div>
-        </q-card-section>
-        <q-card-section class="">
-          <div class="col-md-6">
-            The academic advisor of The Web is a former senior director of the Division for Student Affairs of
-            Stellenbosch University. Residents of The Web will be encouraged to participate in organised student
-            programmes offered by The Web and the various tertiary institutions they attend, such as well-being
-            programmes, leadership training, mentoring programmes, and social events.
-          </div>
-          <div class="col-md-6">
-            The Web is designed in collaboration with top academic experts to give your child the highest possibility of
-            academic success. Cooperation between the tertiary institutions in Stellenbosch and The Web to the benefit
-            of the students who will take up residence at The Web is possible.
-          </div>
-        </q-card-section>
-      </q-card>
-    </div>
-
-    <!-- academics - BANNER -->
-    <div style="height: 100%; margin: 4% 0;">
-      <div flat class="
-        bg-black
-        text-white
-        row justify-between
-        q-pa-lg
-        ">
-        <q-card-section class="text-h4">Need more answers? Read our FAQs</q-card-section>
-      </div>
-    </div>
-
-    <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
-
-    <!-- units card - section 2 -->
-    <div class="row justify-between" style="height: 100%; margin: 4% 0;">
-      <div class="col-md-6 col-12 row justify-center slide-in-left">
-        <q-img src="~src/assets/resources/home/dinning.png" class="side-image" />
-      </div>
-      <q-card flat class="
-        bg-transparent
-        text-body1
-        q-pa-lg
-        col-md-6 col-12
-        column flex-center
-        ">
-        <q-card-section class="fade-in-scale">
-          <div class="text-black"><b>Living Spaces</b></div>
-          <div class="text-h3 q-mb-md">Expertly Designed</div>
-          <div class="q-mb-lg">Architects Boogertman & Partners have spent countless hours configuring each of the
-            living spaces at The Web. Ergonomically designed units all feature a kitchenette, private bathroom, study
-            desk, and open-plan living spaces with premium fittings and fixtures.</div>
-        </q-card-section>
-      </q-card>
-    </div>
 
     <!-- -----------------------------------------------------------------------------------------------------------------------------------------------  -->
     <!-- contact card -->
+    <div style="height: 60px; background-color: #333;"></div>
     <div id="contact-section" style="height: 100%; background-color: #333;" class="q-pa-xl">
 
       <q-card flat class="bg-transparent text-white row justify-center constrain">
@@ -362,22 +487,21 @@
           <div class="text-h4 q-mb-md">Discuss with Our Team</div>
 
           <!-- <div class="text-body2 q-mb-md">Founder and Managing Director</div> -->
-          <div class="text-body1 q-mb-md"><b>Wayne Louw</b></div>
+          <!-- <div class="text-body1 q-mb-md"><b>Wayne Louw</b></div> -->
 
           <div class="column">
-            <a href="mailto:admin@the-web.co.za" class="q-mb-md" style="text-decoration: underline; color: white;">
+            <a href="mailto:admin@the-web.co.za" class="q-mb-md" style="text-decoration: none; color: white;">
               <q-icon name="eva-email-outline" class="q-mr-sm" /> admin@the-web.co.za
             </a>
 
-            <a href="tel:+27823433945" target="_blank" class="q-mb-md"
-              style="text-decoration: underline; color: white;">
+            <!-- <a href="tel:+27823433945" target="_blank" class="q-mb-md"
+              style="color: white; text-decoration: none; ">
               <q-icon name="eva-phone-outline" class="q-mr-sm" /> (+27) 82-343-3945
-            </a>
-
-            <a href="https://api.whatsapp.com/send/?phone=27823433945&text&type=phone_number&app_absent=0"
+            </a> -->
+            <!-- <a href="https://api.whatsapp.com/send/?phone=27823433945&text&type=phone_number&app_absent=0"
               target="_blank" style="text-decoration: underline; color: white;">
               <q-icon name="eva-message-circle-outline" class="q-mr-sm" /> Send WhatsApp
-            </a>
+            </a> -->
           </div>
         </q-card-section>
 
@@ -408,48 +532,37 @@
       </q-card>
 
       <br><br>
-      <q-card flat class="bg-transparent text-white row justify-center">
-        <l-map :zoom="15" :center="[ -33.92599, 18.89250 ]" style="height: 700px; width: 100%;">
-          <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <!-- <q-card flat class="bg-transparent text-white row justify-center">
+          <l-map :zoom="18" :center="[-33.925453, 18.879200]" style="height: 700px; width: 100%;">
+            <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <l-marker :lat-lng="[-33.924853, 18.881097]">
+              <l-popup>The-WEB</l-popup>
+            </l-marker>
 
-          <l-marker :lat-lng="[ -33.92099, 18.89850 ]">
-            <l-popup>The Web</l-popup>
-          </l-marker>
+            <l-marker :lat-lng="[-33.926453, 18.877530]">
+              <l-popup>Steers</l-popup>
+            </l-marker>
 
-          <l-marker :lat-lng="[ -33.93410, 18.87510 ]">
-            <l-popup>BUCO Hardware</l-popup>
-          </l-marker>
-
-          <l-marker :lat-lng="[ -33.93080, 18.88020 ]">
-            <l-popup>PEP Home Thohoyandou Sanlam</l-popup>
-          </l-marker>
-
-
-          <!-- <l-marker :lat-lng="[ -33.93278, 18.86417 ]">
-            <l-popup>Stellenbosch University</l-popup>
-          </l-marker>
-
-          <l-marker :lat-lng="[ -33.93500, 18.86150 ]">
-            <l-popup>Pick n Pay (Bird St)</l-popup>
-          </l-marker> -->
-        </l-map>
-
-      </q-card>
+            <l-marker :lat-lng="[-33.926093, 18.878540]">
+              <l-popup>Superspar</l-popup>
+            </l-marker>
+          </l-map>
+      </q-card> -->
+      <!-- <div class="map-container">
+        <q-img src="~src/assets/resources/home/map/version1.png" />
+        <div class="map-marker" style="top: 40%; left: 60%;">
+          <q-icon name="place" color="red" size="md" />
+        </div>
+      </div> -->
     </div>
+    <!-- <div style="height: 60px; background-color: #333;"></div> -->
     <CustomButton customStyle="width: 180px" label="Secure your spot" @click="openUnitDash"
       style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" />
-
-    <!-- Dialogs -->
-    <q-dialog v-model="detailsDialog">
-      <UnitDetailsComponent :unit="selectedUnit" @close="detailsDialog = false" />
-    </q-dialog>
-    <q-dialog v-model="applyDialog">
-      <UnitApplicationFormComponent :unit="selectedUnit" @close="handleDialogClose" />
-    </q-dialog>
   </q-page>
 </template>
 
 <script>
+import ImageDialog from 'src/components/elements/ImageDialog.vue';
 import 'leaflet/dist/leaflet.css';
 import {
   LMap,
@@ -458,67 +571,52 @@ import {
   LPopup
 } from '@vue-leaflet/vue-leaflet';
 
-
-
+import g21 from 'src/assets/resources/home/gallery/g21.jpg';
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
-import Helper from 'src/services/utils'
+import Helper from 'src/services/utils';
+import UnitCardComponent from 'src/components/user/UnitCardComponent.vue';
+import UnitCardComponentBlack from 'src/components/user/UnitCardComponentBlack.vue';
 
-// interior carousel images
-// import Room1 from 'src/assets/resources/home/images/Room_1.jpg';
-// import Room2 from 'src/assets/resources/home/images/Room_2.jpg';
-// import Room3 from 'src/assets/resources/home/images/Room_3.jpg';
-// import Room8 from 'src/assets/resources/home/images/Room_8.jpg';
-// import Room9 from 'src/assets/resources/home/images/Room_9.jpg';
-// import Room10 from 'src/assets/resources/home/images/Room_10.jpg';
-// import Room11 from 'src/assets/resources/home/images/Room_11.jpg';
-// import Room12 from 'src/assets/resources/home/images/Room_12.jpg';
-// import Bathroom from 'src/assets/resources/home/images/Bathroom.jpg';
+import am0 from 'src/assets/resources/home/amenities/am0.jpg';
+import am1 from 'src/assets/resources/home/amenities/am1.jpeg';
+import am2 from 'src/assets/resources/home/amenities/am2.jpeg';
 
-import g1 from 'src/assets/resources/home/gallery/g1.jpg';
-import g5 from 'src/assets/resources/home/gallery/g5.jpg';
-import g8 from 'src/assets/resources/home/gallery/g8.jpg';
-import g9 from 'src/assets/resources/home/gallery/g9.jpg';
-import g10 from 'src/assets/resources/home/gallery/g10.jpg';
-import g11 from 'src/assets/resources/home/gallery/g11.jpg';
-import g13 from 'src/assets/resources/home/gallery/g13.jpg';
-import g14 from 'src/assets/resources/home/gallery/g14.jpg';
-import g15 from 'src/assets/resources/home/gallery/g15.jpg';
-import g17 from 'src/assets/resources/home/gallery/g17.jpg';
-import g18 from 'src/assets/resources/home/gallery/g18.jpg';
-import g19 from 'src/assets/resources/home/gallery/g19.jpg';
-import g20 from 'src/assets/resources/home/gallery/g20.jpg';
-import g22 from 'src/assets/resources/home/gallery/g22.jpg';
-import g21 from 'src/assets/resources/home/gallery/g21.jpg';
+import a1 from 'src/assets/resources/home/advert/a1.png';
+import a2 from 'src/assets/resources/home/advert/a2.png';
+import a3 from 'src/assets/resources/home/advert/a3.png';
+import a4 from 'src/assets/resources/home/advert/a4.png';
+import a5 from 'src/assets/resources/home/advert/a5.png';
 
-// hero carousel images
+import l1 from 'src/assets/resources/home/location/location1.jpg'
+import l2 from 'src/assets/resources/home/location/location2.jpg'
+import l3 from 'src/assets/resources/home/location/location3.jpg'
+import l4 from 'src/assets/resources/home/location/location4.jpg'
+import l5 from 'src/assets/resources/home/location/location5.jpg'
+import l6 from 'src/assets/resources/home/location/location6.jpg'
+import l7 from 'src/assets/resources/home/location/location7.jpg'
+
 import home1 from 'src/assets/resources/home/slider/1.jpg';
 import home2 from 'src/assets/resources/home/slider/2.jpg';
 import home3 from 'src/assets/resources/home/slider/3.jpg';
 import home4 from 'src/assets/resources/home/slider/4.jpg';
 
-// unit images
-import StudioPatio from 'src/assets/resources/home/unit-types/B-StudioBalcony-768x689.png';
-import StudioBalconyB from 'src/assets/resources/home/unit-types/B3-Studio-768x689.png';
-import StudioPatioB from 'src/assets/resources/home/unit-types/B4-StudioBalcony-768x689.png';
-import StudioBal from 'src/assets/resources/home/unit-types/D-StudioBalcony-768x689.png';
-import Deluxe from 'src/assets/resources/home/unit-types/Deluxe-768x689.png';
-import StudioPatioC from 'src/assets/resources/home/unit-types/C-StudioPatio-768x689.png';
-import SharedStudio from 'src/assets/resources/home/unit-types/E-Shared-768x689.png';
-import TwoBed from 'src/assets/resources/home/unit-types/F-2-Bed-768x689.png';
-
-import UnitService from 'src/services/UnitService'
-import UnitDetailsComponent from 'src/components/user/UnitDetailsComponent.vue'
-import UnitApplicationFormComponent from 'src/components/user/UnitApplicationFormComponent.vue'
-import RentalService from 'src/services/RentalService'
-import BedStatsComponentBlack from 'src/components/user/BedStatsComponentBlack.vue'
-import BedStatsComponent from 'src/components/user/BedStatsComponent.vue'
-
-import { useMeta } from 'quasar'
+import { useMeta } from 'quasar';
 
 export default {
   name: 'Homepage',
+  components: {
+    CustomButton,
+    MaintenanceBanner,
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup,
+    UnitCardComponent,
+    UnitCardComponentBlack,
+    ImageDialog
+  },
 
   setup() {
     useMeta({
@@ -528,8 +626,6 @@ export default {
       },
       title: 'The Web | Premium Student Housing in Stellenbosch',
       meta: {
-
-        // Primary meta
         description: {
           name: 'description',
           content: 'Modern student accommodation in Stellenbosch with resort-style amenities, 24/7 security, high-speed Wi-Fi, and academic-focused living spaces. Apply now for 2026.'
@@ -538,8 +634,6 @@ export default {
           name: 'keywords',
           content: 'student housing Stellenbosch, student accommodation, The Web residences, university housing, secure student living'
         },
-
-        // OpenGraph (Facebook/social)
         ogTitle: {
           property: 'og:title',
           content: 'The Web | Luxury Student Housing in Stellenbosch'
@@ -560,8 +654,6 @@ export default {
           property: 'og:type',
           content: 'website'
         },
-
-        // Twitter Card
         twitterCard: {
           name: 'twitter:card',
           content: 'summary_large_image'
@@ -578,145 +670,71 @@ export default {
       link: {
         canonical: 'https://the-web.co.za' + window.location.pathname
       }
-    })
+    });
   },
 
   data() {
     return {
-      units: [],
-      detailsDialog: false,
-      applyDialog: false,
-      selectedUnit: null,
-      myRentals: [],
-      allUnits: [],
-      // floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
-      floorLabels: ['First Floor', 'Second Floor', 'Third Floor'],
-      expanded: [true, false, false],
-
+      parallax: home2,
+      parallax2: home3,
       currentSlide: 1,
+      currentSlide2: 1,
+      currentSlide3: 1,
+      currentSlide4: 1,
+
+      showImageDialog: false,
+      currentDialogImageUrl: '',
+
       heroCards: [
         { _id: 1, imageUrl: home1 },
         { _id: 2, imageUrl: home2 },
         { _id: 3, imageUrl: home3 },
         { _id: 4, imageUrl: home4 },
       ],
-
-      currentSlide2: 1,
-      // unitCards: [
-      //   { _id: 1, imageUrl: Room1 },
-      //   { _id: 2, imageUrl: Room2 },
-      //   { _id: 3, imageUrl: Room3 },
-      //   { _id: 4, imageUrl: Room8 },
-      //   { _id: 5, imageUrl: Room9 },
-      //   { _id: 6, imageUrl: Room10 },
-      //   { _id: 7, imageUrl: Room11 },
-      //   { _id: 8, imageUrl: Room12 },
-      //   { _id: 9, imageUrl: Bathroom },
-      // ],
-      unitCards: [
-        { _id: 2, imageUrl: g5 },
-        // { _id: 1, imageUrl: g1 },
-
-        // { _id: 3, imageUrl: g8 },
-        // { _id: 4, imageUrl: g9 },
-        { _id: 5, imageUrl: g10 },
-        // { _id: 6, imageUrl: g11 },
-        { _id: 7, imageUrl: g13 },
-        { _id: 8, imageUrl: g14 },
-        // { _id: 9, imageUrl: g15 },
-        { _id: 10, imageUrl: g17 },
-        { _id: 11, imageUrl: g18 },
-        { _id: 12, imageUrl: g19 },
-        { _id: 13, imageUrl: g20 },
-        // { _id: 14, imageUrl: g22 },
-        { _id: 15, imageUrl: g21 },
+      advertCards: [
+        { _id: 1, imageUrl: a1 },
+        { _id: 2, imageUrl: a2 },
+        { _id: 3, imageUrl: a3 },
+        { _id: 4, imageUrl: a4 },
+        { _id: 5, imageUrl: a5 },
+      ],
+      locationCards: [
+        { _id: 1, imageUrl: l1 },
+        { _id: 2, imageUrl: l2 },
+        { _id: 3, imageUrl: l3 },
+        { _id: 4, imageUrl: l4 },
+        { _id: 5, imageUrl: l5 },
+        { _id: 6, imageUrl: l6 },
+        { _id: 7, imageUrl: l7 },
+      ],
+      amenitiesCards: [
+        { _id: 1, imageUrl: am0 },
+        { _id: 2, imageUrl: am1 },
+        { _id: 3, imageUrl: am2 },
       ],
 
-      unitTypes: [
-        { _id: 2, imageUrl: StudioPatio, label: 'Studio Patio' },
-        { _id: 3, imageUrl: StudioBalconyB, label: 'Studio Balcony B' },
-        { _id: 4, imageUrl: StudioPatioB, label: 'Studio Patio' },
-        { _id: 5, imageUrl: StudioBal, label: 'Studio Bal' },
-        { _id: 6, imageUrl: Deluxe, label: 'Deluxe' },
-        { _id: 7, imageUrl: StudioPatioC, label: 'Studio Patio' },
-        { _id: 8, imageUrl: SharedStudio, label: 'Studio Patio' },
-        { _id: 9, imageUrl: TwoBed, label: 'Shared Studio' },
-      ],
       userContact: {
         firstName: '',
         email: '',
-      }, message: '',
-    }
-  },
-  components: {
-    CustomButton,
-    BedStatsComponentBlack,
-    BedStatsComponent,
-    UnitDetailsComponent,
-    UnitApplicationFormComponent,
-    MaintenanceBanner,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup
-
-  },
-  computed: {
-    hasOngoingRentals() {
-      return this.myRentals.some(rental => rental.status === 'Pending' || rental.status === 'Active');
-    }
+      },
+      message: ''
+    };
   },
 
   methods: {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
-    async fetchMyRentals() {
-      const user = await Helper.fetchUserDetails()
-      this.myRentals = await RentalService.findMyRentals(user._id)
+    openImageDialog(url) {
+      this.currentDialogImageUrl = url
+      this.showImageDialog = true
     },
 
-    handleExpansion(expandedIndex) {
-      this.expanded = this.expanded.map((_, index) => index === expandedIndex)
-    },
 
-    async fetchUnits() {
-      const response = await UnitService.getAllUnits()
-      this.units = response
-
-      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
-
-      // const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor')
-      // const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
-      // const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
-
-      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
-      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
-      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor')
-
-      this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits]
-
-      this.fetchMyRentals()
-    },
-    openUnitDetails(unit) {
-      this.selectedUnit = unit,
-        this.detailsDialog = true
-    },
-    openApplicationForm(unit) {
-      this.selectedUnit = unit,
-        this.applyDialog = true
-    },
-    handleDialogClose() {
-      this.applyDialog = false
-      this.fetchUnits()
-    },
-    goToRentalHistory() {
-      this.$router.push({ path: '/user/applications' })
-    },
     scrollToSection(sectionId) {
       const element = document.getElementById(sectionId);
       if (element) {
-        const offset = window.innerHeight * 0.1; // 10vh
+        const offset = window.innerHeight * 0.1;
         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
         const offsetPosition = elementPosition - offset;
 
@@ -726,6 +744,7 @@ export default {
         });
       }
     },
+
     async submitContactForm() {
       const checkbox = document.querySelector('input[name="privacyPolicy"]');
       if (!checkbox.checked) {
@@ -746,28 +765,199 @@ export default {
       } catch (error) {
         this.$q.notify({ type: 'negative', message: 'Error sending message.' });
       }
-    },
-    async openUnitDash() {
-      const isLoggedIn = await Helper.checkCookie()
-      if (isLoggedIn) {
-        this.$router.push('/units/apply')
-      } else {
-        this.$router.push('/auth/login')
-        this.$q.notify({ type: 'negative', message: 'Please login to continue.' })
-      }
     }
   },
-  created() {
-    this.fetchUnits()
-  },
-}
+
+  mounted() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-once')
+          // Force hardware acceleration for mobile
+          entry.target.style.willChange = 'transform, opacity'
+        }
+      })
+    }, {
+      threshold: this.$q.screen.lt.sm ? 0.1 : 0.2
+    })
+
+    const elements = this.$el.querySelectorAll('.slide-in-left, .slide-in-right')
+    elements.forEach(el => {
+      observer.observe(el)
+    })
+  }
+};
 </script>
 
 <style lang="sass">
+.map-container
+  position: relative
+  width: 100%
+  height: auto
+
+  img
+    display: block
+    width: 100%
+    height: auto
+
+@keyframes pulse
+  0%
+    transform: translate(-50%, -100%) scale(1)
+    opacity: 1
+  50%
+    transform: translate(-50%, -100%) scale(1.1)
+    opacity: 0.9
+  100%
+    transform: translate(-50%, -100%) scale(1)
+    opacity: 1
+
+@keyframes fadeInLabel
+  0%
+    opacity: 0
+    transform: translateX(-50%) translateY(10px)
+  100%
+    opacity: 1
+    transform: translateX(-50%) translateY(0)
+
+%marker-base
+  position: absolute
+  cursor: pointer
+  background-size: contain
+  background-repeat: no-repeat
+  transform: translate(-50%, -100%)
+  animation: pulse 1.5s infinite ease-in-out
+  border-radius: 8px
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4)
+
+  &::after
+    content: attr(data-label)
+    position: absolute
+    width: max-content
+    min-width: 57px
+    height: auto
+    left: 100%
+    top: -25px
+    transform: translateX(10%) translateY(0)
+    background: #fff
+    color: #000
+    padding: 6px 12px
+    font-size: 14px
+    border-radius: 10px
+    opacity: 0
+    pointer-events: none
+    white-space: nowrap
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4)
+    transition: opacity 0.3s ease
+
+    // &::before
+    //   content: ""
+    //   position: absolute
+    //   top: 50%
+    //   left: 0
+    //   transform: translate(-100%, -50%)
+    //   border-width: 8px
+    //   border-style: solid
+    //   border-color: transparent rgba(0, 0, 0, 0.9) transparent transparent
+    //   width: 0
+    //   height: 0
+
+  &:hover::after
+    opacity: 1
+
+.marker-1
+  @extend %marker-base
+  top: 15%
+  left: 64%
+  width: 60px
+  height: 43px
+  padding: 3px
+  background-image: url('/assets/map/web.png')
+  background-color: white
+  border: 2px solid white
+
+.marker-2
+  @extend %marker-base
+  top: 27%
+  left: 54%
+  width: 60px
+  height: 60px
+  background-image: url('/assets/map/steers.jpeg')
+  border: 2px solid white
+
+.marker-3
+  @extend %marker-base
+  top: 60%
+  left: 34%
+  width: 60px
+  height: 60px
+  background-image: url('/assets/map/hospital2.png')
+  border: 2px solid red
+
+.marker-4
+  @extend %marker-base
+  top: 82%
+  left: 18%
+  width: 60px
+  height: 60px
+  background-image: url('/assets/map/university.jpeg')
+  border: 2px solid #b8860b
+
+.marker-5
+  @extend %marker-base
+  top: 84%
+  left: 23%
+  width: 55px
+  height: 60px
+  background-image: url('/assets/map/neelsie.jpeg')
+  border: 2px solid #4B2E17
+
+.marker-6
+  @extend %marker-base
+  top: 30%
+  left: 58%
+  width: 40px
+  height: 40px
+  background-image: url('/assets/map/spar.jpeg')
+  border: 2px solid green
+
+.marker-7
+  @extend %marker-base
+  top: 99%
+  left: 5%
+  width: 55px
+  height: 28px
+  background-image: url('/assets/map/kfc.jpeg')
+  border: 2px solid red
+
+@media (max-width: 600px)
+  .marker-1, .marker-2, .marker-3, .marker-4, .marker-5, .marker-6, .marker-7
+    width: 40px !important
+    height: 40px !important
+
+    &::after
+      font-size: 12px
+      min-width: 45px
+      padding: 4px 8px
+      top: -40px
+
+
+
+
+
+
+
+
+
+.parallax-adjusted .q-parallax__image
+  object-fit: cover
+  object-position: center 30%
+
+.dark-wrapper
+  background-color: #121212
+  height: 100%
 
 .fade-in-scale
   transform: scale(0.8)
-  // opacity: 0
   animation: fade-in linear forwards
   animation-timeline: view()
   animation-range: 150px 600px
@@ -775,48 +965,107 @@ export default {
 @keyframes fade-in
   from
     transform: scale(0.8)
-    // opacity: 0
   to
     transform: scale(1)
     opacity: 1
 
+.slide-up
+  transform: translateY(100%)
+  animation: slideUp 4s ease forwards
+  animation-timeline: view()
+  animation-range: 100px 600px
+
+@keyframes slideUp
+  from
+    transform: translateY(100%)
+  to
+    transform: translateY(0)
 body
   overflow-x: hidden
 
+
 .slide-in-left
+  opacity: 0
   transform: translateX(-500px)
-  // opacity: 0
-  animation: slide-left linear forwards
-  animation-timeline: view()
-  animation-range: 150px 600px
 
-@keyframes slide-left
-  from
-    transform: translateX(-500px)
-    // opacity: 0
-  to
-    transform: translateX(0)
-    opacity: 1
-
+  &.animate-once
+    animation: slide-left 0.8s ease-out forwards
 
 .slide-in-right
+  opacity: 0
   transform: translateX(500px)
-  // opacity: 0
-  animation: slide-right linear forwards
-  animation-timeline: view()
-  animation-range: 150px 600px
 
-@keyframes slide-right
-  from
-    transform: translateX(500px)
-    // opacity: 0
+  &.animate-once
+    animation: slide-right 0.8s ease-out forwards
+
+@keyframes slide-left
   to
     transform: translateX(0)
     opacity: 1
+
+@keyframes slide-right
+  to
+    transform: translateX(0)
+    opacity: 1
+
+.text-h3
+  font-size: 3rem
+
+  @media (max-width: 767px)
+    font-size: 2rem
+
+
+
+
+
+
+
+// FIX THIS
+// @media (max-width: 600px)
+//   .slide-in-left,
+//   .slide-in-right
+//     transform: translateX(0) !important
+//     opacity: 1 !important
+//     animation: none !important
+
+//   .side-image
+//     height: auto
+//     min-height: 300px
+//     max-height: 400px
+
+//   .hero-image
+//     height: 50vh !important
+//     min-height: 300px
+
+
+// .slide-in-left
+//   transform: translateX(-500px)
+//   animation: slide-left linear forwards
+//   animation-timeline: view()
+//   animation-range: 150px 600px
+
+// @keyframes slide-left
+//   from
+//     transform: translateX(-500px)
+//   to
+//     transform: translateX(0)
+//     opacity: 1
+
+// .slide-in-right
+//   transform: translateX(500px)
+//   animation: slide-right linear forwards
+//   animation-timeline: view()
+//   animation-range: 150px 600px
+
+// @keyframes slide-right
+//   from
+//     transform: translateX(500px)
+//   to
+//     transform: translateX(0)
+//     opacity: 1
 
 .fade-up
   transform: translateY(150px)
-  // opacity: 0
   animation: fade-up ease-out forwards
   animation-timeline: view()
   animation-range: 150px 500px
@@ -824,7 +1073,6 @@ body
 @keyframes fade-up
   from
     transform: translateY(150px)
-    // opacity: 0
   to
     transform: translateY(0)
     opacity: 1
@@ -859,13 +1107,45 @@ body
   width: 100%
   height: 100%
 
-// #amenities-section
-//   height: 110vh
-// @media (max-width: 1024px)
-//   #amenities-section
-//     height: 100vh
 
-.smaller-image
-  width: 700px
-  height: 100%
+// lists
+.custom-list
+  list-style-type: none
+  padding-left: 1em
+  line-height: 1.4
+
+
+.custom-list li
+  position: relative
+  padding-left: 2.5em
+  text-indent: -3em
+  margin-bottom: 0.5em
+
+.custom-list ul
+  list-style: disc
+  padding-left: 1.5rem
+  margin-top: 0.25rem
+  margin-bottom: 0
+
+.custom-list ul li
+  padding-left: 3rem
+
+
+
+
+.custom-list li:before
+  content: ""
+  position: absolute
+  left: 0
+  padding-right: 0.5em
+
+/* For lists with checkmarks */
+.custom-list li span
+  position: relative
+  left: -0.5em
+
+.emoji
+  font-family: "Twemoji Mozilla", "Segoe UI Emoji"
+  color: #ffd700
+
 </style>

@@ -1,15 +1,15 @@
 <template>
   <q-card flat bordered class="q-ma-md stats-card">
     <q-card-section class="stats-header">
-      <div class="text-h6">Bed Availability Summary</div>
+      <div class="text-h6">Accommodation Availability Summary</div>
       <q-separator class="q-my-sm" style="width: 100%;" />
     </q-card-section>
 
     <q-card-section class="total-stats">
       <div class="row justify-center items-center">
-        <q-icon name="hotel" size="md" class="q-mr-sm" />
+        <!-- <q-icon name="hotel" size="md" class="q-mr-sm" /> -->
         <div class="text-subtitle1">
-          Total Available:
+          Total Sleepers Available:
           <span class="text-bold">{{ stats.overall.available }}/{{ stats.overall.total }}</span>
           ({{ stats.overall.total > 0 ? Math.round((stats.overall.available / stats.overall.total) * 100) + '%' : '0%' }})
         </div>
@@ -17,10 +17,11 @@
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <div class="floor-stats col-3" v-for="floor in floors" :key="floor.key">
+      <div class="floor-stats col-3" v-for="floor in floors" :key="floor.key" @click="goToFloor(floor.key)">
         <div class="text-subtitle2 text-center">{{ floor.label }}</div>
-        <div class="text-center">
-          <q-icon name="bed" size="sm" class="q-mr-xs" />
+
+        <div class="text-center cursor-pointer" >
+          <q-icon name="content_paste" size="sm" class="q-mr-xs" />
           <span class="text-bold">{{ stats[floor.key].available }}/{{ stats[floor.key].total }}</span>
         </div>
         <q-linear-progress
@@ -30,13 +31,11 @@
         />
       </div>
     </q-card-section>
-
-
-
   </q-card>
 </template>
 
 <script>
+import Helper from 'src/services/utils'
 import UnitService from 'src/services/UnitService'
 
 export default {
@@ -72,7 +71,9 @@ export default {
         overall: { available: 0, total: 0 }
       }
 
-      this.units.forEach(unit => {
+      this.units
+        .filter(unit => !unit.reservedBy)
+        .forEach(unit => {
         const occupants = Math.floor(unit.unitOccupants || 0)
         const current = Math.floor(unit.currentOccupants || 0)
         const availableBeds = Math.max(0, occupants - current)
@@ -105,6 +106,23 @@ export default {
         this.calculateBedStats()
       } catch (error) {
         console.error('Error fetching units:', error)
+      }
+    },
+    async goToFloor(key) {
+      // const isLoggedIn = await Helper.checkCookie()
+      // if (!isLoggedIn) {
+      //   this.$router.push(`/auth/login`);
+      //   this.$q.notify({ type: 'negative', message: `Please login in to continue.` })
+      //   return
+      // }
+      const keyToNumber = {
+        firstFloor: 1,
+        secondFloor: 2,
+        thirdFloor: 3
+      };
+      const floorNumber = keyToNumber[key];
+      if (floorNumber) {
+        this.$router.push(`/units/apply/floor/${floorNumber}`);
       }
     }
   },

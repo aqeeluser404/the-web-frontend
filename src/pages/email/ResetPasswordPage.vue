@@ -11,6 +11,7 @@
 
         <q-card-section>
           <q-input filled v-model="password" label="Enter your new password *" type="password" style="width: 100%;" class="q-mb-md"/>
+          <q-input filled v-model="confirmPassword" label="Confirm your new Password *" type="password" style="width: 100%;" class="q-mb-md"/>
           <CustomButton @click="ResetPassword" icon="eva-email-outline" type="password" label="Change Password" />
         </q-card-section>
 
@@ -49,7 +50,8 @@ export default {
   data() {
     return {
       message: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     }
   },
   components: {
@@ -65,14 +67,31 @@ export default {
       return true;
     },
     async ResetPassword() {
+      if (this.password !== this.confirmPassword) {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          message: 'Passwords do not match. Please try again!',
+        });
+        return;
+      }
       const token = this.$route.query.token;
       if (this.password !== '') {
         if (this.validateFields()) {
           if (token) {
             const response = await EmailService.ResetPassword(token, this.password)
             if (response) {
-              this.$q.notify({ type: 'positive', color: 'primary', message: 'Password reset successful!' })
-              this.$router.push('/auth/login')
+
+              this.$q.dialog({
+                title: 'Success',
+                message: 'Password reset successful!',
+                color: 'primary',
+                persistent: true,
+              }).onOk(() => {
+                this.$router.push('/auth/login')
+              });
+              // this.$q.notify({ type: 'positive', color: 'primary', message: 'Password reset successful!' })
+              // this.$router.push('/auth/login')
             } else {
               this.$q.notify({ type: 'negative', message: 'Password reset failed. Please try again.' })
               this.onReset()

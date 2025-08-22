@@ -1,12 +1,12 @@
 <template>
   <div class="signature-pad-container">
-    <q-card flat bordered>
+    <q-card flat>
 
-      <q-card-section>
+      <!-- <q-card-section>
         <div>Digital Signature</div>
-      </q-card-section>
+      </q-card-section> -->
 
-      <q-card-section>
+      <q-card-section class="q-px-none">
         <canvas
           ref="signatureCanvas"
           class="signature-canvas"
@@ -20,19 +20,23 @@
         ></canvas>
       </q-card-section>
 
-      <q-card-section align="left">
+      <q-card-section align="left" class="q-pa-none">
         <q-btn
+          class="custom-button q-mr-md"
           flat
           color="negative"
           label="Clear"
           @click="clearSignature"
+          rounded
         />
         <q-btn
+          class="custom-button"
           flat
           color="primary"
           label="Save"
           :disable="isEmpty"
           @click="saveSignature"
+          rounded
         />
       </q-card-section>
     </q-card>

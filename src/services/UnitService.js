@@ -12,6 +12,34 @@ class UnitService {
       throw error;
     }
   }
+
+  static async reserveUnit(unitId, userId) {
+    const ENDPOINT = '/units/reserve';
+    try {
+      const response = await axiosInstance.post(ENDPOINT, {
+        unitId,
+        userId
+      });
+      return response.data;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  static async cancelReservation(unitId, userId) {
+    const ENDPOINT = '/units/cancel-reservation';
+    try {
+      const response = await axiosInstance.post(ENDPOINT, {
+        unitId,
+        userId
+      });
+      return response.data;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
   // static async updateUnit(unitId, unitDetails) {
   //   const ENDPOINT = `/admin/units/${unitId}`
   //   try {

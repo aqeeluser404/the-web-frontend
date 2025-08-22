@@ -4,9 +4,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap')
 @import url('https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css')
 
-
 // *
 //   font-family: 'Poppins', sans-serif
+
+// *
+//   box-sizing: border-box
 
 // ========================================================================================
 // script css styles
@@ -21,8 +23,63 @@
 .occupied-unit
   color: red
 
+// ========================================================================================
+.hero-heading
+  font-size: 1.5rem
+  line-height: normal
+  font-weight: 500
 
+.hero-subheading
+  font-size: 1rem
+  line-height: normal
 
+.subBanner .text-h4
+  font-size: 1.5rem
+  line-height: normal
+  font-weight: 500
+
+.subBanner .text-body1
+  font-size: 0.9rem
+  line-height: normal
+
+// ========================================================================================
+// table css
+// .q-table th
+//   background-color: #f5f5f5
+//   font-weight: 600
+
+// .q-table__container
+//   border-collapse: collapse
+
+// .q-table th,
+// .q-table td
+//   border-right: 1px solid #ddd
+//   border-bottom: 1px solid #ddd
+
+// .q-table th:last-child,
+// .q-table td:last-child
+//   // border-right: none
+//   // border-bottom: none
+
+.q-table
+  th, td
+    border-right: 0.5px solid #e0e0e0
+    border-bottom: 0.5px solid #e0e0e0
+
+  th
+    background-color: #f5f5f5
+    font-weight: 600
+
+  th:last-child,
+  td:last-child
+    border-right: none
+
+  tr:last-child
+    td
+      border-bottom: none
+
+.q-table__container
+  border-collapse: collapse
 
 // ========================================================================================
 // component styles
@@ -45,9 +102,6 @@
   @media (min-width: 1024px) // for big screen
     max-width: 550px
 
-
-
-
 // ========================================================================================
 // container styles
 
@@ -69,8 +123,24 @@
     margin: 0rem
     height: 100%
 
+.soft-shadow-card
+  border-radius: 8px
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
 
+.header-tint
+  background-color: #f5f5f5
+  border-top-left-radius: 8px
+  border-top-right-radius: 8px
+  @media (max-width: 600px)
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
 
+.tinted-border
+  background-color: #f8fff8
+  border-bottom-left-radius: 8px
+  border-bottom-right-radius: 8px
 
 // ========================================================================================
 // screen styles
@@ -95,19 +165,16 @@
   max-width: 600px
   margin: 0 auto
 
-
-
-
 // ========================================================================================
 // images styles
 
-.image
-  width: 350px
-  height: 350px
-  object-fit: cover
-  @media (max-width: 1025px)
-    width: 300px
-    height: 300px
+// .image
+//   width: 350px
+//   height: 350px
+//   object-fit: cover
+//   @media (max-width: 1025px)
+//     width: 300px
+//     height: 300px
 
 .document
   width: 100px
@@ -117,22 +184,22 @@
     width: 100px
     height: 100px
 
+// .product-image
+//   max-height: 100%
+//   max-width: 100%
+//   object-fit: contain
+
 .product-image
-  max-height: 100%
   max-width: 100%
+  max-height: 100%
   object-fit: contain
-
-
-
+  display: block
 
 // ========================================================================================
 // element styles
 
 .cursor-pointer
   cursor: pointer
-
-
-
 
 // ========================================================================================
 // header code
@@ -171,9 +238,6 @@ p
   opacity: 0.02
   z-index: 999
 
-
-
-
 // =================================================================
 // MISC
 
@@ -196,7 +260,6 @@ p
   bottom: 0
   width: fit-content
   margin: auto
-
 
 // ONLINE STATUSES
 .green-dot
@@ -294,7 +357,6 @@ p
   white-space: normal
   word-wrap: break-word
 
-
 /* Responsive font size utility classes */
 .font-size-responsive-xs
   font-size: $font-size-responsive-xs
@@ -326,9 +388,6 @@ p
   font-weight: 400
   font-style: normal
 
-
-
-
 // =================================================================
 // IMAGES
 
@@ -343,9 +402,6 @@ p
 
 .border
   border: 1px solid lightgrey
-
-
-
 
 // =================================================================
 // ANIMATION HOVERS

@@ -41,6 +41,10 @@
               <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.password" label="Password *" type="password" />
             </q-card-section>
 
+            <q-card-section class="row justify-center q-py-none">
+              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="confirmPassword" label="Confirm Password *" type="password" />
+            </q-card-section>
+
             <q-card-section class="row justify-between q-py-none">
               <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="true" label="Registered student" />
               <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
@@ -119,7 +123,8 @@ export default {
           studentNumber: '' ,
           registeredInstitution: '',
           hasBursary: false
-        }
+        },
+        confirmPassword: ''
       },
 
       userGenderOptions: [
@@ -183,7 +188,14 @@ export default {
     },
     async onSubmit() {
       try {
-
+          if (this.user.password !== this.confirmPassword) {
+            this.$q.notify({
+              type: 'negative',
+              color: 'red',
+              message: 'Passwords do not match. Please try again!',
+            });
+            return;
+          }
         const userDetails = {
           firstName: this.user.firstName,
           lastName: this.user.lastName,
@@ -202,8 +214,17 @@ export default {
         if (this.validateFields()) {
           const response = await UserService.register(userDetails)
           if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Please check your email to verify your account.' })
-            this.$router.push('/auth/login')
+
+            this.$q.dialog({
+              title: 'Success',
+              message: 'Please check your email to verify your account.',
+              color: 'primary',
+              persistent: true,
+            }).onOk(() => {
+              this.$router.push('/auth/login')
+            });
+            // this.$q.notify({ type: 'positive', color: 'primary', message: 'Please check your email to verify your account.' })
+            // this.$router.push('/auth/login')
           } else {
             this.$q.notify({ type: 'negative', message: 'Registration failed. Please try again!' })
             // this.onReset()

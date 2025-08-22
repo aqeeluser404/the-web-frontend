@@ -109,12 +109,12 @@ export default {
   data() {
     return {
       user: {
-        firstName: 'Aarif',
-        lastName: 'Hanslo',
-        email: 'aarif210@gmail.com',
-        phone: '0748904233',
-        username: 'TestUser1',
-        password: 'TestPass2@',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        username: '',
+        password: '',
         gender: 'Select',
         userType: 'Select',
         studentInfo: {

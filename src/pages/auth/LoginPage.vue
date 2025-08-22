@@ -38,6 +38,14 @@
               label="Password *"
               type="password"
             />
+            <!-- <q-input
+              filled
+              label-color="black"
+              color="black"
+              v-model="confirmPassword"
+              label="Confirm Password *"
+              type="password"
+            /> -->
 
             <div
               class="q-my-md q-mb-xl column text-left"
@@ -74,11 +82,10 @@
   </q-page>
 </template>
 
-
 <style scoped lang="sass">
 .right-section
   display: flex
-  @media (max-width: 600px)
+  @media (max-width: 1024px)
     display: none
 
 .background-wrapper
@@ -97,7 +104,7 @@
 
 .constrain
   max-width: 750px
-  height: 450px
+  min-height: 450px
   width: 90%
   background: rgba(255, 255, 255, 0.85)
   backdrop-filter: blur(2px)
@@ -118,6 +125,7 @@
           usernameOrEmail: '',
           password: ''
         },
+        confirmPassword: '',
         logoSrc: theWeb3d,
       }
     },
@@ -127,11 +135,27 @@
     methods: {
       async onSubmit() {
         try {
+          // if (this.user.password !== this.confirmPassword) {
+          //   this.$q.notify({
+          //     type: 'negative',
+          //     color: 'red',
+          //     message: 'Passwords do not match. Please try again!',
+          //   });
+          //   return;
+          // }
           const response = await UserService.login(this.user.usernameOrEmail, this.user.password);
           // if (response.status === 200) {
           if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Login successful!' });
-            this.$router.push('/');
+            // this.$q.notify({ type: 'positive', color: 'primary', message: 'Login successful!' });
+
+            this.$q.dialog({
+              title: 'Success',
+              message: 'Login successful!',
+              color: 'primary',
+              persistent: true,
+            }).onOk(() => {
+              this.$router.push('/units/apply');
+            });
           }
           else {
             // Handle unexpected status codes

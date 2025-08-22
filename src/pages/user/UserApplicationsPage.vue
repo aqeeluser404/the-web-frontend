@@ -1,16 +1,19 @@
 <template>
   <q-page>
     <!-- Banner for rejected rentals -->
-    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false" class="bg-black text-white full-width" @click="openAddPayer">
-      <div class="row justify-center items-center" style="cursor: pointer;">
-        <div>
-          <q-icon name="warning" class="q-mr-sm" size="32px" />
-          <span>You have successfully created your application. Click here to add your payer information.</span>
+    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
+      class="bg-black text-white full-width" @click="openAddPayer">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Your application has been submitted successfully. <br>Since no bursary is linked to your profile, it is
+            mandatory to provide payer information to proceed with financial processing. Click here to complete this
+            step.
+          </span>
         </div>
       </div>
     </q-banner>
-
-
 
     <div class="q-pa-md row justify-center">
       <q-card flat bordered class="col-md-11 col-12 q-ma-sm">
@@ -23,15 +26,31 @@
 
         <q-card-section class="row text-left">
           <div>
-            For <span style="text-decoration: underline;">returning</span> applicants, you may only apply for one rental at a time. If you have an existing application thats ongoing, you will not be able to apply for another rental until the previous rental has ended.
-            Please note that once your application has been approved, cancellation may not be possible as your booking will have been confirmed and the application process will have progressed significantly. You may cancel your application during the following phases:
+            For <span style="text-decoration: underline;">returning</span> applicants, you may only apply for one rental
+            at a time. If you have an existing application thats ongoing, you will not be able to apply for another
+            rental until the previous rental has ended.
+            Please note that once your application has been approved, cancellation may not be possible as your booking
+            will have been confirmed and the application process will have progressed significantly. You may cancel your
+            application during the following phases:
           </div>
           <ul>
             <li>The Processing/Pending phase</li>
             <li>The Rejection phase</li>
           </ul>
           <div>
-            If your application is rejected, you will be notified via email and site notifications. To avoid rejection, please ensure that you have provided all the necessary documents and information. Rejection may occur if <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false information is submitted. In such cases, you will be required to cancel the rejected application and reapply by re-uploading the documents during the rejection phase.
+            If your application is rejected, you will be notified via email and site notifications. To avoid rejection,
+            please ensure that you have provided all the necessary documents and information. Rejection may occur if
+            <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false
+            information is submitted. In such cases, you will be required to cancel the rejected application and reapply
+            by re-uploading the documents during the rejection phase.
+
+
+            <br><br>
+
+            <span>
+              Please note: documents can still be uploaded even if your application is pending or ongoing. Be sure to monitor your email and site notifications for any requests or updates regarding missing or required documents.
+            </span>
+
           </div>
 
         </q-card-section>
@@ -100,17 +119,21 @@
                 </td>
                 <td class="text-left cursor-pointer">R {{ Number(rental.rentalPrice).toFixed(2) }}</td>
                 <td class="text-center cursor-pointer">{{ rental.unitNumber }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="
-                    { 'pending-status': rental.status === 'Pending'},
-                    { 'active-status': rental.status === 'Active'},
-                    { 'rejected-status': rental.status === 'Rejected'},
-                    { 'ended-status': rental.status === 'Ended'}"
-                  >
-                    {{ capitalizeFirstLetter(rental.status) }}
+                <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
+                  { 'active-status': rental.status === 'Active' },
+                  { 'rejected-status': rental.status === 'Rejected' },
+                  { 'ended-status': rental.status === 'Ended' }">
+                  {{ capitalizeFirstLetter(rental.status) }}
                 </td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton v-if="rental.status === 'Pending'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click="openAddPayer" />
+                  <CustomButton v-if="rental.status === 'Pending'" flat color="red" text-color="red"
+                    customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
+                  <CustomButton flat color="black" text-color="positive"
+                    customStyle="width: 15%" icon="eva-cloud-upload-outline" to="/user/profile" />
+                  <CustomButton
+                    v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat
+                    color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline"
+                    @click="openAddPayer" />
                 </td>
               </tr>
             </tbody>
@@ -238,7 +261,7 @@ export default {
     },
     openRequestUser(rental) {
       this.selectedRental = rental,
-      this.requestDialog = true
+        this.requestDialog = true
     },
     openAddPayer() {
       this.addPayerDialog = true

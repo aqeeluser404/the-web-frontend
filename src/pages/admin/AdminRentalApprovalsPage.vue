@@ -10,9 +10,8 @@
               Rental Application Process
             </q-timeline-entry>
             <!-- Account creation -->
-            <q-timeline-entry
-              title="Account Creation" icon="eva-people" side="right" color="orange" :subtitle="formatDate(rental.userDateCreated)"
-            >
+            <q-timeline-entry title="Account Creation" icon="eva-people" side="right" color="orange"
+              :subtitle="formatDate(rental.userDateCreated)">
               <q-card-section>
                 <div class="q-mb-md"><b>Applicant Information</b></div>
                 <ul>
@@ -20,6 +19,9 @@
                   <li>First Name: {{ capitalizeFirstLetter(rental.userFirstName) }}</li>
                   <li>Last Name: {{ capitalizeFirstLetter(rental.userLastName) }}</li>
                   <li>Gender: {{ rental.userGender }}</li>
+                  <li v-if="rental.userAge">Age: {{ rental.userAge }}</li>
+                  <li class="text-negative" v-else>Age: {{ capitalizeFirstLetter(rental.userFirstName) }} has not
+                    specified their age yet</li>
                   <li>Username: {{ rental.userUsername }}</li>
                   <li>Phone: {{ rental.userPhone }}</li>
                   <li>Email: {{ rental.userEmail }}</li>
@@ -28,30 +30,28 @@
             </q-timeline-entry>
 
             <!-- Account verification -->
-            <q-timeline-entry
-              v-if="rental.userVerified === true"
-              title="Account has been Verified" icon="done_all" side="left" />
+            <q-timeline-entry v-if="rental.userVerified === true" title="Account has been Verified" icon="done_all"
+              side="left" />
 
-            <q-timeline-entry
-              v-if="rental.userVerified === false"
-              title="Account has not been Verified" color="red" icon="close" side="left" />
+            <q-timeline-entry v-if="rental.userVerified === false" title="Account has not been Verified" color="red"
+              icon="close" side="left" />
 
             <!-- Rental creation -->
-            <q-timeline-entry
-              title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all" side="right"
-            >
+            <q-timeline-entry title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all"
+              side="right">
               <q-card-section>
                 <div class="q-mb-md">
-                  <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a bursary)</span> <span
-                    v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
+                  <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a
+                    bursary)</span> <span v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
                 </div>
                 <ul v-if="rental.userHasBursary">
                   <li>The applicant has a bursary, so a credit score is not required.</li>
                 </ul>
                 <div v-else class="q-mb-md">
                   <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
-                    <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
-                      rental.payerData.score }}/80)</span></li>
+                    <li v-if="rental.payerData.score">Credit Information <span
+                        style="text-decoration: underline;">(Score: {{
+                          rental.payerData.score }}/80)</span></li>
                     <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
                     <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
                     <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
@@ -70,7 +70,8 @@
                   <b>Parking Information</b><br>
                 </div>
                 <ul v-if="rental.parking?.hasParking">
-                  <li>Accounting for Parking Fees in Monthly Pricing (Fee: R{{ Number(rental.parking.fee).toFixed(2) }})</li>
+                  <li>Accounting for Parking Fees in Monthly Pricing (Fee: R{{ Number(rental.parking.fee).toFixed(2) }})
+                  </li>
                 </ul>
                 <ul v-else>
                   <li>Parking Not Included</li>
@@ -87,10 +88,20 @@
                   <li v-else>
                     This user is not sharing this unit with family or acquaintances.
                   </li>
-                  <li>Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span></li>
+                  <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
+                      }}</span></li>
                   <li>Unit Number: {{ rental.unitNumber }}</li>
-                  <li>
-                    Unit Price: R {{ Number(rental.unitPrice).toFixed(2) }}
+                  <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
+                    Room: {{ rental.selectedSubUnits.roomType }}
+                  </li>
+                  <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.bedType">
+                    Bed: {{ rental.selectedSubUnits.bedType }}
+                  </li>
+                  <li v-if="rental.selectedSubUnits?.price?.price">Unit Price: R {{
+                    Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
+                      rental.selectedSubUnits?.price?.name }}s</li>
+                  <li v-else>
+                    Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
                   </li>
                 </ul>
               </q-card-section>
@@ -111,11 +122,18 @@
                   <li v-if="rental.earlyEndDate">
                     Early End Date: {{ formatDate(rental.earlyEndDate) }}
                   </li>
+                  <li>
+                    <div v-if="rental.selectedSubUnits?.price?.name">Lease Duration: {{
+                      rental.selectedSubUnits?.price?.name }} Payment Plan</div>
+                    <div v-else>Lease Duration: Standard Payment Plan</div>
+                  </li>
                   <li v-if="rental.parking?.hasParking">
-                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (R {{ Number(rental.unitPrice).toFixed(2) }} + R {{ Number(rental.parking.fee).toFixed(2) }})
+                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (R {{
+                      Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} + R {{ Number(rental.parking.fee).toFixed(2)
+                    }})
                   </li>
                   <li v-else>
-                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }}
+                    Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (No Parking)
                   </li>
                 </ul>
               </q-card-section>
@@ -123,37 +141,31 @@
             </q-timeline-entry>
 
             <!-- Documents upload -->
-            <q-timeline-entry
-              v-if="rental.userDocuments && rental.userDocuments.length === 3"
+            <q-timeline-entry v-if="rental.userDocuments && rental.userDocuments.length === 5"
               title="Documents have been Uploaded" side="left" icon="done_all" />
 
-            <q-timeline-entry
-              v-else
-              title="Documents have not been Uploaded" side="left" color="red" icon="close" />
+            <q-timeline-entry v-else title="Remaining Documents to Complete Submission" side="left" color="red"
+              icon="close" />
 
-            <q-timeline-entry
-              v-if="rental.status === 'Active' || rental.status === 'Ended'"
+            <q-timeline-entry v-if="rental.status === 'Active' || rental.status === 'Ended'"
               title="Documents have been Approved" side="right" icon="done_all" />
 
             <!-- Document Approvals -->
-            <q-timeline-entry
-              v-else
-              title="Document Approval" side="right" color="grey" icon="eva-file-text-outline"
-            >
-              <div class="q-mb-md"  style="cursor: pointer; text-decoration: underline;" @click="openUserDocumentsDialog">Please verify if the following documents are valid.</div>
+            <q-timeline-entry v-else title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
+              <div class="q-mb-md" style="cursor: pointer; text-decoration: underline;"
+                @click="openUserDocumentsDialog">Please verify if the following documents are valid.</div>
               <ul>
+                <li>Registration Form</li>
                 <li>Proof of Residential Address</li>
                 <li>South African Identity Document (ID) or Passport</li>
                 <li>Three Months' Bank Statements</li>
-                <li>Documents are automatically approved once the rental has been approved</li>
+                <li>Check Credit Approval</li>
               </ul>
             </q-timeline-entry>
 
             <!-- Rental Approvals -->
-            <q-timeline-entry
-              v-if="rental.status === 'Pending'"
-              title="Approve Rental" color="grey" icon="eva-briefcase-outline" side="left"
-            >
+            <q-timeline-entry v-if="rental.status === 'Pending'" title="Approve Rental" color="grey"
+              icon="eva-briefcase-outline" side="left">
               <div class="q-mb-md"></div>
               <div @click="openRentalApprovalDialog" style="cursor: pointer; text-decoration: underline;">
                 Approve the rental information and desired lease period.
@@ -161,24 +173,23 @@
             </q-timeline-entry>
 
             <!-- rejected rental -->
-            <q-timeline-entry
-              v-if="rental.status === 'Rejected'"
-              title="Rental has been Rejected" icon="close" color="red" side="left" />
+            <q-timeline-entry v-if="rental.status === 'Rejected'" title="Rental has been Rejected" icon="close"
+              color="red" side="left" />
 
             <!-- approved rental -->
-            <q-timeline-entry
-              v-if="rental.status === 'Active'"
-              title="Rental has been Approved" :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" />
+            <q-timeline-entry v-if="rental.status === 'Active'" title="Rental has been Approved"
+              :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" />
 
             <!-- scheduled ended rental -->
-            <q-timeline-entry
-              v-if="rental.status === 'Ended' && rental.earlyEndDate === null"
-              title="Rental has ended" :subtitle="formatDate(rental.rentalEndDate)" :body="`The rental period concluded as scheduled.`" icon="done_all" side="left" color="orange" />
+            <q-timeline-entry v-if="rental.status === 'Ended' && rental.earlyEndDate === null" title="Rental has ended"
+              :subtitle="formatDate(rental.rentalEndDate)" :body="`The rental period concluded as scheduled.`"
+              icon="done_all" side="left" color="orange" />
 
             <!-- early ended rental -->
-            <q-timeline-entry
-              v-if="rental.status === 'Ended' && rental.earlyEndDate !== null"
-              title="Rental has ended" :subtitle="formatDate(rental.earlyEndDate)" :body="`The rental period concluded ahead of the scheduled end date.`" icon="done_all" side="left" color="orange" />
+            <q-timeline-entry v-if="rental.status === 'Ended' && rental.earlyEndDate !== null" title="Rental has ended"
+              :subtitle="formatDate(rental.earlyEndDate)"
+              :body="`The rental period concluded ahead of the scheduled end date.`" icon="done_all" side="left"
+              color="orange" />
           </q-timeline>
         </q-card-section>
       </q-card>
@@ -224,6 +235,9 @@ export default {
   computed: {
     layout() {
       return this.$q.screen.lt.sm ? 'dense' : (this.$q.screen.lt.md ? 'comfortable' : 'loose');
+    },
+    unitPrice() {
+      this.un
     }
   },
   created() {
@@ -281,6 +295,7 @@ export default {
         userEmail: user.email,
         userPhone: user.phone,
         userGender: user.gender,
+        userAge: user.age,
         userDateCreated: user.dateCreated,
         userVerified: user.verification.isVerified,
         userDocuments: user.documents,

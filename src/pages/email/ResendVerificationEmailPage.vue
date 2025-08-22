@@ -69,8 +69,17 @@ export default {
           if (this.validateFields()) {
             const response = await EmailService.resendVerificationEmail(this.email)
             if (response) {
-              this.$q.notify({ type: 'positive', color: 'primary', message: 'Verification email resent successfully!' })
               this.message = 'Verification email resent successfully!'
+              this.$q.dialog({
+                title: 'Success',
+                message: 'Verification email resent successfully!',
+                color: 'primary',
+                persistent: true,
+              }).onOk(() => {
+                // this.$router.push('/units/apply');
+              });
+              // this.$q.notify({ type: 'positive', color: 'primary', message: 'Verification email resent successfully!' })
+              // this.message = 'Verification email resent successfully!'
             } else {
               this.$q.notify({ type: 'negative', message: 'Error resending verification email.' })
               this.message = 'Error resending verification email.'

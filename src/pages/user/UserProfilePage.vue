@@ -65,6 +65,31 @@
               <q-input v-model="userDetails.username" />
             </q-item-section>
           </q-item>
+          <!-- Add Date of Birth field -->
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Date of Birth</q-item-section>
+            <q-item-section class="text-left">
+              <q-input
+                type="date"
+                v-model="userDetails.dateOfBirth"
+                :disable="isEditingDisabled"
+                placeholder="YYYY-MM-DD"
+                @update:model-value="handleDateChange"
+              />
+            </q-item-section>
+          </q-item>
+
+          <!-- Add Age display field -->
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Age</q-item-section>
+            <q-item-section class="text-left">
+              <q-input
+                :model-value="userDetails.age"
+                readonly
+                disable
+              />
+            </q-item-section>
+          </q-item>
         </q-card-section>
 
         <q-card-section>
@@ -119,11 +144,21 @@
         <q-card-section>
           <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly ensure the following documents are uploaded:</div>
           <ul>
-            <li>Proof of Residential Address</li>
-            <li>South African Identity Document (ID) or Passport</li>
-            <li>Three Months' Bank Statements</li>
+            <div v-for="docType in requiredDocuments" :key="docType.type"
+                class="cursor-pointer q-mb-sm" style="font-weight: 500;"
+                @click="openAddDocumentDialog(docType.type)">
+              <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary" name="eva-checkmark-circle-2-outline" />
+              <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
+              <span> {{ docType.label }}</span>
+            </div>
+            <br>
+            <div class="cursor-pointer" @click="removeAllDocuments">
+              <q-icon class="q-mr-sm" name="eva-trash-outline" />
+              <span> Clear All</span>
+            </div>
           </ul>
-         Once your rental application has been submitted, no further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">documents</span> will be permitted unless the application has been rejected or ended. <br><br><b>Note:</b> Applicants with a bursary are exempt from credit score verification.
+          <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
+         <br>Once your rental application has been submitted; <br> No further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">sensitive data</span> will be permitted unless the application has been rejected or ended. <br><br><b>Note:</b> Applicants with a bursary are exempt from credit score verification.
         </q-card-section>
 
         <q-card-section>
@@ -145,51 +180,14 @@
             </li>
           </ul>
         </q-card-section>
-
-        <q-card-section>
-          <div class="text-h6">Your Documents</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section v-if="userDetails.documents && userDetails.documents.length > 0">
-          <q-list v-for="document in userDetails.documents" :key="document._id">
-            <q-card
-              flat bordered
-              class="cursor-pointer row q-ma-sm "
-            >
-              <q-card-section>
-                <q-img
-                  :src="documentLogo"
-                  class="document"
-                />
-              </q-card-section>
-              <q-card-section class="">
-                <div class="text-caption wrap-text limit-text">{{ document.documentUrl.split('/').pop() }}</div>
-                <div class="row justify-between q-my-md">
-                  <CustomButton flat @click="viewDocument(document.documentUrl)" label="Open" color="white" text-color="black" customStyle="width: 45%"  />
-                  <!-- <CustomButton :disable="isEditingDisabled" flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  /> -->
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-list>
-        </q-card-section>
-        <q-card-section v-else>
-          <q-card flat>
-            <q-card-section>
-              <q-item>
-                <q-item-section class="text-subtitle1">You have no documents saved yet.</q-item-section>
-              </q-item>
-            </q-card-section>
-          </q-card>
-        </q-card-section>
-        <q-card-section class="row justify-between">
-          <CustomButton :disable="isEditingDisabled" label="Add Document" customStyle="width: 45%" @click="openAddDocumentDialog" />
-          <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/>
-        </q-card-section>
       </q-card>
     </div>
-
     <q-dialog v-model="addDocDialog">
-      <AddDocumentComponent :user="userDetails" @close="handleDialogClose" />
+      <AddDocumentComponent
+        :user="userDetails"
+        :docType="activeDocType"
+        @close="handleDialogClose"
+        @document-added="fetchUserDetails" />
     </q-dialog>
   </q-page>
 </template>
@@ -216,14 +214,24 @@ export default {
         }
       },
       selectedGender: '',
-      addDocDialog: false,
+
       isEditingDisabled: false,
       userGenderOptions: [
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' }
       ],
       currentAccessKey: '',
-      documentLogo
+      documentLogo,
+
+      addDocDialog: false,
+      requiredDocuments: [
+        { type: 'registration', label: 'Registration Form' },
+        { type: 'proof_of_address', label: 'Proof of Residential Address' },
+        { type: 'id_or_passport', label: 'South African Identity Document (ID) or Passport' },
+        { type: 'bank_statements', label: 'Three Months\' Bank Statements' },
+        { type: 'credit_check', label: 'Check Credit Approval' }
+      ],
+      activeDocType: null
     }
   },
   components: {
@@ -236,6 +244,24 @@ export default {
     validatePhone: Helper.validatePhone,
     validateUsername: Helper.validateUsername,
     validatePassword: Helper.validatePassword,
+    handleDateChange(newDate) {
+      if (newDate) {
+        // Calculate age from date
+        const dob = new Date(newDate);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+          age--;
+        }
+
+        this.userDetails.age = age;
+      } else {
+        this.userDetails.age = null;
+      }
+    },
+
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
@@ -335,7 +361,9 @@ export default {
         userType: this.userDetails.userType,
         location: this.userDetails.location,
         loginInfo: this.userDetails.loginInfo,
-        studentInfo: studentInfo
+        studentInfo: studentInfo,
+        dateOfBirth: this.userDetails.dateOfBirth || null,
+        age: this.userDetails.age || null
       };
       if (this.validateFields()) {
         this.$q.dialog({
@@ -356,11 +384,33 @@ export default {
     },
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails();
+
+      // Format date for display if it exists
+      if (this.userDetails.dateOfBirth) {
+        this.userDetails.dateOfBirth = this.formatDateForDisplay(this.userDetails.dateOfBirth);
+      }
       this.checkEditingDisabled();
 
       const response = await RentalService.findMyRentals(this.userDetails._id)
 
       this.currentAccessKey = response.find(rental => (rental.status === 'Pending' || rental.status === 'Active') && rental.accessKey)?.accessKey
+    },
+
+    formatDateForDisplay(date) {
+      if (!date) return '';
+      let d;
+      if (date.$date) d = new Date(date.$date);
+      else d = new Date(date);
+      if (isNaN(d.getTime())) return '';
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+
+    hasDocument(type) {
+      return this.userDetails.documents?.some(doc => doc.docType === type);
     },
     viewDocument(document) {
       const url = Helper.getDocumentUrl(document);
@@ -395,7 +445,8 @@ export default {
         this.$q.notify({ type: 'negative', message: 'You have no documents to delete. Please try again.' });
       }
     },
-    openAddDocumentDialog() {
+    openAddDocumentDialog(type) {
+      this.activeDocType = type;
       this.addDocDialog = true;
     },
     handleDialogClose() {
@@ -409,9 +460,38 @@ export default {
 };
 </script>
 
-<style lang="sass">
+<style scoped lang="sass">
 .wrap-text
   white-space: pre-wrap
   word-wrap: break-word
+
+// lists
+// .custom-list
+//   list-style-type: none
+  // line-height:
+  // margin: 0
+
+
+  // text-indent: -1em
+
+
+// .custom-list li
+//   position: relative
+//   padding-left: 1em
+//   text-indent: -2em
+//   margin-bottom: 0.5em
+
+
+// .custom-list li:before
+//   content: ""
+//   position: absolute
+//   left: 0
+//   padding-right: 0.5em
+
+// /* For lists with checkmarks */
+// .custom-list li span
+//   position: relative
+
+
 
 </style>

@@ -45,6 +45,7 @@
             <q-select v-model="selectedUser" :options="userSelectors" label="User filters"
               @update:model-value="filteredByUserType" class="col-12 col-md-2" />
           </q-card-section>
+
           <q-card-section>
             <q-markup-table flat bordered>
               <thead>
@@ -59,8 +60,8 @@
                   <th class="text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody v-for="(user, index) in filteredUsers" :key="user._id">
-                <tr @click="viewUserDetails(user._id)">
+              <tbody>
+                <tr v-for="(user, index) in filteredUsers" :key="user._id" @click="viewUserDetails(user._id)">
                   <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                   <td class="text-left cursor-pointer">{{ user.username }}</td>
                   <td class="text-left cursor-pointer id">{{ user._id }}</td>
@@ -421,7 +422,3 @@ export default {
   }
 };
 </script>
-
-<style>
-/* Add any additional styling you need */
-</style>

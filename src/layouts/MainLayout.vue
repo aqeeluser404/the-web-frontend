@@ -1,123 +1,127 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" :style="{ height: headerHeight }"
-      v-if="
-        $route.path !== '/auth/login' &&
-        $route.path !== '/auth/register' &&
-        $route.path !== '/verify-email' &&
-        $route.path !== '/resend-verification' &&
-        $route.path !== '/reset-password' &&
-        $route.path !== '/forgot-password'
-        // $route.path !== '/admin/dashboard'
-      "
-    >
-      <q-toolbar class="q-px-lg text-black row items-center justify-between">
+    <q-header class="bg-white flex" :style="{ height: headerHeight }" v-if="
+      $route.path !== '/auth/login' &&
+      $route.path !== '/auth/register' &&
+      $route.path !== '/verify-email' &&
+      $route.path !== '/resend-verification' &&
+      $route.path !== '/reset-password' &&
+      $route.path !== '/forgot-password'
+      // $route.path !== '/admin/dashboard'
+    ">
+      <!-- Top nav -->
+      <div class="secondary-nav bg-grey-3 text-black full-width q-px-lg ">
+        <div class="full-height large-screen-only">
+          <div class="row justify-center items-center full-height">
+            <q-btn to="/incident-report" rounded flat label="Incident Report"
+              class="custom-button q-py-sm text-weight-medium" />
+            <q-btn to="/resources" rounded flat label="Resources" class="custom-button q-py-sm text-weight-medium" />
+            <q-btn to="/developer" rounded flat label="Developer" class="custom-button q-py-sm text-weight-medium" />
+            <q-btn to="/fees" rounded flat label="Fees" class="custom-button q-py-sm text-weight-medium" />
+            <q-btn to="/history" rounded flat label="History" class="custom-button q-py-sm text-weight-medium" />
+            <q-btn to="/applications" rounded flat label="Applications"
+              class="custom-button q-py-sm text-weight-medium" />
+          </div>
+        </div>
+        <q-btn-dropdown dropdown-icon="menu" flat class="small-screen-only full-height">
+          <q-list style="width: 200px;">
+            <q-item clickable v-close-popup to="/incident-report">
+              <q-item-section>Incident Report</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup to="/resources">
+              <q-item-section>Resources</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup to="/developer">
+              <q-item-section>Developer</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup to="/fees">
+              <q-item-section>Fees</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup to="/history">
+              <q-item-section>History</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup to="/applications">
+              <q-item-section>Applications</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+      </div>
+
+      <!-- <div class="secondary-nav bg-grey-3 text-black full-width q-px-lg small-screen-only">
+        <div class="small-screen-only q-px-md text-right full-height">
+
+        </div>
+      </div> -->
+
+      <q-toolbar class="q-px-lg text-black row items-center justify-between bg-white" style="border-bottom: 1px solid #e0e0e0;">
 
         <!-- title and avatar -->
         <q-toolbar-title class="col-md-4 row items-center ">
-          <router-link to="/">
-            <img
-              :src="logoSrc"
-              alt="Home"
-              style="width: 20%; cursor: pointer;"
-            >
+          <router-link to="/" class="row items-center">
+            <img :src="logoSrc" alt="Home" style="width: 25%; cursor: pointer;">
           </router-link>
         </q-toolbar-title>
 
         <div class="col-md-8">
           <!----------------------------------------------------------- NAV SECTION -------------------------------------------------->
           <!-- Desktop nav -->
-          <div class="row justify-end items-center">
-            <q-btn
-              to="/"
-              class="custom-button q-py-sm large-screen-only"
-              label="Home" flat rounded />
+          <div class="row justify-end items-center q-py-lg ">
+            <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat rounded />
 
             <q-btn
-              v-if="$route.path === '/'"
-              @click="scrollToSection('amenities-section')"
-              class="custom-button q-py-sm large-screen-only"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
+              @click="scrollToSection('amenities-section')" class="custom-button q-py-sm large-screen-only"
               label="Amenities" flat rounded />
 
             <q-btn
-              v-if="$route.path === '/'"
-              @click="scrollToSection('images-section')"
-              class="custom-button q-py-sm large-screen-only"
-              label="Gallery" flat rounded />
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
+              @click="scrollToSection('units-section')" class="custom-button q-py-sm large-screen-only" label="Units"
+              flat rounded />
 
             <q-btn
-              v-if="$route.path === '/'"
-              @click="scrollToSection('academics-section')"
-              class="custom-button q-py-sm large-screen-only"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
+              @click="scrollToSection('academics-section')" class="custom-button q-py-sm large-screen-only"
               label="Academics" flat rounded />
 
             <q-btn
-              v-if="$route.path === '/'"
-              @click="scrollToSection('units-section')"
-              class="custom-button q-py-sm large-screen-only"
-              label="Units" flat rounded />
-
-            <q-btn
-              v-if="$route.path === '/'"
-              @click="scrollToSection('contact-section')"
-              class="custom-button q-py-sm large-screen-only"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
+              @click="scrollToSection('contact-section')" class="custom-button q-py-sm large-screen-only"
               label="Contact" flat rounded />
 
-            <!-- dashboards -->
             <q-btn
-              v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user' || userDetails.userType == 'vendor')"
-              @click="openDash"
-              class="custom-button q-py-sm large-screen-only"
-              label="Book Now" flat rounded />
-            <q-btn
-              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
-              to="/user/profile"
-              class="custom-button q-py-sm large-screen-only"
-              label="User Profile" flat rounded />
-            <q-btn
-              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
-              to="/user/applications"
-              class="custom-button q-py-sm large-screen-only"
-              label="Application History" flat rounded />
-            <q-btn
-              v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
-              to="/user/call-log"
-              class="custom-button q-py-sm large-screen-only"
-              label="Log A Call" flat rounded />
-            <q-btn
-              v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
-              to="/admin"
-              class="custom-button q-py-sm large-screen-only"
-              icon="eva-pie-chart-outline" label="Admin" flat rounded />
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
+              to="/frequently-asked-questions" class="custom-button q-py-sm large-screen-only" label="FAQ" flat
+              rounded />
 
+            <!-- dashboards -->
+            <q-btn to="/units/apply" class="custom-button q-py-sm large-screen-only" label="Book Now" flat rounded />
             <q-btn
-              v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'"
-              to="/vendor"
-              class="custom-button q-py-sm large-screen-only"
-              icon="eva-pie-chart-outline" label="Vendor" flat rounded />
+              v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
+              to="/user/profile" class="custom-button q-py-sm large-screen-only" label="User Profile" flat rounded />
+            <q-btn
+              v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
+              to="/user/applications" class="custom-button q-py-sm large-screen-only" label="Application History" flat
+              rounded />
+            <q-btn
+              v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])"
+              to="/user/call-log" class="custom-button q-py-sm large-screen-only" label="Log A Call" flat rounded />
+            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'" to="/admin"
+              class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Admin" flat rounded />
+
+            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'" to="/vendor"
+              class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Vendor" flat
+              rounded />
 
             <!-- PHP CODE -->
-            <q-btn
-              v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
-              @click="downloadData()"
-              class="custom-button q-py-sm large-screen-only"
-              icon="eva-cloud-download-outline"  flat rounded />
+            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
+              @click="downloadData()" class="custom-button q-py-sm large-screen-only" icon="eva-cloud-download-outline"
+              flat rounded />
 
             <!-- authentication -->
-            <CustomButton
-              v-if="!isLoggedIn"
-              label="Login"
-              to="/auth/login"
-              class="large-screen-only q-ml-md"
-              :customStyle="{ width: 'fit-content' }"
-            />
-            <CustomButton
-              v-else
-              label="Logout"
-              @click="logout"
-              class="large-screen-only q-ml-md"
-              :customStyle="{ width: 'fit-content' }"
-            />
+            <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
+              :customStyle="{ width: 'fit-content' }" />
+            <CustomButton v-else label="Logout" @click="logout" class="large-screen-only q-ml-md"
+              :customStyle="{ width: 'fit-content' }" />
           </div>
 
           <!-- Mobile nav -->
@@ -126,46 +130,55 @@
               <q-item clickable v-close-popup to="/">
                 <q-item-section class="">Home</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-if="$route.path === '/'">
+              <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
                 <q-item-section class="" @click="scrollToSection('amenities-section')">Amenities</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-if="$route.path === '/'">
+              <!-- <q-item clickable v-close-popup v-if="$route.path === '/'">
                 <q-item-section class="" @click="scrollToSection('images-section')">Gallery</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup v-if="$route.path === '/'">
-                <q-item-section class="" @click="scrollToSection('academics-section')">Academics</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup v-if="$route.path === '/'">
+              </q-item> -->
+              <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
                 <q-item-section class="" @click="scrollToSection('units-section')">Units</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-if="$route.path === '/'">
+              <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                <q-item-section class="" @click="scrollToSection('academics-section')">Academics</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
                 <q-item-section class="" @click="scrollToSection('contact-section')">Contact</q-item-section>
               </q-item>
-
-              <!-- PHP CODE -->
-              <q-item clickable v-close-popup v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
-                <q-item-section class="" @click="downloadData()">Download Data</q-item-section>
+              <q-item clickable v-close-popup to='/frequently-asked-questions'
+                v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                <q-item-section class="">FAQ</q-item-section>
               </q-item>
 
               <!-- authentication -->
-              <q-item clickable v-close-popup @click="openDash" v-if="userDetails && userDetails.userType != null && (userDetails.userType == 'admin' || userDetails.userType == 'user' || userDetails.userType == 'vendor')">
+              <q-item clickable v-close-popup to="/units/apply">
                 <q-item-section class="">Book Now</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/user/profile" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
+              <q-item clickable v-close-popup to="/user/profile"
+                v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
                 <q-item-section class="">User Profile</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/user/applications" v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
+              <q-item clickable v-close-popup to="/user/applications"
+                v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
                 <q-item-section class="">Application History</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to='/user/call-log' v-if="isRouteMatch(['/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
+              <q-item clickable v-close-popup to='/user/call-log'
+                v-if="isLoggedIn && isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log'])">
                 <q-item-section class="">Log A Call</q-item-section>
               </q-item>
-
-              <q-item clickable v-close-popup to="/admin" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+              <q-item clickable v-close-popup to="/admin"
+                v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
                 <q-item-section class="">Admin Dashboard</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/vendor" v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'">
+              <q-item clickable v-close-popup to="/vendor"
+                v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'">
                 <q-item-section class="">Vendor Dashboard</q-item-section>
+              </q-item>
+
+              <!-- PHP CODE -->
+              <q-item clickable v-close-popup
+                v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+                <q-item-section class="" @click="downloadData()">Download Data</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
                 <q-item-section class="">Login</q-item-section>
@@ -178,7 +191,7 @@
         </div>
       </q-toolbar>
 
-      <MaintenanceBanner class="full-width" />
+      <MaintenanceBanner v-if="showMaintenanceBanner" class="full-width" />
 
       <!-- breadcrumbs -->
       <div v-if="isAdminRoute">
@@ -187,15 +200,24 @@
             <q-breadcrumbs flat active-color="black">
               <q-breadcrumbs-el v-if="$route.path.includes('/admin')" label="Admin" to="/admin" icon="home" />
 
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users')" label="User Administration" to="/admin/users" icon="eva-people-outline" />
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users/view/')" label="User Details" icon="eva-person" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users')" label="User Administration"
+                to="/admin/users" icon="eva-people-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users/view/')" label="User Details"
+                icon="eva-person" />
 
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/units')" label="Unit Administration" icon="eva-home-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/units')" label="Unit Administration"
+                icon="eva-home-outline" />
 
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals')" label="Rental Administration" to="/admin/rentals" icon="eva-briefcase-outline" />
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details" icon="eva-briefcase" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals')" label="Rental Administration"
+                to="/admin/rentals" icon="eva-briefcase-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details"
+                icon="eva-briefcase" />
 
-              <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration" icon="eva-settings-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration"
+                icon="eva-settings-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/incidents')" label="Incident Administration"
+                icon="eva-settings-outline" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>
@@ -207,7 +229,8 @@
           <q-toolbar class="q-px-lg">
             <q-breadcrumbs flat active-color="black">
               <q-breadcrumbs-el v-if="$route.path.includes('/vendor')" label="Vendor" to="/vendor" icon="home" />
-              <q-breadcrumbs-el v-if="$route.path.includes('/vendor/call-log')" label="Call Log Administration" icon="eva-settings-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/vendor/call-log')" label="Call Log Administration"
+                icon="eva-settings-outline" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>
@@ -233,6 +256,7 @@ import ExportDataService from 'src/services/ExportDataService'
 export default {
   data() {
     return {
+      showMaintenanceBanner: true,
       userDetails: {
         _id: '',
         username: '',
@@ -250,8 +274,34 @@ export default {
   },
   computed: {
     headerHeight() {
-      // return this.isAdminRoute ? '20vh' : '10vh';
-      return (this.isAdminRoute || this.isVendorRoute) ? '34vh' : '23vh';
+      if (this.showMaintenanceBanner === false) {
+        // const adminVendorHeight = '225px';
+        // const defaultMainHeader = '100px';
+
+        const adminVendorHeight = '187px';
+        const defaultMainHeader = '75px';
+
+        // const adminVendorHeight = '150px';
+        // const defaultMainHeader = '50px';
+
+        const secondaryNavHeight = '50px';
+
+        if (this.isAdminRoute || this.isVendorRoute) {
+          return adminVendorHeight;
+        } else {
+          return `calc(${defaultMainHeader} + ${secondaryNavHeight})`;
+        }
+      } else {
+        const adminVendorHeight = '250px';  // 50 extra for the breadcrumbs
+        const defaultMainHeader = '150px';
+        const secondaryNavHeight = '50px';
+
+        if (this.isAdminRoute || this.isVendorRoute) {
+          return adminVendorHeight;
+        } else {
+          return `calc(${defaultMainHeader} + ${secondaryNavHeight})`;
+        }
+      }
     },
     isAdminRoute() {
       return this.$route.path.startsWith('/admin')
@@ -273,18 +323,35 @@ export default {
       return paths.includes(this.$route.path);
     },
     scrollToSection(sectionId) {
+      if (this.$route.path !== '/') {
+        this.$router.push('/').then(() => {
+          // Give the component time to render after routing
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.performScroll(sectionId);
+            }, 300); // tweak delay as needed
+          });
+        });
+      } else {
+        this.performScroll(sectionId);
+      }
+    },
+
+
+    performScroll(sectionId) {
       const element = document.getElementById(sectionId);
       if (element) {
-        const offset = window.innerHeight * 0.1; // 10vh
+        const offset = window.innerHeight * 0.1;
         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
         const offsetPosition = elementPosition - offset;
 
         window.scrollTo({
           top: offsetPosition,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       }
     },
+
     async checkLoginStatus() {
       const isLoggedIn = await Helper.checkCookie()
       if (isLoggedIn) {
@@ -326,10 +393,19 @@ export default {
       }).onOk(async () => {
         const response = await UserService.logout(this.userDetails._id)
         if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'You have successfully logged out!' })
-          this.$router.push('/')
-          this.isLoggedIn = false
-          window.location.reload()
+          // this.$q.notify({ type: 'positive', color: 'primary', message: 'You have successfully logged out!' })
+
+          this.$q.dialog({
+            title: 'Success',
+            message: 'You have successfully logged out!',
+            color: 'primary',
+            persistent: true,
+          }).onOk(() => {
+            this.$router.push('/');
+            this.isLoggedIn = false
+            window.location.reload()
+          });
+
         } else {
           this.$q.notify({ type: 'negative', message: 'Logout failed. Please try again.' })
         }
@@ -387,6 +463,20 @@ export default {
 </script>
 
 <style lang="sass">
+
+.secondary-nav
+  height: 50px
+  border-bottom: 1px solid #e0e0e0
+  padding: 0 16px
+
+// .q-btn
+//   padding: 0 12px
+//   font-size: 0.9rem
+//   &:hover
+//     color: $primary
+
+
+
 
 
 .full-width

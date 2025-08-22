@@ -38,11 +38,13 @@
 
               </q-card-section>
               <q-card-section class="row justify-center">
-                <q-img
-                  v-if="unit.images && unit.images.length > 0"
-                  :src="getImageUrl(unit.images[0].imageUrl)"
-                  class="image"
-                />
+                  <div class="image-container">
+                    <q-img
+                      v-if="unit.images?.length"
+                      :src="getImageUrl(unit.images[0].imageUrl)"
+                      class="image"
+                    />
+                  </div>
               </q-card-section>
               <q-card-section class="row justify-between">
                 <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
@@ -117,22 +119,26 @@ export default {
 
     async findAllUnits() {
       const response = await UnitService.getAllUnits();
-      this.units = response;
 
-      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+      // console.log(response)
 
-      // const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Ground Floor')
-      // const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
-      // const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
+      // Initialize subUnits for each unit
+      this.units = response.map(unit => ({
+        ...unit,
+        subUnits: unit.subUnits || []  // ensure subUnits always exists
+      }));
 
-      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor')
-      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor')
-      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor')
+      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc');
+
+      const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor');
+      const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor');
+      const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor');
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
     },
 
     async deleteUnit(unit) {
+      console.log(unit)
       // Check if there are active or pending rentals
       const hasActiveRentals = unit.rentedHistory.some(rental => rental.status !== 'Ended');
 
@@ -185,3 +191,23 @@ export default {
   },
 };
 </script>
+
+<style lang="sass">
+.image-container
+  width: 350px
+  height: 350px
+  display: flex
+  justify-content: center
+  align-items: center
+  overflow: hidden
+  background-color: #f5f5f5
+  padding: 5px
+  @media (max-width: 1025px)
+    width: 300px
+    height: 300px
+
+.image
+  max-width: 100%
+  max-height: 100%
+  object-fit: contain
+</style>

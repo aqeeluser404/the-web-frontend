@@ -59,8 +59,16 @@ export default {
       } else {
         const response = await EmailService.ForgotPassword(this.email)
         if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'An email has been sent to reset your password!' })
-          this.$router.push('/')
+          // this.$q.notify({ type: 'positive', color: 'primary', message: 'An email has been sent to reset your password!' })
+          // this.$router.push('/')
+            this.$q.dialog({
+              title: 'Success',
+              message: 'An email has been sent with instructions to reset your password.',
+              color: 'primary',
+              persistent: true,
+            }).onOk(() => {
+              this.$router.push('/');
+            });
         } else {
           this.$q.notify({ type: 'negative', message: 'Sending email failed. Please try again.' })
           this.onReset()

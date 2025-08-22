@@ -8,9 +8,19 @@ const routes = [
       { path: '', component: () => import('pages/HomePage.vue') },
       { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
 
+      { path: "/incident-report", component: () => import("src/pages/tabs/IncidentReportPage.vue"), },
+      { path: "/resources", component: () => import("src/pages/tabs/ResourcesPage.vue"), },
+      { path: "/developer", component: () => import("src/pages/tabs/DeveloperPage.vue"), },
+      { path: "/fees", component: () => import("src/pages/tabs/FeesPage.vue"), },
+      { path: "/history", component: () => import("src/pages/tabs/HistoryPage.vue"), },
+
+      { path: "/applications", component: () => import("src/pages/tabs/ApplicationsPage.vue"), },
+
       // user authority routes--------------------------------------------------------------------------------------------------------------------
 
-      { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
+      { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue') },
+      { path: '/units/apply/floor/:floor', component: () => import('src/pages/user/UnitFloorPage.vue')},
+
       { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },            // user profile page (update and view), documents
       { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
       { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
@@ -36,6 +46,9 @@ const routes = [
 
       // call log management
       { path: '/admin/call-log', component: () => import('src/pages/admin/AdminCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      // incident management
+      { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 

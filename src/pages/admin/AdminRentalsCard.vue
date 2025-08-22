@@ -42,6 +42,7 @@
         </q-card-section>
 
         <q-card-section v-if="rentals.length > 0">
+
           <q-markup-table flat bordered>
             <thead>
               <tr>
@@ -65,14 +66,6 @@
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
                 <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
                 <td class="text-left cursor-pointer id">{{ rental._id }}</td>
-                <!-- <td class="text-left cursor-pointer">
-                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" style="text-transform: uppercase; cursor: pointer; color: brown;">
-                    <b>{{ rental.accessKey }}</b>
-                  </div>
-                  <div v-else>
-                    N/A
-                  </div>
-                </td> -->
                 <td class="text-left cursor-pointer">
                   <div v-if="rental.rentalStartDate !== null">
                     {{ formatDate(rental.rentalStartDate) }}
@@ -97,8 +90,6 @@
                     N/A
                   </div>
                 </td>
-                <!-- <td class="text-left cursor-pointer">R {{ rental.rentalPrice }}.00</td> -->
-                <!-- <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.unitType) }}</td> -->
                 <td class="text-left cursor-pointer text-uppercase" :class="
                     { 'pending-status': rental.status === 'Pending'},
                     { 'active-status': rental.status === 'Active'},

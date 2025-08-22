@@ -1,23 +1,26 @@
 <template>
   <q-card class="component-card">
 
+    <!-- UNIT TITLE -->
     <q-card-section>
       <div class="text-h6">{{ unit.unitType }} Details</div>
     </q-card-section>
     <q-separator />
+
+    <!-- IMAGE CAROUSEL -->
     <q-card-section>
       <div class="image-container">
         <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
-          class="q-mb-md product-image cursor-zoom-in" :ratio="1" @click="showImageDialog = true" />
+          class="product-image cursor-zoom-in" @click="showImageDialog = true" />
         <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
         <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
       </div>
     </q-card-section>
-    <q-dialog v-model="showImageDialog" @show="logImageInfo">
+
+    <!-- IMAGE DIALOG -->
+    <q-dialog v-model="showImageDialog" @show="logImageInfo" maximized>
       <q-card flat borderless class="image-dialog-card">
-
         <q-btn icon="close" flat round dense v-close-popup class="close-button" />
-
         <q-card-section class="dialog-image-section row justify-center flex-center">
           <img v-if="currentDialogImageUrl" :src="currentDialogImageUrl" class="enlarged-image"
             style="object-fit: contain" />
@@ -27,222 +30,281 @@
       </q-card>
     </q-dialog>
 
+    <!-- UNIT DETAILS FORM -->
     <q-card-section>
+      <!-- Images Upload -->
+      <div v-for="(img, i) in 7" :key="'img' + i">
+        <q-item>
+          <q-item-section class="text-left text-subtitle1">Image {{ i + 1 }}</q-item-section>
+          <q-item-section class="text-left text-subtitle1">
+            <q-file v-model="newImages[i]" :label="'Upload Image ' + (i + 1)" label-color="black" color="black"
+              accept="image/*">
+              <template v-slot:prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+          </q-item-section>
+        </q-item>
+      </div>
 
-      <!-- PHP VERSION -->
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Cover Image</q-item-section>
+      <!-- Basic Unit Fields -->
+      <q-item v-for="field in basicFields" :key="field.key">
+        <q-item-section class="text-left text-subtitle1">{{ field.label }}</q-item-section>
         <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage1" label="Upload Cover Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">First Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage2" label="Upload Second Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Second Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage3" label="Upload Second Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Third Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage4" label="Upload Third Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Fourth Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage5" label="Upload Fourth Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Fifth Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage6" label="Upload Fifth Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Sixth Image</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="newImage7" label="Upload Sixth Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit ID </q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit._id" readonly />
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Number</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitNumber" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Floor Level</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input readonly v-model="unit.floorLevel" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Status</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input readonly v-model="unit.unitStatus" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Current Occupants</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input readonly v-model="unit.currentOccupants" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Maximum Unit Occupancy</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitOccupants" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Type</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitType" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Price</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitPrice" type="number" prefix="R"
-            :rules="[val => val > 0 || 'Price must be positive']" />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Description</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input type="textarea" v-model="unit.unitDescription" />
+          <q-input v-model="unit[field.key]" :readonly="field.readonly" :type="field.type || 'text'"
+            :prefix="field.prefix || ''" :rules="field.rules || []" />
         </q-item-section>
       </q-item>
     </q-card-section>
 
-    <q-card-section class="row justify-between">
-      <CustomButton label="Update Unit" customStyle="width: 45%" @click="updateUnit" />
-      <CustomButton label="Close" customStyle="width: 45%" color="white" text-color="black" @click="$emit('close')" />
+    <!-- SUB-UNITS -->
+    <q-card-section>
+      <div class="text-subtitle1 q-mb-md">{{ unit.subUnits?.length ? 'Edit Sub-Units' : 'Create Sub-Units' }}</div>
+
+      <!-- Existing SubUnits -->
+      <div v-if="unit.subUnits && unit.subUnits.length">
+        <!-- <div v-for="(sub, index) in unit.subUnits" :key="'existing-'+index" class="row items-center q-mb-sm q-gutter-sm">
+          <q-input v-model="sub.name" :label="sub.roomType || sub.bedType || 'Please Specify'" class="col" />
+          <q-select v-model="sub.type" :options="['room','bed']" label="Type" class="col-2" />
+          <q-input v-model.number="sub.price" label="Price" type="number" prefix="R" class="col-2" />
+          <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
+        </div> -->
+
+        <div v-for="(sub, index) in unit.subUnits" :key="'existing-' + index" class="q-mb-sm">
+          <q-input v-model="sub.name" :label="sub.roomType || sub.bedType || 'Please Specify'" class="col" />
+
+          <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
+
+          <!-- Prices -->
+          <div class="col-4">
+            <div v-for="(priceObj, pIndex) in subUnitPrices[index]" :key="pIndex" class="row items-center q-mb-xs">
+              <q-input v-model.number="subUnitPrices[index][pIndex].price" type="number" label="Price (R)" prefix="R"
+                class="col" dense />
+              <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" class="col q-ml-sm" dense />
+              <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
+            </div>
+            <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
+
+          </div>
+
+          <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
+        </div>
+      </div>
+
+      <!-- New SubUnits -->
+      <!-- <div v-for="(sub, index) in newSubUnits" :key="'new-'+index" class="row items-center q-gutter-sm q-mb-sm">
+        <q-input v-model="sub.name" label="Subunit Name" class="col" />
+        <q-select v-model="sub.type" :options="['room','bed']" label="Type" class="col-2" />
+        <q-input v-model.number="sub.price" label="Price" type="number" prefix="R" class="col-2" />
+        <q-btn icon="delete" color="negative" flat round dense @click="deleteNewSubUnit(index)" />
+      </div> -->
+
+      <div v-for="(sub, index) in newSubUnits" :key="'new-' + index" class="row items-center q-gutter-sm q-mb-sm">
+        <q-input v-model="sub.name" label="Subunit Name" class="col" />
+        <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
+
+        <!-- Multiple Prices -->
+        <!-- <div class="col-3">
+          <div v-for="(p, pIndex) in sub.price" :key="pIndex" class="row items-center q-mb-xs">
+            <q-input v-model.number="sub.price[pIndex]" label="Price" type="number" prefix="R" dense class="col" />
+            <q-btn icon="remove_circle" flat dense color="negative" @click="sub.price.splice(pIndex, 1)" />
+          </div>
+          <q-btn icon="add_circle" flat dense color="primary" @click="sub.price.push(0)" label="Add Price" />
+        </div>
+        <q-btn icon="delete" color="negative" flat round dense @click="deleteNewSubUnit(index)" /> -->
+
+        <div v-for="(priceObj, pIndex) in subUnitPrices[index]" :key="pIndex" class="row items-center q-mb-xs">
+          <q-input v-model="subUnitPrices[index][pIndex].price" type="number" label="Price (R)" prefix="R" class="col"
+            dense />
+          <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" class="col q-ml-sm" dense />
+          <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
+        </div>
+        <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
+
+      </div>
+
+
+      <q-btn icon="add" label="Add Subunit" color="primary" flat @click="addNewSubUnit" />
     </q-card-section>
+
+    <!-- ACTION BUTTONS -->
+    <q-card-section class="column items-center">
+      <CustomButton label="Update Unit" customStyle="width: 100%" @click="updateUnit" class="q-mb-sm" />
+      <CustomButton label="Reserve Unit" v-if="!unit.reservedBy" customStyle="width: 100%" @click="handleReserve"
+        class="q-mb-sm" />
+      <CustomButton label="Cancel Reserve" v-if="unit.reservedBy" customStyle="width: 100%"
+        @click="handleCancelReservation" class="q-mb-sm" />
+      <CustomButton label="Close" customStyle="width: 100%" color="white" text-color="black" @click="$emit('close')" />
+    </q-card-section>
+
   </q-card>
 </template>
 
 <script>
-import Helper from 'src/services/utils'
-import CustomButton from '../elements/CustomButton.vue'
+import Helper from 'src/services/utils';
+import CustomButton from '../elements/CustomButton.vue';
 import UnitService from 'src/services/UnitService';
 
 export default {
   name: 'UnitDetailsComponent',
   props: {
-    unit: {
-      type: Object,
-      required: true
-    }
+    unit: { type: Object, required: true }
   },
   data() {
     return {
+      isLoggedIn: '',
+      userDetails: {},
+
       currentImageIndex: 0,
       showImageDialog: false,
+      newImages: Array(7).fill(null),
+      newSubUnits: [],
+      // subUnitPrices: this.unit.subUnits?.map(sub => Array.isArray(sub.price) ? [...sub.price] : [sub.price || 0]) || [],
+      subUnitPrices: this.unit.subUnits?.map(sub =>
+        Array.isArray(sub.price)
+          ? sub.price.map(p => typeof p === 'object' ? { name: p.name || 'default', price: parseFloat(p.price) || 0 } : { name: 'default', price: parseFloat(p) || 0 })
+          : [{ name: 'default', price: parseFloat(sub.price) || 0 }]
+      ) || [],
 
-      // PHP VERSION
-      newImage1: null,
-      newImage2: null,
-      newImage3: null,
-      newImage4: null,
-      newImage5: null,
-      newImage6: null,
-      newImage7: null
-    }
+      basicFields: [
+        { key: '_id', label: 'Unit ID', readonly: true },
+        { key: 'unitNumber', label: 'Unit Number' },
+        { key: 'floorLevel', label: 'Floor Level', readonly: true },
+        { key: 'unitStatus', label: 'Unit Status', readonly: true },
+        { key: 'currentOccupants', label: 'Current Occupants', readonly: true },
+        { key: 'unitOccupants', label: 'Maximum Unit Occupancy', readonly: true },
+        { key: 'unitType', label: 'Unit Type' },
+        // { key: 'unitPrice', label: 'Unit Price', type: 'number', prefix: 'R', rules: [val => val > 0 || 'Price must be positive'] },
+        { key: 'unitDescription', label: 'Unit Description', type: 'textarea' }
+      ]
+    };
   },
-  components: {
-    CustomButton
-  },
+  components: { CustomButton },
   computed: {
     currentDialogImageUrl() {
-      if (!this.unit.images || !this.unit.images.length) return null;
+      if (!this.unit.images?.length) return null;
       const image = this.unit.images[this.currentImageIndex];
-      if (!image || !image.imageUrl) return null;
-
+      if (!image?.imageUrl) return null;
       const url = this.getImageUrl(image.imageUrl);
       return url.startsWith('http') ? url : `${window.location.origin}${url}`;
     }
   },
   methods: {
     getImageUrl: Helper.getImageUrl,
+    addPrice(subIndex) {
+      this.subUnitPrices[subIndex].push({ name: 'default', price: 0 });
+    },
+    removePrice(subIndex, priceIndex) {
+      this.subUnitPrices[subIndex].splice(priceIndex, 1);
+    },
+
+    // addNewSubUnit() { this.newSubUnits.push({ name: '', type: 'room', price: 0 }); },
+    addNewSubUnit() {
+      this.newSubUnits.push({ name: '', type: 'room', price: [{ name: 'default', price: 0 }] });
+      this.subUnitPrices.push([{ name: 'default', price: 0 }]);
+    },
+    deleteSubUnit(index) { this.unit.subUnits.splice(index, 1); },
+    deleteNewSubUnit(index) { this.newSubUnits.splice(index, 1); },
+    nextImage() { this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length; },
+    prevImage() { this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length; },
 
     // async updateUnit() {
-    //   const updatedUnit = {
-    //     unitNumber: this.unit.unitNumber,
-    //     floorLevel: this.unit.floorLevel,
-    //     unitType: this.unit.unitType,
-    //     unitOccupants: this.unit.unitOccupants,
-    //     currentOccupants: this.unit.currentOccupants,
-    //     unitDescription: this.unit.unitDescription,
-    //     unitPrice: this.unit.unitPrice,
-    //     images: this.unit.images
+    //   if (!this.unit.floorLevel || !this.unit.unitType || !this.unit.unitDescription || !this.unit.unitPrice) {
+    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
+    //     return;
     //   }
-    //   if (this.unit.unitNumber === '' || this.unit.floorLevel === '' || this.unit.unitType === '' || this.unit.unitOccupants === '' || this.unit.unitDescription === '' || this.unit.unitPrice === '') {
-    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' })
-    //     return
-    //   }
+
     //   this.$q.dialog({
-    //     title: 'Confirm', message: `You are about to update this unit in the database, continue?`, color: 'primary', cancel: true, persistent: true
+    //     title: 'Confirm',
+    //     message: `You are about to update this unit in the database, continue?`,
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
     //   }).onOk(async () => {
-    //     const response = await UnitService.updateUnit(this.unit._id, updatedUnit)
-    //     if (response) {
-    //       this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Updated!' })
-    //       this.$emit('close')
-    //     } else {
-    //       this.$q.notify({ type: 'negative', message: 'Failed to update unit. Please try again.' })
+    //     const formData = new FormData();
+    //     formData.append('unitNumber', this.unit.unitNumber);
+    //     formData.append('floorLevel', this.unit.floorLevel);
+    //     formData.append('unitType', this.unit.unitType);
+    //     // formData.append('unitOccupants', this.unit.unitOccupants);
+    //     formData.append('unitDescription', this.unit.unitDescription);
+    //     // formData.append('unitPrice', this.unit.unitPrice);
+    //     formData.append('genderAssignment', this.unit.genderAssignment || '');
+
+    //     this.newImages.forEach(img => { if (img) formData.append('images[]', img); });
+
+    //     // Build final subUnits array
+    //     // const subUnits = [];
+    //     // this.unit.subUnits?.forEach(s => {
+    //     //   const name = s.name?.trim();
+    //     //   subUnits.push({
+    //     //     type: s.type,
+    //     //     roomType: s.type === 'room' ? (name || s.roomType || '') : null,
+    //     //     bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
+    //     //     price: s.price || 0,
+    //     //     isAvailable: true
+    //     //   });
+    //     // });
+
+    //     // this.newSubUnits?.forEach(s => {
+    //     //   const name = s.name?.trim();
+    //     //   if (!name) return; // skip empty entries
+
+    //     //   subUnits.push({
+    //     //     type: s.type,
+    //     //     roomType: s.type === 'room' ? name : null,
+    //     //     bedType: s.type === 'bed' ? name : null,
+    //     //     price: s.price || 0,
+    //     //     isAvailable: true
+    //     //   });
+    //     // });
+
+    //     const subUnits = [];
+
+    //     this.unit.subUnits?.forEach((s, index) => {
+    //       const name = s.name?.trim();
+    //       const prices = this.subUnitPrices[index]?.map(p => parseFloat(p) || 0) || [0];
+
+    //       subUnits.push({
+    //         type: s.type,
+    //         roomType: s.type === 'room' ? (name || s.roomType || '') : null,
+    //         bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
+    //         price: prices,
+    //         isAvailable: true
+    //       });
+    //     });
+
+    //     this.newSubUnits?.forEach(s => {
+    //       const name = s.name?.trim();
+    //       if (!name) return; // skip empty entries
+    //       const prices = Array.isArray(s.price) ? s.price.map(p => parseFloat(p) || 0) : [parseFloat(s.price) || 0];
+
+    //       subUnits.push({
+    //         type: s.type,
+    //         roomType: s.type === 'room' ? name : null,
+    //         bedType: s.type === 'bed' ? name : null,
+    //         price: prices,
+    //         isAvailable: true
+    //       });
+    //     });
+
+    //     formData.append('subUnits', JSON.stringify(subUnits));
+
+    //     try {
+    //       await UnitService.updateUnit(this.unit._id, formData);
+    //       this.$q.notify({ type: 'positive', message: 'Unit updated successfully!' });
+    //       this.$emit('close');
+    //     } catch (error) {
+    //       this.$q.notify({ type: 'negative', message: error.response?.data?.message || 'Update failed. Please try again.' });
     //     }
-    //   }).onCancel(() => {
-    //     return
-    //   })
+    //   });
     // },
 
-    // PHP VERSION
     async updateUnit() {
-      if (!this.unit.floorLevel || !this.unit.unitType ||
-        !this.unit.unitOccupants || !this.unit.unitDescription || !this.unit.unitPrice) {
+      if (this.unit.currentOccupants && this.unit.currentOccupants > 0) {
+        this.$q.notify({ type: 'negative', message: 'Unit cannot be updated while it has occupants.' });
+        return;
+      }
+      if (!this.unit.floorLevel || !this.unit.unitType || !this.unit.unitDescription) {
         this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
         return;
       }
@@ -255,49 +317,136 @@ export default {
         persistent: true
       }).onOk(async () => {
         const formData = new FormData();
-
         formData.append('unitNumber', this.unit.unitNumber);
         formData.append('floorLevel', this.unit.floorLevel);
         formData.append('unitType', this.unit.unitType);
-        formData.append('unitOccupants', this.unit.unitOccupants);
         formData.append('unitDescription', this.unit.unitDescription);
-        formData.append('unitPrice', this.unit.unitPrice);
         formData.append('genderAssignment', this.unit.genderAssignment || '');
 
-        if (this.newImage1) formData.append('images[]', this.newImage1);
-        if (this.newImage2) formData.append('images[]', this.newImage2);
-        if (this.newImage3) formData.append('images[]', this.newImage3);
-        if (this.newImage4) formData.append('images[]', this.newImage4);
-        if (this.newImage5) formData.append('images[]', this.newImage5);
-        if (this.newImage6) formData.append('images[]', this.newImage6);
-        if (this.newImage7) formData.append('images[]', this.newImage7);
+        this.newImages.forEach(img => { if (img) formData.append('images[]', img); });
+
+        const subUnits = [];
+
+        this.unit.subUnits?.forEach((s, index) => {
+          const name = s.name?.trim();
+          const prices = this.subUnitPrices[index]?.map(p => ({
+            name: p.name || 'default',
+            price: parseFloat(p.price) || 0
+          })) || [{ name: 'default', price: 0 }];
+
+          subUnits.push({
+            type: s.type,
+            roomType: s.type === 'room' ? (name || s.roomType || '') : null,
+            bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
+            price: prices,
+            isAvailable: true,
+          });
+        });
+
+
+        this.newSubUnits?.forEach(s => {
+          const name = s.name?.trim();
+          if (!name) return; // Skip empty entries
+          const prices = Array.isArray(s.price)
+            ? s.price.map(p => ({
+              name: p.name || 'default',
+              price: parseFloat(p.price) || 0
+            }))
+            : [{ name: 'default', price: parseFloat(s.price) || 0 }];
+
+          subUnits.push({
+            type: s.type,
+            roomType: s.type === 'room' ? name : null,
+            bedType: s.type === 'bed' ? name : null,
+            price: prices,
+            isAvailable: true,
+          });
+        });
+
+        // Append updated subUnits JSON to form
+        formData.append('subUnits', JSON.stringify(subUnits));
 
         try {
           await UnitService.updateUnit(this.unit._id, formData);
-
-          this.$q.notify({
-            type: 'positive',
-            message: 'Unit updated successfully!'
-          });
+          this.$q.notify({ type: 'positive', message: 'Unit updated successfully!' });
           this.$emit('close');
         } catch (error) {
-          this.$q.notify({
-            type: 'negative',
-            message: error.response?.data?.message || 'Update failed. Please try again.'
-          });
+          this.$q.notify({ type: 'negative', message: error.response?.data?.message || 'Update failed. Please try again.' });
         }
-      }).onCancel(() => {
-        return;
       });
     },
-    nextImage() {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length;
+
+
+    async handleCancelReservation() {
+      try {
+        const response = await UnitService.cancelReservation(this.unit._id, this.userDetails._id);
+        if (response) {
+          this.$q.dialog({
+            title: 'Success',
+            message: 'Unit opened',
+            color: 'primary',
+            persistent: true,
+          }).onOk(async () => {
+            this.$emit('close');
+          });
+        }
+      } catch (error) {
+        this.$q.notify({
+          type: 'negative',
+          message: error.response?.data?.error || error.message || 'Failed to cancel reservation'
+        });
+      }
     },
-    prevImage() {
-      this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length;
+
+    async handleReserve() {
+      try {
+
+        this.$q.dialog({
+          title: 'Reserve',
+          message: 'Do you wish to continue?',
+          color: 'primary',
+          persistent: true,
+          cancel: true
+        }).onOk(async () => {
+          const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
+          if (response) {
+            // Update global reservation state
+            // const updatedUnit = this.units.find(u => u._id === unit._id)
+            // if (updatedUnit) {
+            //   updatedUnit.reservedBy = this.userDetails._id
+            //   this.allReservedUnits.push(updatedUnit)
+            // }
+
+            this.$q.dialog({
+              title: 'Success',
+              message: 'Unit reserved successfully',
+              color: 'primary',
+              persistent: true,
+            }).onOk(async () => {
+              this.$emit('close');
+              // await this.fetchUnits();
+            });
+          }
+        });
+      } catch (error) {
+        this.$q.notify({
+          type: 'negative',
+          message: error.response?.data?.error || error.message || 'Failed to reserve unit'
+        });
+      }
     },
+
+    async checkLoginStatus() {
+      this.isLoggedIn = await Helper.checkCookie();
+      if (this.isLoggedIn) {
+        this.userDetails = await Helper.fetchUserDetails();
+      }
+    },
+  },
+  async created() {
+    await this.checkLoginStatus();
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
@@ -307,16 +456,19 @@ export default {
 .image-container
   position: relative
   width: 100%
-  height: 340px
+  height: 450px
   overflow: hidden
   border-radius: 4px
   background: #f5f5f5
+  display: flex
+  justify-content: center
+  align-items: center
 
 .nav-button
   position: absolute
   top: 50%
   transform: translateY(-50%)
-  background: rgba(0, 0, 0, 0.2)
+  background: rgba(0,0,0,0.2)
   color: white
   z-index: 2
   width: 48px
@@ -330,38 +482,26 @@ export default {
 .cursor-zoom-in
   cursor: zoom-in
 
-/* Dialog fixes */
 .image-dialog-card
-  background: rgba(0, 0, 0, 0.9)
-  max-width: 100vw
-  max-height: 92vh
-  width: 100vw
-  height: 92vh
-  display: flex
-  flex-direction: column
-  margin: 0
-  overflow: hidden
+  background: rgba(0,0,0,0.9) !important
 
 .dialog-image-section
-  flex: 1
+  height: 100%
   display: flex
   justify-content: center
   align-items: center
   position: relative
-  padding: 0
-  margin: 0
 
 .enlarged-image
-  max-width: calc(100vw - 100px)
-  max-height: calc(100vh - 100px)
+  max-width: 100%
+  max-height: 100%
   width: auto
   height: auto
-  object-fit: contain
 
 .close-button
   position: fixed
-  right: 62px
-  top: 62px
+  right: 15px
+  top: 10px
   z-index: 2
   background: transparent
   color: white
