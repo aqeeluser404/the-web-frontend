@@ -1,7 +1,6 @@
 <template>
   <q-card class="component-card">
 
-    <!-- UNIT TITLE -->
     <q-card-section>
       <div class="text-h6">{{ unit.unitType }} Details</div>
     </q-card-section>
@@ -16,8 +15,6 @@
         <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
       </div>
     </q-card-section>
-
-    <!-- IMAGE DIALOG -->
     <q-dialog v-model="showImageDialog" @show="logImageInfo" maximized>
       <q-card flat borderless class="image-dialog-card">
         <q-btn icon="close" flat round dense v-close-popup class="close-button" />
@@ -57,22 +54,14 @@
       </q-item>
     </q-card-section>
 
-    <!-- SUB-UNITS -->
+    <!-- Sub units -->
     <q-card-section>
       <div class="text-subtitle1 q-mb-md">{{ unit.subUnits?.length ? 'Edit Sub-Units' : 'Create Sub-Units' }}</div>
 
       <!-- Existing SubUnits -->
       <div v-if="unit.subUnits && unit.subUnits.length">
-        <!-- <div v-for="(sub, index) in unit.subUnits" :key="'existing-'+index" class="row items-center q-mb-sm q-gutter-sm">
-          <q-input v-model="sub.name" :label="sub.roomType || sub.bedType || 'Please Specify'" class="col" />
-          <q-select v-model="sub.type" :options="['room','bed']" label="Type" class="col-2" />
-          <q-input v-model.number="sub.price" label="Price" type="number" prefix="R" class="col-2" />
-          <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
-        </div> -->
-
         <div v-for="(sub, index) in unit.subUnits" :key="'existing-' + index" class="q-mb-sm">
           <q-input v-model="sub.name" :label="sub.roomType || sub.bedType || 'Please Specify'" class="col" />
-
           <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
 
           <!-- Prices -->
@@ -84,35 +73,17 @@
               <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
             </div>
             <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
-
           </div>
-
           <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
         </div>
       </div>
 
       <!-- New SubUnits -->
-      <!-- <div v-for="(sub, index) in newSubUnits" :key="'new-'+index" class="row items-center q-gutter-sm q-mb-sm">
-        <q-input v-model="sub.name" label="Subunit Name" class="col" />
-        <q-select v-model="sub.type" :options="['room','bed']" label="Type" class="col-2" />
-        <q-input v-model.number="sub.price" label="Price" type="number" prefix="R" class="col-2" />
-        <q-btn icon="delete" color="negative" flat round dense @click="deleteNewSubUnit(index)" />
-      </div> -->
-
       <div v-for="(sub, index) in newSubUnits" :key="'new-' + index" class="row items-center q-gutter-sm q-mb-sm">
         <q-input v-model="sub.name" label="Subunit Name" class="col" />
         <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
 
         <!-- Multiple Prices -->
-        <!-- <div class="col-3">
-          <div v-for="(p, pIndex) in sub.price" :key="pIndex" class="row items-center q-mb-xs">
-            <q-input v-model.number="sub.price[pIndex]" label="Price" type="number" prefix="R" dense class="col" />
-            <q-btn icon="remove_circle" flat dense color="negative" @click="sub.price.splice(pIndex, 1)" />
-          </div>
-          <q-btn icon="add_circle" flat dense color="primary" @click="sub.price.push(0)" label="Add Price" />
-        </div>
-        <q-btn icon="delete" color="negative" flat round dense @click="deleteNewSubUnit(index)" /> -->
-
         <div v-for="(priceObj, pIndex) in subUnitPrices[index]" :key="pIndex" class="row items-center q-mb-xs">
           <q-input v-model="subUnitPrices[index][pIndex].price" type="number" label="Price (R)" prefix="R" class="col"
             dense />
@@ -120,14 +91,10 @@
           <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
         </div>
         <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
-
       </div>
-
-
       <q-btn icon="add" label="Add Subunit" color="primary" flat @click="addNewSubUnit" />
     </q-card-section>
 
-    <!-- ACTION BUTTONS -->
     <q-card-section class="column items-center">
       <CustomButton label="Update Unit" customStyle="width: 100%" @click="updateUnit" class="q-mb-sm" />
       <CustomButton label="Reserve Unit" v-if="!unit.reservedBy" customStyle="width: 100%" @click="handleReserve"
@@ -136,7 +103,6 @@
         @click="handleCancelReservation" class="q-mb-sm" />
       <CustomButton label="Close" customStyle="width: 100%" color="white" text-color="black" @click="$emit('close')" />
     </q-card-section>
-
   </q-card>
 </template>
 
@@ -197,8 +163,6 @@ export default {
     removePrice(subIndex, priceIndex) {
       this.subUnitPrices[subIndex].splice(priceIndex, 1);
     },
-
-    // addNewSubUnit() { this.newSubUnits.push({ name: '', type: 'room', price: 0 }); },
     addNewSubUnit() {
       this.newSubUnits.push({ name: '', type: 'room', price: [{ name: 'default', price: 0 }] });
       this.subUnitPrices.push([{ name: 'default', price: 0 }]);
@@ -207,97 +171,6 @@ export default {
     deleteNewSubUnit(index) { this.newSubUnits.splice(index, 1); },
     nextImage() { this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length; },
     prevImage() { this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length; },
-
-    // async updateUnit() {
-    //   if (!this.unit.floorLevel || !this.unit.unitType || !this.unit.unitDescription || !this.unit.unitPrice) {
-    //     this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
-    //     return;
-    //   }
-
-    //   this.$q.dialog({
-    //     title: 'Confirm',
-    //     message: `You are about to update this unit in the database, continue?`,
-    //     color: 'primary',
-    //     cancel: true,
-    //     persistent: true
-    //   }).onOk(async () => {
-    //     const formData = new FormData();
-    //     formData.append('unitNumber', this.unit.unitNumber);
-    //     formData.append('floorLevel', this.unit.floorLevel);
-    //     formData.append('unitType', this.unit.unitType);
-    //     // formData.append('unitOccupants', this.unit.unitOccupants);
-    //     formData.append('unitDescription', this.unit.unitDescription);
-    //     // formData.append('unitPrice', this.unit.unitPrice);
-    //     formData.append('genderAssignment', this.unit.genderAssignment || '');
-
-    //     this.newImages.forEach(img => { if (img) formData.append('images[]', img); });
-
-    //     // Build final subUnits array
-    //     // const subUnits = [];
-    //     // this.unit.subUnits?.forEach(s => {
-    //     //   const name = s.name?.trim();
-    //     //   subUnits.push({
-    //     //     type: s.type,
-    //     //     roomType: s.type === 'room' ? (name || s.roomType || '') : null,
-    //     //     bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
-    //     //     price: s.price || 0,
-    //     //     isAvailable: true
-    //     //   });
-    //     // });
-
-    //     // this.newSubUnits?.forEach(s => {
-    //     //   const name = s.name?.trim();
-    //     //   if (!name) return; // skip empty entries
-
-    //     //   subUnits.push({
-    //     //     type: s.type,
-    //     //     roomType: s.type === 'room' ? name : null,
-    //     //     bedType: s.type === 'bed' ? name : null,
-    //     //     price: s.price || 0,
-    //     //     isAvailable: true
-    //     //   });
-    //     // });
-
-    //     const subUnits = [];
-
-    //     this.unit.subUnits?.forEach((s, index) => {
-    //       const name = s.name?.trim();
-    //       const prices = this.subUnitPrices[index]?.map(p => parseFloat(p) || 0) || [0];
-
-    //       subUnits.push({
-    //         type: s.type,
-    //         roomType: s.type === 'room' ? (name || s.roomType || '') : null,
-    //         bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
-    //         price: prices,
-    //         isAvailable: true
-    //       });
-    //     });
-
-    //     this.newSubUnits?.forEach(s => {
-    //       const name = s.name?.trim();
-    //       if (!name) return; // skip empty entries
-    //       const prices = Array.isArray(s.price) ? s.price.map(p => parseFloat(p) || 0) : [parseFloat(s.price) || 0];
-
-    //       subUnits.push({
-    //         type: s.type,
-    //         roomType: s.type === 'room' ? name : null,
-    //         bedType: s.type === 'bed' ? name : null,
-    //         price: prices,
-    //         isAvailable: true
-    //       });
-    //     });
-
-    //     formData.append('subUnits', JSON.stringify(subUnits));
-
-    //     try {
-    //       await UnitService.updateUnit(this.unit._id, formData);
-    //       this.$q.notify({ type: 'positive', message: 'Unit updated successfully!' });
-    //       this.$emit('close');
-    //     } catch (error) {
-    //       this.$q.notify({ type: 'negative', message: error.response?.data?.message || 'Update failed. Please try again.' });
-    //     }
-    //   });
-    // },
 
     async updateUnit() {
       if (this.unit.currentOccupants && this.unit.currentOccupants > 0) {
@@ -365,7 +238,6 @@ export default {
 
         // Append updated subUnits JSON to form
         formData.append('subUnits', JSON.stringify(subUnits));
-
         try {
           await UnitService.updateUnit(this.unit._id, formData);
           this.$q.notify({ type: 'positive', message: 'Unit updated successfully!' });
@@ -375,7 +247,6 @@ export default {
         }
       });
     },
-
 
     async handleCancelReservation() {
       try {
@@ -410,13 +281,6 @@ export default {
         }).onOk(async () => {
           const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
           if (response) {
-            // Update global reservation state
-            // const updatedUnit = this.units.find(u => u._id === unit._id)
-            // if (updatedUnit) {
-            //   updatedUnit.reservedBy = this.userDetails._id
-            //   this.allReservedUnits.push(updatedUnit)
-            // }
-
             this.$q.dialog({
               title: 'Success',
               message: 'Unit reserved successfully',
@@ -424,7 +288,6 @@ export default {
               persistent: true,
             }).onOk(async () => {
               this.$emit('close');
-              // await this.fetchUnits();
             });
           }
         });

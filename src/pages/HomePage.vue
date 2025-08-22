@@ -146,8 +146,9 @@
         <div class="marker marker-3" data-label="1.5 km, 22min walk, 5min drive"></div>
         <div class="marker marker-4" data-label="2.1 km, 27min walk, 5min drive"></div>
         <div class="marker marker-5" data-label="4.1km, 53min walk, 11min drive"></div>
-        <div class="marker marker-6" data-label="160m, 2min walk, 1min drive"></div>
+        <div class="marker marker-6" data-label="350m, 5min walk, 2min drive"></div>
         <div class="marker marker-7" data-label="4.1km, 53min walk, 11min drive"></div>
+        <div class="marker marker-8" data-label="300m, 4min walk, 1min drive"></div>
       </div>
     </div>
     <div style="height: 120px; background-color: #333;"></div>
@@ -924,6 +925,15 @@ export default {
   @extend %marker-base
   top: 99%
   left: 5%
+  width: 55px
+  height: 28px
+  background-image: url('/assets/map/kfc.jpeg')
+  border: 2px solid red
+
+.marker-8
+  @extend %marker-base
+  top: 28%
+  left: 62%
   width: 55px
   height: 28px
   background-image: url('/assets/map/kfc.jpeg')

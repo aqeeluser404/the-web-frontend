@@ -34,79 +34,43 @@
         </q-dialog>
 
         <q-card-section>
-          <div class="text-h6 q-mb-md">Unit Specifications</div>
+          <div class="text-h6 q-mb-sm">Unit Specifications</div>
           <q-separator class="q-mb-md" />
 
           <div class="specs-grid q-gutter-y-sm">
 
             <!-- Room Type -->
-            <div class="row items-center">
+            <div class="row items-center justify-between">
               <div class="col-4 text-grey-7">
-                <b>{{ getSubUnitType(unit.subUnits) === 'strand' ? 'Bed Type' : 'Room Type' }}</b>
+                <b>{{ getSubUnitType(unit.subUnits) === 'strand' ? 'Bed Type:' : 'Room Type:' }}</b>
               </div>
-              <div class="col-8">
+              <div class="col-7">
                 <template v-if="getSubUnitType(unit.subUnits) === 'strand'">
                   <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" dense filled :label="selectLabel" />
+                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
                 </template>
                 <template v-else-if="getSubUnitType(unit.subUnits) === 'pinnacle'">
                   <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" dense filled :label="selectLabel" />
+                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
                 </template>
                 <template v-else-if="getSubUnitType(unit.subUnits) === 'mixed'">
                   <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" dense filled :label="selectLabel" />
+                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
                 </template>
               </div>
             </div>
 
-            <div class="row items-center">
+            <!-- Unit Number -->
+            <div class="row items-center justify-between">
               <div class="col-4 text-grey-7"><b>Number:</b></div>
-              <div class="col-8">{{ unit.unitNumber }}</div>
+              <div class="col-7">{{ unit.unitNumber }}</div>
             </div>
 
-            <!-- <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1" class="row items-center">
-              <div class="col-4 text-grey-7"><b>Price Option:</b></div>
-              <div class="col-8">
-                <q-select
-                  v-model="selectedPrice"
-                  :options="priceOptions"
-                  dense
-                  filled
-                  label="Select Price Option"
-                />
-              </div>
-            </div>
-
-            <div class="row items-center">
-              <div class="col-4 text-grey-7"><b>Price:</b></div>
-              <div class="col-8">
-                <span v-if="getSubUnitType(unit.subUnits) === 'pinnacle' || getSubUnitType(unit.subUnits) === 'mixed'">
-                  R {{ Number(currentPrice).toFixed(2) }} / mo / room
-                </span>
-                <span v-else>
-                  R {{ Number(currentPrice).toFixed(2) }} / mo / bed
-                </span>
-              </div>
-            </div> -->
-
-            <!-- NBBNBNBNBNBNBNBNBNBNBNBNBNNB -->
-            <!-- ================================================ -->
+            <!-- Payment Plan -->
             <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1"
-              class="row items-center">
+              class="row items-center justify-between">
               <div class="col-4 text-grey-7"><b>Payment Plan:</b></div>
-              <div class="col-8">
-                <!-- <q-select v-model="selectedPrice" :options="priceOptions" dense filled label="Select Payment Plan"
-                  option-value="value" option-label="label" emit-value map-options>
-                  <template v-slot:option="scope">
-                    <q-item v-bind="scope.itemProps">
-                      <q-item-section>
-                        <q-item-label>{{ scope.opt.label }}</q-item-label>
-                        <q-item-label caption>{{ scope.opt.description }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select> -->
+              <div class="col-7">
                 <q-select v-model="selectedPrice" :options="priceOptions" dense filled label="Select Payment Plan"
                   option-value="value" option-label="label" emit-value map-options>
                   <template v-slot:option="scope">
@@ -121,42 +85,44 @@
               </div>
             </div>
 
-            <div class="row items-center">
+            <!-- Status -->
+            <div class="row items-center justify-between">
               <div class="col-4 text-grey-7"><b>Status:</b></div>
-              <div class="col-8">
+              <div class="col-7">
                 <q-badge :color="unit.unitStatus === 'Available' ? 'positive' : 'negative'" :label="unit.unitStatus"
                   class="text-capitalize q-px-sm q-py-xs" />
               </div>
             </div>
 
+            <!-- Next Available -->
             <div v-if="nextAvailabilityDate" class="row items-center">
               <div class="col-4 text-grey-7"><b>Next Available:</b></div>
               <div class="col-8">{{ formatDate(nextAvailabilityDate) }}</div>
             </div>
 
-            <div class="row items-center">
+            <!-- Occupancy -->
+            <div class="row items-center justify-between">
               <div class="col-4 text-grey-7"><b>Occupancy:</b></div>
-              <div class="col-8">
+              <div class="col-7">
                 <!-- Access Key Based Assignment -->
                 <q-badge v-if="unit.accessKey?.isShared" label="Access Key" size="sm" color="orange" text-color="white"
                   class="q-px-sm q-py-xs" />
-
                 <!-- Gender Based Assignment -->
                 <q-badge v-else-if="unit.genderAssignment === 'Male'" label="Assigned to Males" size="sm" color="blue"
                   text-color="white" class="q-px-sm q-py-xs" />
                 <q-badge v-else-if="unit.genderAssignment === 'Female'" label="Assigned to Females" size="sm"
                   color="pink" text-color="white" class="q-px-sm q-py-xs" />
-
                 <!-- Fallback -->
                 <span v-else class="text-grey">Unassigned</span>
               </div>
 
             </div>
 
+            <!-- Availability -->
             <template v-if="unit.unitStatus !== 'Occupied'">
-              <div class="row items-center">
+              <div class="row items-center justify-between">
                 <div class="col-4 text-grey-7"><b>Availability:</b></div>
-                <div class="col-8">
+                <div class="col-7">
                   {{ unit.unitOccupants - unit.currentOccupants }} of {{ unit.unitOccupants }} spots
                 </div>
               </div>
@@ -164,24 +130,23 @@
           </div>
         </q-card-section>
 
-        <!-- NBBNBNBNBNBNBNBNBNBNBNBNBNNB -->
-        <!-- ================================================ -->
+        <!-- Price Section Per Month -->
         <q-card-section>
-          <q-separator class="q-mb-md" />
-          <div class="description-text">
+          <q-separator class="q-mb-sm" />
+          <div>
             <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1">
-              <div class="text-h6 text-primary">
+              <div class="text-h6 text-primary q-mb-sm">
                 R {{ Number(currentPrice).toFixed(2) }} / month
               </div>
-              <div class="text-caption text-grey">
+              <div class="text-caption1 text-grey">
                 {{ getPricePlanDescription(selectedPrice) }}
               </div>
             </div>
             <div v-else>
-              <div class="text-h6 text-primary">
+              <div class="text-h6 text-primary q-mb-sm">
                 R {{ Number(currentPrice).toFixed(2) }} / month
               </div>
-              <div class="text-caption text-grey">Starting from R {{ Number(currentPrice).toFixed(2) }} per month.
+              <div class="text-caption1 text-grey">Starting from R {{ Number(currentPrice).toFixed(2) }} per month.
                 <br>Select
                 your preferred unit configuration and payment plan to begin.
               </div>
@@ -191,9 +156,10 @@
 
         <!-- description -->
         <q-card-section>
-          <div class="text-h6 q-mb-md">Description</div>
-          <q-separator class="q-mb-md" />
-          <div class="description-text">
+          <q-separator class="q-mb-sm" />
+          <div class="text-h6 q-mb-sm">Description</div>
+
+          <div class="text-caption1 text-grey">
             {{ unit.unitDescription }}
           </div>
         </q-card-section>
@@ -297,7 +263,7 @@
                   <q-icon :name="userDetails.verification?.isVerified ? 'check_circle' : 'error'"
                     :color="userDetails.verification?.isVerified ? 'positive' : 'negative'" size="20px" />
                   <span class="q-ml-sm">Email {{ userDetails.verification?.isVerified ? 'verified' : 'not verified'
-                  }}</span>
+                    }}</span>
                 </div>
                 <div class="column cursor-pointer" @click="goToUserProfile">
                   <div class="row">
@@ -542,7 +508,6 @@ export default {
         } else if (isBed) {
           label = `${su.bedType}`;
         } else {
-          // fallback for mixed or unknown types
           label = `${su.roomType ?? 'Room'} - ${su.bedType ?? 'Bed'}`;
         }
 
@@ -555,39 +520,8 @@ export default {
     selectLabel() {
       if (this.selectedRoomType && !this.selectedBedType) return "Choose your bed";
       if (this.selectedBedType && !this.selectedRoomType) return "Choose your room";
-      return "Choose your option";
+      return "Select Option";
     },
-    // priceOptions() {
-    //   if (!this.selectedOption || !this.selectedOption.price) return [];
-
-    //   const rawPrices = this.selectedOption.price.map(p => Number(p));
-    //   const sortedPrices = [...rawPrices].sort((a, b) => a - b);
-    //   const totalPlans = sortedPrices.length;
-
-    //   return sortedPrices.map((priceValue, index) => {
-    //     let months = 10 + (totalPlans - 1 - index);
-    //     let label = `R ${priceValue.toFixed(2)} / mo`;
-    //     let description;
-
-    //     if (months === 10) {
-    //       description = "10-month standard payment plan";
-    //     } else if (months === 11) {
-    //       description = "11-month standard payment plan";
-    //     } else if (months === 12 && totalPlans === 3) {
-    //       description = "12-month annual payment plan";
-    //     } else {
-    //       description = `${months}-month payment plan`;
-    //     }
-
-    //     return {
-    //       value: priceValue,
-    //       label,
-    //       description,
-    //       index
-    //     };
-    //   });
-    // },
-
 
     priceOptions() {
       if (!this.selectedOption || !this.selectedOption.price) return [];
@@ -595,13 +529,12 @@ export default {
       const sortedPrices = [...this.selectedOption.price].sort((a, b) => a.price - b.price);
 
       return sortedPrices.map((priceObj, index) => {
-        // Example suffix string you want after price name
         const paymentPlanSuffix = 'payment plan';
 
         return {
           value: priceObj.price,
           label: `R ${priceObj.price.toFixed(2)} / mo`,
-          description: `${priceObj.name} ${paymentPlanSuffix}`,  // Concatenate name and suffix here
+          description: `${priceObj.name} ${paymentPlanSuffix}`,
           index,
         };
       });
@@ -622,7 +555,7 @@ export default {
   watch: {
     selectedOption(newOption) {
       if (newOption && newOption.price && newOption.price.length > 0) {
-        this.selectedPrice = newOption.price[0].price;  // default to first price's price
+        this.selectedPrice = newOption.price[0].price;
       }
     },
   },
@@ -635,22 +568,16 @@ export default {
 
     updateSelectedPrice() {
       if (this.selectedOption && this.selectedPriceIndex !== null) {
-        // Clone the selected option to avoid reactivity issues
+
         const updatedOption = { ...this.selectedOption };
 
-        // Set the selected price in the option
         updatedOption.selectedPrice = this.selectedOption.price[this.selectedPriceIndex];
         updatedOption.selectedPriceIndex = this.selectedPriceIndex;
 
-        // Update the selected option
         this.selectedOption = updatedOption;
       }
     },
 
-    // getPricePlanDescription(price) {
-    //   const match = this.priceOptions.find(p => Number(p.value) === Number(price));
-    //   return match?.description || '';
-    // },
     getPricePlanDescription(price) {
       const match = this.priceOptions.find(p => Number(p.value) === Number(price));
       return match?.description || '';
@@ -955,7 +882,7 @@ p
 
 .combined-unit-card
   width: 100%
-  max-width: 1200px
+  max-width: 1300px
   padding: 16px
 
 .image-container

@@ -1,257 +1,8 @@
-<!-- <template>
-  <q-card class="component-card">
-    <q-card-section>
-      <div class="text-h6">Create a new unit</div>
-    </q-card-section>
-
-    <q-separator />
-
-    <q-card-section>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitNumber" readonly />
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Floor Level *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-select v-model="unit.floorLevel" :options="floorLevelOptions" emit-value map-options />
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Occupants *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-select v-model="unit.unitOccupants" :options="unitOccupantsOptions" emit-value map-options />
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Price *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitPrice" type="number" prefix="R"
-            :rules="[val => val > 0 || 'Price must be positive']" />
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Cover Image *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="image1" label="Upload Cover Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Second Image *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="image2" label="Upload Second Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Third Image *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-file v-model="image3" label="Upload Third Image" label-color="black" color="black" accept="image/*">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-        </q-item-section>
-      </q-item>
-
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Description *</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit.unitDescription" type="textarea" />
-        </q-item-section>
-      </q-item>
-    </q-card-section>
-
-    <q-card-section>
-      <CustomButton label="Add New Unit" @click="addUnit" />
-    </q-card-section>
-  </q-card>
-</template>
-
-<script>
-import CustomButton from '../elements/CustomButton.vue';
-import UnitService from 'src/services/UnitService';
-
-export default {
-  name: 'AdminAddUnitComponent',
-  data() {
-    return {
-      unit: {
-        unitNumber: 'Loading...',
-        floorLevel: '',
-        unitType: 'Shared',
-        unitOccupants: '',
-        unitDescription: 'This unit features a well-appointed kitchen area, (x) modern bathrooms, (x) spacious lounges, and ample parking for (x) vehicles.',
-        unitPrice: '',
-        images: []
-      },
-      image1: null, image2: null, image3: null,
-
-      floorLevelOptions: [
-        { label: 'First Floor', value: 'First Floor' },
-        { label: 'Second Floor', value: 'Second Floor' },
-        { label: 'Third Floor', value: 'Third Floor' },
-      ],
-
-      unitOccupantsOptions: [
-        { label: '1', value: 1 },
-        { label: '2', value: 2 },
-        { label: '3', value: 3 },
-        { label: '4', value: 4 },
-        { label: '5', value: 5 },
-        { label: '6', value: 6 },
-        { label: '7', value: 7 },
-        { label: '8', value: 8 },
-        { label: '9', value: 9 },
-        { label: '10', value: 10 },
-      ]
-    }
-  },
-  components: {
-    CustomButton
-  },
-  async mounted() {
-    if (this.unit.floorLevel) {
-      await this.fetchLatestUnitNumber(this.unit.floorLevel);
-    }
-  },
-  watch: {
-    'unit.floorLevel': function (newFloorLevel) {
-      if (newFloorLevel) {
-        this.fetchLatestUnitNumber(newFloorLevel);
-      }
-    }
-  },
-  methods: {
-    async fetchLatestUnitNumber(floorLevel) {
-      try {
-        const units = await UnitService.getAllUnits();
-        const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
-
-        let floorPrefix;
-        const floorName = (floorLevel || '').toString().toLowerCase().trim();
-
-        if (floorName === 'first floor') {
-          floorPrefix = '1';
-        } else if (floorName === 'second floor') {
-          floorPrefix = '2';
-        } else if (floorName === 'third floor') {
-          floorPrefix = '3';
-        } else {
-          const floorNum = parseInt(floorName);
-          floorPrefix = !isNaN(floorNum) ? (floorNum + 1).toString() : '1';
-        }
-
-        // Default starting number for this floor (e.g., 1-01, 2-01, etc.)
-        const defaultStartNumber = `${floorPrefix}-01`;
-
-        if (filteredUnits.length === 0) {
-          this.unit.unitNumber = defaultStartNumber;
-          return;
-        }
-
-        const unitNumbers = filteredUnits
-          .map(u => {
-            const unitNumStr = u.unitNumber?.toString() || '';
-            // Handle both formats (with dash and without)
-            if (unitNumStr.includes('-')) {
-              const [prefix, num] = unitNumStr.split('-');
-              if (prefix === floorPrefix) {
-                const numValue = parseInt(num);
-                return isNaN(numValue) ? 0 : numValue;
-              }
-            } else if (unitNumStr.startsWith(floorPrefix)) {
-              const num = parseInt(unitNumStr.substring(floorPrefix.length));
-              return isNaN(num) ? 0 : num;
-            }
-            return 0;
-          })
-          .filter(num => num > 0) // Filter out invalid numbers
-          .sort((a, b) => a - b);
-
-        if (unitNumbers.length === 0) {
-          this.unit.unitNumber = defaultStartNumber;
-          return;
-        }
-
-        // Find the next available number (starting from 1)
-        let nextNumber = 1;
-        for (const num of unitNumbers) {
-          if (num > nextNumber) break;
-          nextNumber = num + 1;
-        }
-
-        const maxNumberForFloor = 99;
-        if (nextNumber > maxNumberForFloor) {
-          this.$q.notify({
-            type: 'negative',
-            message: 'Maximum unit numbers reached for this floor'
-          });
-          this.unit.unitNumber = 'Error';
-          return;
-        }
-
-        // Format the number with leading zero if needed
-        const formattedNumber = nextNumber.toString().padStart(2, '0');
-        this.unit.unitNumber = `${floorPrefix}-${formattedNumber}`;
-      } catch (error) {
-        console.error('Error fetching units:', error);
-        this.$q.notify({ type: 'negative', message: 'Failed to load unit numbers' });
-        this.unit.unitNumber = 'Error';
-      }
-    },
-    addUnit() {
-      if (this.unit.unitNumber === '' || this.unit.floorLevel === '' || this.unit.unitType === '' || this.unit.unitOccupants === '' || this.unit.unitDescription === '' || this.unit.unitPrice === '') {
-        this.$q.notify({ type: 'negative', message: 'Please fill in all fields' })
-        return
-      }
-      this.$q.dialog({
-        title: 'Confirm', message: `You are about to save this unit into the database, continue?`, color: 'primary', cancel: true, persistent: true
-      }).onOk(async () => {
-        const formData = new FormData()
-        for (const key in this.unit) {
-          if (key !== 'images') {
-            formData.append(key, this.unit[key])
-          }
-        }
-        // PHP VERSION
-        if (this.image1) formData.append('images[]', this.image1);
-        if (this.image2) formData.append('images[]', this.image2);
-        if (this.image3) formData.append('images[]', this.image3);
-
-        const response = await UnitService.createUnit(formData)
-        if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Unit Saved!' })
-          this.$emit('close')
-        } else {
-          this.$q.notify({ type: 'negative', message: 'Failed to save unit. Please try again.' })
-        }
-      }).onCancel(() => {
-        return
-      })
-    }
-  }
-}
-</script> -->
-
 <template>
   <q-card class="combined-unit-card">
     <div class="row">
+
+      <!-- Left side -->
       <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
         <q-card-section>
           <div class="text-h6">Create a new unit</div>
@@ -259,44 +10,26 @@ export default {
 
         <q-separator />
 
+        <!-- Unit Info -->
         <q-card-section>
-          <!-- Unit Info -->
           <q-item>
             <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
             <q-item-section>
               <q-input v-model="unit.unitNumber" readonly />
             </q-item-section>
           </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Floor Level *</q-item-section>
             <q-item-section>
               <q-select v-model="unit.floorLevel" :options="floorLevelOptions" emit-value map-options />
             </q-item-section>
           </q-item>
-
-          <!-- <q-item>
-            <q-item-section class="text-left text-subtitle1">Unit Price *</q-item-section>
-            <q-item-section>
-              <q-input v-model="unit.unitPrice" type="number" prefix="R"
-                :rules="[val => val > 0 || 'Price must be positive']" />
-            </q-item-section>
-          </q-item> -->
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Unit Description *</q-item-section>
             <q-item-section>
               <q-input v-model="unit.unitDescription" type="textarea" />
             </q-item-section>
           </q-item>
-
-          <!-- Show current calculated occupants -->
-          <!-- <q-item>
-            <q-item-section class="text-left text-subtitle1">Calculated Occupants</q-item-section>
-            <q-item-section>
-              <q-input v-model="unit.unitOccupants" readonly />
-            </q-item-section>
-          </q-item> -->
         </q-card-section>
 
         <q-card-section>
@@ -304,6 +37,7 @@ export default {
         </q-card-section>
       </div>
 
+      <!-- Right side -->
       <div class="col-md-6 col-12 q-pa-md">
         <q-card-section class="row justify-end items-center q-py-none q-py-sm">
           <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
@@ -319,7 +53,6 @@ export default {
               </q-file>
             </q-item-section>
           </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Second Image *</q-item-section>
             <q-item-section>
@@ -337,7 +70,6 @@ export default {
               </q-file>
             </q-item-section>
           </q-item>
-
         </q-card-section>
 
         <!-- SubUnits Section -->
@@ -353,10 +85,6 @@ export default {
             </q-item-section>
           </q-item>
 
-
-
-
-
           <template v-if="unit.unitType === 'rooms'">
             <div v-for="(room, index) in unit.rooms" :key="'room-' + index" class="q-gutter-md q-mb-sm">
               <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" dense />
@@ -366,7 +94,6 @@ export default {
                 class="row items-center q-mt-xs">
                 <q-input v-model.number="room.price[pIndex].price" label="Price (R)" type="number" dense class="col" />
                 <q-input v-model="room.price[pIndex].name" label="Price Name" dense class="col q-ml-sm" />
-
                 <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="room.price.length > 1"
                   @click="room.price.splice(pIndex, 1)" />
               </div>
@@ -374,13 +101,10 @@ export default {
               <!-- Add Price Button -->
               <q-btn label="Add Price" dense flat icon="add" @click="room.price.push({ name: 'default', price: 0 })"
                 :disable="room.price.length >= 3" />
-
               <q-btn icon="delete" color="negative" flat round dense @click="removeRoom(index)" class="q-ml-sm" />
             </div>
-
             <CustomButton label="Add Room" color="primary" @click="addRoom" class="q-mb-md"
               :disable="unit.rooms.length >= 3" />
-
             <div v-if="unit.rooms.length >= 3" class="text-caption text-grey">
               Maximum of 3 rooms per unit
             </div>
@@ -468,7 +192,6 @@ export default {
         </q-card-section>
       </div>
     </div>
-
   </q-card>
 </template>
 
@@ -525,8 +248,6 @@ export default {
       if (this.unit.rooms.length < 3) {
         this.unit.rooms.push({
           type: 'Standard',
-          // price: 0
-          // price: [0]
           price: [
             { name: 'default', price: 100 },
             { name: 'special', price: 150 },
@@ -542,8 +263,6 @@ export default {
     addBed() {
       this.unit.beds.push({
         number: `Bed ${this.unit.beds.length + 1}`,
-        // price: 0
-        // price: [0]
         price: [
           { name: 'default', price: 100 },
           { name: 'special', price: 150 },
@@ -554,7 +273,6 @@ export default {
       this.unit.beds.splice(index, 1);
     },
 
-    // When unit type changes
     onUnitTypeChange() {
       // Clear the other type's data
       if (this.unit.unitType === 'rooms') {
@@ -575,8 +293,6 @@ export default {
       }
       return 0;
     },
-
-
 
     async fetchLatestUnitNumber(floorLevel) {
       try {
@@ -630,7 +346,6 @@ export default {
         return;
       }
 
-      // Confirm dialog
       this.$q.dialog({
         title: 'Confirm',
         message: 'Create this unit with ' + this.calculateTotalOccupants() + ' occupants?',
@@ -642,35 +357,12 @@ export default {
           const formData = new FormData();
 
           // Build subUnits array
-          // const subUnits = [];
-          // if (this.unit.unitType === 'rooms') {
-          //   this.unit.rooms.forEach(room => {
-          //     subUnits.push({
-          //       type: 'room',
-          //       roomType: room.type,
-          //       price: room.price || 0,
-          //       isAvailable: true
-          //     });
-          //   });
-          // } else if (this.unit.unitType === 'beds') {
-          //   this.unit.beds.forEach(bed => {
-          //     subUnits.push({
-          //       type: 'bed',
-          //       bedType: bed.number,
-          //       price: bed.price || 0,
-          //       isAvailable: true
-          //     });
-          //   });
-          // }
-
-          // Build subUnits array
           const subUnits = [];
           if (this.unit.unitType === 'rooms') {
             this.unit.rooms.forEach(room => {
               subUnits.push({
                 type: 'room',
                 roomType: room.type,
-                // price: room.price.map(p => parseFloat(p) || 0),
                 price: room.price.map(p => ({
                   name: p.name || 'default',
                   price: parseFloat(p.price) || 0
@@ -683,7 +375,6 @@ export default {
               subUnits.push({
                 type: 'bed',
                 bedType: bed.number,
-                // price: bed.price.map(p => parseFloat(p) || 0),
                 price: bed.price.map(p => ({
                   name: p.name || 'default',
                   price: parseFloat(p.price) || 0
@@ -692,7 +383,6 @@ export default {
               });
             });
           }
-
           // Calculate total price
           // const totalPrice = subUnits.reduce((sum, s) => sum + (s.price || 0), 0);
 
@@ -715,7 +405,6 @@ export default {
           if (this.image2) formData.append('images[]', this.image2);
           if (this.image3) formData.append('images[]', this.image3);
 
-          // Send to backend
           const response = await UnitService.createUnit(formData);
           if (response) {
             this.$q.notify({ type: 'positive', message: 'Unit created successfully!' });
@@ -726,8 +415,6 @@ export default {
         }
       });
     }
-
-
   }
 }
 </script>

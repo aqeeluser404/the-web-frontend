@@ -19,15 +19,6 @@
       </div>
     </q-card-section>
 
-    <!-- <q-card-section>
-      <q-item>
-        <q-item-section class="text-left text-subtitle1">Unit Number</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input readonly :value="formatDate(rental.applicationDate)" />
-        </q-item-section>
-      </q-item>
-    </q-card-section> -->
-
     <q-card-section class="column justify-between">
       <div v-if="rental.status === 'Active'">Application Status: <span style="color: green;"><b>{{ rental.status }}</b></span></div>
       <div v-if="rental.status === 'Pending'">Application Status: <span style="color: black;"><b>{{ rental.status }}</b></span></div>
