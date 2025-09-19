@@ -2,9 +2,11 @@
   <q-card class="combined-unit-card">
     <div class="row">
       <!-- Left Side - Unit Details -->
-      <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
-        <q-card-section>
+      <div class="col-md-7 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
+        <q-card-section class="row justify-between items-center">
           <div class="text-h6">Unit {{ unit.unitNumber }}</div>
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="small-screen-only" />
         </q-card-section>
 
         <q-separator />
@@ -13,13 +15,13 @@
           <div class="image-container">
             <q-img v-if="unit.images && unit.images.length > 0"
               :src="getImageUrl(unit.images[currentImageIndex].imageUrl)" class="product-image cursor-zoom-in"
-              @click="showImageDialog = true" />
+              @click="showImageDialog = true" fit="contain" />
             <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
             <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
           </div>
         </q-card-section>
 
-        <q-dialog v-model="showImageDialog" maximized>
+        <!-- <q-dialog v-model="showImageDialog" maximized>
           <q-card flat borderless class="image-dialog-card">
             <div class="row">
               <q-btn icon="close" flat round v-close-popup class="close-button" />
@@ -31,7 +33,26 @@
               <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
             </q-card-section>
           </q-card>
+        </q-dialog> -->
+
+        <q-dialog v-model="showImageDialog" maximized>
+          <q-card flat borderless class="image-dialog-card">
+            <div class="row">
+              <q-btn icon="close" flat round v-close-popup class="close-button" />
+            </div>
+            <q-card-section class="dialog-image-section row justify-center flex-center">
+              <SimpleZoom v-if="currentDialogImageUrl">
+                <img :src="currentDialogImageUrl" class="enlarged-image"
+                  style="object-fit: contain; width: 100%; height: auto;" />
+              </SimpleZoom>
+
+              <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
+              <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
+            </q-card-section>
+          </q-card>
         </q-dialog>
+
+
 
         <q-card-section>
           <div class="text-h6 q-mb-sm">Unit Specifications</div>
@@ -40,39 +61,31 @@
           <div class="specs-grid q-gutter-y-sm">
 
             <!-- Room Type -->
-            <div class="row items-center justify-between">
-              <div class="col-4 text-grey-7">
-                <b>{{ getSubUnitType(unit.subUnits) === 'strand' ? 'Bed Type:' : 'Room Type:' }}</b>
+            <div class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7">
+                <b>{{unit.subUnits?.some(sub => sub.bedType) ? 'Bed Type:' : 'Room Type:'}}</b>
               </div>
-              <div class="col-7">
-                <template v-if="getSubUnitType(unit.subUnits) === 'strand'">
-                  <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
-                </template>
-                <template v-else-if="getSubUnitType(unit.subUnits) === 'pinnacle'">
-                  <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
-                </template>
-                <template v-else-if="getSubUnitType(unit.subUnits) === 'mixed'">
-                  <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                    option-label="label" class="text-caption" dense filled :label="selectLabel" />
-                </template>
+              <div class="col-md-6 col-7">
+                <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
+                  option-label="label" class="text-caption" dense filled :label="selectLabel"
+                  :menu-anchor="'bottom start'" :menu-self="'top start'" :menu-cover="false" fit />
               </div>
             </div>
 
             <!-- Unit Number -->
-            <div class="row items-center justify-between">
-              <div class="col-4 text-grey-7"><b>Number:</b></div>
-              <div class="col-7">{{ unit.unitNumber }}</div>
+            <div class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Number:</b></div>
+              <div class="col-md-6 col-7">{{ unit.unitNumber }}</div>
             </div>
 
             <!-- Payment Plan -->
             <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1"
-              class="row items-center justify-between">
-              <div class="col-4 text-grey-7"><b>Payment Plan:</b></div>
-              <div class="col-7">
+              class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Payment:</b></div>
+              <div class="col-md-6 col-7">
                 <q-select v-model="selectedPrice" :options="priceOptions" dense filled label="Select Payment Plan"
-                  option-value="value" option-label="label" emit-value map-options>
+                  option-value="value" option-label="label" emit-value map-options :menu-anchor="'bottom start'"
+                  :menu-self="'top start'" :menu-cover="false" fit>
                   <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
@@ -86,24 +99,24 @@
             </div>
 
             <!-- Status -->
-            <div class="row items-center justify-between">
-              <div class="col-4 text-grey-7"><b>Status:</b></div>
-              <div class="col-7">
+            <div class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Status:</b></div>
+              <div class="col-md-6 col-7">
                 <q-badge :color="unit.unitStatus === 'Available' ? 'positive' : 'negative'" :label="unit.unitStatus"
                   class="text-capitalize q-px-sm q-py-xs" />
               </div>
             </div>
 
             <!-- Next Available -->
-            <div v-if="nextAvailabilityDate" class="row items-center">
-              <div class="col-4 text-grey-7"><b>Next Available:</b></div>
-              <div class="col-8">{{ formatDate(nextAvailabilityDate) }}</div>
+            <div v-if="nextAvailabilityDate" class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Next Available:</b></div>
+              <div class="col-md-6 col-7">{{ formatDate(nextAvailabilityDate) }}</div>
             </div>
 
             <!-- Occupancy -->
-            <div class="row items-center justify-between">
-              <div class="col-4 text-grey-7"><b>Occupancy:</b></div>
-              <div class="col-7">
+            <div class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Occupancy:</b></div>
+              <div class="col-md-6 col-7">
                 <!-- Access Key Based Assignment -->
                 <q-badge v-if="unit.accessKey?.isShared" label="Access Key" size="sm" color="orange" text-color="white"
                   class="q-px-sm q-py-xs" />
@@ -120,10 +133,12 @@
 
             <!-- Availability -->
             <template v-if="unit.unitStatus !== 'Occupied'">
-              <div class="row items-center justify-between">
-                <div class="col-4 text-grey-7"><b>Availability:</b></div>
-                <div class="col-7">
-                  {{ unit.unitOccupants - unit.currentOccupants }} of {{ unit.unitOccupants }} spots
+              <div class="row items-center justify-around">
+                <div class="col-md-4 col-5 text-grey-7"><b>Availability:</b></div>
+                <div class="col-md-6 col-7">
+                  {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                    unit.unitOccupants || 0}}
+                  spots
                 </div>
               </div>
             </template>
@@ -135,11 +150,15 @@
           <q-separator class="q-mb-sm" />
           <div>
             <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1">
-              <div class="text-h6 text-primary q-mb-sm">
+              <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
+                R {{ Number(currentPrice).toFixed(2) }} / once off
+              </div>
+              <div class="text-h6 text-primary q-mb-sm" v-else>
                 R {{ Number(currentPrice).toFixed(2) }} / month
               </div>
+
               <div class="text-caption1 text-grey">
-                {{ getPricePlanDescription(selectedPrice) }}
+                {{ capitalizeFirstLetter(getPricePlanDescription(selectedPrice)) }}
               </div>
             </div>
             <div v-else>
@@ -166,14 +185,15 @@
       </div>
 
       <!-- Right Side - Application Form -->
-      <div class="col-md-6 col-12 q-pa-md">
+      <div class="col-md-5 col-12 q-pa-md">
         <div v-if="!loading">
 
           <!-- RENTAL FORM -->
           <!-- ===================================================================================================== -->
           <template v-if="isLoggedIn && !hasOngoingRentals">
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
-              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+                class="large-screen-only" />
             </q-card-section>
             <template v-if="unit.unitStatus !== 'Occupied'">
               <q-card-section>
@@ -200,10 +220,25 @@
 
               <q-card-section>
                 <div class="q-mb-sm"><b>Would you like to add parking?</b></div>
-                <q-radio v-model="rentalDetails.parking.hasParking" :val="true"
+                <q-radio v-if="getSelectedPriceObject()?.name === 'annual'" v-model="rentalDetails.parking.hasParking"
+                  :val="true" :label="`Include Parking (R ${rentalDetails.parking.fee.toFixed(2)} / once off)`" />
+                <q-radio v-else v-model="rentalDetails.parking.hasParking" :val="true"
                   :label="`Include Parking (R ${rentalDetails.parking.fee.toFixed(2)} / mo)`" />
                 <br>
                 <q-radio v-model="rentalDetails.parking.hasParking" :val="false" label="No parking needed" />
+              </q-card-section>
+
+              <q-card-section v-if="getSelectedPriceObject()?.name === 'annual'">
+                <div class="q-mb-sm"><b>Discounted Price (Payment by 30 Nov)</b></div>
+                <div>
+                  <!-- Discounted Parking: {{ (Number(rentalDetails.parking?.fee) * 0.96).toFixed(2) }}
+                  Discounted Once off rental: {{ (Number(rentalDetails.selectedS?.fee) * 0.96).toFixed(2) }} -->
+                  <div class="text-grey-9">
+                    <li>Upfront payment includes 11 months at discounted rate (4% off both rent and parking)</li>
+                    <li>Payment must be made by 30 November to qualify for discount</li>
+                    <li>Monthly payments are due on the 1st of each month</li>
+                  </div>
+                </div>
               </q-card-section>
 
               <!-- <q-card-section>
@@ -227,7 +262,10 @@
                     <q-field label="Start Date" borderless stack-label>
                       <template v-slot:control>
                         <div class="text-primary">
-                          {{ formatDate(rentalDetails.rentalStartDate) }}
+                          {{ new Date(rentalDetails.rentalStartDate).toLocaleDateString('en-ZA', {
+                            month: 'short', year:
+                              'numeric'
+                          }) }}
                         </div>
                       </template>
                     </q-field>
@@ -242,7 +280,7 @@
                     </q-field>
                   </div>
                 </div>
-                <div class="text-caption text-grey-7 ">
+                <div class="text-grey-9">
                   Lease dates are provisional and will be updated during the application processing.
                 </div>
               </q-card-section>
@@ -326,7 +364,8 @@
           <!-- ===================================================================================================== -->
           <template v-else-if="isLoggedIn && hasOngoingRentals">
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
-              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+                class="large-screen-only" />
             </q-card-section>
             <q-card-section class="login-splash column justify-center items-center q-pa-md" style="height: 100%;">
               <div class="text-h6 q-mb-md">
@@ -356,7 +395,8 @@
           <!-- ===================================================================================================== -->
           <template v-else>
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
-              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+              <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+                class="large-screen-only" />
             </q-card-section>
             <q-card-section class="login-splash column justify-center items-center q-pa-md" style="height: 100%;">
               <div class="text-h6 q-mb-md">🔒 Secure Your Spot</div>
@@ -385,6 +425,7 @@ import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import RentalService from 'src/services/RentalService'
 import SignaturePad from '../elements/SignaturePad.vue'
+import SimpleZoom from '../elements/SimpleZoom.vue'
 
 export default {
   name: 'CombinedUnitApplication',
@@ -392,12 +433,19 @@ export default {
     unit: {
       type: Object,
       required: true
+    },
+    subUnit: {
+      type: String,
+      required: false,
+      default: null
     }
   },
   data() {
     const today = new Date();
     const nextYear = today.getFullYear() + 1;
     return {
+      pinchZoomInstance: null,
+
       loading: true,
       isLoggedIn: false,
       currentImageIndex: 0,
@@ -405,13 +453,13 @@ export default {
       rentalDetails: {
         user: "",
         unit: "",
-        rentalStartDate: `${nextYear}-01-01`,
-        rentalEndDate: `${nextYear}-12-31`,
+        rentalStartDate: `${nextYear}-02-01`,
+        rentalEndDate: `${nextYear}-12-15`,
         accessKeyIsTrue: null,
         accessKey: '',
         parking: {
           hasParking: false,
-          fee: 400.0
+          fee: 495.0
         }
       },
       myRentals: [],
@@ -424,12 +472,16 @@ export default {
       selectedPrice: null,
       selectedOption: null,
 
+      selectedRoomType: null,
+      selectedBedType: null,
+
       guardianSignatureData: null,
     }
   },
   components: {
     CustomButton,
-    SignaturePad
+    SignaturePad,
+    SimpleZoom
   },
   computed: {
     hasAllRequiredDocuments() {
@@ -467,12 +519,12 @@ export default {
     },
     canSubmit() {
       return this.userDetails.verification?.isVerified &&
-        (
-          this.userDetails?.username === 'testuser' ||
-          this.userDetails?.username === 'WayneL' ||
-          this.userDetails?.username === 'yusri' ||
-          this.userDetails?.username === 'admin'
-        ) &&
+        // (
+        //   this.userDetails?.username === 'testuser' ||
+        //   this.userDetails?.username === 'WayneL' ||
+        //   this.userDetails?.username === 'yusri' ||
+        //   this.userDetails?.username === 'admin'
+        // ) &&
         this.userDetails?.age &&
         // this.userDetails.documents?.length === 3 &&
         this.rentalDetails.rentalStartDate &&
@@ -486,6 +538,7 @@ export default {
 
     filteredSubUnits() {
       if (!this.unit?.subUnits) return [];
+
       return this.unit.subUnits.filter(su => {
         const matchesRoom = this.selectedRoomType
           ? su.roomType?.includes(this.selectedRoomType)
@@ -493,7 +546,9 @@ export default {
         const matchesBed = this.selectedBedType
           ? su.bedType === this.selectedBedType
           : true;
-        return matchesRoom && matchesBed && su.isAvailable;
+        const isAvailable = su.isAvailable && !su.reservedBy;
+
+        return matchesRoom && matchesBed && isAvailable;
       });
     },
     selectOptions() {
@@ -510,7 +565,6 @@ export default {
         } else {
           label = `${su.roomType ?? 'Room'} - ${su.bedType ?? 'Bed'}`;
         }
-
         return {
           ...su,
           label
@@ -533,7 +587,7 @@ export default {
 
         return {
           value: priceObj.price,
-          label: `R ${priceObj.price.toFixed(2)} / mo`,
+          label: `R ${priceObj.price.toFixed(2)}`,
           description: `${priceObj.name} ${paymentPlanSuffix}`,
           index,
         };
@@ -553,18 +607,72 @@ export default {
   },
 
   watch: {
+    selectedPrice(newPrice) {
+      if (this.selectedOption && this.selectedOption.price) {
+        const priceObj = this.selectedOption.price.find(p => p.price === newPrice);
+        if (priceObj) {
+          if (priceObj.name === '10-month')
+            this.rentalDetails.parking.fee = 495.0
+          else if (priceObj.name === '11-month')
+            this.rentalDetails.parking.fee = 450.0
+          else if (priceObj.name === 'annual')
+            this.rentalDetails.parking.fee = 4950.0
+        }
+      }
+    },
     selectedOption(newOption) {
       if (newOption && newOption.price && newOption.price.length > 0) {
         this.selectedPrice = newOption.price[0].price;
       }
     },
+    subUnit: {
+      immediate: true,
+      handler(newSubUnit) {
+        if (newSubUnit && this.unit && this.selectOptions?.length > 0) {
+          this.initializeSelectedOption();
+        } else {
+          this.selectedOption = null;
+          this.selectedPrice = null;
+        }
+      }
+    }
   },
   async created() {
-    console.log(this.unit)
+
     await this.checkLoginStatus()
   },
   methods: {
-    getImageUrl: Helper.getImageUrl, formatDate: Helper.formatDate,
+    getImageUrl: Helper.getImageUrl, formatDate: Helper.formatDate, capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    initializeSelectedOption() {
+      if (this.subUnit && this.unit && Array.isArray(this.unit.subUnits)) {
+        const floorNumber = this.$route.params.floor || '1';
+
+        // Extract prefix from first available roomType or bedType
+        const sampleType = this.selectOptions[0]?.roomType || this.selectOptions[0]?.bedType || '';
+        const basePrefix = sampleType.split(' ')[0];
+
+        const fullRoomType = `${basePrefix} ${floorNumber}-${this.subUnit}`;
+
+        const option = this.selectOptions.find(
+          su => su.roomType === fullRoomType || su.bedType === fullRoomType
+        );
+
+        if (option) {
+          this.selectedOption = option;
+          if (option.price?.length > 0) {
+            this.selectedPriceIndex = 0;
+            this.selectedPrice = option.price[0].price;
+          }
+        } else {
+          this.$q.notify({
+            type: 'negative',
+            message: `Room ${fullRoomType} is already reserved or unavailable.`,
+            position: 'top'
+          });
+        }
+      }
+    },
 
     updateSelectedPrice() {
       if (this.selectedOption && this.selectedPriceIndex !== null) {
@@ -578,25 +686,14 @@ export default {
       }
     },
 
+    getSelectedPriceObject() {
+      if (!this.selectedOption || !this.selectedOption.price || !this.selectedPrice) return null;
+      return this.selectedOption.price.find(p => p.price === this.selectedPrice);
+    },
+
     getPricePlanDescription(price) {
       const match = this.priceOptions.find(p => Number(p.value) === Number(price));
       return match?.description || '';
-    },
-
-
-    getSubUnitType(subUnits) {
-      if (!Array.isArray(subUnits)) return null;
-
-      const hasStrand = subUnits.some(su => su.bedType?.toLowerCase().includes('the strand'));
-      const hasPinnacle = subUnits.some(su => su.roomType?.toLowerCase().includes('the pinnacle'));
-      const hasCore = subUnits.some(su => su.roomType?.toLowerCase().includes('the core'));
-
-      if (hasStrand) return 'strand';
-      if (hasPinnacle && hasCore) return 'mixed';
-      if (hasPinnacle) return 'pinnacle';
-      if (hasCore) return 'core';
-
-      return null;
     },
 
     // IMAGES AND FULLSCREEN
@@ -649,6 +746,17 @@ export default {
 
     handleGuardianSignatureSave(signature) {
       this.guardianSignatureData = signature
+    },
+
+    getAvailableSubUnits(unit) {
+      if (unit.subUnits && Array.isArray(unit.subUnits)) {
+        return unit.subUnits.filter(sub => sub.isAvailable && !sub.reservedBy).length;
+      }
+      // fallback for old units
+      if (unit.unitOccupants != null && unit.currentOccupants != null) {
+        return unit.unitOccupants - unit.currentOccupants;
+      }
+      return 0;
     },
 
 
@@ -779,9 +887,9 @@ export default {
       // }
 
       try {
-        for (let pair of formData.entries()) {
-          console.log(pair[0], pair[1])
-        }
+        // for (let pair of formData.entries()) {
+        //   console.log(pair[0], pair[1])
+        // }
         const response = await RentalService.createRental(formData)
         // console.log(response)
         let message = 'Application submitted successfully'
@@ -882,19 +990,35 @@ p
 
 .combined-unit-card
   width: 100%
-  max-width: 1300px
+  max-width: 1570px
   padding: 16px
 
 .image-container
   position: relative
   width: 100%
-  height: 430px
+  height: auto
   overflow: hidden
   border-radius: 4px
-  // background: #f5f5f5
   display: flex
   justify-content: center
   align-items: center
+
+  @media (max-width: 1025px)
+    width: 100%
+    height: 100%  // let container collapse or fill parent height if needed
+
+.product-image
+  max-width: 100%
+  max-height: 100%
+  object-fit: contain
+  display: block
+
+  @media (max-width: 1025px)
+    width: 120%         // make the image bigger than container width
+    height: 120%        // also bigger than container height
+    object-fit: cover   // fill and crop to cover container fully
+    max-width: none     // disable max-width to allow overflow
+    max-height: none    // disable max-height
 
 .nav-button
   position: absolute
@@ -913,6 +1037,32 @@ p
 
 .cursor-zoom-in
   cursor: zoom-in
+
+// .pinch-zoom-wrapper
+//   touch-action: none
+//   overflow: hidden
+//   max-width: 100%
+//   max-height: 100%
+
+//   img
+//     width: 100%
+//     height: auto
+//     display: block
+
+// .pinch-zoom-wrapper
+//   width: 100%
+//   height: 100%
+//   overflow: hidden
+//   touch-action: none
+//   display: flex
+//   justify-content: center
+//   align-items: center
+
+// .enlarged-image
+//   max-width: 100%
+//   max-height: 100%
+//   object-fit: contain
+//   display: block
 
 .image-dialog-card
   background: rgba(0, 0, 0, 0.9) !important

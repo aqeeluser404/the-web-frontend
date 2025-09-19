@@ -75,6 +75,8 @@
             <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
           </div>
           <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
+          <q-btn v-if="!sub.reservedBy" label="Reserve" color="primary" flat dense @click="handleReserveRoom(index)" />
+          <q-btn v-else label="Unreserve" color="negative" flat dense @click="handleCancelReserveRoom(index)" />
         </div>
       </div>
 
@@ -120,6 +122,8 @@ export default {
     return {
       isLoggedIn: '',
       userDetails: {},
+
+      logImageInfo: null,
 
       currentImageIndex: 0,
       showImageDialog: false,
@@ -248,18 +252,124 @@ export default {
       });
     },
 
+    // async handleCancelReservation() {
+    //   try {
+    //     const response = await UnitService.cancelReservation(this.unit._id, this.userDetails._id);
+    //     if (response) {
+    //       this.$q.dialog({
+    //         title: 'Success',
+    //         message: 'Unit opened',
+    //         color: 'primary',
+    //         persistent: true,
+    //       }).onOk(async () => {
+    //         this.$emit('close');
+    //       });
+    //     }
+    //   } catch (error) {
+    //     this.$q.notify({
+    //       type: 'negative',
+    //       message: error.response?.data?.error || error.message || 'Failed to cancel reservation'
+    //     });
+    //   }
+    // },
+
+    // async handleReserve() {
+    //   try {
+
+    //     this.$q.dialog({
+    //       title: 'Reserve',
+    //       message: 'Do you wish to continue?',
+    //       color: 'primary',
+    //       persistent: true,
+    //       cancel: true
+    //     }).onOk(async () => {
+    //       const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
+    //       if (response) {
+    //         this.$q.dialog({
+    //           title: 'Success',
+    //           message: 'Unit reserved successfully',
+    //           color: 'primary',
+    //           persistent: true,
+    //         }).onOk(async () => {
+    //           this.$emit('close');
+    //         });
+    //       }
+    //     });
+    //   } catch (error) {
+    //     this.$q.notify({
+    //       type: 'negative',
+    //       message: error.response?.data?.error || error.message || 'Failed to reserve unit'
+    //     });
+    //   }
+    // },
+
+    async handleReserve() {
+      try {
+        this.$q.dialog({
+          title: 'Reserve',
+          message: 'Do you wish to reserve the entire unit?',
+          color: 'primary',
+          persistent: true,
+          cancel: true
+        }).onOk(async () => {
+          const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
+          if (response) {
+            this.unit.reservedBy = this.userDetails._id;
+            this.unit.reservedAt = new Date().toISOString();
+
+            // Reserve only subUnits that aren't already reserved
+            if (Array.isArray(this.unit.subUnits)) {
+              for (let i = 0; i < this.unit.subUnits.length; i++) {
+                const sub = this.unit.subUnits[i];
+                if (!sub.reservedBy) {
+                  await this.handleReserveRoom(i);
+                }
+              }
+            }
+
+            // this.$q.dialog({
+            //   title: 'Success',
+            //   message: 'Unit and available rooms reserved successfully',
+            //   color: 'primary',
+            //   persistent: true,
+            // }).onOk(() => {
+            //   this.$emit('close');
+            // });
+          }
+        });
+      } catch (error) {
+        this.$q.notify({
+          type: 'negative',
+          message: error.response?.data?.error || error.message || 'Failed to reserve unit'
+        });
+      }
+    },
+
     async handleCancelReservation() {
       try {
         const response = await UnitService.cancelReservation(this.unit._id, this.userDetails._id);
         if (response) {
-          this.$q.dialog({
-            title: 'Success',
-            message: 'Unit opened',
-            color: 'primary',
-            persistent: true,
-          }).onOk(async () => {
-            this.$emit('close');
-          });
+          this.unit.reservedBy = null;
+          this.unit.reservedAt = null;
+
+          // Cancel only subUnits reserved by this user
+          if (Array.isArray(this.unit.subUnits)) {
+            for (let i = 0; i < this.unit.subUnits.length; i++) {
+              const sub = this.unit.subUnits[i];
+              if (sub.reservedBy === this.userDetails._id) {
+                await this.handleCancelReserveRoom(i);
+              }
+            }
+          }
+
+          // this.$q.dialog({
+          //   title: 'Success',
+          //   message: 'Unit and your room reservations cancelled',
+          //   color: 'primary',
+          //   persistent: true,
+          // }).onOk(() => {
+          //   this.$emit('close');
+          // });
         }
       } catch (error) {
         this.$q.notify({
@@ -269,33 +379,49 @@ export default {
       }
     },
 
-    async handleReserve() {
+    async handleReserveRoom(index) {
       try {
-
         this.$q.dialog({
-          title: 'Reserve',
-          message: 'Do you wish to continue?',
+          title: 'Reserve Room',
+          message: 'Do you want to reserve this room?',
           color: 'primary',
           persistent: true,
           cancel: true
         }).onOk(async () => {
-          const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
+          const subUnit = this.unit.subUnits[index];
+          const response = await UnitService.reserveRoom(this.unit._id, index, this.userDetails._id);
           if (response) {
-            this.$q.dialog({
-              title: 'Success',
-              message: 'Unit reserved successfully',
-              color: 'primary',
-              persistent: true,
-            }).onOk(async () => {
-              this.$emit('close');
-            });
+            this.$q.notify({ type: 'positive', message: 'Room reserved successfully!' });
+            // Refresh or update local data here if needed
+            this.unit.subUnits[index].reservedBy = this.userDetails._id; // Optimistic update
+            this.unit.subUnits[index].reservedAt = new Date().toISOString();
           }
         });
       } catch (error) {
-        this.$q.notify({
-          type: 'negative',
-          message: error.response?.data?.error || error.message || 'Failed to reserve unit'
+        this.$q.notify({ type: 'negative', message: error.response?.data?.error || error.message || 'Failed to reserve room' });
+      }
+    },
+
+    async handleCancelReserveRoom(index) {
+      try {
+        this.$q.dialog({
+          title: 'Cancel Reservation',
+          message: 'Do you want to cancel the reservation for this room?',
+          color: 'negative',
+          persistent: true,
+          cancel: true
+        }).onOk(async () => {
+          const subUnit = this.unit.subUnits[index];
+          const response = await UnitService.cancelReserveRoom(this.unit._id, index, this.userDetails._id);
+          if (response) {
+            this.$q.notify({ type: 'positive', message: 'Room reservation cancelled!' });
+            // Refresh or update local data here if needed
+            this.unit.subUnits[index].reservedBy = null;
+            this.unit.subUnits[index].reservedAt = null;
+          }
         });
+      } catch (error) {
+        this.$q.notify({ type: 'negative', message: error.response?.data?.error || error.message || 'Failed to cancel room reservation' });
       }
     },
 

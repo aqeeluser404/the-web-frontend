@@ -1,178 +1,374 @@
 <template>
-  <q-card flat class="q-ma-sm bg-transparent">
+  <div class="">
     <!-- Carousel section (always shown) -->
-    <div class="carousel-wrapper row justify-center">
-      <q-carousel animated v-model="currentSlide" infinite :autoplay="!isSpecificFloorRoute" :autoplay-interval="5000"
-        transition-prev="slide-right" transition-next="slide-left" transition-duration="1800" arrows
-        control-color="white" class="carousel col-md-9">
+    <div class="q-py-md">
+      <div class="carousel-wrapper row justify-center bg-grey-3">
+        <q-carousel v-show="!isSpecificFloorRoute" animated v-model="currentSlide" infinite
+          :autoplay="!isSpecificFloorRoute" :autoplay-interval="5000" transition-prev="slide-right"
+          transition-next="slide-left" transition-duration="1800" control-color="white" class="carousel col-md-9"
+          :class="isHomePage ? 'bg-none' : 'bg-grey-3'">
+          <q-carousel-slide v-for="(card, index) in carouselFloorCards" :key="card._id" :name="card._id"
+            class="column no-wrap flex-center" style="position: relative; border-radius: 0;">
+            <q-img :src="card.imageUrl" loading="lazy" spinner-color="primary" :alt="'Floor ' + card._id"
+              class="carousel-image cursor-pointer"
+              :style="isHomePage ? 'background: none; border-radius: 0;' : 'border-radius: 0;'"
+              :class="{ 'image-shadow': !isHomePage }" fit="contain" @click="openFloorPage(index)" />
+          </q-carousel-slide>
+        </q-carousel>
 
-        <q-carousel-slide v-for="(card, index) in filteredFloorCards" :key="card._id" :name="card._id"
-          class="column no-wrap flex-center">
-          <q-img :src="card.imageUrl" :alt="'Floor ' + card._id" class="hero-image cursor-pointer"
-            :style="isHomePage ? 'background: #121212;' : ''" :class="{ 'image-shadow': !isHomePage }" fit="contain"
-            @click="openImageDialog(index)" />
-        </q-carousel-slide>
-
-      </q-carousel>
+        <!-- Smart Map -->
+        <div class="map-image-wrapper" v-if="isSpecificFloorRoute">
+          <q-img v-if="filteredFloorCards.length > 0" :src="filteredFloorCards[0].imageUrl" class="hero-image" @click="openImageDialog(0)">
+          </q-img>
+        </div>
+      </div>
     </div>
 
-    <template v-if="isSpecificFloorRoute">
-      <div class="">
-        <q-card v-for="(units, floorIndex) in filteredUnits" :key="floorIndex" class="q-mt-lg soft-shadow-card">
-          <q-card-section class="header-tint">
-            <div class="text-h6">
-              {{ floorLabels[currentFloor - 1] }} ({{ units.length }} items)
-            </div>
-            <q-separator class="q-my-sm" style="width: 100%;" />
-          </q-card-section>
+    <div v-if="isHomeRoute" class="q-py-lg">
+      <BedStatsComponent />
+    </div>
 
-          <q-card-section class="row justify-center q-gutter-md">
-            <q-input filled dense debounce="300" v-model="search" placeholder="Search by unit number, or status"
-              class="col-xs-12 col-sm-6 col-md-3">
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-            <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
-              class="col-xs-12 col-sm-6 col-md-1" emit-value map-options />
-            <q-select filled dense v-model="selectedFloor" :options="[
-              { label: '1st Floor', value: 1 },
-              { label: '2nd Floor', value: 2 },
-              { label: '3rd Floor', value: 3 },
-            ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-1" @update:model-value="goToFloor" />
-            <q-input filled dense v-model.number="priceRange.min" type="number" placeholder="Min Price"
-              class="col-xs-12 col-sm-6 col-md-1" />
-            <q-input filled dense v-model.number="priceRange.max" type="number" placeholder="Max Price"
-              class="col-xs-12 col-sm-6 col-md-1" />
-            <q-btn flat rounded icon="refresh" label="Reset" color="red"
-              class="q-py-sm custom-button col-xs-12 col-sm-6 col-md-1" @click="resetFilters" />
-          </q-card-section>
+    <div v-if="isHomeRoute" class="q-pb-md">
+      <template v-if="isHomeRoute">
+        <div>
+          <q-card flat v-for="(units, floorIndex) in firstFloorCards" :key="floorIndex" class="soft-shadow-card">
+            <!-- <q-card-section class="header-tint">
+              <div class="text-h6">
+                {{ floorLabels[currentFloor - 1] }} ({{ units.length }} items)
+              </div>
+              <q-separator class="q-my-sm" style="width: 100%;" />
+            </q-card-section>
 
-          <q-card-section>
-            <q-list class="row justify-center">
-              <q-card v-for="unit in units" :key="unit._id" class="hover-scale q-ma-sm bg-transparent soft-shadow-card"
-                :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
-                :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }"
-                @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
+            <q-card-section class="row justify-center q-gutter-md q-pa-lg">
+              <q-input filled dense debounce="300" v-model="search" placeholder="Search by unit number, or status"
+                class="col-xs-12 col-sm-6 col-md-3">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+              <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
+                class="col-xs-12 col-sm-6 col-md-1" emit-value map-options />
+              <q-select filled dense v-model="selectedFloor" :options="[
+                { label: '1st Floor', value: 1 },
+                { label: '2nd Floor', value: 2 },
+                { label: '3rd Floor', value: 3 },
+              ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-1" @update:model-value="goToFloor" />
+              <q-btn flat rounded icon="refresh" label="Reset" color="red"
+                class="q-py-sm custom-button col-xs-12 col-sm-6 col-md-1" @click="resetFilters" />
+            </q-card-section> -->
 
-                <!-- Image -->
-                <q-card-section class="row justify-center">
-                  <div class="image-container reserved-container">
-                    <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)"
-                      class="reserved-image" />
-                    <div v-if="unit.reservedBy" class="reserved-full-overlay">
-                      RESERVED
-                    </div>
-                  </div>
-                </q-card-section>
 
-                <!-- Heading -->
-                <q-card-section style="background-color: #f8f8f8;">
-                  <div class="row justify-between">
-                    <div class="column items-start q-pa-sm">
-                      <div class="text-h6">Unit {{ unit.unitNumber }}</div>
-                      <div class="text-caption text-grey-9">
-                        {{ unit.floorLevel }} <br>
-                        {{ getAvailableSubUnits(unit) }}/{{ unit.subUnits?.length || unit.unitOccupants || 0 }}
-                        Available
+              <q-list class="row justify-center">
+                <q-card
+                  v-for="unit in units"
+                  :key="unit._id"
+                  class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-6 col-12"
+                  :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
+                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }"
+                  style="max-width: 496px;"
+                  @click="openUnitImageDialog(unit)"
+                >
+                  <!-- Image -->
+                  <div class="row justify-center">
+                    <div class="image-container reserved-container full-height">
+                      <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)"
+                        class="reserved-image" fit="cover" />
+                      <div v-if="unit.reservedBy" class="reserved-full-overlay">
+                        RESERVED
                       </div>
-                    </div>
-
-                    <div class="column items-end q-pa-sm">
-                      <span class="text-h6"
-                        :class="unit.unitStatus === 'Available' ? 'available-unit' : 'occupied-unit'">
-                        {{ unit.unitStatus }}
-                      </span>
-                      <span class="text-caption" v-if="unit.unitStatus === 'Available'">
-                        <b>From R {{ Number(unit.unitPrice).toFixed(2) }}</b>
-                      </span>
                     </div>
                   </div>
 
-                  <div class="row justify-center q-mt-xs">
-                    <div class="unit-meta-info row justify-between">
-
-                      <!-- Status -->
-                      <div class="column items-center hover-scale-icon">
-                        <q-tooltip anchor="top middle" self="bottom middle">Status: {{ unit.unitStatus }}</q-tooltip>
-                        <q-icon :name="unit.unitStatus === 'Available' ? 'check_circle' : 'block'"
-                          :color="unit.unitStatus === 'Available' ? 'positive' : 'negative'" size="sm" />
-                        <div class="text-caption">{{ unit.unitStatus }}</div>
-                      </div>
-
-                      <!-- Unit Type -->
-                      <div class="column items-center hover-scale-icon">
-                        <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
-                        <q-icon name="home" size="sm" />
-                        <div class="text-caption">{{ unit.unitType }}</div>
-                      </div>
-
-                      <!-- Occupancy -->
-                      <div class="column items-center hover-scale-icon">
-                        <q-tooltip anchor="top middle" self="bottom middle">
-                          {{ getAvailableSubUnits(unit) }} of {{ unit.subUnits?.length || unit.unitOccupants || 0 }} available
-                        </q-tooltip>
-
-                        <q-icon
-                          :name="unit.subUnits?.[0]?.type === 'bed' ? 'bed'
-                                  : unit.subUnits?.[0]?.type === 'room' ? 'meeting_room'
-                                  : 'help'"
-                          size="sm"
-                        />
-
-                        <div class="text-caption">
-                          {{ unit.subUnits?.length || unit.unitOccupants || 0 }}
-                          {{ unit.subUnits?.[0]?.type === 'bed' ? 'Beds'
-                            : unit.subUnits?.[0]?.type === 'room' ? 'Rooms'
-                            : 'Units' }}
+                  <!-- Heading -->
+                  <q-card-section style="background-color: #f8f8f8;">
+                    <div class="row justify-between">
+                      <div class="column items-start q-pa-sm">
+                        <div class="text-h6">Unit {{ unit.unitNumber }}</div>
+                        <div class="text-caption text-grey-9">
+                          <div v-if="getAvailableSubUnits(unit)">
+                            {{ unit.floorLevel }} <br>
+                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            Available
+                          </div>
+                          <div v-else>
+                            {{ unit.floorLevel }} <br>
+                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            Occupied
+                          </div>
                         </div>
                       </div>
 
-                      <!-- Gender / Access -->
-                      <div class="column items-center hover-scale-icon">
-                        <q-tooltip anchor="top middle" self="bottom middle">
-                          <span v-if="unit.accessKey?.isShared">Access Key Required</span>
-                          <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
-                          <span v-else-if="unit.currentOccupants > 0">General Applied</span>
-                          <span v-else>Unassigned</span>
-                        </q-tooltip>
+                      <div class="column items-end q-pa-sm">
+                        <span v-if="getAvailableSubUnits(unit)" class="text-h6 text-primary">
+                          Available
+                        </span>
+                        <span v-else class="text-h6 text-negative">
+                          Occupied
+                        </span>
+                        <span class="text-caption" v-if="getAvailableSubUnits(unit)">
+                          <b>From R {{ Number(unit.unitPrice).toFixed(2) }}</b>
+                        </span>
+                      </div>
+                    </div>
 
-                        <q-icon v-if="unit.accessKey?.isShared" name="vpn_key" color="orange" size="sm" />
-                        <q-icon v-else-if="unit.genderAssignment === 'Male'" name="male" color="blue" size="sm" />
-                        <q-icon v-else-if="unit.genderAssignment === 'Female'" name="female" color="pink" size="sm" />
-                        <q-icon v-else-if="unit.currentOccupants > 0" name="group" color="green" size="sm" />
-                        <q-icon v-else name="help" color="grey" size="sm" />
+                    <div class="row justify-center q-mt-xs">
+                      <div class="unit-meta-info row justify-between">
 
-                        <div class="text-caption">
-                          <span v-if="unit.accessKey?.isShared">Key</span>
-                          <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }}</span>
-                          <span v-else-if="unit.currentOccupants > 0">General</span>
-                          <span v-else>Unassigned</span>
+                        <!-- Status -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
+                          </q-tooltip>
+
+                          <q-icon
+                            :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
+                            :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'"
+                            size="sm"
+                          />
+
+                          <div class="text-caption">
+                            {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
+                          </div>
+                        </div>
+
+                        <!-- Unit Type -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
+                          <q-icon name="home" size="sm" />
+                          <div class="text-caption">{{ unit.unitType }}</div>
+                        </div>
+
+                        <!-- Occupancy -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            available
+                          </q-tooltip>
+
+                          <q-icon :name="unit.subUnits?.[0]?.type === 'bed' ? 'bed'
+                            : unit.subUnits?.[0]?.type === 'room' ? 'meeting_room'
+                              : 'help'" size="sm" />
+
+                          <div class="text-caption">
+                            {{unit.subUnits?.filter(su => !su.reservedBy)?.length || unit.unitOccupants || 0}}
+                            {{ unit.subUnits?.[0]?.type === 'bed' ? 'Beds'
+                              : unit.subUnits?.[0]?.type === 'room' ? 'Rooms'
+                                : 'Units' }}
+                          </div>
+                        </div>
+
+                        <!-- Gender / Access -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            <span v-if="unit.accessKey?.isShared">Access Key Required</span>
+                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
+                            <span v-else-if="unit.currentOccupants > 0">General Applied</span>
+                            <span v-else>Unassigned</span>
+                          </q-tooltip>
+
+                          <q-icon v-if="unit.accessKey?.isShared" name="vpn_key" color="orange" size="sm" />
+                          <q-icon v-else-if="unit.genderAssignment === 'Male'" name="male" color="blue" size="sm" />
+                          <q-icon v-else-if="unit.genderAssignment === 'Female'" name="female" color="pink" size="sm" />
+                          <q-icon v-else-if="unit.currentOccupants > 0" name="group" color="green" size="sm" />
+                          <q-icon v-else name="help" color="grey" size="sm" />
+
+                          <div class="text-caption">
+                            <span v-if="unit.accessKey?.isShared">Key</span>
+                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }}</span>
+                            <span v-else-if="unit.currentOccupants > 0">General</span>
+                            <span v-else>Unassigned</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </q-card-section>
+
+                  <!-- <q-card-section>
+                    <CustomButton label="Reserve Now" @click="handleUnitClick(unit)" />
+                  </q-card-section> -->
+                </q-card>
+              </q-list>
+
+          </q-card>
+        </div>
+      </template>
+    </div>
+
+    <div v-if="isSpecificFloorRoute" class="q-py-lg">
+      <BedStatsComponent />
+    </div>
+
+    <div v-if="isSpecificFloorRoute" class="q-pb-md">
+      <template v-if="isSpecificFloorRoute">
+        <div>
+          <q-card v-for="(units, floorIndex) in filteredUnits" :key="floorIndex" class="soft-shadow-card">
+            <q-card-section class="header-tint">
+              <div class="text-h6">
+                {{ floorLabels[currentFloor - 1] }} ({{ units.length }} items)
+              </div>
+              <q-separator class="q-my-sm" style="width: 100%;" />
+            </q-card-section>
+
+            <q-card-section class="row justify-center q-gutter-md q-pa-lg">
+              <q-input filled dense debounce="300" v-model="search" placeholder="Search by unit number, or status"
+                class="col-xs-12 col-sm-6 col-md-3">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+              <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
+                class="col-xs-12 col-sm-6 col-md-1" emit-value map-options />
+              <q-select filled dense v-model="selectedFloor" :options="[
+                { label: '1st Floor', value: 1 },
+                { label: '2nd Floor', value: 2 },
+                { label: '3rd Floor', value: 3 },
+              ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-1" @update:model-value="goToFloor" />
+              <q-btn flat rounded icon="refresh" label="Reset" color="red"
+                class="q-py-sm custom-button col-xs-12 col-sm-6 col-md-1" @click="resetFilters" />
+            </q-card-section>
+
+            <q-card-section>
+              <q-list class="row justify-center">
+                <q-card v-for="unit in units" :key="unit._id"
+                  class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-5 col-12"
+                  :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
+                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }"
+                  style="max-width: 496px;"
+                  @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
+
+                  <!-- Image -->
+                  <div class="row justify-center">
+                    <div class="image-container reserved-container full-height">
+                      <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)"
+                        class="reserved-image" fit="cover" />
+                      <div v-if="unit.reservedBy" class="reserved-full-overlay">
+                        RESERVED
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Heading -->
+                  <q-card-section style="background-color: #f8f8f8;">
+                    <div class="row justify-between">
+                      <div class="column items-start q-pa-sm">
+                        <div class="text-h6">Unit {{ unit.unitNumber }}</div>
+                        <div class="text-caption text-grey-9">
+                          <div v-if="getAvailableSubUnits(unit)">
+                            {{ unit.floorLevel }} <br>
+                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            Available
+                          </div>
+                          <div v-else>
+                            {{ unit.floorLevel }} <br>
+                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            Occupied
+                          </div>
                         </div>
                       </div>
 
+                      <div class="column items-end q-pa-sm">
+                        <span v-if="getAvailableSubUnits(unit)" class="text-h6 text-primary">
+                          Available
+                        </span>
+                        <span v-else class="text-h6 text-negative">
+                          Occupied
+                        </span>
+                        <span class="text-caption" v-if="getAvailableSubUnits(unit)">
+                          <b>From R {{ Number(unit.unitPrice).toFixed(2) }}</b>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </q-card-section>
 
-                <q-card-section>
-                  <!-- <template v-if="unit.reservedBy">
-                    <CustomButton v-if="isReservedByCurrentUser(unit)" label="Return to Application" color="negative"
-                      @click.stop="handleCancelReservation(unit)" />
-                    <CustomButton v-else label="Reserved" disabled color="grey" />
-                  </template>
-                  <CustomButton v-else label="Reserve" :disabled="!isLoggedIn || getAvailableSubUnits(unit) === 0"
-                    @click.stop="handleReserve(unit)"
-                    :color="(!isLoggedIn || getAvailableSubUnits(unit) === 0) ? 'grey' : 'primary'" /> -->
+                    <div class="row justify-center q-mt-xs">
+                      <div class="unit-meta-info row justify-between">
 
-                  <CustomButton label="Reserve Now" @click="handleUnitClick(unit)"  />
-                </q-card-section>
-              </q-card>
-            </q-list>
-          </q-card-section>
-        </q-card>
-      </div>
-    </template>
+                        <!-- Status -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
+                          </q-tooltip>
+
+                          <q-icon
+                            :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
+                            :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'"
+                            size="sm"
+                          />
+
+                          <div class="text-caption">
+                            {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
+                          </div>
+                        </div>
+
+                        <!-- Unit Type -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
+                          <q-icon name="home" size="sm" />
+                          <div class="text-caption">{{ unit.unitType }}</div>
+                        </div>
+
+                        <!-- Occupancy -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                              unit.unitOccupants || 0}}
+                            available
+                          </q-tooltip>
+
+                          <q-icon :name="unit.subUnits?.[0]?.type === 'bed' ? 'bed'
+                            : unit.subUnits?.[0]?.type === 'room' ? 'meeting_room'
+                              : 'help'" size="sm" />
+
+                          <div class="text-caption">
+                            {{unit.subUnits?.filter(su => !su.reservedBy)?.length || unit.unitOccupants || 0}}
+                            {{ unit.subUnits?.[0]?.type === 'bed' ? 'Beds'
+                              : unit.subUnits?.[0]?.type === 'room' ? 'Rooms'
+                                : 'Units' }}
+                          </div>
+                        </div>
+
+                        <!-- Gender / Access -->
+                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                          <q-tooltip anchor="top middle" self="bottom middle">
+                            <span v-if="unit.accessKey?.isShared">Access Key Required</span>
+                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
+                            <span v-else-if="unit.currentOccupants > 0">General Applied</span>
+                            <span v-else>Unassigned</span>
+                          </q-tooltip>
+
+                          <q-icon v-if="unit.accessKey?.isShared" name="vpn_key" color="orange" size="sm" />
+                          <q-icon v-else-if="unit.genderAssignment === 'Male'" name="male" color="blue" size="sm" />
+                          <q-icon v-else-if="unit.genderAssignment === 'Female'" name="female" color="pink" size="sm" />
+                          <q-icon v-else-if="unit.currentOccupants > 0" name="group" color="green" size="sm" />
+                          <q-icon v-else name="help" color="grey" size="sm" />
+
+                          <div class="text-caption">
+                            <span v-if="unit.accessKey?.isShared">Key</span>
+                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }}</span>
+                            <span v-else-if="unit.currentOccupants > 0">General</span>
+                            <span v-else>Unassigned</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </q-card-section>
+
+                  <q-card-section>
+                    <CustomButton label="Reserve Now" @click="handleUnitClick(unit)" />
+                  </q-card-section>
+                </q-card>
+              </q-list>
+            </q-card-section>
+          </q-card>
+        </div>
+      </template>
+    </div>
 
     <!-- Dialogs -->
     <q-dialog v-model="imageDialog" maximized>
@@ -180,39 +376,37 @@
         <q-btn icon="close" flat round dense v-close-popup class="close-button" />
 
         <q-card-section class="dialog-image-section row justify-center flex-center">
-          <img :src="currentDialogImageUrl" class="enlarged-image" style="object-fit: contain" />
+          <SimpleZoom>
+            <img :src="currentDialogImageUrl" class="enlarged-image" style="object-fit: contain" />
+          </SimpleZoom>
 
           <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage"
-            v-if="filteredFloorCards.length > 1" />
+            v-if="filteredFloorCards.length > 1 && !isHomeRoute" />
           <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage"
-            v-if="filteredFloorCards.length > 1" />
+            v-if="filteredFloorCards.length > 1 && !isHomeRoute" />
         </q-card-section>
       </q-card>
     </q-dialog>
-
-    <q-dialog v-model="detailFormDialog">
-      <UnitDetailedApplicationForm :unit="selectedUnit" @close="handleDialogClose" />
+    <q-dialog v-model="detailFormDialog" @hide="handleDialogClose" :maximized="$q.screen.lt.sm ? true : false">
+      <UnitDetailedApplicationForm :unit="selectedUnit" :sub-unit="selectedSubUnit" @close="handleDialogClose" />
     </q-dialog>
-    <q-dialog v-model="detailsDialog">
-      <UnitDetailsComponent :unit="selectedUnit" @close="detailsDialog = false" />
-    </q-dialog>
-    <q-dialog v-model="applyDialog">
-      <UnitApplicationFormComponent :unit="selectedUnit" @close="handleDialogClose" />
-    </q-dialog>
-  </q-card>
+  </div>
 </template>
 
 <script>
+import BedStatsComponent from './BedStatsComponent.vue'
 import UnitDetailedApplicationForm from './UnitDetailedApplicationForm.vue'
 import UnitDetailsComponent from './UnitDetailsComponent.vue'
 import UnitApplicationFormComponent from './UnitApplicationFormComponent.vue'
 import UnitService from '../../services/UnitService'
 import RentalService from '../../services/RentalService'
 import Helper from '../../services/utils'
-import floor1 from '../../assets/resources/floorLayout/FirstFloorLayout.png'
+import floor1 from 'src/assets/resources/floorLayout/FirstFloorLayout.png'
 import floor2 from 'src/assets/resources/floorLayout/SecondFloorLayout.png'
 import floor3 from 'src/assets/resources/floorLayout/ThirdFloorLayout.png'
+// import floorHome from 'src/assets/resources/floorLayout/FirstFloorLayoutHome.png'
 import CustomButton from '../elements/CustomButton.vue'
+import SimpleZoom from '../elements/SimpleZoom.vue'
 
 export default {
   name: 'UnitGridSection',
@@ -220,7 +414,7 @@ export default {
     UnitDetailsComponent,
     UnitApplicationFormComponent,
     UnitDetailedApplicationForm,
-    CustomButton
+    CustomButton, BedStatsComponent, SimpleZoom
   },
   data() {
     return {
@@ -246,6 +440,7 @@ export default {
       allUnits: [],
       myRentals: [],
       selectedUnit: null,
+      selectedSubUnit: null,
       detailFormDialog: false,
       detailsDialog: false,
       applyDialog: false,
@@ -253,12 +448,17 @@ export default {
       floorCards: [
         { _id: 1, imageUrl: floor1 },
         { _id: 2, imageUrl: floor2 },
-        { _id: 3, imageUrl: floor3 },
+        { _id: 3, imageUrl: floor3 }
+        // { _id: 4, imageUrl: floorHome }
       ],
       currentFloor: null
     }
   },
   computed: {
+
+    // currentRoute() {
+    //   return this.$route.params.floor;
+    // },
 
     // Check if the current user reserved any unit
     myReservedUnitId() {
@@ -282,11 +482,39 @@ export default {
     isSpecificFloorRoute() {
       return this.$route.path.match(/\/units\/apply\/floor\/\d+$/)
     },
+    isHomeRoute() {
+      return this.$route.path === '/';
+    },
+    carouselFloorCards() {
+      if (this.isHomePage || this.$route.path === '/units/apply') {
+        return this.floorCards.filter(card => card._id === 1);
+        // return this.floorCards.filter(card => card._id === 4);
+      }
+      if (this.isSpecificFloorRoute) {
+        return this.floorCards.filter(card => card._id === this.currentFloor);
+      }
+      return this.floorCards;
+    },
     filteredFloorCards() {
       if (!this.isSpecificFloorRoute) {
         return this.floorCards
       }
       return this.floorCards.filter(card => card._id === this.currentFloor)
+    },
+    firstFloorCards() {
+      if (this.isHomeRoute) {
+        const floorIndex = 0
+        let floorUnits = this.allUnits[floorIndex] || []
+        if (this.search) {
+          const searchTerm = this.search.toLowerCase()
+          floorUnits = floorUnits.filter(unit =>
+            unit.unitNumber.toString().toLowerCase().includes(searchTerm) ||
+            unit.unitStatus?.toLowerCase().includes(searchTerm)
+          )
+        }
+        console.log(floorUnits)
+        return [floorUnits]
+      }
     },
     filteredUnits() {
       if (!this.isSpecificFloorRoute) return []
@@ -323,9 +551,64 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
 
+    getHomePageFloorCards() {
+      return this.floorCards.filter(card => card._id === 1);
+    },
+
+    getFloorLabel(id) {
+      const labels = {
+        1: 'First Floor Plan',
+        2: 'Second Floor Plan',
+        3: 'Third Floor Plan',
+        4: 'Fourth Floor',
+        5: 'Fifth Floor'
+        // Add more if needed
+      };
+      return labels[id] || `Floor ${id}`;
+    },
+
+
+    toggleLabel(markerId) {
+      this.activeLabel = this.activeLabel === markerId ? null : markerId;
+    },
+
+    markerImage(unit) {
+      const floor = this.$route.params.floor || '1';
+      return `/assets/units/f${floor}/${unit}.png`;
+    },
+
+    markerClass(unit) {
+      const floor = this.$route.params.floor || '1';
+      return `marker-${unit}-f${floor}`;
+    },
+
+    // Open Map Unit
+    onMarkerClick(unitSuffix, subUnitId) {
+      const floorNumber = this.currentFloor;
+      if (!floorNumber) {
+        this.$q.notify({ type: 'negative', message: 'Floor not selected' });
+        return;
+      }
+      const targetUnitNumber = `${floorNumber}-${unitSuffix}`;
+      const floorIndex = floorNumber - 1;
+      const unitsOnFloor = this.allUnits?.[floorIndex] || [];
+
+      const matchedUnit = unitsOnFloor.find(unit =>
+        unit.unitNumber.toString() === targetUnitNumber || unit.unitNumber.toString().endsWith(unitSuffix)
+      );
+      if (matchedUnit) {
+        this.selectedUnit = matchedUnit;
+        this.selectedSubUnit = subUnitId;
+        // console.log('selectedSubUnit set to:', this.selectedSubUnit);
+        this.detailFormDialog = true;
+      } else {
+        this.$q.notify({ type: 'negative', message: 'Unit not found' });
+      }
+    },
+
     getAvailableSubUnits(unit) {
       if (unit.subUnits && Array.isArray(unit.subUnits)) {
-        return unit.subUnits.filter(sub => sub.isAvailable).length;
+        return unit.subUnits.filter(sub => sub.isAvailable && !sub.reservedBy).length;
       }
       // fallback for old units
       if (unit.unitOccupants != null && unit.currentOccupants != null) {
@@ -343,24 +626,6 @@ export default {
       // fallback for old units
       return 'meeting_room';
     },
-
-    // getRoomType(description) {
-    //   if (!description) return null;
-    //   const desc = description.toLowerCase();
-
-    //   const isStrand = desc.includes('the strand');
-    //   const isPinnacle = desc.includes('the pinnacle');
-    //   const isCore = desc.includes('the core');
-
-    //   // Check for mixed units first
-    //   if (isPinnacle && isCore) return 'mixed';
-    //   if (isStrand) return 'strand';
-    //   if (isPinnacle) return 'pinnacle';
-    //   if (isCore) return 'core';
-
-    //   return null;
-    // },
-
 
     // RESERVE UNITS
     // ------------------------------------------------------------------------------------------
@@ -486,6 +751,19 @@ export default {
       this.currentDialogImageUrl = this.filteredFloorCards[index].imageUrl
       this.imageDialog = true
     },
+    openUnitImageDialog(unit) {
+      this.currentImageIndex = 0
+      this.currentDialogImageUrl = unit.images && unit.images.length > 0
+        ? unit.images[0].imageUrl
+        : unit.imageUrl
+      this.imageDialog = true
+    },
+
+
+    openFloorPage(index) {
+      index = index + 1
+      this.$router.push(`/units/apply/floor/${index}`);
+    },
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.filteredFloorCards.length
       this.currentDialogImageUrl = this.filteredFloorCards[this.currentImageIndex].imageUrl
@@ -503,7 +781,10 @@ export default {
       this.units = response
       this.allReservedUnits = response.filter(u => u.reservedBy)
       this.organizeUnitsByFloor()
-      await this.fetchMyRentals()
+
+      if (this.isLoggedIn) {
+        await this.fetchMyRentals()
+      }
     },
 
     async fetchMyRentals() {
@@ -533,16 +814,23 @@ export default {
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     handleUnitClick(unit) {
-      this.selectedUnit = unit
-      this.detailFormDialog = true
+      // Clone the unit to avoid mutating the original reference
+      const cleanUnit = { ...unit };
+
+      if (Array.isArray(unit.subUnits)) {
+        cleanUnit.subUnits = unit.subUnits.filter(sub => !sub.reservedBy);
+      }
+
+      this.selectedUnit = cleanUnit;
+      this.detailFormDialog = true;
       // this.detailsDialog = true
       // this.applyDialog = true
-
     },
+
     handleDialogClose() {
       this.detailFormDialog = false
-      // this.applyDialog = false
-      // this.detailsDialog = false
+      this.selectedSubUnit = null;
+      this.selectedUnit = null;
       this.fetchUnits()
     },
 
@@ -581,7 +869,7 @@ export default {
       this.parseFloorFromRoute()
     }
   },
-  async created() {
+  async mounted() {
     await this.checkLoginStatus();
     this.parseFloorFromRoute()
     this.fetchUnits()
@@ -589,158 +877,533 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss" scoped>
+/* #region MAP WRAPPER */
+.map-image-wrapper {
+  width: 100%;
+  position: relative;
+  //max-width: 1024px;
+  //max-height: 550px;
+  //height: 100%;
 
-.reserved-container
-  position: relative
-  width: 100%
-  height: 100%
+  //max-width: 1575px;
+  /* updated from 1024px */
+  height: auto;
+  overflow: hidden;
+  margin: 0 auto;
+}
 
-.reserved-image
-  // width: 100%
-  // height: 100%
-  max-width: 100%
-  max-height: 100%
-  object-fit: contain
+.hero-image {
+  width: 100%;
+  // height: 100%;
+  width: 100%;
+  object-fit: contain;
+  display: block;
+}
 
-.reserved-full-overlay
-  position: absolute
-  top: 10
-  left: 10
-  width: 60%
-  height: 20%
-  background-color: rgba(0, 0, 0, 1)
-  color: white
-  display: flex
-  align-items: center
-  justify-content: center
-  font-size: 2rem
-  font-weight: bold
-  letter-spacing: 2px
-  border-radius: 8px
-  z-index: 10
-  text-transform: uppercase
-
-.dimmed-unit
-  opacity: 0.3
-  filter: grayscale(100%)
-
-// Enlarged Image
-.image-dialog-card
-  background: rgba(0, 0, 0, 0.9) !important
-
-.dialog-image-section
-  height: 100%
-  display: flex
-  justify-content: center
-  align-items: center
-  position: relative
-
-.enlarged-image
-  max-width: 100%
-  max-height: 100%
-  width: auto
-  height: auto
-
-.close-button
-  position: fixed
-  right: 15px
-  top: 10px
-  z-index: 6000
-  color: white
-
-.dialog-nav
-  position: absolute
-  top: 50%
-  transform: translateY(-50%)
-  color: white
-  z-index: 2
-  width: 48px
-  height: 48px
-  font-size: 24px
-  &.left
-    left: 24px
-
-  &.right
-    right: 24px
-
-.cursor-pointer
-  cursor: pointer
+/* #endregion MAP WRAPPER */
 
 
-// -----------------------
-.image-container
-  width: 350px
-  height: 275px
-  display: flex
-  justify-content: center
-  align-items: center
-  overflow: hidden
-  padding: 5px
-  @media (max-width: 1025px)
-    width: 300px
-    height: 300px
+/* #region MARKERS */
+.marker {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+  background-color: transparent;
 
-.unit-meta-info
-  width: 350px
-  padding: 8px
+  &:hover {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.8));
+    z-index: 100;
+    transform: translate(-50%, -100%) scale(1.55);
+    overflow: visible;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
 
-// .image
-//   max-width: 100%
-//   max-height: 100%
-//   object-fit: contain
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+}
 
-.background-transparent
-  background: #121212
+// .marker:hover img {
+//   filter:
+//     /* Solid border simulated by multiple sharp drop shadows */
+//     drop-shadow(0 0 0 #009B77) drop-shadow(1px 0 0 #009B77) drop-shadow(-1px 0 0 #009B77) drop-shadow(0 1px 0 #009B77) drop-shadow(0 -1px 0 #009B77);
+// }
 
-.carousel-wrapper
-  max-height: 550px
-  height: auto
-  overflow: hidden
-  width: 100%
+::v-deep(.q-img__content > div) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
 
-.carousel
-  width: 100%
-  height: auto
-  aspect-ratio: 16/9
-  min-height: 300px
-  max-height: 550px
+/* #endregion MARKERS */
 
-.hero-image
-  width: 100%
-  height: 100%
-  object-fit: contain
 
-.image-shadow
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5))
+/* #region MARKER POSITIONS */
+$markers: (
+  "01-01": (width: 5.7%, top: 94%, left: 87.75%),
+  "01-02": (width: 5%, top: 94.5%, left: 82.2%),
+  "02-01": (width: 6.8%, top: 94.1%, left: 75.8%),
+  "02-02": (width: 6.8%, top: 77.7%, left: 72.48%),
 
-.q-carousel__slide
-  padding: 0 !important
+  "03-01": (width: 7.15%, top: 48.3%, left: 79.35%),
+  "03-02": (width: 7.15%, top: 23.3%, left: 79.4%),
+  "03-03": (width: 7.1%, top: 23.3%, left: 86.7%),
 
-.q-carousel__navigation-inner
-  padding-bottom: 20px
+  "04-01A": (width: 3.54%, top: 48.5%, left: 69.75%),
+  "04-01B": (width: 3.54%, top: 48.5%, left: 73.31%),
+  "04-02A": (width: 3.55%, top: 18.3%, left: 69.7%),
+  "04-02B": (width: 3.55%, top: 18.3%, left: 73.3%),
+  "04-03A": (width: 3.63%, top: 19.5%, left: 62.4%),
+  "04-03B": (width: 3.65%, top: 19.5%, left: 65.85%),
 
-.q-carousel__arrow
-  color: white
-  font-size: 2rem
+  "05-01A": (width: 3.71%, top: 48.4%, left: 54.6%),
+  "05-01B": (width: 3.56%, top: 48.4%, left: 58.1%),
+  "05-02A": (width: 3.65%, top: 18%, left: 54.5%),
+  "05-02B": (width: 3.61%, top: 18%, left: 58.1%),
+  "05-03A": (width: 3.53%, top: 19%, left: 47.1%),
+  "05-03B": (width: 3.65%, top: 19%, left: 50.6%),
 
-.hover-scale
-  cursor: pointer
-  transition: transform 0.2s ease-in-out
+  "06-01A": (width: 3.71%, top: 48.4%, left: 32.1%),
+  "06-01B": (width: 3.56%, top: 48.4%, left: 35.55%),
+  "06-02A": (width: 3.65%, top: 18%, left: 32.1%),
+  "06-02B": (width: 3.61%, top: 18%, left: 35.6%),
+  "06-03A": (width: 3.53%, top: 18.8%, left: 39.4%),
+  "06-03B": (width: 3.65%, top: 19%, left: 43%),
 
-.hover-scale:hover
-  transform: scale(1.03)
+  "07-01A": (width: 3.62%, top: 48.4%, left: 24.3%),
+  "07-01B": (width: 3.56%, top: 48.4%, left: 27.8%),
+  "07-02A": (width: 3.65%, top: 18%, left: 24.25%),
+  "07-02B": (width: 3.61%, top: 18%, left: 27.8%),
 
-.hover-scale-icon
-  cursor: pointer
-  transition: transform 0.2s ease-in-out
+  "07-03A": (width: 3.53%, top: 18.8%, left: 16.8%),
+  "07-03B": (width: 3.65%, top: 19%, left: 20.35%),
 
-.hover-scale-icon:hover
-  transform: scale(1.2)
+  "08-01": (width: 7.19%, top: 23.35%, left: 10.8%)
+);
 
-.available-unit
-  color: #4CAF50
+// @each $name, $props in $markers {
 
-.occupied-unit
-  color: #F44336
+//   ::v-deep(.marker-#{$name}-f1),
+//   ::v-deep(.marker-#{$name}-f2),
+//   ::v-deep(.marker-#{$name}-f3) {
+//     width: map-get($props, width);
+//     top: map-get($props, top);
+//     left: map-get($props, left);
+//   }
+// }
+
+$color-one: #009B77;
+$color-two: #FF5733;
+
+@each $name, $props in $markers {
+  $prefix: str-slice($name, 1, 2); // get "01", "02", etc.
+
+  $hover-color: if(($prefix =="01") or ($prefix =="02") or ($prefix =="03") or ($prefix =="08"),
+      $color-one,
+      $color-two );
+
+  ::v-deep(.marker-#{$name}-f1),
+  ::v-deep(.marker-#{$name}-f2),
+  ::v-deep(.marker-#{$name}-f3) {
+    width: map-get($props, width);
+    top: map-get($props, top);
+    left: map-get($props, left);
+
+    &:hover img {
+      filter: drop-shadow(0 0 0 #{$hover-color}) drop-shadow(1px 0 0 #{$hover-color}) drop-shadow(-1px 0 0 #{$hover-color}) drop-shadow(0 1px 0 #{$hover-color}) drop-shadow(0 -1px 0 #{$hover-color});
+    }
+  }
+}
+
+/* #endregion MARKER POSITIONS */
+
+
+/* #region FLOOR LABELS */
+// .floor-label {
+//   position: absolute;
+//   // bottom: 0px;
+//   // color: white;
+//   padding: 6px 12px;
+//   border-radius: 4px;
+//   // font-size: 1.2rem;
+//   font-weight: 500;
+//   z-index: 2;
+//   left: 0%;
+//   bottom: 0%;
+
+//   @media (max-width: 767px) {
+//     font-size: 0.75rem;
+//   }
+// }
+// .floor-label2 {
+//   width: 390px;
+//   position: absolute;
+//   padding: 6px 12px;
+//   border-radius: 4px;
+//   font-weight: 500;
+//   z-index: 2;
+//   left: 24%;
+//   bottom: 0%;
+
+//   @media (max-width: 767px) {
+//     // width: 250px;
+//     // left: 0%;
+//     // bottom: 28%;
+//   }
+// }
+
+.floor-label {
+  // width: 390px;
+  // position: absolute;
+  // padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  // z-index: 2;
+  // left: 0%;
+  // bottom: 0%;
+
+  // @media (max-width: 767px) {
+  //   width: 160px;
+
+  //   // padding: 4px 6px;
+  // }
+}
+
+.room-card {
+  height: 100%;
+  // padding: 12px;
+  // font-size: 1rem;
+
+  // @media (max-width: 767px) {
+  //   font-size: 0.6rem;
+  // }
+}
+
+.room-name {
+  font-weight: bold;
+  // font-size: 1rem;
+
+  // @media (max-width: 767px) {
+  //   font-size: 0.6rem;
+  // }
+}
+
+.room-description {
+  margin: 0;
+  // font-size: 0.9rem;
+
+  // @media (max-width: 767px) {
+  //   font-size: 0.6rem;
+  // }
+}
+
+.web-icon {
+  font-size: 2rem;
+  display: inline-block;
+
+  @media (max-width: 767px) {
+    font-size: 1.5rem;
+  }
+
+  &--botmaskop {
+    filter: invert(70%) sepia(95%) saturate(4%) hue-rotate(7deg) brightness(105%) contrast(102%);
+  }
+
+  &--helshoogte {
+    filter: invert(86%) sepia(32%) saturate(1%) hue-rotate(314deg) brightness(81%) contrast(106%);
+  }
+}
+
+/* #endregion FLOOR LABELS */
+
+
+/* #region CAROUSEL */
+
+.carousel-wrapper {
+  width: 100%;
+  max-width: 1575px;
+  /* updated from 1024px */
+  height: auto;
+  /* auto height */
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.carousel {
+  width: 100%;
+  height: auto;
+  /* auto height */
+}
+
+.carousel-image {
+  width: 100%;
+  height: auto;
+  /* auto height */
+  object-fit: contain;
+  display: block;
+}
+
+.q-carousel__slides-container {
+  height: auto !important;
+  /* auto height */
+  min-height: unset !important;
+  /* remove min height */
+}
+
+.q-carousel__slide {
+  height: auto !important;
+  /* auto height */
+  padding: 0 !important;
+}
+
+
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .carousel-wrapper {
+    max-height: 240px;
+    /* Reduced from 350px */
+  }
+
+  .carousel {
+    height: 240px !important;
+    /* Reduced from 350px */
+    max-height: 240px !important;
+    min-height: 240px !important;
+  }
+
+  .carousel-image {
+    height: 240px !important;
+    /* Reduced from 350px */
+  }
+
+  .q-carousel__slides-container {
+    height: 240px !important;
+    min-height: 240px !important;
+  }
+
+  .q-carousel__slide {
+    height: 240px !important;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  // .carousel-wrapper {
+  //   max-height: 180px;
+  //   /* Reduced from 300px */
+  // }
+
+  .carousel {
+    height: 180px !important;
+    /* Reduced from 300px */
+    max-height: 180px !important;
+    min-height: 180px !important;
+  }
+
+  .carousel-image {
+    height: 180px !important;
+    /* Reduced from 300px */
+  }
+
+  .q-carousel__slides-container {
+    height: 180px !important;
+    min-height: 180px !important;
+  }
+
+  .q-carousel__slide {
+    height: 180px !important;
+  }
+}
+
+
+// .carousel-wrapper {
+//   height: 100%;
+//   max-height: 550px;
+//   overflow: hidden;
+// }
+
+// .carousel {
+//   height: 100%;
+//   max-height: 550px;
+//   overflow: hidden;
+// }
+
+// .q-carousel__slide {
+//   height: 100% !important;
+//   overflow: hidden !important;
+//   padding: 0 !important;
+// }
+
+// .carousel-image {
+//   height: 100%;
+//   width: 100%;
+//   object-fit: cover;
+//   display: block;
+// }
+
+
+.q-carousel__navigation-inner {
+  padding-bottom: 20px;
+}
+
+.q-carousel__arrow {
+  color: white;
+  font-size: 2rem;
+}
+
+/* #endregion CAROUSEL */
+
+
+/* #region RESERVED UNITS */
+.reserved-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.reserved-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.reserved-full-overlay {
+  position: absolute;
+  top: 10;
+  left: 10;
+  width: 60%;
+  height: 20%;
+  background-color: rgba(0, 0, 0, 1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  border-radius: 8px;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.dimmed-unit {
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+/* #endregion RESERVED UNITS */
+
+
+/* #region ENLARGED IMAGE DIALOG */
+.image-dialog-card {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.dialog-image-section {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.enlarged-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.close-button {
+  position: fixed;
+  right: 15px;
+  top: 10px;
+  z-index: 6000;
+  color: white;
+}
+
+.dialog-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+
+  &.left {
+    left: 24px;
+  }
+
+  &.right {
+    right: 24px;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* #endregion ENLARGED IMAGE DIALOG */
+
+
+/* #region UNIT CARDS / THUMBNAILS */
+.image-container {
+  // width: 750px;
+  // height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  // padding: 5px;
+
+  @media (max-width: 1025px) {
+    //  width: 300px;
+    //  height: 300px;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.unit-meta-info {
+  width: 100%;
+  padding: 8px;
+}
+
+.background-transparent {
+  background: #121212;
+}
+
+.hover-scale {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+
+.hover-scale-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.available-unit {
+  color: #4CAF50;
+}
+
+.occupied-unit {
+  color: #F44336;
+}
+
+/* #endregion UNIT CARDS / THUMBNAILS */
 </style>

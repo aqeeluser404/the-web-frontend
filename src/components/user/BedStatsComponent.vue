@@ -1,43 +1,46 @@
 <template>
-  <q-card class="q-ma-md soft-shadow-card">
+  <q-card class="soft-shadow-card">
     <q-card-section class="header-tint">
       <div class="text-h6">Accommodation Availability Summary</div>
       <q-separator class="q-my-sm" style="width: 100%;" />
     </q-card-section>
 
-    <q-card-section>
+    <!-- <q-card-section v-if="!isHomePage">
       <div class="row justify-center items-center">
-        <!-- <q-icon name="meeting_room" size="md" class="q-mr-sm" /> -->
         <div class="text-subtitle1">
           Total Sleepers Available:
           <span class="text-bold">{{ stats.overall.available }}/{{ stats.overall.total }}</span>
-          ({{ stats.overall.total > 0 ? Math.round((stats.overall.available / stats.overall.total) * 100) + '%' : '0%' }})
+          ({{ stats.overall.total > 0 ? Math.round((stats.overall.available / stats.overall.total) * 100) + '%' : '0%'
+          }})
         </div>
       </div>
-    </q-card-section>
+    </q-card-section> -->
 
-    <q-separator class="q-my-xs" />
+    <!-- <q-separator class="q-my-xs" v-if="!isHomePage" /> -->
 
     <q-card-section class="tinted-border row justify-between">
-      <div class="floor-stats col-3" v-for="floor in floors" :key="floor.key" @click="goToFloor(floor.key)">
-        <div class="text-subtitle2 text-center">{{ floor.label }}</div>
-        <div class="text-center cursor-pointer">
+      <div class="floor-stats col-md-3 col-12 cursor-pointer" :class="$q.screen.gt.sm ? '' : 'q-pa-sm'" v-for="floor in floors"
+        :key="floor.key" @click="goToFloor(floor.key)" :style="{
+          backgroundColor: getBackgroundColor(floor.key),
+          color: getTextColor(floor.key)
+        }"
+        >
+
+        <div class="text-body1 text-center text-weight-bold">{{ floor.label }}</div>
+        <!-- <div class="text-subtitle2 text-center" v-if="!isHomePage">{{ floor.label }}</div>
+        <div class="text-center cursor-pointer" v-if="!isHomePage">
           <q-icon name="content_paste" size="sm" class="q-mr-xs" />
           <span class="text-bold">{{ stats[floor.key].available }}/{{ stats[floor.key].total }}</span>
-        </div>
+        </div> -->
 
-        <q-linear-progress
-          :value="stats[floor.key].available / stats[floor.key].total"
-          :color="getProgressColor(floor.key)"
-          class="q-mt-sm"
-        />
+        <q-linear-progress :value="stats[floor.key].available / stats[floor.key].total"
+          :color="getProgressColor(floor.key)" class="q-mt-sm" style="border-radius: 6px; padding: 3px;" />
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script>
-import Helper from 'src/services/utils'
 import UnitService from 'src/services/UnitService'
 
 export default {
@@ -62,30 +65,97 @@ export default {
     currentFloorParam() {
       const match = this.$route.path.match(/\/units\/apply\/floor\/(\d+)$/)
       return match ? parseInt(match[1]) : null
-    }
+    },
+    // isHomePage() {
+    //   return this.$route.path === '/'
+    // },
   },
   methods: {
-    getProgressColor(floorKey) {
-      const keyToNumber = {
-        firstFloor: 1,
-        secondFloor: 2,
-        thirdFloor: 3
-      }
+    getBackgroundColor(floorKey) {
+      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 };
+      const floorNumber = keyToNumber[floorKey];
 
+      if (this.$route.path === '/' && floorKey === 'firstFloor') {
+        return '#009B77';
+      }
+      return this.currentFloorParam === floorNumber ? '#009B77' : 'white';
+    },
+    getTextColor(floorKey) {
+      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 };
+      const floorNumber = keyToNumber[floorKey];
+
+      if (this.$route.path === '/' && floorKey === 'firstFloor') {
+        return 'white';
+      }
+      return this.currentFloorParam === floorNumber ? 'white' : 'black';
+    },
+
+    getProgressColor(floorKey) {
+      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 }
       const floorNumber = keyToNumber[floorKey]
 
-      if (this.currentFloorParam === floorNumber) {
-        return 'primary' // Active route color
+      if (this.$route.path === '/' && floorKey === 'firstFloor') {
+        return 'white';
       }
 
+      if (this.currentFloorParam === floorNumber) {
+        return 'white'
+      }
       const available = this.stats[floorKey].available
       const total = this.stats[floorKey].total
       const percentage = available / total
 
-      if (percentage > 0.5) return 'positive'
-      if (percentage > 0.25) return 'warning'
+      // if (percentage > 0.5) return 'positive'
+      // if (percentage > 0.25) return 'warning'
+
+      if (percentage > 0.5) return 'black'
+      if (percentage > 0.25) return 'black'
       return 'negative'
     },
+    // calculateBedStats() {
+    //   const stats = {
+    //     firstFloor: { available: 0, total: 0 },
+    //     secondFloor: { available: 0, total: 0 },
+    //     thirdFloor: { available: 0, total: 0 },
+    //     overall: { available: 0, total: 0 }
+    //   }
+
+    //   this.units
+    //     .filter(unit =>
+    //       !unit.reservedBy &&
+    //       !(unit.subUnits && unit.subUnits.some(sub => sub.reservedBy))
+    //     )
+    //     .forEach(unit => {
+    //       const occupants = Math.floor(unit.unitOccupants || 0)
+    //       const current = Math.floor(unit.currentOccupants || 0)
+    //       const availableBeds = Math.max(0, occupants - current)
+
+    //       switch (unit.floorLevel) {
+    //         case 'First Floor':
+    //           stats.firstFloor.available += availableBeds
+    //           stats.firstFloor.total += occupants
+    //           break
+    //         case 'Second Floor':
+    //           stats.secondFloor.available += availableBeds
+    //           stats.secondFloor.total += occupants
+    //           break
+    //         case 'Third Floor':
+    //           stats.thirdFloor.available += availableBeds
+    //           stats.thirdFloor.total += occupants
+    //           break
+    //       }
+    //     })
+
+    //   stats.overall.available = stats.firstFloor.available +
+    //     stats.secondFloor.available +
+    //     stats.thirdFloor.available
+    //   stats.overall.total = stats.firstFloor.total +
+    //     stats.secondFloor.total +
+    //     stats.thirdFloor.total
+
+    //   this.stats = stats
+    // },
+
     calculateBedStats() {
       const stats = {
         firstFloor: { available: 0, total: 0 },
@@ -94,37 +164,54 @@ export default {
         overall: { available: 0, total: 0 }
       }
 
-      this.units
-      .filter(unit => !unit.reservedBy)
-      .forEach(unit => {
-        const occupants = Math.floor(unit.unitOccupants || 0)
-        const current = Math.floor(unit.currentOccupants || 0)
-        const availableBeds = Math.max(0, occupants - current)
+      this.units.forEach(unit => {
+        // 🚫 Skip entire unit if it's reserved
+        if (unit.reservedBy) return
 
-        switch(unit.floorLevel) {
-          case 'First Floor':
-            stats.firstFloor.available += availableBeds
-            stats.firstFloor.total += occupants
-            break
-          case 'Second Floor':
-            stats.secondFloor.available += availableBeds
-            stats.secondFloor.total += occupants
-            break
-          case 'Third Floor':
-            stats.thirdFloor.available += availableBeds
-            stats.thirdFloor.total += occupants
-            break
+        const floor = unit.floorLevel
+
+        if (unit.subUnits && Array.isArray(unit.subUnits)) {
+          unit.subUnits.forEach(sub => {
+            const isAvailable = sub.isAvailable && !sub.reservedBy
+            const isCountable = !sub.reservedBy
+
+            if (isCountable) {
+              stats[floorKey(floor)].total += 1
+            }
+            if (isAvailable) {
+              stats[floorKey(floor)].available += 1
+            }
+          })
+        } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
+          const occupants = Math.floor(unit.unitOccupants || 0)
+          const current = Math.floor(unit.currentOccupants || 0)
+          const availableBeds = Math.max(0, occupants - current)
+
+          stats[floorKey(floor)].available += availableBeds
+          stats[floorKey(floor)].total += occupants
         }
       })
 
-      stats.overall.available = stats.firstFloor.available +
-                                stats.secondFloor.available +
-                                stats.thirdFloor.available
-      stats.overall.total = stats.firstFloor.total +
-                            stats.secondFloor.total +
-                            stats.thirdFloor.total
+      stats.overall.available =
+        stats.firstFloor.available +
+        stats.secondFloor.available +
+        stats.thirdFloor.available
+
+      stats.overall.total =
+        stats.firstFloor.total +
+        stats.secondFloor.total +
+        stats.thirdFloor.total
 
       this.stats = stats
+
+      function floorKey(level) {
+        switch (level) {
+          case 'First Floor': return 'firstFloor'
+          case 'Second Floor': return 'secondFloor'
+          case 'Third Floor': return 'thirdFloor'
+          default: return 'firstFloor'
+        }
+      }
     },
     async fetchUnits() {
       try {
@@ -160,33 +247,14 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-// .stats-card
-//   border-radius: 8px
-//   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+.floor-stats
+  padding: 12px
+  border-radius: 6px
+  transition: all 0.3s ease
+  &:hover
+    background-color: #efefef
 
-  // .stats-header
-  //   background-color: #f5f5f5
-  //   border-top-left-radius: 8px
-  //   border-top-right-radius: 8px
-  //   @media (max-width: 600px)
-  //     display: flex
-  //     flex-direction: column
-  //     align-items: center
-  //     justify-content: center
-
-  .floor-stats
-    padding: 8px
-    border-radius: 6px
-    transition: all 0.3s ease
-    &:hover
-      background-color: #efefef
-
-  // .tinted-border
-  //   background-color: #f8fff8
-  //   border-bottom-left-radius: 8px
-  //   border-bottom-right-radius: 8px
-
-  .q-linear-progress
-    height: 8px
-    border-radius: 4px
+.q-linear-progress
+  height: 8px
+  border-radius: 4px
 </style>

@@ -323,7 +323,7 @@ export default {
     },
     async fetchRentalDetails() {
       this.myRentals = await RentalService.findMyRentals(this.userDetails._id)
-      console.log(this.myRentals)
+      // console.log(this.myRentals)
     },
 
     viewDocument(document) {

@@ -4,7 +4,7 @@
 
       <q-card flat class="q-ma-sm">
         <q-card-section class="row justify-center">
-          <div class="text-h6">Admin Panel</div>
+          <div class="text-h4">Administration Dashboard</div>
         </q-card-section>
 
         <q-card-section class="row justify-center flex-center constrain">
@@ -37,7 +37,7 @@ export default {
         { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline' },
         { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' },
         { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline' },
-        { label: 'Incident Administration', route: '/admin/incidents', icon: 'eva-settings-outline' }
+        // { label: 'Incident Administration', route: '/admin/incidents', icon: 'eva-settings-outline' }
       ]
     }
   },
@@ -56,7 +56,7 @@ export default {
   width: 220px
   transition: all 0.3s ease
   &:hover
-    background-color: black !important
+    background-color: var(--q-primary) !important
     .card-icon, .card-label
       color: white !important
 

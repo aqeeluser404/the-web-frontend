@@ -11,7 +11,8 @@
         <!-- <q-icon class="q-mb-sm" name="construction"  size="22px" /> -->
 
         <span class="">
-          <strong>
+          <strong class="">
+            Premium Student Accommodation in heart of Stellenbosch <br>
             The Web is currently under construction and designed for occupancy next year. New unit images will be added soon. <br> Join a new
             generation of Stellenbosch student living in a space that  celebrates both modern living and the distinct
             character of Idas Valley.

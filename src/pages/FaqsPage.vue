@@ -1,23 +1,16 @@
 <template>
   <q-page>
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <q-parallax
-      :src="parallax"
-      :height="300"
-      :speed="0.5"
-      style="background-position: center 30% !important; background-size: cover !important"
-    >
-      <div
-        style="
+    <q-parallax :src="parallax" :height="300" :speed="0.5"
+      style="background-position: center 30% !important; background-size: cover !important">
+      <div style="
           position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
           background: rgba(34, 34, 34, 0.6);
-        "
-        class="text-white text-center column justify-center items-center q-pa-xl"
-      >
+        " class="text-white text-center column justify-center items-center q-pa-xl">
         <q-card-section>
           <div class="text-h3">Frequently Asked Questions</div>
           <br />
@@ -45,46 +38,34 @@
 
     <!-- Main FAQ Content -->
     <div class="q-pa-lg">
-      <div class="row justify-around">
+      <div class="row justify-around items-start full-height">
         <!-- Left Column -->
-        <div class="col-md-5 col-12 q-mb-md">
-          <q-expansion-item
-            label="User"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222"
-          >
+        <div class="col-md-5 col-12">
+
+          <q-expansion-item label="User" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
-              <div class="full-width row items-center">
-                <div class="text-h5 text-left">How to Login into your account ?</div>
+              <div class="full-width">
+                <div class="text-h5 text-left">How to Register/Login to your Account?</div>
               </div>
             </template>
+
             <div class="q-py-lg q-px-md text-left">
-              <q-btn
-                label="Download Login"
-                color="black"
-                icon="download"
-                href="/files/Login.pdf"
-                target="_blank"
-              />
+              <q-btn label="Download Register" color="black" icon="download" href="/files/Register.pdf"
+                target="_blank" />
+              <div style="margin-top: 16px" class="q-mb-md">
+                <iframe title="Register" src="/files/Register.pdf" width="100%" height="250"
+                  style="border: none"></iframe>
+              </div>
+              <q-btn label="Download Login" color="black" icon="download" href="/files/Login.pdf" target="_blank" />
               <div style="margin-top: 16px">
-                <iframe
-                  title="Login"
-                  src="/files/Login.pdf"
-                  width="100%"
-                  height="250"
-                  style="border: none"
-                ></iframe>
+                <iframe title="Login" src="/files/Login.pdf" width="100%" height="250" style="border: none"></iframe>
               </div>
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Admission"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Admission" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Is there admission criteria?</div>
@@ -95,12 +76,8 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Admission"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Admission" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Can I choose my roommate?</div>
@@ -111,12 +88,8 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Rooms"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Rooms" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Is the WiFi free?</div>
@@ -127,12 +100,8 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Rooms"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <!-- <q-expansion-item label="Rooms" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Are the rooms serviced?</div>
@@ -141,80 +110,132 @@
             <div class="q-py-lg q-px-md text-left">
               Yes, cleaning and maintenance services are provided weekly.
             </div>
+          </q-expansion-item> -->
+
+          <q-expansion-item label="PrivacyPolicy" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Privacy Policy</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              To review our Privacy Policy, please click the link below to download the document.
+
+              <!-- <q-btn label="Download Application" color="black" icon="download" href="/files/PrivacyPolicy.pdf" target="_blank"
+                class="q-my-md" />
+
+              <iframe title="Apply" src="/files/PrivacyPolicy.pdf" width="100%" height="250" style="border: none"></iframe> -->
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/PrivacyPolicy.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Privacy Policy
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/PrivacyPolicy.pdf" width="100%" height="250" style="border: none"></iframe>
+            </div>
+          </q-expansion-item>
+
+          <q-expansion-item label="Disclaimer" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Disclaimer</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              To review our Disclaimer, please click the link below to download the document.
+
+              <!-- <q-btn label="Download Application" color="black" icon="download" href="/files/PrivacyPolicy.pdf" target="_blank"
+                class="q-my-md" />
+
+              <iframe title="Apply" src="/files/PrivacyPolicy.pdf" width="100%" height="250" style="border: none"></iframe> -->
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/Disclaimer.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Privacy Policy
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/Disclaimer.pdf" width="100%" height="250" style="border: none"></iframe>
+            </div>
           </q-expansion-item>
         </div>
 
         <!-- Right Column -->
-        <div class="col-md-5 col-12 q-mb-md">
+        <div class="col-md-5 col-12">
 
-                  <q-expansion-item
-            label="User"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222"
-          >
+          <!-- <q-expansion-item label="User" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222">
             <template v-slot:header>
               <div class="full-width row items-center">
-                <div class="text-h5 text-left">How to Register an Account?</div>
+                <div class="text-h5 text-left">How to Login into your account ?</div>
               </div>
             </template>
             <div class="q-py-lg q-px-md text-left">
-              <q-btn
-                label="Download Register"
-                color="black"
-                icon="download"
-                href="/files/Register.pdf"
-                target="_blank"
-              />
+              <q-btn label="Download Login" color="black" icon="download" href="/files/Login.pdf" target="_blank" />
               <div style="margin-top: 16px">
-                <iframe
-                  title="Register"
-                  src="/files/Register.pdf"
-                  width="100%"
-                  height="250"
-                  style="border: none"
-                ></iframe>
+                <iframe title="Login" src="/files/Login.pdf" width="100%" height="250" style="border: none"></iframe>
               </div>
             </div>
-          </q-expansion-item>
+          </q-expansion-item> -->
 
-          <q-expansion-item
-            label="User"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="How to Apply" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
-              <div class="full-width row items-center">
+              <div class="full-width">
                 <div class="text-h5 text-left">How to Apply?</div>
               </div>
             </template>
+
             <div class="q-py-lg q-px-md text-left">
-              <q-btn
-                label="Download Application"
-                color="black"
-                icon="download"
-                href="/files/Apply.pdf"
-                target="_blank"
-              />
-              <div style="margin-top: 16px">
-                <iframe
-                  title="Apply"
-                  src="/files/Apply.pdf"
-                  width="100%"
-                  height="250"
-                  style="border: none"
-                ></iframe>
-              </div>
+              <p class="text-h6 q-mb-md">
+                Follow these simple steps to apply for The-WEB Student Accommodation:
+              </p>
+
+              <ol class="text-body1 q-mb-md">
+                <li>
+                  <b>Complete Application:</b> Fill in the application form. Returning students and first-time
+                  applicants must
+                  all apply. If applying with a preferred flatmate, coordinate your submissions.
+                </li>
+                <li>
+                  <b>Application Fee:</b> A non refundable payment of R1200 is required.
+                </li>
+                <li>
+                  <b>Make Payment:</b> Early payment improves your reservation position. Include the R400 parking fee if
+                  required.
+                </li>
+                <li>
+                  <b>Sign Lease Agreement:</b> Complete the online lease once your application and payment are
+                  processed.
+                </li>
+                <li>
+                  <b>Placement:</b> Placement is first come, first served based on application date, payment, and lease
+                  submission. Preference is given to returning students and SU students.
+                </li>
+                <li>
+                  <b>Cancellation:</b> Submit in writing via the official Withdrawal Form. Refunds are subject to
+                  policy.
+                </li>
+              </ol>
+
+              <!-- <q-btn label="Download Application" color="black" icon="download" href="/files/Apply.pdf" target="_blank"
+                class="q-mb-md" /> -->
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/Apply.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Application Form
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/Apply.pdf" width="100%" height="250" style="border: none"></iframe>
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Rooms"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Rooms" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Can I choose my room?</div>
@@ -225,12 +246,8 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Rooms"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Rooms" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Are there pictures of the rooms?</div>
@@ -241,12 +258,8 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item
-            label="Rooms"
-            header-class="text-h4 text-left q-pa-md"
-            expand-icon-class="text-black"
-            style="border: 1px solid #222; margin-top: 16px"
-          >
+          <q-expansion-item label="Rooms" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
                 <div class="text-h5 text-left">Are there house rules?</div>
@@ -254,6 +267,46 @@
             </template>
             <div class="q-py-lg q-px-md text-left">
               Yes, quiet hours and guest policies are outlined in your lease agreement.
+            </div>
+          </q-expansion-item>
+
+          <q-expansion-item label="Terms&Conditions" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Terms & Conditions</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              To review our Terms & Conditions, please click the link below to download the document.
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/Terms&Conditions.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Terms & Conditions
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/Terms&Conditions.pdf" width="100%" height="250" style="border: none"></iframe>
+            </div>
+          </q-expansion-item>
+
+          <q-expansion-item label="CodeOfConduct" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Code of Conduct</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              To review our Code of Conduct, please click the link below to download the document.
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/CodeOfConduct.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Code of Conduct
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/CodeOfConduct.pdf" width="100%" height="250" style="border: none"></iframe>
             </div>
           </q-expansion-item>
         </div>
@@ -271,7 +324,7 @@ export default {
   data() {
     return {
       currentSlide: 1,
-        parallax: home2,
+      parallax: home2,
       // faqHeroCards: [
       //   { _id: 1, imageUrl: home1 },
       //   { _id: 2, imageUrl: home2 },

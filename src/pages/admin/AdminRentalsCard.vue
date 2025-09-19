@@ -30,15 +30,11 @@
         </q-card-section>
 
         <q-card-section class="row justify-between">
-          <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch" class="col-12 col-md-9" />
+          <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
+            class="col-12 col-md-9" />
 
-          <q-select
-            v-model="selectedRentalStatus"
-            :options="rentalStatus"
-            label="Rental Status"
-            @update:model-value="filteredByRentalStatus"
-            class="col-12 col-md-2"
-          />
+          <q-select v-model="selectedRentalStatus" :options="rentalStatus" label="Rental Status"
+            @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
         </q-card-section>
 
         <q-card-section v-if="rentals.length > 0">
@@ -49,13 +45,13 @@
                 <th></th>
                 <th class="text-left">Application Date</th>
                 <th class="text-left">Applicant</th>
-                <!-- <th class="text-left">Access Key</th> -->
                 <th class="text-left">Application ID</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
                 <th class="text-left">Before Scheduled</th>
-                <!-- <th class="text-left">Rental Price</th> -->
-                <!-- <th class="text-left">Unit Type</th> -->
+
+                <th class="text-left">Condition</th>
+
                 <th class="text-left">Status</th>
                 <th class="text-left">Actions</th>
               </tr>
@@ -64,10 +60,11 @@
               <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</td>
+                <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{
+                  rental.username }}</td>
                 <td class="text-left cursor-pointer id">{{ rental._id }}</td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalStartDate !== null">
+                  <div v-if="!defaultValues(rental)">
                     {{ formatDate(rental.rentalStartDate) }}
                   </div>
                   <div v-else>
@@ -75,7 +72,7 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalEndDate !== null">
+                  <div v-if="!defaultValues(rental)">
                     {{ formatDate(rental.rentalEndDate) }}
                   </div>
                   <div v-else>
@@ -90,18 +87,28 @@
                     N/A
                   </div>
                 </td>
-                <td class="text-left cursor-pointer text-uppercase" :class="
-                    { 'pending-status': rental.status === 'Pending'},
-                    { 'active-status': rental.status === 'Active'},
-                    { 'rejected-status': rental.status === 'Rejected'},
-                    { 'ended-status': rental.status === 'Ended'}"
-                  >
-                    {{ capitalizeFirstLetter(rental.status) }}
+                <td class="text-center cursor-pointer">
+                  <div class="column items-center">
+                    <q-icon :name="needsAttention(rental) ? 'error' : 'check_circle'"
+                      :color="needsAttention(rental) ? 'negative' : 'positive'" size="18px" />
+                    <span class="text-caption" :class="needsAttention(rental) ? 'text-negative' : 'text-positive'">
+                      {{ needsAttention(rental) ? 'Alert' : 'All Good' }}
+                    </span>
+                  </div>
+                </td>
+                <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
+                  { 'active-status': rental.status === 'Active' },
+                  { 'rejected-status': rental.status === 'Rejected' },
+                  { 'ended-status': rental.status === 'Ended' }">
+                  {{ capitalizeFirstLetter(rental.status) }}
                 </td>
                 <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
+                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                    @click.stop="deleteRental(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
+                    customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
+                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
+                    customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
                 </td>
               </tr>
             </tbody>
@@ -123,9 +130,10 @@
 </template>
 
 <script>
-import { Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
+import {
+  Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
   LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
- } from 'chart.js';
+} from 'chart.js';
 Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
   LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
 );
@@ -162,9 +170,39 @@ export default {
     AdminExtendRentalComponent,
     BedGraphComponent
   },
+  computed: {
+    hasBeforeEnd() {
+      const hasBeforeEnd = this.rentals.find(rental =>
+        (rental?.earlyEndDate && rental.status === 'Ended')
+      );
+      return hasBeforeEnd;
+    }
+  },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    needsAttention(rental) {
+      if (!rental) return true;
+      const emailVerified = rental.userVerification?.isVerified === true;
+      const uploadedDocs = Array.isArray(rental.userDocuments) ? rental.userDocuments.map(doc => doc.docType) : [];
+      const requiredDocs = ['registration', 'proof_of_address', 'id_or_passport', 'bank_statements', 'credit_check'];
+      const documentsComplete = requiredDocs.every(docType => uploadedDocs.includes(docType));
+      return !(emailVerified && documentsComplete);
+    },
+
+    defaultValues(rental) {
+      const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
+      const today = new Date();
+      const nextYear = today.getFullYear() + 1;
+      const defaultStart = `${nextYear}-01-01`;
+      const defaultEnd = `${nextYear}-12-31`;
+
+      const start = toDateOnly(rental?.rentalStartDate);
+      const end = toDateOnly(rental?.rentalEndDate);
+
+      return start === defaultStart && end === defaultEnd;
+    },
 
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
@@ -185,7 +223,9 @@ export default {
           ...rental,
           unitType: unit.unitType,
           username: user.username,
-          userId: user._id
+          userId: user._id,
+          userVerification: user.verification,
+          userDocuments: user.documents || []
         };
       }));
 
@@ -204,15 +244,15 @@ export default {
     updateChart() {
       const statusData = this.showAllStatuses
         ? {
-            Active: this.approvedRentals.length,
-            Pending: this.pendingRentals.length,
-            Rejected: this.rejectedRentals.length,
-            Ended: this.endedRentals.length
-          }
+          Active: this.approvedRentals.length,
+          Pending: this.pendingRentals.length,
+          Rejected: this.rejectedRentals.length,
+          Ended: this.endedRentals.length
+        }
         : {
-            Active: this.approvedRentals.length,
-            Ended: this.endedRentals.length
-          };
+          Active: this.approvedRentals.length,
+          Ended: this.endedRentals.length
+        };
 
       // Labels now include count in brackets
       const labels = Object.keys(statusData).map(status => `${status} (${statusData[status]})`);
@@ -346,7 +386,7 @@ export default {
         } else {
           this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
 
     async endRental(rental) {

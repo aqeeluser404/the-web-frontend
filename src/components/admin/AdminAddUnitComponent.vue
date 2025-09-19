@@ -4,43 +4,56 @@
 
       <!-- Left side -->
       <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
-        <q-card-section>
+        <q-card-section class="row justify-between items-center">
           <div class="text-h6">Create a new unit</div>
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="small-screen-only" />
         </q-card-section>
 
         <q-separator />
 
         <!-- Unit Info -->
-        <q-card-section>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
-            <q-item-section>
-              <q-input v-model="unit.unitNumber" readonly />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Floor Level *</q-item-section>
-            <q-item-section>
-              <q-select v-model="unit.floorLevel" :options="floorLevelOptions" emit-value map-options />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Unit Description *</q-item-section>
-            <q-item-section>
-              <q-input v-model="unit.unitDescription" type="textarea" />
-            </q-item-section>
-          </q-item>
-        </q-card-section>
+        <div class="column justify-between full-height">
+          <q-card-section>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
+              <q-item-section>
+                <q-input v-model="unit.unitNumber" readonly />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Floor Level *</q-item-section>
+              <q-item-section>
+                <q-select v-model="unit.floorLevel" :options="floorLevelOptions" emit-value map-options />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Total Occupants</q-item-section>
+              <q-item-section>
+                <q-input :model-value="calculateTotalOccupants()" readonly />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Unit Description *</q-item-section>
+              <q-item-section>
+                <q-input v-model="unit.unitDescription" type="textarea" />
+              </q-item-section>
+            </q-item>
+          </q-card-section>
 
-        <q-card-section>
-          <CustomButton label="Add New Unit" @click="addUnit" />
-        </q-card-section>
+          <q-card-section>
+            <CustomButton label="Add New Unit" @click="addUnit" />
+          </q-card-section>
+        </div>
       </div>
+
+
 
       <!-- Right side -->
       <div class="col-md-6 col-12 q-pa-md">
         <q-card-section class="row justify-end items-center q-py-none q-py-sm">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="large-screen-only" />
         </q-card-section>
 
         <q-card-section>
@@ -61,7 +74,6 @@
               </q-file>
             </q-item-section>
           </q-item>
-
           <q-item>
             <q-item-section class="text-left text-subtitle1">Third Image *</q-item-section>
             <q-item-section>
@@ -87,15 +99,29 @@
 
           <template v-if="unit.unitType === 'rooms'">
             <div v-for="(room, index) in unit.rooms" :key="'room-' + index" class="q-gutter-md q-mb-sm">
-              <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" dense />
+
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Room Type *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" dense />
+                </q-item-section>
+              </q-item>
+
 
               <!-- Multiple Prices with name and price -->
               <div v-for="(priceEntry, pIndex) in room.price" :key="'room-price-' + index + '-' + pIndex"
                 class="row items-center q-mt-xs">
-                <q-input v-model.number="room.price[pIndex].price" label="Price (R)" type="number" dense class="col" />
-                <q-input v-model="room.price[pIndex].name" label="Price Name" dense class="col q-ml-sm" />
-                <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="room.price.length > 1"
-                  @click="room.price.splice(pIndex, 1)" />
+                <q-item>
+                  <q-item-section class="text-left text-subtitle1">
+                    Prices *
+                  </q-item-section>
+                  <q-item-section class="text-left text-subtitle1 row items-center no-wrap">
+                    <q-input v-model.number="room.price[pIndex].price" label="Price (R)" type="number" dense class="col-auto" />
+                    <q-input v-model="room.price[pIndex].name" label="Price Name" dense class="col-auto q-ml-sm" />
+                    <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="room.price.length > 1"
+                      @click="room.price.splice(pIndex, 1)" />
+                  </q-item-section>
+                </q-item>
               </div>
 
               <!-- Add Price Button -->
@@ -109,7 +135,6 @@
               Maximum of 3 rooms per unit
             </div>
           </template>
-
 
           <template v-if="unit.unitType === 'beds'">
             <div v-for="(bed, index) in unit.beds" :key="'bed-' + index" class="q-mb-sm">
@@ -128,67 +153,13 @@
               <!-- Add Price Button -->
               <q-btn label="Add Price" dense flat icon="add" @click="bed.price.push({ name: 'default', price: 0 })"
                 :disable="bed.price.length >= 3" />
-
               <q-btn icon="delete" color="negative" @click="removeBed(index)" />
             </div>
             <CustomButton label="Add Bed" color="primary" @click="addBed" class="q-mb-md" />
           </template>
-
-
-
-
-
-          <!-- <template v-if="unit.unitType === 'rooms'">
-            <div v-for="(room, index) in unit.rooms" :key="'room-' + index" class="q-gutter-md q-mb-sm">
-              <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" dense />
-
-              <div v-for="(price, pIndex) in room.price" :key="'room-price-' + index + '-' + pIndex"
-                class="row items-center q-mt-xs">
-                <q-input v-model.number="room.price[pIndex]" label="Price (R)" type="number" dense class="col" />
-                <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="room.price.length > 1"
-                  @click="room.price.splice(pIndex, 1)" />
-              </div>
-
-              <q-btn label="Add Price" dense flat icon="add" @click="room.price.push(0)"
-                :disable="room.price.length >= 3" />
-
-              <q-btn icon="delete" color="negative" flat round dense @click="removeRoom(index)" class="q-ml-sm" />
-            </div>
-
-            <CustomButton label="Add Room" color="primary" @click="addRoom" class="q-mb-md"
-              :disable="unit.rooms.length >= 3" />
-            <div v-if="unit.rooms.length >= 3" class="text-caption text-grey">
-              Maximum of 3 rooms per unit
-            </div>
-          </template>
-
-          <template v-if="unit.unitType === 'beds'">
-            <div v-for="(bed, index) in unit.beds" :key="'bed-' + index" class="q-mb-sm">
-              <q-input v-model="bed.number" label="Bed Number" class="col-4" />
-
-              <div v-for="(price, pIndex) in bed.price" :key="'bed-price-' + index + '-' + pIndex"
-                class="row items-center q-mt-xs">
-                <q-input v-model.number="bed.price[pIndex]" label="Price (R)" type="number" class="col" />
-                <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="bed.price.length > 1"
-                  @click="bed.price.splice(pIndex, 1)" />
-              </div>
-
-              <q-btn label="Add Price" dense flat icon="add" @click="bed.price.push(0)"
-                :disable="bed.price.length >= 3" />
-
-              <q-btn icon="delete" color="negative" @click="removeBed(index)" />
-            </div>
-            <CustomButton label="Add Bed" color="primary" @click="addBed" class="q-mb-md" />
-          </template> -->
-
 
           <!-- Calculated Occupants -->
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Total Occupants</q-item-section>
-            <q-item-section>
-              <q-input :model-value="calculateTotalOccupants()" readonly />
-            </q-item-section>
-          </q-item>
+
         </q-card-section>
       </div>
     </div>
@@ -395,7 +366,7 @@ export default {
           formData.append('unitOccupants', this.calculateTotalOccupants());
           // formData.append('unitPrice', this.unit.unitPrice);
 
-          console.log('Submitting subUnits:', JSON.stringify(subUnits, null, 2));
+          // console.log('Submitting subUnits:', JSON.stringify(subUnits, null, 2));
 
           // Append subUnits
           formData.append('subUnits', JSON.stringify(subUnits));

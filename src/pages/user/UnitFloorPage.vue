@@ -1,17 +1,19 @@
 <template>
-  <!-- <q-card-section>
-    <div class="text-h4 text-center">Floor Number {{ currentFloor }}</div>
-  </q-card-section> -->
+  <q-page>
+    <div class="bg-grey-3">
+      <div class="constrain-standard">
 
-  <q-card-section>
-    <div class="text-h4 text-center">Unit Specifications</div>
-  </q-card-section>
+        <div class="q-pt-md">
+          <div class="text-h4 text-weight-bold text-center">The-WEB: Architectural Layout & <br> Floor Plan Guide</div>
+        </div>
 
-  <div class="q-pa-md">
-    <BedStatsComponent />
-    <br><br>
-    <UnitCardGridComponent />
-  </div>
+        <div class="q-py-md">
+          <UnitCardGridComponent />
+        </div>
+
+      </div>
+    </div>
+  </q-page>
 </template>
 
 <script>
@@ -25,8 +27,8 @@ export default {
     }
   },
   components: {
-      BedStatsComponent,
-      UnitCardGridComponent
+    BedStatsComponent,
+    UnitCardGridComponent
   },
 
   created() {

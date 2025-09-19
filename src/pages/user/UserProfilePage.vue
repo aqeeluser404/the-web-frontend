@@ -1,192 +1,200 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
-
-
+    <div class="constrain-standard row justify-center q-py-md">
 
       <!-- user profile section -->
-      <q-card
-        flat
-        bordered
-        class="col-md-4 col-12 q-ma-sm full-height"
-      >
-        <q-card-section>
-          <div class="text-h6">Personal Details</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input v-model="userDetails.firstName" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input v-model="userDetails.lastName" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">
-              <span>Email
-                <span class="text-subtitle1 q-ml-md" v-if="userDetails && userDetails.verification && userDetails.verification.isVerified">
-                  <!-- VERIFIED  -->
-                  <q-icon color="secondary" name="eva-checkmark-circle-2-outline" />
-                </span>
-                <span class="text-subtitle1 q-ml-md" v-else>
-                  <!-- NOT VERIFIED  -->
-                  <q-icon color="negative" name="eva-alert-circle-outline" />
-                </span>
-              </span>
-            </q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input :disable="isEditingDisabled" v-model="userDetails.email" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Gender</q-item-section>
-            <q-item-section class="text-left" v-if="!userDetails.gender">
-              <q-select v-model="selectedGender" label-color="black" color="black" label=" *" :options="userGenderOptions" emit-value map-options />
-            </q-item-section>
-            <q-item-section class="text-left" v-else>
-              <q-input readonly :disable="true" v-model="userDetails.gender" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Phone</q-item-section>
-            <q-item-section class="text-left">
-              <q-input v-model="userDetails.phone" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Username</q-item-section>
-            <q-item-section class="text-left">
-              <q-input v-model="userDetails.username" />
-            </q-item-section>
-          </q-item>
-          <!-- Add Date of Birth field -->
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Date of Birth</q-item-section>
-            <q-item-section class="text-left">
-              <q-input
-                type="date"
-                v-model="userDetails.dateOfBirth"
-                :disable="isEditingDisabled"
-                placeholder="YYYY-MM-DD"
-                @update:model-value="handleDateChange"
-              />
-            </q-item-section>
-          </q-item>
-
-          <!-- Add Age display field -->
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Age</q-item-section>
-            <q-item-section class="text-left">
-              <q-input
-                :model-value="userDetails.age"
-                readonly
-                disable
-              />
-            </q-item-section>
-          </q-item>
-        </q-card-section>
-
-        <q-card-section>
-          <div class="text-h6">Student Info</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div>
-            <q-item class="row justify-between">
-              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.isRegisteredStudent" :val="true" label="Registered student" />
-              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
-            </q-item>
-          </div>
-          <div>
-            <q-item class="row justify-between">
-              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
-              <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
-            </q-item>
-          </div>
-          <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+      <div class="col-md-6 col-12 full-height ">
+        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+          <q-card-section>
+            <div class="text-h6">Personal Details</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
             <q-item>
-              <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
-              <q-item-section class="text-left">
-                <q-input :disable="isEditingDisabled" v-model="userDetails.studentInfo.studentNumber" />
+              <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input v-model="userDetails.firstName" />
               </q-item-section>
             </q-item>
             <q-item>
-              <q-item-section class="text-left text-subtitle1">Registered Institution</q-item-section>
-              <q-item-section class="text-left">
-                <q-input :disable="isEditingDisabled" v-model="userDetails.studentInfo.registeredInstitution" />
+              <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input v-model="userDetails.lastName" />
               </q-item-section>
             </q-item>
-          </div>
-        </q-card-section>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">
+                <span>Email
+                  <span class="text-subtitle1 q-ml-md"
+                    v-if="userDetails && userDetails.verification && userDetails.verification.isVerified">
+                    <!-- VERIFIED  -->
+                    <q-icon color="secondary" name="eva-checkmark-circle-2-outline" />
+                  </span>
+                  <span class="text-subtitle1 q-ml-md" v-else>
+                    <!-- NOT VERIFIED  -->
+                    <q-icon color="negative" name="eva-alert-circle-outline" />
+                  </span>
+                </span>
+              </q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input :disable="isEditingDisabled" v-model="userDetails.email" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Gender</q-item-section>
+              <q-item-section class="text-left" v-if="!userDetails.gender">
+                <q-select v-model="selectedGender" label-color="black" color="black" label=" *"
+                  :options="userGenderOptions" emit-value map-options />
+              </q-item-section>
+              <q-item-section class="text-left" v-else>
+                <q-input readonly :disable="true" v-model="userDetails.gender" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Phone</q-item-section>
+              <q-item-section class="text-left">
+                <q-input v-model="userDetails.phone" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Username</q-item-section>
+              <q-item-section class="text-left">
+                <q-input v-model="userDetails.username" />
+              </q-item-section>
+            </q-item>
+            <!-- Add Date of Birth field -->
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Date of Birth</q-item-section>
+              <q-item-section class="text-left">
+                <q-input type="date" v-model="userDetails.dateOfBirth" :disable="isEditingDisabled"
+                  placeholder="YYYY-MM-DD" @update:model-value="handleDateChange" />
+              </q-item-section>
+            </q-item>
 
-        <q-card-section  class="row justify-between">
-          <CustomButton label="Save" customStyle="width: 45%" @click="updateUser" />
-          <CustomButton label="Verify Email" customStyle="width: 45%" color="white" text-color="black" @click="resendVerificationEmail" v-if="userDetails && userDetails.verification && !userDetails.verification.isVerified" />
-        </q-card-section>
-      </q-card>
+            <!-- Add Age display field -->
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Age</q-item-section>
+              <q-item-section class="text-left">
+                <q-input :model-value="userDetails.age" readonly disable />
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+
+          <q-card-section>
+            <div class="text-h6">Student Info</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <div>
+              <q-item class="row justify-between">
+                <q-radio :disable="isEditingDisabled" style="width: 48%;"
+                  v-model="userDetails.studentInfo.isRegisteredStudent" :val="true" label="Registered student" />
+                <q-radio :disable="isEditingDisabled" style="width: 48%;"
+                  v-model="userDetails.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
+              </q-item>
+            </div>
+            <div>
+              <q-item class="row justify-between">
+                <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary"
+                  :val="true" label="I am a bursary recipient" />
+                <q-radio :disable="isEditingDisabled" style="width: 48%;" v-model="userDetails.studentInfo.hasBursary"
+                  :val="false" label="I am not a bursary recipient" />
+              </q-item>
+            </div>
+            <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
+                <q-item-section class="text-left">
+                  <q-input :disable="isEditingDisabled" v-model="userDetails.studentInfo.studentNumber" />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Registered Institution</q-item-section>
+                <q-item-section class="text-left">
+                  <q-input :disable="isEditingDisabled" v-model="userDetails.studentInfo.registeredInstitution" />
+                </q-item-section>
+              </q-item>
+            </div>
+          </q-card-section>
+
+          <q-card-section class="row justify-between">
+            <CustomButton label="Save" customStyle="width: 45%" @click="updateUser" />
+            <CustomButton label="Verify Email" customStyle="width: 45%" color="white" text-color="black"
+              @click="resendVerificationEmail"
+              v-if="userDetails && userDetails.verification && !userDetails.verification.isVerified" />
+          </q-card-section>
+        </q-card>
+      </div>
 
       <!-- documents section -->
-      <q-card
-        flat
-        bordered
-        class="col-md-4 col-12 q-ma-sm full-height"
-      >
-        <q-card-section>
-          <div class="text-h6">Instructions</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly ensure the following documents are uploaded:</div>
-          <ul>
-            <div v-for="docType in requiredDocuments" :key="docType.type"
-                class="cursor-pointer q-mb-sm" style="font-weight: 500;"
-                @click="openAddDocumentDialog(docType.type)">
-              <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary" name="eva-checkmark-circle-2-outline" />
-              <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
-              <span> {{ docType.label }}</span>
-            </div>
-            <br>
-            <div class="cursor-pointer" @click="removeAllDocuments">
-              <q-icon class="q-mr-sm" name="eva-trash-outline" />
-              <span> Clear All</span>
-            </div>
-          </ul>
-          <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
-         <br>Once your rental application has been submitted; <br> No further changes to your <span style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">sensitive data</span> will be permitted unless the application has been rejected or ended. <br><br><b>Note:</b> Applicants with a bursary are exempt from credit score verification.
-        </q-card-section>
+      <div class="col-md-6 col-12 full-height">
+        <q-card flat bordered class="full-height">
+          <q-card-section>
+            <div class="text-h6">Instructions</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly
+              ensure
+              the following documents are uploaded:</div>
+            <ul>
+              <div v-for="docType in requiredDocuments" :key="docType.type" class="cursor-pointer q-mb-sm"
+                style="font-weight: 500;" @click="openAddDocumentDialog(docType.type)">
+                <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary"
+                  name="eva-checkmark-circle-2-outline" />
+                <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
+                <span> {{ docType.label }}</span>
+              </div>
+              <br>
+              <div class="cursor-pointer" @click="removeAllDocuments">
+                <q-icon class="q-mr-sm" name="eva-trash-outline" />
+                <span> Clear All</span>
+              </div>
+            </ul>
+            <div class="q-mt-xl q-mb-sm">
+              <p class="">
+                To view the full application process, check out our
+                <a target="_blank" href="/frequently-asked-questions" class="text-primary">How to Apply guide</a>.
+              </p>
 
-        <q-card-section>
-          <div class="text-h6">Current Access Key</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div class="q-mb-sm">Use this key to grant family members or dependents access to shared accommodation within a designated unit.</div>
-          <ul>
-            <li v-if="currentAccessKey">
-              Copy to clipboard:
-              <span
-                class="id" @click="copyToClipboard(currentAccessKey)">
-                {{ currentAccessKey }}
-              </span>
-            </li>
-            <li v-else>
-              You have not utilized an access or reference key in your current application.
-            </li>
-          </ul>
-        </q-card-section>
-      </q-card>
+              <p class="q-mt-sm">
+                <a href="/files/Apply.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Application Form
+                </a>
+              </p>
+            </div>
+            <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
+            <br>Once your rental application has been submitted; <br> No further changes to your <span
+              style="text-decoration: underline;">email</span> or <span style="text-decoration: underline;">sensitive
+              data</span> will be permitted unless the application has been rejected or ended. <br><br><b>Note:</b>
+            Applicants with a bursary are exempt from credit score verification.
+          </q-card-section>
+
+          <q-card-section>
+            <div class="text-h6">Current Access Key</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <div class="q-mb-sm">Use this key to grant family members or dependents access to shared accommodation
+              within
+              a designated unit.</div>
+            <ul>
+              <li v-if="currentAccessKey">
+                Copy to clipboard:
+                <span class="id" @click="copyToClipboard(currentAccessKey)">
+                  {{ currentAccessKey }}
+                </span>
+              </li>
+              <li v-else>
+                You have not utilized an access or reference key in your current application.
+              </li>
+            </ul>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
     <q-dialog v-model="addDocDialog">
-      <AddDocumentComponent
-        :user="userDetails"
-        :docType="activeDocType"
-        @close="handleDialogClose"
+      <AddDocumentComponent :user="userDetails" :docType="activeDocType" @close="handleDialogClose"
         @document-added="fetchUserDetails" />
     </q-dialog>
   </q-page>

@@ -208,7 +208,7 @@ class Helper {
         // const response = await axios.get(`https://the-web-backend.onrender.com/get-token`, { withCredentials: true });
         return response.data.token || response.data || null;
       } else {
-        console.log(`Cookie ${name} not found`);
+        // console.log(`Cookie ${name} not found`);
         return null;
       }
     } catch (error) {
@@ -243,6 +243,18 @@ class Helper {
     try {
       const encyptedId = CryptoJS.AES.encrypt(id.toString(), 'secret-key').toString();
       router.push(`/admin/rentals/view/${encodeURIComponent(encyptedId)}`)
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static viewRentalDetails(id, router) {
+    if (!id) {
+      Logger.error("Invalid Rental ID");
+      return;
+    }
+    try {
+      const encyptedId = CryptoJS.AES.encrypt(id.toString(), 'secret-key').toString();
+      router.push(`/user/applications/view/${encodeURIComponent(encyptedId)}`)
     } catch (error) {
       Logger.error(error)
     }

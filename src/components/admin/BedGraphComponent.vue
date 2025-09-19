@@ -49,44 +49,60 @@ export default {
       if (percentage > 0.25) return 'warning'
       return 'negative'
     },
-    calculateBedStats() {
-      const stats = {
-        firstFloor: { available: 0, total: 0 },
-        secondFloor: { available: 0, total: 0 },
-        thirdFloor: { available: 0, total: 0 },
-        overall: { available: 0, total: 0 }
-      }
+calculateBedStats() {
+  const stats = {
+    firstFloor: { available: 0, total: 0 },
+    secondFloor: { available: 0, total: 0 },
+    thirdFloor: { available: 0, total: 0 },
+    overall: { available: 0, total: 0 }
+  };
 
-      this.units.forEach(unit => {
-        const occupants = Math.floor(unit.unitOccupants || 0)
-        const current = Math.floor(unit.currentOccupants || 0)
-        const availableBeds = Math.max(0, occupants - current)
+  this.units.forEach(unit => {
+    // 🚫 Skip entire unit if it's reserved
+    if (unit.reservedBy) return;
 
-        switch (unit.floorLevel) {
-          case 'First Floor':
-            stats.firstFloor.available += availableBeds
-            stats.firstFloor.total += occupants
-            break
-          case 'Second Floor':
-            stats.secondFloor.available += availableBeds
-            stats.secondFloor.total += occupants
-            break
-          case 'Third Floor':
-            stats.thirdFloor.available += availableBeds
-            stats.thirdFloor.total += occupants
-            break
+    const floor = floorKey(unit.floorLevel);
+
+    if (Array.isArray(unit.subUnits)) {
+      unit.subUnits.forEach(sub => {
+        if (!sub.reservedBy) {
+          stats[floor].total += 1;
+          if (sub.isAvailable) {
+            stats[floor].available += 1;
+          }
         }
-      })
+      });
+    } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
+      const occupants = Math.floor(unit.unitOccupants || 0);
+      const current = Math.floor(unit.currentOccupants || 0);
+      const availableBeds = Math.max(0, occupants - current);
 
-      stats.overall.available = stats.firstFloor.available +
-        stats.secondFloor.available +
-        stats.thirdFloor.available
-      stats.overall.total = stats.firstFloor.total +
-        stats.secondFloor.total +
-        stats.thirdFloor.total
+      stats[floor].total += occupants;
+      stats[floor].available += availableBeds;
+    }
+  });
 
-      this.stats = stats
-    },
+  stats.overall.available =
+    stats.firstFloor.available +
+    stats.secondFloor.available +
+    stats.thirdFloor.available;
+
+  stats.overall.total =
+    stats.firstFloor.total +
+    stats.secondFloor.total +
+    stats.thirdFloor.total;
+
+  this.stats = stats;
+
+  function floorKey(level) {
+    switch (level) {
+      case 'First Floor': return 'firstFloor';
+      case 'Second Floor': return 'secondFloor';
+      case 'Third Floor': return 'thirdFloor';
+      default: return 'firstFloor';
+    }
+  }
+},
 
     drawLineChart() {
       const labels = this.floors.map(f => f.label);

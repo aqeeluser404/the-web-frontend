@@ -30,7 +30,7 @@
           </q-card-section>
 
           <q-card-section>
-            <CustomButton color="black" text-color="white" label="Add New User" @click="openAddNewUsersDialog" />
+            <CustomButton label="Add New User" @click="openAddNewUsersDialog" />
           </q-card-section>
         </q-card>
 

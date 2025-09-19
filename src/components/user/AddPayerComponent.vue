@@ -3,8 +3,9 @@
     <div class="row">
       <!-- Left Section: Score Overview -->
       <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
-        <q-card-section>
+        <q-card-section class="row justify-between items-center">
           <div class="text-h6">Verify Payer Score</div>
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="small-screen-only" />
         </q-card-section>
 
         <q-separator />
@@ -64,7 +65,7 @@
       <!-- Right Section: Form -->
       <div class="col-md-6 col-12 q-pa-md">
         <q-card-section class="row justify-end items-center q-py-none q-py-xs">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="large-screen-only" />
         </q-card-section>
 
         <q-card-section class="q-gutter-md">

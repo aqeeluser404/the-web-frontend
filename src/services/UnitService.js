@@ -40,6 +40,37 @@ class UnitService {
       throw error;
     }
   }
+
+  static async reserveRoom(unitId, roomIndex, userId) {
+    const ENDPOINT = '/units/rooms/reserve';
+    try {
+      const response = await axiosInstance.post(ENDPOINT, {
+        unitId,
+        roomIndex,
+        userId
+      });
+      return response.data;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  static async cancelReserveRoom(unitId, roomIndex, userId) {
+    const ENDPOINT = '/units/rooms/cancel-reservation';
+    try {
+      const response = await axiosInstance.post(ENDPOINT, {
+        unitId,
+        roomIndex,
+        userId
+      });
+      return response.data;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
   // static async updateUnit(unitId, unitDetails) {
   //   const ENDPOINT = `/admin/units/${unitId}`
   //   try {

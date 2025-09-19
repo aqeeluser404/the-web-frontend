@@ -4,21 +4,11 @@
 
       <!-- view all units -->
       <q-card flat bordered class="col-md-7 col-12 q-ma-sm full-height">
-        <q-expansion-item
-          v-for="(units, floorIndex) in allUnits"
-          :key="floorIndex"
-          :label="`${floorLabels[floorIndex]} (${units.length} items)`"
-          expand-separator
-          v-model="expanded[floorIndex]"
-          @show="handleExpansion(floorIndex)"
-        >
+        <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
+          :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator v-model="expanded[floorIndex]"
+          @show="handleExpansion(floorIndex)">
           <q-list class="row justify-center">
-            <q-card
-              v-for="unit in units"
-              :key="unit._id"
-              flat bordered
-              class="q-ma-sm"
-            >
+            <q-card v-for="unit in units" :key="unit._id" flat bordered class="q-ma-sm">
               <q-card-section class="column flex-center">
                 <div class="text-h6">
 
@@ -26,28 +16,69 @@
                   Unit {{ unit.unitNumber }}
 
                   <!-- available status -->
-                  (<span v-if="unit.unitStatus === 'Available'" :class="{ 'available-unit': unit.unitStatus === 'Available'}">
-                    {{ unit.unitStatus }}
+                  (
+                  <span
+                    v-if="unit.unitStatus === 'Available' && unit.subUnits?.length && !unit.subUnits.some(sub => sub.reservedBy)"
+                    :class="{ 'available-unit': true }">
+                    Available
                   </span>
-                  <span v-else :class="{ 'occupied-unit': unit.unitStatus === 'Occupied'}">
-                    {{ unit.unitStatus }}
-                  </span>)
+
+                  <span v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.some(sub => !sub.reservedBy)"
+                    :class="{ 'partially-reserved-unit': true }" style="color: orange;">
+                    Partially Reserved
+                  </span>
+
+                  <span
+                    v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.length && unit.subUnits.every(sub => sub.reservedBy)"
+                    :class="{ 'fully-reserved-unit': true }" style="color: crimson;">
+                    Fully Reserved
+                  </span>
+
+                  <span v-else-if="unit.unitStatus === 'Occupied'" :class="{ 'occupied-unit': true }">
+                    Occupied
+                  </span>
+                  )
                 </div>
                 <!-- shared + bed count -->
-                <div class="text-caption">{{ unit.unitType }} - {{ unit.unitOccupants - unit.currentOccupants }}/{{ unit.unitOccupants }} Beds</div>
+                <div class="text-caption">
+                  {{ unit.unitType }} -
+                  {{
+                    Array.isArray(unit.subUnits)
+                      ? unit.subUnits.filter(sub => sub.isAvailable && !sub.reservedBy).length
+                      : 0
+                  }}/{{
+                    Array.isArray(unit.subUnits)
+                      ? unit.subUnits.filter(sub => !sub.reservedBy).length
+                      : 0
+                  }} Beds
+                </div>
+
+                <!-- reserved by (unit-level) -->
+                <div v-if="unit.reservedBy && getUsername(unit.reservedBy)" class="text-caption text-weight-light"
+                  style="color: black;">
+                  Reserved by: {{ getUsername(unit.reservedBy) }}
+                </div>
+
+                <!-- reserved by (subUnit-level) -->
+                <div v-if="Array.isArray(unit.subUnits) && unit.subUnits.some(sub => sub?.reservedBy)"
+                  class="text-caption text-weight-light" style="color: black;">
+                  <template v-for="(sub, i) in unit.subUnits" :key="i">
+                    <div v-if="sub?.reservedBy">
+                      Room {{ i + 1 }} reserved by: {{ getUsername(sub.reservedBy) }}
+                    </div>
+                  </template>
+                </div>
+
 
               </q-card-section>
               <q-card-section class="row justify-center">
-                  <div class="image-container">
-                    <q-img
-                      v-if="unit.images?.length"
-                      :src="getImageUrl(unit.images[0].imageUrl)"
-                      class="image"
-                    />
-                  </div>
+                <div class="image-container">
+                  <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+                </div>
               </q-card-section>
               <q-card-section class="row justify-between">
-                <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black" @click="openUnitDetails(unit)" />
+                <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black"
+                  @click="openUnitDetails(unit)" />
                 <CustomButton label="Delete " customStyle="width: 40%" @click="deleteUnit(unit)" />
               </q-card-section>
             </q-card>
@@ -64,13 +95,16 @@
         <q-card-section>
           <div class="q-mb-sm">When adding new units to the system, please note the following guidelines:</div>
           <ul>
-            <li class="q-mb-sm">Units will be assigned the next available unit number based on the highest existing unit number for the selected floor level.</li>
-            <li class="q-mb-sm">Each unit entry can accommodate a maximum of three images which must be provided during the creation process.</li>
-            <li class="q-mb-sm">Unit numbers are automatically generated by the system and cannot be manually altered to ensure <span style="text-decoration: underline;">consistency and accuracy.</span></li>
+            <li class="q-mb-sm">Units will be assigned the next available unit number based on the highest existing unit
+              number for the selected floor level.</li>
+            <li class="q-mb-sm">Each unit entry can accommodate a maximum of three images which must be provided during
+              the creation process.</li>
+            <li class="q-mb-sm">Unit numbers are automatically generated by the system and cannot be manually altered to
+              ensure <span style="text-decoration: underline;">consistency and accuracy.</span></li>
           </ul>
         </q-card-section>
         <q-card-section>
-          <CustomButton color="black" text-color="white" label="Add New" @click="openAddUnitsDialog" />
+          <CustomButton label="Add New" @click="openAddUnitsDialog" />
         </q-card-section>
       </q-card>
     </div>
@@ -89,12 +123,14 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
 import AdminAddUnitComponent from 'src/components/admin/AdminAddUnitComponent.vue';
 import AdminUnitDetailsComponent from 'src/components/admin/AdminUnitDetailsComponent.vue';
+import UserService from 'src/services/UserService';
 
 export default {
   name: "AdminUnitsCard",
 
   data() {
     return {
+      users: [],
       units: [],
       allUnits: [],
       // floorLabels: ['Ground Floor', 'First Floor', 'Second Floor'],
@@ -123,9 +159,17 @@ export default {
       // console.log(response)
 
       // Initialize subUnits for each unit
+      // this.units = response.map(unit => ({
+      //   ...unit,
+      //   subUnits: unit.subUnits || []  // ensure subUnits always exists
+      // }));
+
       this.units = response.map(unit => ({
         ...unit,
-        subUnits: unit.subUnits || []  // ensure subUnits always exists
+        subUnits: (unit.subUnits || []).map(sub => ({
+          ...sub,
+          name: sub.name || sub.roomType || sub.bedType || ''
+        }))
       }));
 
       const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc');
@@ -137,8 +181,14 @@ export default {
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
     },
 
+    getUsername(userId) {
+      const user = this.users?.find(u => u._id === userId);
+      // console.log(user.username)
+      return user?.username || 'Unknown';
+    },
+
     async deleteUnit(unit) {
-      console.log(unit)
+      // console.log(unit)
       // Check if there are active or pending rentals
       const hasActiveRentals = unit.rentedHistory.some(rental => rental.status !== 'Ended');
 
@@ -174,7 +224,7 @@ export default {
     },
     openUnitDetails(unit) {
       this.selectedUnit = unit,
-      this.updateDetailsDialog = true
+        this.updateDetailsDialog = true
     },
 
     handleClose() {
@@ -184,9 +234,23 @@ export default {
     },
     handleExpansion(expandedIndex) {
       this.expanded = this.expanded.map((_, index) => index === expandedIndex)
+    },
+    async findAllUsers() {
+      try {
+        const response = await UserService.findAllUsers();
+        this.users = response || [];
+        // console.log(this.users)
+      } catch (error) {
+        this.$q.notify({
+          type: 'negative',
+          message: 'Failed to load user list'
+        });
+        this.users = [];
+      }
     }
   },
   created() {
+    this.findAllUsers()
     this.findAllUnits();
   },
 };

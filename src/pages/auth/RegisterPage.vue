@@ -1,85 +1,67 @@
 <template>
-  <q-page>
-    <div class="background-wrapper">
-      <q-img
-        src="~src/assets/resources/login/outside3.jpg"
-        alt="Hero Image"
-        class="blurred-background"
-      />
+  <q-page class="relative-position" style="overflow-x: hidden; overflow-y: hidden;">
+    <q-img src="~src/assets/resources/login/outside3.jpg" alt="Hero Image" class="blurred-background absolute-full"
+      style="object-fit: cover; z-index: -1;" />
+
+    <div class="row justify-center items-center q-pa-md" :class="{ 'items-center': $q.screen.gt.sm }"
+      style="min-height: 100vh; max-width: 100vw;">
+
+      <q-card class="q-pa-lg bg-white" style="max-width: 100%; width: 650px;">
+        <div class="q-gutter-lg q-mb-xl ">
+          <q-card-section>
+            <router-link to="/auth/login" style="text-decoration: none; color: black;">
+              <q-icon name="eva-arrow-back-outline" size="24px" color="black" />
+            </router-link>
+          </q-card-section>
+          <q-card-section class="row justify-between q-gutter-y-md">
+            <div class="col-md-6 col-12">
+              <q-input filled label-color="black" color="black" v-model="user.firstName" label="First Name *"
+                :class="{ 'q-mr-sm': $q.screen.gt.sm }" />
+            </div>
+            <q-input filled class="col-md-6 col-12" label-color="black" color="black" v-model="user.lastName"
+              label="Last Name *" />
+            <div class="col-md-6 col-12">
+              <q-input filled label-color="black" color="black" v-model="user.username" label="Username *"
+                :class="{ 'q-mr-sm': $q.screen.gt.sm }" />
+            </div>
+            <q-input filled class="col-md-6 col-12" label-color="black" color="black" v-model="user.email"
+              label="Email *" />
+            <q-select filled class="col-md-12 col-12" v-model="user.gender" label-color="black" color="black"
+              label="Gender *" :options="userGenderOptions" emit-value map-options />
+            <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="user.phone"
+              label="Phone Number *" />
+            <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="user.password"
+              label="Password *" type="password" />
+            <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="confirmPassword"
+              label="Confirm Password *" type="password" />
+          </q-card-section>
+          <q-card-section class="row justify-between q-py-none q-gutter-y-sm q-px-none q-px-sm">
+            <q-radio class="col-md-6 col-12" v-model="user.studentInfo.isRegisteredStudent" :val="true"
+              label="Registered student" />
+            <q-radio class="col-md-6 col-12" v-model="user.studentInfo.isRegisteredStudent" :val="false"
+              label="Unregistered student" />
+            <q-radio class="col-md-6 col-12" v-model="user.studentInfo.hasBursary" :val="true"
+              label="I am a bursary recipient" />
+            <q-radio class="col-md-6 col-12" v-model="user.studentInfo.hasBursary" :val="false"
+              label="I am not a bursary recipient" />
+          </q-card-section>
+
+          <q-card-section v-if="user.studentInfo.isRegisteredStudent === true"
+            class="row justify-center q-py-none q-gutter-y-md">
+            <q-input filled class="col-md-12 col-12" label-color="black" color="black"
+              v-model="user.studentInfo.studentNumber" label="Student Number *" />
+            <q-input filled class="col-md-12 col-12" label-color="black" color="black"
+              v-model="user.studentInfo.registeredInstitution" label="Registered Institution *" />
+          </q-card-section>
+        </div>
+        <br>
+        <div class="q-gutter-sm">
+          <q-card-section class="row justify-start q-py-none">
+            <CustomButton label="Create your account" @click="onSubmit" />
+          </q-card-section>
+        </div>
+      </q-card>
     </div>
-
-      <div class="absolute-full q-ma-xl row justify-center">
-        <q-card class="q-pa-lg bg-white" style="max-width: 100%;">
-          <!-- <div class="row justify-center">
-            <p class="q-mb-md text-h6">CREATE A NEW ACCOUNT</p>
-          </div> -->
-
-          <div class="q-gutter-lg  q-mb-xl ">
-            <q-card-section>
-              <router-link to="/auth/login" style="text-decoration: none; color: black;">
-                <q-icon name="eva-arrow-back-outline" size="24px" color="black" />
-              </router-link>
-            </q-card-section>
-            <q-card-section class="row justify-around  q-py-none">
-              <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.firstName" label="First Name *" />
-              <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.lastName" label="Last Name *" />
-            </q-card-section>
-            <q-card-section class="row justify-around  q-py-none">
-              <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.username" label="Username *" />
-              <q-input filled style="width: 48%;" label-color="black" color="black" v-model="user.email" label="Email *" />
-            </q-card-section>
-
-            <q-card-section class="row justify-center q-py-none">
-              <q-select filled style="width: 98%;" v-model="user.gender" label-color="black" color="black" label="Gender *" :options="userGenderOptions" emit-value map-options />
-            </q-card-section>
-
-            <q-card-section class="row justify-center q-py-none">
-              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.phone" label="Phone Number *" />
-            </q-card-section>
-
-            <q-card-section class="row justify-center q-py-none">
-              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.password" label="Password *" type="password" />
-            </q-card-section>
-
-            <q-card-section class="row justify-center q-py-none">
-              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="confirmPassword" label="Confirm Password *" type="password" />
-            </q-card-section>
-
-            <q-card-section class="row justify-between q-py-none">
-              <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="true" label="Registered student" />
-              <q-radio style="width: 48%;" v-model="user.studentInfo.isRegisteredStudent" :val="false" label="Unregistered student" />
-            </q-card-section>
-
-            <q-card-section class="row justify-between q-py-none">
-              <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="true" label="I am a bursary recipient" />
-              <q-radio style="width: 48%;" v-model="user.studentInfo.hasBursary" :val="false" label="I am not a bursary recipient" />
-            </q-card-section>
-
-            <q-card-section v-if="user.studentInfo.isRegisteredStudent === true" class="row justify-center q-py-none">
-              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.studentInfo.studentNumber" label="Student Number *" />
-            </q-card-section>
-
-            <q-card-section v-if="user.studentInfo.isRegisteredStudent === true" class="row justify-center q-py-none">
-              <q-input filled style="width: 98%;" label-color="black" color="black" v-model="user.studentInfo.registeredInstitution" label="Registered Institution *" />
-            </q-card-section>
-          </div>
-          <br>
-          <div class="q-gutter-sm">
-            <!-- <q-card-section class="row justify-start q-py-none">
-              <router-link to="/auth/login" class="" style="text-decoration: none; color: black;">
-                Already a member, login instead?
-              </router-link>
-            </q-card-section> -->
-            <!-- <br /> -->
-            <!-- <q-card-section class="row justify-start q-py-none">
-              <p>By signing up, you acknowledge and agree to The Webs’s Terms of Service.</p>
-            </q-card-section> -->
-            <q-card-section class="row justify-start q-py-none">
-              <CustomButton label="Create your account" @click="onSubmit" />
-            </q-card-section>
-          </div>
-        </q-card>
-      </div>
   </q-page>
 </template>
 
@@ -87,7 +69,7 @@
 .background-wrapper
   position: fixed
   width: 100%
-  height: 100vh
+  height: 100%
   overflow: hidden
   z-index: -1
 
@@ -120,12 +102,13 @@ export default {
         gender: '',
         studentInfo: {
           isRegisteredStudent: true,
-          studentNumber: '' ,
+          studentNumber: '',
           registeredInstitution: '',
           hasBursary: false
         },
         confirmPassword: ''
       },
+      confirmPassword: '',
 
       userGenderOptions: [
         { label: 'Male', value: 'Male' },
@@ -181,21 +164,22 @@ export default {
       if (!this.validatePassword(details.password)) {
         this.$q.notify({
           type: 'negative',
-          message: 'Password must be 8-64 characters, with at least 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&).'        });
+          message: 'Password must be 8-64 characters, with at least 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&).'
+        });
         return false;
       }
       return true
     },
     async onSubmit() {
       try {
-          if (this.user.password !== this.confirmPassword) {
-            this.$q.notify({
-              type: 'negative',
-              color: 'red',
-              message: 'Passwords do not match. Please try again!',
-            });
-            return;
-          }
+        if (this.user.password !== this.confirmPassword) {
+          this.$q.notify({
+            type: 'negative',
+            color: 'red',
+            message: 'Passwords do not match. Please try again!',
+          });
+          return;
+        }
         const userDetails = {
           firstName: this.user.firstName,
           lastName: this.user.lastName,
@@ -211,7 +195,7 @@ export default {
             hasBursary: this.user.studentInfo.hasBursary
           }
         }
-        if (this.validateFields()) {
+
           const response = await UserService.register(userDetails)
           if (response) {
 
@@ -229,7 +213,7 @@ export default {
             this.$q.notify({ type: 'negative', message: 'Registration failed. Please try again!' })
             // this.onReset()
           }
-        }
+
       } catch (error) {
         if (error.response && (error.response.status === 401 || error.response.status === 400)) {
           this.$q.notify({ type: 'negative', color: 'red', message: 'Username or email already exists. Please try again!' })

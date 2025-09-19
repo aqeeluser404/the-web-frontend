@@ -2,8 +2,9 @@
   <q-card class="combined-unit-card">
     <div class="row">
       <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
-        <q-card-section class="">
+        <q-card-section class="row justify-between items-center">
           <div class="text-h6">Review and Validate Information</div>
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="small-screen-only" />
         </q-card-section>
 
         <q-separator />
@@ -46,7 +47,7 @@
             </ul>
             <div v-else>
               <ul>
-                <li>Not scored yet</li>
+                <li class="text-negative">Not scored yet</li>
               </ul>
             </div>
           </div>
@@ -57,7 +58,14 @@
             <b>Parking Information</b><br>
           </div>
           <ul v-if="rental.parking?.hasParking">
-            <li>Accounting for Parking Fees in Monthly Pricing (Fee: R{{ Number(rental.parking.fee).toFixed(2) }})</li>
+            <li v-if="rental.selectedSubUnits?.price?.name === 'annual'">
+              Accounting for Parking Fees in Once Off Payment (Fee: R{{ Number(rental.parking.fee).toFixed(2)
+              }})
+            </li>
+            <li v-else>
+              Accounting for Parking Fees in Monthly Pricing (Fee: R{{ Number(rental.parking.fee).toFixed(2)
+              }} / mo)
+            </li>
           </ul>
           <ul v-else>
             <li>Parking Not Included</li>
@@ -74,8 +82,8 @@
             <li v-else>
               This user is not sharing this unit with family or acquaintances.
             </li>
-            <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey }}</span>
-            </li>
+            <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
+            }}</span></li>
             <li>Unit Number: {{ rental.unitNumber }}</li>
             <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
               Room: {{ rental.selectedSubUnits.roomType }}
@@ -83,9 +91,24 @@
             <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.bedType">
               Bed: {{ rental.selectedSubUnits.bedType }}
             </li>
-            <li v-if="rental.selectedSubUnits?.price?.price">Unit Price: R {{
-              Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{ rental.selectedSubUnits?.price?.name
-              }}s</li>
+            <!-- <li v-if="rental.selectedSubUnits?.price?.price">Unit Price: R {{
+                      Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
+                        rental.selectedSubUnits?.price?.name }}s</li>
+                    <li v-else>
+                      Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
+                    </li> -->
+
+            <li v-if="rental.selectedSubUnits?.price?.name === 'annual'">
+              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} {{
+                rental.selectedSubUnits?.price?.name }} payment
+            </li>
+
+            <li
+              v-else-if="rental.selectedSubUnits?.price?.name === '11-month' || rental.selectedSubUnits?.price?.name === '10-month'">
+              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
+                rental.selectedSubUnits?.price?.name }}
+            </li>
+
             <li v-else>
               Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
             </li>
@@ -95,7 +118,7 @@
 
       <div class="col-md-6 col-12 q-pa-md">
         <q-card-section class="row justify-end items-center q-py-none q-py-sm">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="large-screen-only" />
         </q-card-section>
 
         <q-card-section>
@@ -105,29 +128,136 @@
             <li>
               <span>Application Date:</span> {{ formatDate(rental.applicationDate) }}
             </li>
-            <li v-if="rental.rentalStartDate">
-              Start Date: {{ formatDate(rental.rentalStartDate) }}
-            </li>
-            <li v-if="rental.rentalEndDate">
-              End Date: {{ formatDate(rental.rentalEndDate) }}
-            </li>
-            <li v-if="rental.earlyEndDate">
-              Early End Date: {{ formatDate(rental.earlyEndDate) }}
-            </li>
             <li>
               <div v-if="rental.selectedSubUnits?.price?.name">Lease Duration: {{
                 rental.selectedSubUnits?.price?.name }} Payment Plan</div>
               <div v-else>Lease Duration: Standard Payment Plan</div>
             </li>
-            <li v-if="rental.parking?.hasParking">
-              Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (R {{
-                Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} + R {{ Number(rental.parking.fee).toFixed(2)
-              }})
+            <li v-if="!defaultValues">
+              Start Date: {{ formatDate(rental.rentalStartDate) }}
             </li>
             <li v-else>
-              Total Monthly Payment: R {{ Number(rental.rentalPrice).toFixed(2) }} (No Parking)
+              Start Date: <span class="text-negative"><b>Being processed</b></span>
+            </li>
+            <li v-if="!defaultValues">
+              End Date: {{ formatDate(rental.rentalEndDate) }}
+            </li>
+            <li v-else>
+              End Date: <span class="text-negative"><b>Being processed</b></span>
+            </li>
+            <li v-if="rental.earlyEndDate">
+              Early End Date: {{ formatDate(rental.earlyEndDate) }}
             </li>
           </ul>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="q-mb-md"><b>Payment Information</b></div>
+
+          <!-- Terms in list format to match above -->
+          <!-- <ul class="q-mt-md" v-if="rental.selectedSubUnits?.price.name === 'annual'">
+                    <li v-if="rental.parking?.hasParking">
+                      Upfront payment includes 11 months at discounted rate (4% off both rent and parking)
+                    </li>
+                    <li v-else>
+                      Upfront payment includes 11 months rent at discounted rate (4% off)
+                    </li>
+                    <li>Payment must be made by 30 November to qualify for discount</li>
+                    <li>Monthly payments are due on the 1st of each month</li>
+                  </ul>
+
+                  <ul class="q-mt-md" v-else>
+                    <li v-if="rental.selectedSubUnits && rental.selectedSubUnits?.roomType.startsWith('Botmaskop')">
+                      A deposit of R12 000 must be paid upon approval
+                    </li>
+                    <li
+                      v-else-if="rental.selectedSubUnits && rental.selectedSubUnits?.bedType.startsWith('Helshoogte')">
+                      A deposit of R6 250 must be paid upon approval
+                    </li>
+                    <li v-else>
+                      A deposit is required upon approval
+                    </li>
+                    <li>Discount of 4% is only applicable for annual payments</li>
+                    <li>Monthly payments are due on the 1st of each month</li>
+                  </ul>
+                  <br> -->
+
+          <!-- Payment Cards -->
+          <div class="row q-col-gutter-md q-mb-md">
+            <!-- Upfront Payment Card -->
+            <div class="col-12 col-sm-6" v-if="rental.selectedSubUnits?.price.name === 'annual'">
+              <q-card flat bordered class="bg-green-1">
+                <q-card-section>
+                  <div class="text-weight-medium">Discounted Price (Payment by 30 Nov)</div>
+                  <div class="text-h6 text-green">
+                    R {{
+                      rental.parking?.hasParking
+                        ? (
+                          (Number(rental.selectedSubUnits?.price?.price) * 0.96) +
+                          (Number(rental.parking?.fee) * 0.96)
+                        ).toFixed(2)
+                        : (Number(rental.selectedSubUnits?.price?.price) * 0.96).toFixed(2)
+                    }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    <span v-if="rental.parking?.hasParking">
+                      Save 4%: R {{ (Number(rental.selectedSubUnits?.price?.price) * 0.96).toFixed(2) }} / once
+                      off rent<br>
+                      + R {{ (Number(rental.parking?.fee) * 0.96).toFixed(2) }} / once off parking
+                    </span>
+                    <span v-else>
+                      Save 4%: R {{ (Number(rental.selectedSubUnits?.price?.price) * 0.96).toFixed(2) }} / once
+                      off rent
+                    </span>
+                  </div>
+                </q-card-section>
+              </q-card>
+
+              <!-- Original Price Without Discount -->
+              <q-card flat bordered class="bg-grey-2 q-mt-md">
+                <q-card-section>
+                  <div class="text-weight-medium">Original Price</div>
+                  <div class="text-h6 text-grey">
+                    R {{
+                      rental.parking?.hasParking
+                        ? (
+                          Number(rental.selectedSubUnits?.price?.price) +
+                          Number(rental.parking?.fee)
+                        ).toFixed(2)
+                        : Number(rental.selectedSubUnits?.price?.price).toFixed(2)
+                    }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    <span v-if="rental.parking?.hasParking">
+                      R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} / once
+                      off rent<br>
+                      + R {{ Number(rental.parking?.fee).toFixed(2) }} / once off parking
+                    </span>
+                    <span v-else>
+                      R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} rent
+                    </span>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+
+            <!-- Monthly Payment Card -->
+            <div class="col-12 col-sm-6" v-else>
+              <q-card flat bordered class="bg-grey-1">
+                <q-card-section>
+                  <div class="text-weight-medium">Monthly Payment Plan</div>
+                  <div class="text-h6">R {{ Number(rental.rentalPrice).toFixed(2) }}</div>
+                  <div class="text-caption text-grey">
+                    <span v-if="rental.parking?.hasParking">
+                      R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} / mo rent<br>
+                      + R {{ Number(rental.parking.fee).toFixed(2) }} / mo parking
+                    </span>
+                    <span v-else>No parking included</span>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
         </q-card-section>
 
         <q-card-section>
@@ -151,8 +281,13 @@
               :color="userDetails.dateOfBirth ? 'positive' : 'negative'" size="20px" />
             <span class="q-ml-sm">Age {{ userDetails.dateOfBirth ? 'verified' : 'not verified' }}</span>
           </div>
+        </q-card-section>
 
-
+        <q-card-section v-if="isApproved" class="row justify-between">
+          <div class="col-md-6 col-12 q-px-sm"><q-input filled type="date" v-model="rental.rentalStartDate"
+              label="Rental Start Date" :min="minDate" /></div>
+          <div class="col-md-6 col-12 q-px-sm"><q-input filled type="date" v-model="rental.rentalEndDate"
+              label="Rental End Date" :min="rentalStartDate || minDate" /></div>
         </q-card-section>
 
         <q-card-section>
@@ -160,6 +295,8 @@
           <q-radio v-model="isApproved" :val="true" label="Approved" />
           <q-radio v-model="isApproved" :val="false" label="Declined" />
         </q-card-section>
+
+
 
         <q-card-section v-if="isApproved === null">
           <q-input filled label-color="black" v-model="message" label="Message to Applicant" type="textarea" stack-label
@@ -176,7 +313,7 @@
           <CustomButton v-if="isApproved === true" label="Approve" @click="approveRental" customStyle="width: 100%" />
           <CustomButton v-if="isApproved === false" label="Decline" @click="rejectRental" customStyle="width: 100%" />
           <CustomButton v-if="isApproved === null" label="Send Request" @click="requestMoreInfo"
-            customStyle="width: 100%" :disable="true" />
+            customStyle="width: 100%" />
         </q-card-section>
       </div>
     </div>
@@ -227,10 +364,28 @@ export default {
 
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
+
+    defaultValues() {
+      const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
+      const today = new Date();
+      const nextYear = today.getFullYear() + 1;
+      const defaultStart = `${nextYear}-01-01`;
+      const defaultEnd = `${nextYear}-12-31`;
+
+      const start = toDateOnly(this.rental?.rentalStartDate);
+      const end = toDateOnly(this.rental?.rentalEndDate);
+
+      return start === defaultStart && end === defaultEnd;
+    },
   },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    setRentalDates(startDate, endDate) {
+      this.rental.rentalStartDate = startDate;
+      this.rental.rentalEndDate = endDate;
+    },
 
     async fetchUserDetails() {
       try {
@@ -262,7 +417,7 @@ export default {
         persistent: true
       }).onOk(async () => {
         try {
-          await EmailService.RequestMoreInfo(this.rental.userId, this.message)
+          await EmailService.RentalActionReminder(this.rental.userId, this.message)
           this.$q.notify({ type: 'info', color: 'primary', message: 'Request sent to applicant.' })
           this.$emit('close')
         } catch (error) {
@@ -271,25 +426,35 @@ export default {
       })
     },
 
-    setRentalDates(startDate, endDate) {
-      this.rental.rentalStartDate = startDate;
-    },
-
     async approveRental() {
-      const approvedRental = {
-        applicationDate: this.rental.applicationDate,
-        status: "Active",
-        rentalStartDate: this.rental.rentalStartDate,
-        rentalEndDate: this.rental.rentalEndDate,
-        rentalPrice: this.rental.rentalPrice,
-        unit: this.rental.unit,
-        unitType: this.rental.unitType,
-        user: this.rental.user
-      }
       if (this.isApproved === true) {
+        const today = new Date();
+        const nextYear = today.getFullYear() + 1;
+        const defaultStart = `${nextYear}-01-01`;
+        const defaultEnd = `${nextYear}-12-31`;
+
+        if (this.rental.rentalStartDate == defaultStart && this.rental.rentalEndDate === defaultEnd) {
+          this.$q.notify({
+            type: 'warning',
+            message: 'Please update the rental start and end dates before approval.'
+          });
+          return;
+        }
+
         this.$q.dialog({
           title: 'Confirm', message: `You are about to approve this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
         }).onOk(async () => {
+          const approvedRental = {
+            applicationDate: this.rental.applicationDate,
+            status: "Active",
+            rentalStartDate: this.rental.rentalStartDate,
+            rentalEndDate: this.rental.rentalEndDate,
+            rentalPrice: this.rental.rentalPrice,
+            unit: this.rental.unit,
+            unitType: this.rental.unitType,
+            user: this.rental.user
+          }
+
           const response = await RentalService.updateRental(this.rental._id, approvedRental)
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Approved!' })
@@ -321,7 +486,7 @@ export default {
         this.$q.dialog({
           title: 'Confirm', message: `You are about to reject this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
         }).onOk(async () => {
-          console.log(this.rental._id, rejectedRental)
+          // console.log(this.rental._id, rejectedRental)
           const response = await RentalService.updateRental(this.rental._id, rejectedRental)
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Rejected!' })

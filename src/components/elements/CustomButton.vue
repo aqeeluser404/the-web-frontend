@@ -27,7 +27,7 @@ export default {
     },
     color: {
       type: String,
-      default: 'black'
+      default: 'primary'
     },
     textColor: {
       type: String,

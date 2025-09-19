@@ -154,7 +154,7 @@
               color: 'primary',
               persistent: true,
             }).onOk(() => {
-              this.$router.push('/units/apply');
+              this.$router.push('/units/apply/floor/1');
             });
           }
           else {

@@ -15,8 +15,8 @@
       </div>
     </q-banner>
 
-    <div class="q-pa-md row justify-center">
-      <q-card flat bordered class="col-md-11 col-12 q-ma-sm">
+    <div class="constrain-standard row justify-center q-py-md">
+      <q-card flat bordered class="col-md-12 col-12">
 
         <q-card-section class="row justify-center">
           <div class="text-h6">Rental Information</div>
@@ -43,12 +43,11 @@
             <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false
             information is submitted. In such cases, you will be required to cancel the rejected application and reapply
             by re-uploading the documents during the rejection phase.
-
-
             <br><br>
-
             <span>
-              Please note: documents can still be uploaded even if your application is pending or ongoing. Be sure to monitor your email and site notifications for any requests or updates regarding missing or required documents.
+              Please note: documents can still be uploaded even if your application is pending or ongoing. Be sure to
+              monitor your email and site notifications for any requests or updates regarding missing or required
+              documents.
             </span>
 
           </div>
@@ -72,21 +71,22 @@
                 <th class="text-left">Application ID</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
-                <th class="text-left">Before Scheduled</th>
+                <!-- <th class="text-left">Before Scheduled</th> -->
                 <th class="text-left">Parking</th>
-                <th class="text-left">Total Monthly Price</th>
-                <th class="text-left">Unit Number</th>
+                <th class="text-left">Bed/Room Price</th>
+                <th class="text-left">Payment Plan</th>
+                <th class="text-center">Unit Number</th>
                 <th class="text-left">Status</th>
                 <th class="text-left">Actions</th>
               </tr>
             </thead>
             <tbody v-for="(rental, index) in rentals" :key="rental._id">
-              <tr>
+              <tr @click="viewRentalDetails(rental._id)">
                 <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                 <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
                 <td class="text-left cursor-pointer id">{{ rental._id }}</td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalStartDate !== null">
+                  <div v-if="!defaultValues(rental)">
                     {{ formatDate(rental.rentalStartDate) }}
                   </div>
                   <div v-else>
@@ -94,7 +94,7 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.rentalEndDate !== null">
+                  <div v-if="!defaultValues(rental)">
                     {{ formatDate(rental.rentalEndDate) }}
                   </div>
                   <div v-else>
@@ -102,23 +102,16 @@
                   </div>
                 </td>
                 <td class="text-left cursor-pointer">
-                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
-                    {{ formatDate(rental.earlyEndDate) }}
-                  </div>
-                  <div v-else>
-                    N/A
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">
                   <div v-if="rental.parking?.hasParking">
-                    Yes (Added Fee: R{{ Number(rental.parking?.fee).toFixed(2) }})
+                    R {{ Number(rental.parking?.fee).toFixed(2) }}
                   </div>
                   <div v-else>
                     No
                   </div>
                 </td>
-                <td class="text-left cursor-pointer">R {{ Number(rental.rentalPrice).toFixed(2) }}</td>
-                <td class="text-center cursor-pointer">{{ rental.unitNumber }}</td>
+                <td class="text-left cursor-pointer">R {{ Number(rental.selectedSubUnits.price.price).toFixed(2) }} </td>
+                <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.selectedSubUnits.price.name) }}</td>
+                <td class="text-center cursor-pointer">{{ rental.unitNumber }} </td>
                 <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
                   { 'active-status': rental.status === 'Active' },
                   { 'rejected-status': rental.status === 'Rejected' },
@@ -128,8 +121,8 @@
                 <td class="text-left cursor-pointer">
                   <CustomButton v-if="rental.status === 'Pending'" flat color="red" text-color="red"
                     customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton flat color="black" text-color="positive"
-                    customStyle="width: 15%" icon="eva-cloud-upload-outline" to="/user/profile" />
+                  <CustomButton flat color="black" text-color="positive" customStyle="width: 15%"
+                    icon="eva-cloud-upload-outline" to="/user/profile" />
                   <CustomButton
                     v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat
                     color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline"
@@ -188,11 +181,15 @@ export default {
     AddPayerComponent
   },
   computed: {
+
     addPayerInformation() {
-      // Find the rental that requires payer information
-      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending' && rental.payerData.isValidated === false);
-      this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
-      return !!rentalNeedingPayer; // Return true if such a rental exists
+      // Find a rental where status is either 'Pending' or 'Approved' and payerData is not validated
+      const rentalNeedingPayer = this.rentals.find(rental =>
+        (rental.status === 'Pending' || rental.status === 'Active') &&
+        rental.payerData.isValidated === false
+      );
+      this.addPayerRental = rentalNeedingPayer;
+      return !!rentalNeedingPayer;
     },
     viewPayerInformation() {
       // Find the rental that requires payer information
@@ -204,6 +201,19 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    defaultValues(rental) {
+      const toDateOnly = (dateStr) => (dateStr?.split('T')[0] || '');
+      const today = new Date();
+      const nextYear = today.getFullYear() + 1;
+      const defaultStart = `${nextYear}-01-01`;
+      const defaultEnd = `${nextYear}-12-31`;
+
+      const start = toDateOnly(rental?.rentalStartDate);
+      const end = toDateOnly(rental?.rentalEndDate);
+
+      return start === defaultStart && end === defaultEnd;
+    },
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
@@ -271,6 +281,10 @@ export default {
       this.requestDialog = false
       this.addPayerDialog = false
       this.fetchUserDetails()
+    },
+
+    viewRentalDetails(id) {
+      Helper.viewRentalDetails(id, this.$router);
     },
   },
   mounted() {

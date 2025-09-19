@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="q-ma-md stats-card">
+  <q-card flat bordered class="stats-card">
     <q-card-section class="stats-header">
       <div class="text-h6">Accommodation Availability Summary</div>
       <q-separator class="q-my-sm" style="width: 100%;" />
@@ -11,24 +11,22 @@
         <div class="text-subtitle1">
           Total Sleepers Available:
           <span class="text-bold">{{ stats.overall.available }}/{{ stats.overall.total }}</span>
-          ({{ stats.overall.total > 0 ? Math.round((stats.overall.available / stats.overall.total) * 100) + '%' : '0%' }})
+          ({{ stats.overall.total > 0 ? Math.round((stats.overall.available / stats.overall.total) * 100) + '%' : '0%'
+          }})
         </div>
       </div>
     </q-card-section>
 
     <q-card-section class="row justify-between">
-      <div class="floor-stats col-3" v-for="floor in floors" :key="floor.key" @click="goToFloor(floor.key)">
+      <div class="floor-stats col-md-3 col-12" :class="$q.screen.gt.sm ? '' : 'q-pa-sm'" v-for="floor in floors" :key="floor.key" @click="goToFloor(floor.key)">
         <div class="text-subtitle2 text-center">{{ floor.label }}</div>
 
-        <div class="text-center cursor-pointer" >
+        <div class="text-center cursor-pointer">
           <q-icon name="content_paste" size="sm" class="q-mr-xs" />
           <span class="text-bold">{{ stats[floor.key].available }}/{{ stats[floor.key].total }}</span>
         </div>
-        <q-linear-progress
-          :value="stats[floor.key].available / stats[floor.key].total"
-          :color="getAvailabilityColor(stats[floor.key].available, stats[floor.key].total)"
-          class="q-mt-sm"
-        />
+        <q-linear-progress :value="stats[floor.key].available / stats[floor.key].total"
+          :color="getAvailabilityColor(stats[floor.key].available, stats[floor.key].total)" class="q-mt-sm" />
       </div>
     </q-card-section>
   </q-card>
@@ -63,42 +61,63 @@ export default {
       if (percentage > 0.25) return 'warning'
       return 'negative'
     },
-    calculateBedStats() {
-      const stats = {
-        firstFloor: { available: 0, total: 0 },
-        secondFloor: { available: 0, total: 0 },
-        thirdFloor: { available: 0, total: 0 },
-        overall: { available: 0, total: 0 }
-      }
+calculateBedStats() {
+  const stats = {
+    firstFloor: { available: 0, total: 0 },
+    secondFloor: { available: 0, total: 0 },
+    thirdFloor: { available: 0, total: 0 },
+    overall: { available: 0, total: 0 }
+  }
 
-      this.units
-        .filter(unit => !unit.reservedBy)
-        .forEach(unit => {
-        const occupants = Math.floor(unit.unitOccupants || 0)
-        const current = Math.floor(unit.currentOccupants || 0)
-        const availableBeds = Math.max(0, occupants - current)
+  this.units.forEach(unit => {
+    // 🚫 Skip entire unit if it's reserved
+    if (unit.reservedBy) return
 
-        switch(unit.floorLevel) {
-          case 'First Floor':
-            stats.firstFloor.available += availableBeds
-            stats.firstFloor.total += occupants
-            break
-          case 'Second Floor':
-            stats.secondFloor.available += availableBeds
-            stats.secondFloor.total += occupants
-            break
-          case 'Third Floor':
-            stats.thirdFloor.available += availableBeds
-            stats.thirdFloor.total += occupants
-            break
+    const floor = unit.floorLevel
+
+    if (unit.subUnits && Array.isArray(unit.subUnits)) {
+      unit.subUnits.forEach(sub => {
+        const isAvailable = sub.isAvailable && !sub.reservedBy
+        const isCountable = !sub.reservedBy
+
+        if (isCountable) {
+          stats[floorKey(floor)].total += 1
+        }
+        if (isAvailable) {
+          stats[floorKey(floor)].available += 1
         }
       })
+    } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
+      const occupants = Math.floor(unit.unitOccupants || 0)
+      const current = Math.floor(unit.currentOccupants || 0)
+      const availableBeds = Math.max(0, occupants - current)
 
-      stats.overall.available = stats.firstFloor.available + stats.secondFloor.available + stats.thirdFloor.available
-      stats.overall.total = stats.firstFloor.total + stats.secondFloor.total + stats.thirdFloor.total
+      stats[floorKey(floor)].available += availableBeds
+      stats[floorKey(floor)].total += occupants
+    }
+  })
 
-      this.stats = stats
-    },
+  stats.overall.available =
+    stats.firstFloor.available +
+    stats.secondFloor.available +
+    stats.thirdFloor.available
+
+  stats.overall.total =
+    stats.firstFloor.total +
+    stats.secondFloor.total +
+    stats.thirdFloor.total
+
+  this.stats = stats
+
+  function floorKey(level) {
+    switch (level) {
+      case 'First Floor': return 'firstFloor'
+      case 'Second Floor': return 'secondFloor'
+      case 'Third Floor': return 'thirdFloor'
+      default: return 'firstFloor'
+    }
+  }
+},
     async fetchUnits() {
       try {
         const response = await UnitService.getAllUnits()
