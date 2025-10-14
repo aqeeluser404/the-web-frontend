@@ -8,24 +8,7 @@
         $route.path !== '/resend-verification' &&
         $route.path !== '/reset-password' &&
         $route.path !== '/forgot-password'
-        // $route.path !== '/admin/dashboard'
       ">
-      <!-- Top nav -->
-      <!-- <div class="secondary-nav large-screen-only bg-grey-3 text-black full-width q-px-lg ">
-        <div class="full-height large-screen-only">
-          <div class="row justify-center items-center full-height">
-            <q-btn to="/incident-report" rounded flat label="Incident Report"
-              class="custom-button q-py-sm text-weight-medium" />
-            <q-btn to="/resources" rounded flat label="Resources" class="custom-button q-py-sm text-weight-medium" />
-            <q-btn to="/developer" rounded flat label="Developer" class="custom-button q-py-sm text-weight-medium" />
-            <q-btn to="/fees" rounded flat label="Fees" class="custom-button q-py-sm text-weight-medium" />
-            <q-btn to="/history" rounded flat label="History" class="custom-button q-py-sm text-weight-medium" />
-            <q-btn to="/applications" rounded flat label="Applications"
-              class="custom-button q-py-sm text-weight-medium" />
-          </div>
-        </div>
-      </div> -->
-
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
 
         <!-- title and avatar -->
@@ -70,11 +53,6 @@
               v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees" flat rounded />
 
-            <!-- <q-btn
-              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
-              to="/applications" class="custom-button q-py-sm large-screen-only" label="Applications" flat
-              rounded /> -->
-
             <!-- dashboards -->
             <q-btn to="/units/apply/floor/1" class="custom-button q-py-sm large-screen-only" label="Book Now" flat rounded />
             <q-btn
@@ -113,27 +91,12 @@
                 <div class="two-column-list">
 
                   <div class="column q-pa-md" style="background-color: #f8f8f8;">
-                    <!-- <q-item clickable v-close-popup to="/incident-report">
-                      <q-item-section>Incident Report</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup to="/resources">
-                      <q-item-section>Resources</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup to="/developer">
-                      <q-item-section>Developer</q-item-section>
-                    </q-item> -->
                     <q-item clickable v-close-popup to='/frequently-asked-questions'>
                       <q-item-section class="">FAQs</q-item-section>
                     </q-item>
                     <q-item clickable v-close-popup to="/fees">
                       <q-item-section>Fees</q-item-section>
                     </q-item>
-                    <!-- <q-item clickable v-close-popup to="/history">
-                      <q-item-section>History</q-item-section>
-                    </q-item> -->
-                    <!-- <q-item clickable v-close-popup to="/applications">
-                      <q-item-section>Applications</q-item-section>
-                    </q-item> -->
                   </div>
 
                   <div class="column q-pa-md">
@@ -188,7 +151,6 @@
                       <q-item-section class="">Logout</q-item-section>
                     </q-item>
                   </div>
-
                 </div>
               </q-list>
             </q-btn-dropdown>
@@ -442,37 +404,10 @@ export default {
 </script>
 
 <style lang="sass">
-
-// .no-highlight q-item,
-// .no-highlight q-item:hover,
-// .no-highlight q-item:focus,
-// .no-highlight q-item.q-item--active,
-// .no-highlight q-item--active
-//   background-color: transparent !important
-//   color: inherit !important
-//   box-shadow: none !important
-
-// .no-highlight q-item-section
-//   background: transparent !important
-//   color: inherit !important
-// .q-item.q-item--active,
-// .q-item.q-item--active:hover
-//   background-color: transparent !important
-//   color: inherit !important
-//   box-shadow: none !important
-
-
-
 .secondary-nav
   height: 50px
   border-bottom: 1px solid #e0e0e0
   padding: 0 16px
-
-// .q-btn
-//   padding: 0 12px
-//   font-size: 0.9rem
-//   &:hover
-//     color: $primary
 
 .two-column-list
   display: flex
@@ -485,8 +420,6 @@ export default {
   flex-direction: column
   gap: 8px
   box-sizing: border-box
-
-
 
 .full-width
   width: 100%

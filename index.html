@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= productName %></title>
 
-    <meta charset="utf-8">
-    <meta name="description" content="<%= productDescription %>">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
+<head>
+  <title>
+    <%= productName %>
+  </title>
 
-    <!-- Favicon Setup -->
-    <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icon/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon/android-chrome-512x512.png">
-    <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png">
-    <link rel="manifest" href="/icon/site.webmanifest">
+  <meta charset="utf-8">
+  <meta name="description" content="<%= productDescription %>">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
 
-    <!-- <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script> -->
+  <!-- Favicon Setup -->
+  <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/android-chrome-512x512.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/icons/site.webmanifest">
 
-    <!-- Canonical Link -->
-    <link rel="canonical" href="https://the-web.co.za">
+  <!-- Canonical Link -->
+  <link rel="canonical" href="https://the-web.co.za">
 
-    <!-- Structured Data for Google -->
-    <script type="application/ld+json">
+  <!-- Structured Data for Google -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
@@ -32,7 +34,7 @@
       "url": "https://the-web.co.za",
       "description": "The Web offers affordable student rentals with study lounges, high-speed Wi-Fi, and social spaces, perfect for students seeking secure accommodation.",
       "image": "https://the-web.co.za/assets/outside3.jpg",
-      "logo": "https://the-web.co.za/icon/android-chrome-512x512.png",
+      "logo": "https://the-web.co.za/icons/android-chrome-512x512.png",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "ERF 3223",
@@ -49,13 +51,13 @@
       "brand": {
         "@type": "Brand",
         "name": "The Web",
-        "logo": "https://the-web.co.za/icon/android-chrome-512x512.png"
+        "logo": "https://the-web.co.za/icons/android-chrome-512x512.png"
       }
     }
     </script>
 
-    <!-- Structured Data for FAQs (Boosts SEO) -->
-    <script type="application/ld+json">
+  <!-- Structured Data for FAQs (Boosts SEO) -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -78,9 +80,20 @@
         }
       ]
     }
-    </script>
-  </head>
-  <body>
-    <!-- quasar:entry-point -->
-  </body>
+  </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4WKBXV23BP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-4WKBXV23BP');
+  </script>
+</head>
+
+<body>
+  <!-- quasar:entry-point -->
+</body>
+
 </html>

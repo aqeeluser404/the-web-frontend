@@ -62,60 +62,6 @@ class Helper {
     });
   }
 
-  // ------------------------------------------------------------------------------------------------------------------------------------------------
-  // GET IMAGES
-  // static getImageUrl(imagePath) {
-  //   try {
-  //     const imageKitBase = 'https://ik.imagekit.io/';
-  //     const webBase = 'https://the-web.co.za/get-file.php?file=';
-  //     const defaultImage = 'default.jpg';
-
-  //     const tryBothUrls = (path) => {
-  //       if (path.startsWith(imageKitBase)) {
-  //         return path;
-  //       }
-  //       return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
-  //     };
-  //     if (imagePath && typeof imagePath === 'object' && typeof imagePath.imageUrl === 'string') {
-  //       return tryBothUrls(imagePath.imageUrl);
-  //     }
-  //     if (typeof imagePath === 'string') {
-  //       return tryBothUrls(imagePath);
-  //     }
-  //     console.error('Invalid image path:', imagePath);
-  //     return `${imageKitBase}${defaultImage}`;
-  //   } catch (error) {
-  //     console.error('Error generating image URL:', error);
-  //     return `${imageKitBase}default.jpg`;
-  //   }
-  // }
-  // static getDocumentUrl(documentPath) {
-  //   try {
-  //     const imageKitBase = 'https://ik.imagekit.io/';
-  //     const webBase = 'https://the-web.co.za/get-file.php?file=';
-  //     const defaultDocument = 'default-document.pdf';
-
-  //     const tryBothUrls = (path) => {
-  //       if (path.startsWith(imageKitBase)) {
-  //         return path;
-  //       }
-  //       return `${imageKitBase}${path}` || `${webBase}${encodeURIComponent(path)}`;
-  //     };
-  //     if (documentPath && typeof documentPath === 'object' && typeof documentPath.documentUrl === 'string') {
-  //       return tryBothUrls(documentPath.documentUrl);
-  //     }
-  //     if (typeof documentPath === 'string') {
-  //       return tryBothUrls(documentPath);
-  //     }
-  //     console.error('Invalid document path:', documentPath);
-  //     return `${imageKitBase}${defaultDocument}`;
-  //   } catch (error) {
-  //     console.error('Error generating document URL:', error);
-  //     return `${imageKitBase}default-document.pdf`;
-  //   }
-  // }
-
-  // PHP VERSION
   static getImageUrl(imagePath) {
     try {
       const webBase = 'https://the-web.co.za/get-file.php?file=';

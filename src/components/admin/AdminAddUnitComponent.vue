@@ -84,9 +84,11 @@
           </q-item>
         </q-card-section>
 
+        <!-- <q-separator /> -->
+
         <!-- SubUnits Section -->
-        <q-card-section>
-          <div class="text-subtitle1 q-mt-md">Unit Configuration</div>
+        <q-card-section class="q-py-none q-mb-sm">
+          <div class="text-subtitle1 text-weight-bold q-mt-md">Unit Configuration</div>
 
           <!-- Unit Type Selection -->
           <q-item>
@@ -98,67 +100,96 @@
           </q-item>
 
           <template v-if="unit.unitType === 'rooms'">
-            <div v-for="(room, index) in unit.rooms" :key="'room-' + index" class="q-gutter-md q-mb-sm">
+            <div v-for="(room, index) in unit.rooms" :key="'room-' + index">
 
               <q-item>
                 <q-item-section class="text-left text-subtitle1">Room Type *</q-item-section>
                 <q-item-section class="text-left text-subtitle1">
-                  <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" dense />
+                  <q-select v-model="room.type" :options="roomTypeOptions" label="Room Type" class="col-grow" />
                 </q-item-section>
               </q-item>
 
-
               <!-- Multiple Prices with name and price -->
               <div v-for="(priceEntry, pIndex) in room.price" :key="'room-price-' + index + '-' + pIndex"
-                class="row items-center q-mt-xs">
+                class="">
                 <q-item>
                   <q-item-section class="text-left text-subtitle1">
-                    Prices *
+                    Price ({{ pIndex + 1 }})
                   </q-item-section>
-                  <q-item-section class="text-left text-subtitle1 row items-center no-wrap">
-                    <q-input v-model.number="room.price[pIndex].price" label="Price (R)" type="number" dense class="col-auto" />
-                    <q-input v-model="room.price[pIndex].name" label="Price Name" dense class="col-auto q-ml-sm" />
-                    <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="room.price.length > 1"
+                  <q-item-section>
+                    <q-input v-model.number="room.price[pIndex].price" label="Price (R)" type="number" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model="room.price[pIndex].name" label="Price Name" />
+                  </q-item-section>
+                  <q-item-section>
+                    <CustomButton color="negative" icon="delete" v-if="room.price.length > 1"
                       @click="room.price.splice(pIndex, 1)" />
                   </q-item-section>
                 </q-item>
               </div>
 
-              <!-- Add Price Button -->
-              <q-btn label="Add Price" dense flat icon="add" @click="room.price.push({ name: 'default', price: 0 })"
-                :disable="room.price.length >= 3" />
-              <q-btn icon="delete" color="negative" flat round dense @click="removeRoom(index)" class="q-ml-sm" />
+              <div class="q-mx-none q-mt-md row justify-between">
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Price" icon="add" @click="room.price.push({ name: 'default', price: 0 })" :disable="room.price.length >= 3" />
+                </div>
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Room" icon="add" color="primary" @click="addRoom"
+                      :disable="unit.rooms.length >= 3" v-if="unit.rooms.length > 0" />
+                </div>
+                <div class="col-md-5 col-12 q-mb-sm">
+                  <CustomButton icon="delete" label="Remove Room" color="negative" @click="removeRoom(index)" class="" />
+                </div>
+              </div>
             </div>
-            <CustomButton label="Add Room" color="primary" @click="addRoom" class="q-mb-md"
-              :disable="unit.rooms.length >= 3" />
-            <div v-if="unit.rooms.length >= 3" class="text-caption text-grey">
+            <!-- <div v-if="unit.rooms.length >= 3" class="text-caption text-grey">
               Maximum of 3 rooms per unit
-            </div>
+            </div> -->
           </template>
 
           <template v-if="unit.unitType === 'beds'">
-            <div v-for="(bed, index) in unit.beds" :key="'bed-' + index" class="q-mb-sm">
-              <q-input v-model="bed.number" label="Bed Number" class="col-4" />
+            <div v-for="(bed, index) in unit.beds" :key="'bed-' + index">
+
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Bed Type *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-input v-model="bed.number" label="Bed Number" class="col-grow" />
+                </q-item-section>
+              </q-item>
 
               <!-- Multiple Prices with name and price -->
               <div v-for="(priceEntry, pIndex) in bed.price" :key="'bed-price-' + index + '-' + pIndex"
-                class="row items-center q-mt-xs">
-                <q-input v-model.number="bed.price[pIndex].price" label="Price (R)" type="number" class="col" />
-                <q-input v-model="bed.price[pIndex].name" label="Price Name" dense class="col q-ml-sm" />
-
-                <q-btn icon="delete" color="negative" flat round dense class="q-ml-xs" v-if="bed.price.length > 1"
-                  @click="bed.price.splice(pIndex, 1)" />
+                class="">
+                <q-item>
+                  <q-item-section class="text-left text-subtitle1">
+                    Price ({{ pIndex + 1 }})
+                  </q-item-section>
+                  <q-item-section class="text-left text-subtitle1">
+                    <q-input v-model.number="bed.price[pIndex].price" label="Price (R)" type="number" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model="bed.price[pIndex].name" label="Price Name" />
+                  </q-item-section>
+                  <q-item-section>
+                    <CustomButton icon="delete" color="negative" v-if="bed.price.length > 1" @click="bed.price.splice(pIndex, 1)" />
+                  </q-item-section>
+                </q-item>
               </div>
 
-              <!-- Add Price Button -->
-              <q-btn label="Add Price" dense flat icon="add" @click="bed.price.push({ name: 'default', price: 0 })"
-                :disable="bed.price.length >= 3" />
-              <q-btn icon="delete" color="negative" @click="removeBed(index)" />
+              <div class="q-mx-none q-mt-md row justify-between">
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Price" icon="add" @click="bed.price.push({ name: 'default', price: 0 })"
+                    :disable="bed.price.length >= 3" />
+                </div>
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Bed" icon="add" color="primary" @click="addBed" class="" />
+                </div>
+                <div class="col-md-5 col-12">
+                  <CustomButton icon="delete" label="Remove Bed" color="negative" @click="removeBed(index)" />
+                </div>
+              </div>
             </div>
-            <CustomButton label="Add Bed" color="primary" @click="addBed" class="q-mb-md" />
           </template>
-
-          <!-- Calculated Occupants -->
 
         </q-card-section>
       </div>
@@ -182,6 +213,7 @@ export default {
         // unitPrice: '',
         images: [],
         rooms: [],
+        beds: [],
       },
       image1: null, image2: null, image3: null,
 
@@ -196,7 +228,7 @@ export default {
         { label: 'Beds Unit', value: 'beds' }
       ],
       roomTypeOptions: [
-        'The Strand', 'The Core', 'The Pinnacle'
+        'The Core', 'Botmaskop'
       ]
     }
   },

@@ -2,7 +2,7 @@
   <q-page>
     <div class="background-wrapper">
       <q-img
-        src="~src/assets/resources/login/outside3.jpg"
+        src="~src/assets/resources/authentication/background1.jpg"
         alt="Hero Image"
         class="blurred-background"
       />
@@ -38,15 +38,6 @@
               label="Password *"
               type="password"
             />
-            <!-- <q-input
-              filled
-              label-color="black"
-              color="black"
-              v-model="confirmPassword"
-              label="Confirm Password *"
-              type="password"
-            /> -->
-
             <div
               class="q-my-md q-mb-xl column text-left"
               style="transform: translateY(-1px);"
@@ -54,7 +45,6 @@
               <router-link to="/forgot-password" style="text-decoration: none; color: black;">
                 Forgot password?
               </router-link>
-
             </div>
 
             <div>
@@ -74,7 +64,6 @@
 
         <!-- Right -->
         <div class="column q-pa-lg col-md-6 col-12 bg-black items-center justify-center right-section">
-          <!-- <q-icon name="account_circle" size="125px" color="white" /> -->
           <img :src="logoSrc" alt="logo" class="" >
         </div>
       </q-card>
@@ -135,19 +124,8 @@
     methods: {
       async onSubmit() {
         try {
-          // if (this.user.password !== this.confirmPassword) {
-          //   this.$q.notify({
-          //     type: 'negative',
-          //     color: 'red',
-          //     message: 'Passwords do not match. Please try again!',
-          //   });
-          //   return;
-          // }
           const response = await UserService.login(this.user.usernameOrEmail, this.user.password);
-          // if (response.status === 200) {
           if (response) {
-            // this.$q.notify({ type: 'positive', color: 'primary', message: 'Login successful!' });
-
             this.$q.dialog({
               title: 'Success',
               message: 'Login successful!',
@@ -158,7 +136,6 @@
             });
           }
           else {
-            // Handle unexpected status codes
             this.$q.notify({ type: 'negative', color: 'red', message: 'Login failed. Please try again!' });
             this.onReset();
           }

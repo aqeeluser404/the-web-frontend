@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <q-parallax
+    <!-- <q-parallax
       :src="parallax"
       :height="300"
       :speed="0.5"
@@ -24,7 +24,7 @@
           <div class="text-body1 q-mb-lg hero-subheading">How it all began</div>
         </q-card-section>
       </div>
-    </q-parallax>
+    </q-parallax> -->
 
     <div style="height: 100%; background-color: #222" class="text-white q-pa-xl">
       <div class="constrain text-center subBanner">
@@ -95,7 +95,7 @@
         </ul>
       </div>
       <div class="col-12 col-sm-6" style="padding: 12px;">
-      <img :src="valley" style="width: 100%; height:100%; object-fit: cover;" alt="idas Valley">
+      <!-- <img :src="valley" style="width: 100%; height:100%; object-fit: cover;" alt="idas Valley"> -->
       </div>
     </q-card>
 
@@ -104,14 +104,14 @@
 </template>
 
 <script>
-import home2 from 'src/assets/resources/home/slider/2.jpg';
-import idasValley from 'src/assets/resources/tab/idasValley.png';
+// import home2 from 'src/assets/resources/home/slider/2.jpg';
+// import idasValley from 'src/assets/resources/tab/idasValley.png';
 
 export default {
   data() {
     return {
-      parallax: home2,
-      valley: idasValley,
+      // parallax: home2,
+      // valley: idasValley,
     }
   },
 }

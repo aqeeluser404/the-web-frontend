@@ -1,112 +1,120 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
+    <div class="constrain-standard row justify-center q-py-md">
 
-      <!-- view all units -->
-      <q-card flat bordered class="col-md-7 col-12 q-ma-sm full-height">
-        <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
-          :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator v-model="expanded[floorIndex]"
-          @show="handleExpansion(floorIndex)">
-          <q-list class="row justify-center">
-            <q-card v-for="unit in units" :key="unit._id" flat bordered class="q-ma-sm">
-              <q-card-section class="column flex-center">
-                <div class="text-h6">
+      <div class="col-md-8 col-12 full-height">
+        <!-- view all units -->
+        <q-card flat bordered class="full-height" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+          <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
+            :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator
+            v-model="expanded[floorIndex]" @show="handleExpansion(floorIndex)">
+            <q-list class="row justify-center">
+              <q-card v-for="unit in units" :key="unit._id" flat bordered class="q-ma-sm">
+                <q-card-section class="column flex-center">
+                  <div class="text-h6">
 
-                  <!-- unit number -->
-                  Unit {{ unit.unitNumber }}
+                    <!-- unit number -->
+                    Unit {{ unit.unitNumber }}
 
-                  <!-- available status -->
-                  (
-                  <span
-                    v-if="unit.unitStatus === 'Available' && unit.subUnits?.length && !unit.subUnits.some(sub => sub.reservedBy)"
-                    :class="{ 'available-unit': true }">
-                    Available
-                  </span>
+                    <!-- available status -->
+                    (
+                    <span
+                      v-if="unit.unitStatus === 'Available' && unit.subUnits?.length && !unit.subUnits.some(sub => sub.reservedBy)"
+                      :class="{ 'available-unit': true }">
+                      Available
+                    </span>
 
-                  <span v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.some(sub => !sub.reservedBy)"
-                    :class="{ 'partially-reserved-unit': true }" style="color: orange;">
-                    Partially Reserved
-                  </span>
+                    <span v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.some(sub => !sub.reservedBy)"
+                      :class="{ 'partially-reserved-unit': true }" style="color: orange;">
+                      Partially Reserved
+                    </span>
 
-                  <span
-                    v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.length && unit.subUnits.every(sub => sub.reservedBy)"
-                    :class="{ 'fully-reserved-unit': true }" style="color: crimson;">
-                    Fully Reserved
-                  </span>
+                    <span
+                      v-else-if="unit.unitStatus === 'Available' && unit.subUnits?.length && unit.subUnits.every(sub => sub.reservedBy)"
+                      :class="{ 'fully-reserved-unit': true }" style="color: crimson;">
+                      Fully Reserved
+                    </span>
 
-                  <span v-else-if="unit.unitStatus === 'Occupied'" :class="{ 'occupied-unit': true }">
-                    Occupied
-                  </span>
-                  )
-                </div>
-                <!-- shared + bed count -->
-                <div class="text-caption">
-                  {{ unit.unitType }} -
-                  {{
-                    Array.isArray(unit.subUnits)
-                      ? unit.subUnits.filter(sub => sub.isAvailable && !sub.reservedBy).length
-                      : 0
-                  }}/{{
-                    Array.isArray(unit.subUnits)
-                      ? unit.subUnits.filter(sub => !sub.reservedBy).length
-                      : 0
-                  }} Beds
-                </div>
+                    <span v-else-if="unit.unitStatus === 'Occupied'" :class="{ 'occupied-unit': true }">
+                      Occupied
+                    </span>
+                    )
+                  </div>
+                  <!-- shared + bed count -->
+                  <div class="text-caption">
+                    {{ unit.unitType }} -
+                    {{
+                      Array.isArray(unit.subUnits)
+                        ? unit.subUnits.filter(sub => sub.isAvailable && !sub.reservedBy).length
+                        : 0
+                    }}/{{
+                      Array.isArray(unit.subUnits)
+                        ? unit.subUnits.filter(sub => !sub.reservedBy).length
+                        : 0
+                    }} Beds
+                  </div>
 
-                <!-- reserved by (unit-level) -->
-                <div v-if="unit.reservedBy && getUsername(unit.reservedBy)" class="text-caption text-weight-light"
+                  <!-- reserved by (unit-level) -->
+                  <!-- <div v-if="unit.reservedBy && getUsername(unit.reservedBy)" class="text-caption text-weight-light"
                   style="color: black;">
                   Reserved by: {{ getUsername(unit.reservedBy) }}
-                </div>
+                </div> -->
 
-                <!-- reserved by (subUnit-level) -->
-                <div v-if="Array.isArray(unit.subUnits) && unit.subUnits.some(sub => sub?.reservedBy)"
-                  class="text-caption text-weight-light" style="color: black;">
-                  <template v-for="(sub, i) in unit.subUnits" :key="i">
-                    <div v-if="sub?.reservedBy">
-                      Room {{ i + 1 }} reserved by: {{ getUsername(sub.reservedBy) }}
-                    </div>
-                  </template>
-                </div>
+                  <!-- reserved by (subUnit-level) -->
+                  <div v-if="Array.isArray(unit.subUnits) && unit.subUnits.some(sub => sub?.reservedBy)"
+                    class="text-caption text-weight-light" style="color: black;">
+                    {{ getReservedSummary(unit.subUnits) }}
+                  </div>
+
+                  <div v-else class="text-caption text-weight-light" style="color: black;">
+                    Unreserved
+                  </div>
 
 
-              </q-card-section>
-              <q-card-section class="row justify-center">
-                <div class="image-container">
-                  <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
-                </div>
-              </q-card-section>
-              <q-card-section class="row justify-between">
-                <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black"
-                  @click="openUnitDetails(unit)" />
-                <CustomButton label="Delete " customStyle="width: 40%" @click="deleteUnit(unit)" />
-              </q-card-section>
-            </q-card>
-          </q-list>
-        </q-expansion-item>
-      </q-card>
 
-      <!-- add new unit -->
-      <q-card flat class="col-md-3 col-12 q-ma-sm full-height">
-        <q-card-section>
-          <div class="text-h6">Add a new unit</div>
-        </q-card-section>
-        <!-- <q-separator /> -->
-        <q-card-section>
-          <div class="q-mb-sm">When adding new units to the system, please note the following guidelines:</div>
-          <ul>
-            <li class="q-mb-sm">Units will be assigned the next available unit number based on the highest existing unit
-              number for the selected floor level.</li>
-            <li class="q-mb-sm">Each unit entry can accommodate a maximum of three images which must be provided during
-              the creation process.</li>
-            <li class="q-mb-sm">Unit numbers are automatically generated by the system and cannot be manually altered to
-              ensure <span style="text-decoration: underline;">consistency and accuracy.</span></li>
-          </ul>
-        </q-card-section>
-        <q-card-section>
-          <CustomButton label="Add New" @click="openAddUnitsDialog" />
-        </q-card-section>
-      </q-card>
+                </q-card-section>
+                <q-card-section class="row justify-center">
+                  <div class="image-container">
+                    <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+                  </div>
+                </q-card-section>
+                <q-card-section class="row justify-between">
+                  <CustomButton label="Update " customStyle="width: 40%" color="white" text-color="black"
+                    @click="openUnitDetails(unit)" />
+                  <CustomButton label="Delete " customStyle="width: 40%" @click="deleteUnit(unit)" />
+                </q-card-section>
+              </q-card>
+            </q-list>
+          </q-expansion-item>
+        </q-card>
+      </div>
+
+      <div class="col-md-4 col-12 full-height">
+        <!-- add new unit -->
+        <q-card flat class="q-pa-md full-height">
+          <q-card-section>
+            <div class="text-h6">Add a new unit</div>
+          </q-card-section>
+          <!-- <q-separator /> -->
+          <q-card-section>
+            <div class="q-mb-sm">When adding new units to the system, please note the following guidelines:</div>
+            <ul>
+              <li class="q-mb-sm">Units will be assigned the next available unit number based on the highest existing
+                unit
+                number for the selected floor level.</li>
+              <li class="q-mb-sm">Each unit entry can accommodate a maximum of three images which must be provided
+                during
+                the creation process.</li>
+              <li class="q-mb-sm">Unit numbers are automatically generated by the system and cannot be manually altered
+                to
+                ensure <span style="text-decoration: underline;">consistency and accuracy.</span></li>
+            </ul>
+          </q-card-section>
+          <q-card-section>
+            <CustomButton label="Add New" @click="openAddUnitsDialog" />
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
     <q-dialog v-model="updateDetailsDialog">
       <AdminUnitDetailsComponent :unit="selectedUnit" @close="handleClose" />
@@ -152,6 +160,13 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    getReservedSummary(subUnits) {
+      const reserved = subUnits
+        .map((sub, i) => sub?.reservedBy ? `Room ${i + 1} by ${this.getUsername(sub.reservedBy)}` : null)
+        .filter(Boolean);
+      return reserved.length > 0 ? reserved.join(', ') : '';
+    },
 
     async findAllUnits() {
       const response = await UnitService.getAllUnits();

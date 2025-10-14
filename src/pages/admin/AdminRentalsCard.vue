@@ -1,126 +1,125 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
+    <div class="constrain-standard q-pt-md q-pb-md row justify-center">
       <BedGraphComponent />
     </div>
-    <div class="q-pa-md row justify-center">
-      <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
-        <!-- Pie Chart Section -->
-        <q-card-section class="row justify-center">
-          <div class="text-h6">Rental Status Distribution</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section class="row justify-center">
-          <div style="width: 300px; height: 300px;">
-            <canvas ref="pieChart"></canvas>
-          </div>
-        </q-card-section>
-        <q-card-section class="row justify-center">
-          <!-- <q-toggle
-            v-model="showAllStatuses"
-            label="Show All Statuses"
-            @update:model-value="updateChart"
-          /> -->
-        </q-card-section>
-      </q-card>
-      <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
-        <!-- Table Section -->
-        <q-card-section class="row justify-center">
-          <div class="text-h6">Rental History</div>
-        </q-card-section>
 
-        <q-card-section class="row justify-between">
-          <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
-            class="col-12 col-md-9" />
+    <div class="constrain-standard row justify-center q-pb-md">
+      <div class="col-md-3 col-12 full-height">
+        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+          <q-card-section class="row justify-center">
+            <div class="text-h6">Rental Status Distribution</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="row justify-center">
+            <div style="width: 300px; height: 300px;">
+              <canvas ref="pieChart"></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
 
-          <q-select v-model="selectedRentalStatus" :options="rentalStatus" label="Rental Status"
-            @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
-        </q-card-section>
+      <div class="col-md-9 col-12 full-height">
+        <q-card flat bordered class="full-height">
+          <!-- Table Section -->
+          <q-card-section class="row justify-center">
+            <div class="text-h6">Rental History</div>
+          </q-card-section>
 
-        <q-card-section v-if="rentals.length > 0">
+          <q-card-section class="row justify-between">
+            <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
+              class="col-12 col-md-9" />
 
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Application Date</th>
-                <th class="text-left">Applicant</th>
-                <th class="text-left">Application ID</th>
-                <th class="text-left">Start Date</th>
-                <th class="text-left">End Date</th>
-                <th class="text-left">Before Scheduled</th>
+            <q-select v-model="selectedRentalStatus" :options="rentalStatus" label="Rental Status"
+              @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
+          </q-card-section>
 
-                <th class="text-left">Condition</th>
+          <q-card-section v-if="rentals.length > 0">
+            <q-markup-table flat bordered>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left">Application Date</th>
+                  <th class="text-left">Applicant</th>
+                  <th class="text-left">Applicant Contact</th>
+                  <th class="text-left">Application ID</th>
+                  <th class="text-left">Start Date</th>
+                  <th class="text-left">End Date</th>
+                  <th class="text-left">Before Scheduled</th>
+                  <th class="text-left">Condition</th>
+                  <th class="text-left">Status</th>
+                  <th class="text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
+                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                  <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
+                  <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{
+                    rental.username }}</td>
+                  <td class="text-left cursor-pointer" @click="copyToClipboard(currentAccessKey)">
+                    {{ rental.userPhone }}
+                  </td>
+                  <td class="text-left cursor-pointer id">{{ rental._id }}</td>
+                  <td class="text-left cursor-pointer">
+                    <div v-if="!defaultValues(rental)">
+                      {{ formatDate(rental.rentalStartDate) }}
+                    </div>
+                    <div v-else>
+                      Being processed...
+                    </div>
+                  </td>
+                  <td class="text-left cursor-pointer">
+                    <div v-if="!defaultValues(rental)">
+                      {{ formatDate(rental.rentalEndDate) }}
+                    </div>
+                    <div v-else>
+                      Being processed...
+                    </div>
+                  </td>
+                  <td class="text-left cursor-pointer">
+                    <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
+                      {{ formatDate(rental.earlyEndDate) }}
+                    </div>
+                    <div v-else>
+                      N/A
+                    </div>
+                  </td>
+                  <td class="text-center cursor-pointer">
+                    <div class="column items-center">
+                      <q-icon :name="needsAttention(rental) ? 'error' : 'check_circle'"
+                        :color="needsAttention(rental) ? 'negative' : 'positive'" size="18px" />
+                      <span class="text-caption" :class="needsAttention(rental) ? 'text-negative' : 'text-positive'">
+                        {{ needsAttention(rental) ? 'Alert' : 'All Good' }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
+                    { 'active-status': rental.status === 'Active' },
+                    { 'rejected-status': rental.status === 'Rejected' },
+                    { 'ended-status': rental.status === 'Ended' }">
+                    {{ capitalizeFirstLetter(rental.status) }}
+                  </td>
+                  <td class="text-left cursor-pointer">
+                    <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                      @click.stop="deleteRental(rental)" />
+                    <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
+                      customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
+                    <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
+                      customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
+                  </td>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </q-card-section>
 
-                <th class="text-left">Status</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{
-                  rental.username }}</td>
-                <td class="text-left cursor-pointer id">{{ rental._id }}</td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="!defaultValues(rental)">
-                    {{ formatDate(rental.rentalStartDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="!defaultValues(rental)">
-                    {{ formatDate(rental.rentalEndDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
-                    {{ formatDate(rental.earlyEndDate) }}
-                  </div>
-                  <div v-else>
-                    N/A
-                  </div>
-                </td>
-                <td class="text-center cursor-pointer">
-                  <div class="column items-center">
-                    <q-icon :name="needsAttention(rental) ? 'error' : 'check_circle'"
-                      :color="needsAttention(rental) ? 'negative' : 'positive'" size="18px" />
-                    <span class="text-caption" :class="needsAttention(rental) ? 'text-negative' : 'text-positive'">
-                      {{ needsAttention(rental) ? 'Alert' : 'All Good' }}
-                    </span>
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
-                  { 'active-status': rental.status === 'Active' },
-                  { 'rejected-status': rental.status === 'Rejected' },
-                  { 'ended-status': rental.status === 'Ended' }">
-                  {{ capitalizeFirstLetter(rental.status) }}
-                </td>
-                <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
-                    @click.stop="deleteRental(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
-                    customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
-                  <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
-                    customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
-
-        <q-card-section v-else class="row justify-center">
-          <q-item>
-            <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
-          </q-item>
-        </q-card-section>
-      </q-card>
+          <q-card-section v-else class="row justify-center">
+            <q-item>
+              <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
+            </q-item>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
 
     <q-dialog v-model="extendRentalDialog">
@@ -224,6 +223,7 @@ export default {
           unitType: unit.unitType,
           username: user.username,
           userId: user._id,
+          userPhone: user.phone,
           userVerification: user.verification,
           userDocuments: user.documents || []
         };

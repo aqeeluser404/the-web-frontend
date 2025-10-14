@@ -1,8 +1,5 @@
 <template>
   <q-page>
-
-
-
     <!-- Hero Carousel -->
     <section class="hero-carousel bg-grey">
       <q-carousel animated v-model="currentSlide" infinite autoplay :autoplay-interval="18000"
@@ -13,12 +10,6 @@
             class="hero-carousel__image" fit="cover" loading="lazy" />
         </q-carousel-slide>
       </q-carousel>
-
-      <!-- Overlay -->
-      <!-- <div class="hero-overlay" :class="{ 'hero-overlay--hidden': overlayHidden }">
-        <h1>The-WEB</h1>
-        <img :src="logoSrc" alt="Home" style="width: 25%; cursor: pointer;">
-      </div> -->
     </section>
 
 
@@ -33,7 +24,6 @@
         </div>
       </div>
     </div>
-
 
 
 
@@ -75,7 +65,6 @@
     <section id="amenities-section" class="amenities-section">
       <div class="padding-y-xl constrain-standard">
         <div class="section-spacer-md"></div>
-
         <div class="amenities-content row justify-between items-center overflow-hidden-x">
           <q-card flat class="amenities-text col-12 col-md q-pr-md">
             <div class="fade-in-scale">
@@ -85,9 +74,7 @@
               <div class="text-h6 section-label small-screen-only">
                 <b>—&nbsp;&nbsp;&nbsp;AMENITIES&nbsp;&nbsp;&nbsp;—</b>
               </div>
-
               <h2 class="text-h3 text-weight-bold amenities-title">What's inside The-WEB?</h2>
-
               <ul class="amenities-list text-h6">
                 <li><span class="emoji">⛰</span> 360° panoramic views</li>
                 <li><span class="emoji">📚</span> Communal Study areas</li>
@@ -100,310 +87,39 @@
                 <li><span class="emoji">💧</span> Natural spring water on tap</li>
                 <li><span class="emoji">🚐</span> University shuttle route</li>
               </ul>
-
               <p class="text-body1 amenities-cta">
                 <em>Live where your lifestyle is supported, not limited.</em>
               </p>
             </div>
           </q-card>
-
-          <!-- <div class="amenities-carousel col-md-6 col-12">
-          <q-carousel animated v-model="currentSlide4" infinite autoplay :autoplay-interval="5000"
-            transition-prev="slide-right" transition-next="slide-left" transition-duration="800" height="600px"
-            control-color="white" class="amenities-carousel__container">
-            <q-carousel-slide v-for="card in amenitiesCards" :key="card._id" :name="card._id"
-              class="amenities-carousel__slide">
-              <q-img :src="card.imageUrl" :alt="'Amenity - ' + (card.title || 'Feature ' + card._id)"
-                class="amenities-carousel__image cursor-pointer" fit="cover" @click="openImageDialog(card.imageUrl)" />
-            </q-carousel-slide>
-          </q-carousel>
-        </div> -->
-
           <div class="why-choose-image col-12 col-md q-pl-md mobile-no-pl flex justify-center slide-in-right">
-            <q-img src="~src/assets/resources/home/amenities/am0.png" @click="openImageDialog('assets/dialog/am0.png')"
+            <q-img :src="a1" @click="openImageDialog(a1)"
               class="side-image" />
           </div>
         </div>
-
         <div class="section-spacer-md"></div>
         <ImageDialog v-model="showImageDialog" :imageUrl="currentDialogImageUrl" />
       </div>
     </section>
 
+
+
     <!-- Rooms Section -->
     <section id="units-section" class="rooms-section">
       <div class="padding-y-xl">
         <div class="section-spacer-sm"></div>
-
-
         <div class="rooms-component constrain-standard">
           <UnitCardComponentBlack />
-
-          <!-- <div class="card1">
-            <q-card flat class="room-card text-center bg-primary text-white">
-              <div class="room-type row justify-start items-center full-height">
-                <div class="col-md-3">
-                  <span class="web-icon web-icon--botmaskop">🕸️</span>
-                </div>
-                <div class="col-md-9">
-                  <h3 class="text-h6 room-name text-left">Botmaskop</h3>
-                  <p class="text-body1 room-description text-left">Larger private room</p>
-                </div>
-              </div>
-            </q-card>
-          </div> -->
         </div>
-
-        <!-- <div class="section-spacer-sm"></div> -->
-        <!-- <div class="fade-in-scale constrain-center-items">
-          <div class="rooms-header text-center">
-            <div class="text-h3 text-weight-bold rooms-title">Rooms</div>
-            <p class="text-h6 rooms-subtitle">
-              Choose between our Grand Private Rooms (Botmaskop) — spacious, premium bedrooms with <br> double beds — or our
-              Shoji Private Rooms (Helshoogte), private single spaces within a 6-student apartment separated by Shoji
-              screens.
-            </p>
-          </div>
-          <div class="rooms-content" :class="$q.screen.lt.sm ? 'padding-y-lg' : ''">
-          <div class="rooms-content">
-            <div class="row justify-center">
-              <div class="col-md-6 col-sm-6 col-12 q-pa-sm small-screen-only">
-                <q-card flat class="room-card text-center bg-primary text-white">
-                  <div class="room-type row justify-start items-center full-height">
-                    <div class="col-md-3">
-                      <span class="web-icon web-icon--botmaskop">🕸️</span>
-                    </div>
-                    <div class="col-md-9">
-                      <h3 class="text-h6 room-name text-left" style="line-height: 1.2;">Botmaskop</h3>
-                      <p class="text-body1 room-description text-left" style="line-height: 1.2;">Larger private room</p>
-                    </div>
-                  </div>
-
-                  <div class="room-type ">
-                    <span class="web-icon web-icon--botmaskop">🕸️</span>
-                    <h3 class="text-h6 room-name">Botmaskop</h3>
-                    <p class="text-body1 room-description">Larger private room</p>
-                  </div>
-                </q-card>
-              </div>
-
-              <div class="col-md-6 col-sm-6 col-12 q-pa-sm small-screen-only">
-                <q-card flat class="room-card text-center bg-primary text-white">
-                  <div class="room-type row justify-start items-center full-height">
-                    <div class="col-md-3">
-                      <span class="web-icon web-icon--helshoogte">🕸️</span>
-                    </div>
-                    <div class="col-md-9">
-                      <h3 class="text-h6 room-name text-left" style="line-height: 1.2;">Helshoogte</h3>
-                      <p class="text-body1 room-description text-left" style="line-height: 1.2;">Shoji separated semi-private room</p>
-                    </div>
-                  </div>
-
-                  <div class="room-type ">
-                    <span class="web-icon web-icon--helshoogte">🕸️</span>
-                    <h3 class="text-h6 room-name">Helshoogte</h3>
-                    <p class="text-body1 room-description">Shoji separated semi-private room</p>
-                  </div>
-                </q-card>
-              </div>
-            </div>
-
-            <div class="text-body1 text-center rooms-includes padding-y-lg">
-              <em><b>All rooms include: </b> Wi-Fi, storage, study desks, and secure access.</em>
-            </div>
-          </div> -->
-        <!-- </div> -->
         <div class="section-spacer-sm"></div>
       </div>
     </section>
 
 
 
-    <!-- <section id="location-section" class="location-section">
-      <div class="location-carousel">
-
-        <section class="hero-carousel bg-grey">
-          <q-carousel animated v-model="currentSlide3" infinite autoplay :autoplay-interval="5000"
-            transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
-            :height="$q.screen.lt.sm ? '340px' : '100vh'" control-color="white" class="hero-carousel__container">
-            <q-carousel-slide v-for="card in locationCards" :key="card._id" :name="card._id"
-              class="hero-carousel__slide">
-              <q-img :src="card.imageUrl" :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                class="hero-carousel__image" fit="cover" loading="lazy" />
-            </q-carousel-slide>
-          </q-carousel>
-        </section>
-      </div>
-
-      <div class="section-spacer-sm"></div>
-      <div class="padding-y-xl constrain-center-items">
-        <div class="location-content bg-transparent column items-center full-width">
-          <div class="location-info fade-in-scale">
-            <div class="text-h6 text-center section-label large-screen-only">
-              <b>⸻&nbsp;&nbsp;&nbsp;LOCATION&nbsp;&nbsp;&nbsp;⸻</b>
-            </div>
-            <div class="text-h6 text-center section-label small-screen-only">
-              <b>—&nbsp;&nbsp;&nbsp;LOCATION&nbsp;&nbsp;&nbsp;—</b>
-            </div>
-            <div class="text-h3 text-center text-weight-bold location-title line-height-normal">
-              Where Campus Meets Lifestyle<br>And Nature Meets Culture
-            </div>
-            <div class="text-h6 text-center location-subtitle">
-              <span class="text-h5 text-weight-bold gold-label">1 Old Helshoogte Road, Idas Valley, Stellenbosch</span>
-              <br><br>
-              The-WEB is more than just centrally located it's at the intersection of student life, nature, sport,
-              and heritage.
-              <br>Nestled in Idas Valley, it places you minutes away from everything that matters.
-            </div>
-
-            <div class="location-grid row justify-between q-gutter-y-sm padding-y-xl">
-
-              <div class="col-md-6 col-12">
-                <q-expansion-item :class="{ 'q-mr-sm': $q.screen.gt.sm }" header-class="text-h6 text-left q-pa-md" expand-icon-class="text-black"
-                  style="border: 1px solid #ccc;">
-                  <template v-slot:header>
-                    <div class="full-width row items-center">
-                      <div class="text-h6">Within walking or easy cycling distance</div>
-                    </div>
-                  </template>
-<div class="q-pa-lg">
-  <ul class="custom-list text-h6">
-    <li><span class="tick-emoji">✔️</span> Stellenbosch University main campus</li>
-    <li><span class="tick-emoji">✔️</span> Spar Convenience Centre for groceries and daily needs</li>
-    <li><span class="tick-emoji">✔️</span> Trendy cafés, takeaways, and student hangouts</li>
-    <li><span class="tick-emoji">✔️</span> University Shuttle Service access point</li>
-    <li>
-      <span class="tick-emoji">✔️</span> Jan S Marais Park - perfect for:
-      <ul style="list-style: disc inside; padding-left: 1.5rem;">
-        <li>Outdoor study sessions</li>
-        <li>Picnics</li>
-      </ul>
-    </li>
-    <li><span class="tick-emoji">✔️</span> Coetzenburg high-performance sports precinct</li>
-  </ul>
-</div>
-</q-expansion-item>
-</div>
-<div class="col-md-6 col-12">
-  <q-expansion-item header-class="text-h6 text-left q-pa-md" expand-icon-class="text-black"
-    style="border: 1px solid #ccc;">
-    <template v-slot:header>
-                    <div class="full-width row items-center">
-                      <div class="full-width text-h6">Surrounded by nature and adventure</div>
-                    </div>
-                  </template>
-    <div class="q-pa-lg">
-      <p class="text-h6">Explore breathtaking natural reserves and trails nearby:</p>
-      <ul class="custom-list text-h6">
-        <li><span class="tick-emoji">✔️</span> Idas Valley Nature Reserve right in your backyard</li>
-        <li><span class="tick-emoji">✔️</span> Incredible views of the Simonsberg and Jonkershoek mountain
-          ranges</li>
-        <li>
-          <span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve - world renowned for:
-          <ul style="list-style: disc inside; padding-left: 1.5rem;">
-            <li>Mountain biking</li>
-            <li>Hiking</li>
-            <li>Trail running</li>
-          </ul>
-        </li>
-        <li>
-          <span class="tick-emoji">✔️</span> Network of cycling and hiking trails through:
-          <ul style="list-style: disc inside; padding-left: 1.5rem;">
-            <li>Pine forests, fynbos, and mountain passes</li>
-            <li>Perfect for beginners and advanced riders</li>
-            <li>Guided tours available</li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </q-expansion-item>
-</div>
-<div class="col-md-6 col-12">
-  <q-expansion-item :class="{ 'q-mr-sm': $q.screen.gt.sm }" header-class="text-h6 text-left q-pa-md"
-    expand-icon-class="text-black" style="border: 1px solid #ccc;">
-    <template v-slot:header>
-                    <div class="full-width row items-center">
-                      <div class="full-width text-h6">Weekend escapes</div>
-                    </div>
-                  </template>
-    <div class="q-pa-lg">
-      <p class="text-h6">Surrounded by stunning nature destinations that include:</p>
-      <ul class="custom-list text-h6">
-        <li><span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve</li>
-        <li><span class="tick-emoji">✔️</span> Helderberg Nature Reserve</li>
-        <li><span class="tick-emoji">✔️</span> Strand Beach</li>
-        <li><span class="tick-emoji">✔️</span> Stellenbosch Botanical Garden</li>
-        <li><span class="tick-emoji">✔️</span> Coetzenburg Hiking Trails</li>
-      </ul>
-      <p class="text-h6">Ideal for long lunches, scenic views, and the perfect break from the books.</p>
-    </div>
-  </q-expansion-item>
-</div>
-<div class="col-md-6 col-12">
-  <q-expansion-item header-class="text-h6 text-left q-pa-md" expand-icon-class="text-black"
-    style="border: 1px solid #ccc;">
-    <template v-slot:header>
-                    <div class="full-width row items-center">
-                      <div class="full-width text-h6">Sporting excellence nearby</div>
-                    </div>
-                  </template>
-    <div class="q-pa-lg">
-      <ul class="custom-list text-h6">
-        <li>
-          <span class="tick-emoji">✔️</span> Idas Valley Sports Ground:
-          <ul style="list-style: disc inside; padding-left: 1.5rem;">
-            <li>Home to Stellenbosch FC and the Federico</li>
-            <li>Coppini Tennis Foundation</li>
-          </ul>
-        </li>
-        <li>
-          <span class="tick-emoji">✔️</span> Lentelus Sports Ground:
-          <ul style="list-style: disc inside; padding-left: 1.5rem;">
-            <li>Historic home of Maties Football Club</li>
-          </ul>
-        </li>
-        <li><span class="tick-emoji">✔️</span> Community tennis courts</li>
-        <li><span class="tick-emoji">✔️</span> Rugby fields</li>
-        <li><span class="tick-emoji">✔️</span> Running routes</li>
-      </ul>
-    </div>
-  </q-expansion-item>
-</div>
-</div>
-
-<div class="text-body1 text-center location-cta">
-  <em>At The-WEB, you don't just live near campus, you live at the heart of a lifestyle.
-    Mountains. Markets. Matches. Moments. It's all right here.</em>
-</div>
-</div>
-</div>
-</div>
-
-<div class="section-spacer-md"></div>
-</section> -->
-
-
-
     <!-- Location Section -->
     <section id="location-section" class="location-section">
-
-      <!-- <div class="location-carousel">
-        <section class="hero-carousel bg-grey">
-          <q-carousel animated v-model="currentSlide3" infinite autoplay :autoplay-interval="32000"
-            transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
-            :height="$q.screen.lt.sm ? '340px' : '100vh'" control-color="white" class="hero-carousel__container">
-            <q-carousel-slide v-for="card in locationCards" :key="card._id" :name="card._id"
-              class="hero-carousel__slide">
-              <q-img :src="card.imageUrl" :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                class="hero-carousel__image" fit="cover" loading="lazy" />
-            </q-carousel-slide>
-          </q-carousel>
-        </section>
-      </div> -->
-
-      <!-- <div class="section-spacer-sm"></div> -->
       <div class="padding-b-xl constrain-standard">
-        <!-- <div class=" constrain-standard"> -->
         <div class="location-content bg-transparent column items-center full-width">
           <div class="location-info fade-in-scale">
             <div class="text-h6 text-center section-label large-screen-only">
@@ -784,52 +500,7 @@
       <div class="section-spacer-md"></div>
     </section>
 
-    <!-- Why Choose The WEB? -->
-    <!-- <section class="why-choose-section">
-      <div class="padding-y-xl constrain-standard">
-        <div class="section-spacer-md"></div>
 
-        <div class="why-choose-content row justify-between items-center overflow-hidden-x ">
-          <q-card flat class="why-choose-text col-12 col-md q-pr-xl">
-            <div class="fade-in-scale">
-              <div class="text-h6 section-label large-screen-only">
-                <b><span>⸻</span>&nbsp;&nbsp;&nbsp;REDEFINE STUDENT LIVING&nbsp;&nbsp;&nbsp;⸻</b>
-              </div>
-              <div class="text-h6 section-label small-screen-only">
-                <b><span>—</span>&nbsp;&nbsp;&nbsp;REDEFINE STUDENT LIVING&nbsp;&nbsp;&nbsp;—</b>
-              </div>
-
-              <h2 class="text-h3 text-weight-bold why-choose-title">Why Choose The-WEB?</h2>
-
-              <p class="text-h6 why-choose-subtitle">
-                At The-WEB, you don't just live near campus — you live at the heart of a lifestyle.
-                Mountains. Markets. Matches. Moments. It's all right here.
-              </p>
-
-              <ul class="why-choose-list custom-list text-h6">
-                <li><span class="q-mr-sm tick-emoji">✔️</span> Purpose-built for students</li>
-                <li><span class="q-mr-sm tick-emoji">✔️</span> Architectural edge with Modern minimalist inspiration
-                </li>
-                <li><span class="q-mr-sm tick-emoji">✔️</span> Secure, modern, connected</li>
-                <li><span class="q-mr-sm tick-emoji">✔️</span> Community-driven living</li>
-                <li><span class="q-mr-sm tick-emoji">✔️</span> Affordable luxury</li>
-              </ul>
-
-              <p class="text-body1 why-choose-cta">
-                <em>Whether you're first-year or finishing your thesis, The-WEB adapts to your
-                  personal style.</em>
-              </p>
-            </div>
-          </q-card>
-
-          <div class="why-choose-image col-12 col-md q-pl-md mobile-no-pl flex justify-center slide-in-right">
-            <q-img src="~src/assets/resources/home/slider/4.jpg" @click="openImageDialog('assets/dialog/4.jpg')"
-              class="side-image" />
-          </div>
-        </div>
-        <div class="section-spacer-md"></div>
-      </div>
-    </section> -->
 
     <!-- FAQ CTA Banner -->
     <div class="faq-banner bg-black text-white">
@@ -838,30 +509,12 @@
           <div class="text-h4 text-weight-bold">
             Need more answers? Read our FAQs
           </div>
-          <div>
-            <!-- <CustomButton customStyle="width: 180px" color="black" text-color="white" label="Read FAQS"
-              to="/frequently-asked-questions" class="border-white" /> -->
-
-            <CustomButton customStyle="width: 180px" label="Read FAQs" to="/frequently-asked-questions" />
-
-            <!-- <CustomButton customStyle="width: 180px" label="APPLY NOW" @click="openUnitRentals"
-              style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" /> -->
-          </div>
+          <div><CustomButton customStyle="width: 180px" label="Read FAQs" to="/frequently-asked-questions" /></div>
         </div>
       </div>
     </div>
 
-    <!-- Attraction Slide -->
-    <!-- <div id="images-section" style="margin-top: 0;" :style="$q.screen.gt.sm ? 'padding: 10em' : 'padding: 0'">
-      <q-carousel animated v-model="currentSlide2" infinite autoplay :autoplay-interval="5000"
-        transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
-        :height="$q.screen.lt.sm ? 'auto' : '100vh'" arrows control-color="white" class="fullscreen-carousel">
-        <q-carousel-slide v-for="card in advertCards" :key="card._id" :name="card._id"
-          class="column no-wrap flex-center">
-          <q-img :src="card.imageUrl" :alt="'Room ' + card._id" class="hero-image" fit="cover" />
-        </q-carousel-slide>
-      </q-carousel>
-    </div> -->
+
 
     <!-- contact card -->
     <div id="contact-section" style="height: 100%; background-color: #333;">
@@ -870,31 +523,35 @@
         <q-card flat class="bg-transparent text-white row justify-center">
 
           <div class="col-md-6 col-12">
-            <div class="text-h3 q-mb-lg text-underline-on-hover">Discuss with Our Team</div>
-            <!-- <q-separator color="primary" style="width: 60%;" /> -->
-            <!-- <div class="section-spacer-sm" ></div> -->
+            <div class="text-h3 text-underline-on-hover">Discuss with Our Team</div>
 
-            <div class="column text-body1">
+            <div class="column text-body1 q-mt-lg">
               <a href="mailto:admin@the-web.co.za" class="q-mb-sm row items-center"
                 style="text-decoration: none; color: white;">
                 <span class="gold-label text-bold"><q-icon name="eva-email-outline" class="q-mr-md"
                     size="20px" /></span>
                 admin@the-web.co.za
               </a>
-              <a href="tel:+27213008801" target="_blank" class="q-mb-md row items-center"
+              <a href="tel:+27213008801" target="_blank" class="q-mb-sm row items-center"
                 style="color: white; text-decoration: none; ">
                 <span class="gold-label text-bold"><q-icon name="eva-phone-outline" class="q-mr-md"
                     size="20px" /></span>
                 (+27) 21-300-8801
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61581033305332" target="_blank" class="q-mb-md row items-center"
+                style="text-decoration: none; color: white;">
+                <span class="gold-label text-bold"><q-icon name="eva-facebook-outline" class="q-mr-md"
+                    size="20px" /></span>
+                Facebook
               </a>
             </div>
           </div>
 
           <div class="col-md-6 col-12 bg-transparent">
             <div class="section-spacer-sm small-screen-only"></div>
-            <div class="text-h3 q-mb-lg text-underline-on-hover">Contact Us</div>
+            <div class="text-h3 text-underline-on-hover">Contact Us</div>
 
-            <div class="">
+            <div class="q-mt-lg">
               <q-form @submit="submitContactForm" style="width: 100%;">
                 <q-input filled label-color=white v-model="userContact.firstName" label="Your Name" stack-label
                   class="q-mb-md bg-dark" required input-style="color: white;" />
@@ -939,13 +596,9 @@
       </div>
       <div class="footer-section text-white constrain-standard" style="background-color: #333;">
         <q-separator color="primary" style="width: 65%; margin: auto; height: 2px;" />
-        <div class="q-py-md row justify-center items-center text-body1" style="opacity: 75%;">
+        <div class="q-py-sm row justify-center items-center text-body1" style="opacity: 75%;">
           © 2025 The-WEB. All rights reserved. | Developed by
-          <!-- <a href="https://aqeel-dev-portfolio.web.app/" target="_blank" class="text-bold text-white cursor-pointer"
-            style="text-decoration: none;">
-            Aqeel Hanslo
-          </a> -->
-          &nbsp;
+          <span class="large-screen-only">&nbsp;</span>
           <a href="https://wlvsolutions.co.za/" target="_blank" class="text-bold text-white cursor-pointer"
             style="text-decoration: none;">
             WLV Solutions
@@ -955,6 +608,7 @@
       </div>
     </div>
 
+    <!-- overlay button -->
     <CustomButton customStyle="width: 180px" label="APPLY NOW" @click="openUnitRentals"
       style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" />
   </q-page>
@@ -966,8 +620,6 @@ import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
 
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
-
-// import g21 from 'src/assets/resources/home/gallery/g21.jpg';
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/EmailService';
@@ -975,31 +627,15 @@ import Helper from 'src/services/utils';
 import UnitCardComponent from 'src/components/user/UnitCardComponent.vue';
 import UnitCardComponentBlack from 'src/components/user/UnitCardComponentBlack.vue';
 
-import am0 from 'src/assets/resources/home/amenities/am0.png';
-// import am1 from 'src/assets/resources/home/amenities/am1.png';
-// import am2 from 'src/assets/resources/home/amenities/am2.jpeg';
-// import am3 from 'src/assets/resources/home/amenities/am3.jpeg';
+// Hero
+import main from 'src/assets/resources/home/slider/main.png';
+import home1 from 'src/assets/resources/home/slider/1.png';
+import home2 from 'src/assets/resources/home/slider/2.png';
+import home3 from 'src/assets/resources/home/slider/3.png';
+import home4 from 'src/assets/resources/home/slider/4.png';
 
-import a1 from 'src/assets/resources/home/advert/a1.png';
-import a2 from 'src/assets/resources/home/advert/a2.png';
-import a3 from 'src/assets/resources/home/advert/a3.png';
-import a4 from 'src/assets/resources/home/advert/a4.png';
-import a5 from 'src/assets/resources/home/advert/a5.png';
-
-// import l1 from 'src/assets/resources/home/location/old2/location1.jpg'
-// import l2 from 'src/assets/resources/home/location/old2/location2.jpg'
-// import l3 from 'src/assets/resources/home/location/old2/location3.jpg'
-// import l4 from 'src/assets/resources/home/location/old2/location4.jpg'
-// import l5 from 'src/assets/resources/home/location/old2/location5.jpg'
-// import l6 from 'src/assets/resources/home/location/old2/location6.jpg'
-// import l7 from 'src/assets/resources/home/location/old2/location7.jpg'
-
-import l0 from 'src/assets/resources/home/location/location0.jpeg'
-import l1 from 'src/assets/resources/home/location/location1.jpg'
-import l2 from 'src/assets/resources/home/location/location2.jpg'
-import l3 from 'src/assets/resources/home/location/location3.jpg'
-import l4 from 'src/assets/resources/home/location/location4.jpg'
-import l5 from 'src/assets/resources/home/location/location5.jpg'
+// Amenities
+import a1 from 'src/assets/resources/home/amenities/am0.png';
 
 // Location - WALKING
 import w1 from 'src/assets/resources/home/location/walking/w1.jpg'
@@ -1025,12 +661,6 @@ import s3 from 'src/assets/resources/home/location/sport/s3.jpg'
 import s4 from 'src/assets/resources/home/location/sport/s4.jpg'
 import s5 from 'src/assets/resources/home/location/sport/s5.jpg'
 import s6 from 'src/assets/resources/home/location/sport/s6.jpg'
-
-import main from 'src/assets/resources/home/slider/main.png';
-import home1 from 'src/assets/resources/home/slider/1.jpg';
-import home2 from 'src/assets/resources/home/slider/2.jpg';
-import home3 from 'src/assets/resources/home/slider/3.jpg';
-import home4 from 'src/assets/resources/home/slider/4.jpg';
 
 import { useMeta } from 'quasar';
 
@@ -1136,21 +766,8 @@ export default {
         { _id: 4, imageUrl: home3 },
         { _id: 5, imageUrl: home4 },
       ],
-      advertCards: [
-        { _id: 1, imageUrl: a1 },
-        { _id: 2, imageUrl: a2 },
-        { _id: 3, imageUrl: a3 },
-        { _id: 4, imageUrl: a4 },
-        { _id: 5, imageUrl: a5 },
-      ],
-      locationCards: [
-        { _id: 1, imageUrl: l0 },
-        { _id: 2, imageUrl: l1 },
-        { _id: 3, imageUrl: l2 },
-        { _id: 4, imageUrl: l3 },
-        { _id: 5, imageUrl: l4 },
-        { _id: 6, imageUrl: l5 },
-      ],
+
+      a1,
 
       // New Location Setup
       walkingSlide: 1,
@@ -1182,24 +799,6 @@ export default {
         { _id: 5, imageUrl: s5 },
         { _id: 6, imageUrl: s6 },
       ],
-
-      // currentSlide4: 3,
-      // updatedLocationCards: [
-      //   { _id: 1, imageUrl: l5, title: 'Walking Distance' },
-      //   { _id: 2, imageUrl: l3, title: 'Nature & Adventure' },
-      //   { _id: 3, imageUrl: l0, title: 'Weekend Escapes' },
-      //   { _id: 4, imageUrl: l2, title: 'Sporting Excellence' },
-      //   { _id: 5, imageUrl: l4, title: 'Extra Slide 1' },
-      //   { _id: 6, imageUrl: l1, title: 'Extra Slide 2' },
-      // ],
-
-      amenitiesCards: [
-        { _id: 1, imageUrl: am0 },
-        // { _id: 2, imageUrl: am1 },
-        // { _id: 3, imageUrl: am2 },
-        // { _id: 4, imageUrl: am3 },
-      ],
-
       userContact: {
         firstName: '',
         email: ''
@@ -1222,7 +821,7 @@ export default {
       this.$nextTick(() => {
         event.target.scrollIntoView({
           behavior: 'smooth',
-          block: 'center' // can also be 'start' to put it at top
+          block: 'center'
         });
       });
     },
@@ -1296,7 +895,6 @@ export default {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('animate-once')
-          // Force hardware acceleration for mobile
           entry.target.style.willChange = 'transform, opacity'
         }
       })
@@ -1317,6 +915,7 @@ export default {
 
 <!-- home sections -->
 <style lang="scss" scoped>
+
 /* #region HERO CAROUSEL */
 .hero-carousel {
   margin-top: 0;
@@ -2244,10 +1843,10 @@ export default {
 .marker-1
   @extend %marker-base
   top: 15%
-  left: 64%
-  width: 60px
-  height: 43px
-  padding: 3px
+  left: 63%
+  width: 59px
+  height: 53.5px
+  // padding: 3px
   background-image: url('/assets/map/web.png')
   background-color: white
   border: 2px solid white

@@ -1,23 +1,9 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
+    <div class="constrain-standard row justify-center q-py-md">
 
-      <!-- NEW LOGIN COUNT BAR CHART SECTION -->
-      <!-- <q-card flat bordered class="col-md-11 col-12 q-ma-sm">
-        <q-card-section class="row justify-center">
-          <div class="text-h6">User Login Activity</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section class="row justify-center ">
-          <div style="width: 100%; height: 300px;">
-            <canvas ref="loginBarChart"></canvas>
-          </div>
-        </q-card-section>
-      </q-card> -->
-
-      <div class="row justify-center full-height" style="width: 100%;">
-        <!-- Pie Chart Section -->
-        <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
+      <div class="col-md-3 col-12 full-height">
+        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-card-section class="row justify-center">
             <div class="text-h6">User Online Status</div>
           </q-card-section>
@@ -26,16 +12,16 @@
             <div style="width: 300px; height: 300px;">
               <canvas ref="userPieChart"></canvas>
             </div>
-
           </q-card-section>
-
           <q-card-section>
             <CustomButton label="Add New User" @click="openAddNewUsersDialog" />
           </q-card-section>
         </q-card>
+      </div>
 
+      <div class="col-md-9 col-12 full-height">
         <!-- USER TABLE -->
-        <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
+        <q-card flat bordered class="full-height">
           <q-card-section class="row justify-center">
             <div class="text-h6">Registered Users</div>
           </q-card-section>

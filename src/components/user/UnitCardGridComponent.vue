@@ -18,7 +18,8 @@
 
         <!-- Smart Map -->
         <div class="map-image-wrapper" v-if="isSpecificFloorRoute">
-          <q-img v-if="filteredFloorCards.length > 0" :src="filteredFloorCards[0].imageUrl" class="hero-image" @click="openImageDialog(0)">
+          <q-img v-if="filteredFloorCards.length > 0" :src="filteredFloorCards[0].imageUrl" class="hero-image"
+            @click="openImageDialog(0)">
           </q-img>
         </div>
       </div>
@@ -32,167 +33,133 @@
       <template v-if="isHomeRoute">
         <div>
           <q-card flat v-for="(units, floorIndex) in firstFloorCards" :key="floorIndex" class="soft-shadow-card">
-            <!-- <q-card-section class="header-tint">
-              <div class="text-h6">
-                {{ floorLabels[currentFloor - 1] }} ({{ units.length }} items)
-              </div>
-              <q-separator class="q-my-sm" style="width: 100%;" />
-            </q-card-section>
+            <q-list class="row justify-center">
+              <q-card v-for="unit in units" :key="unit._id"
+                class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-6 col-12"
+                :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
+                :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }" style="max-width: 496px;"
+                @click="openUnitImageDialog(unit)">
+                <!-- Image -->
+                <div class="row justify-center">
+                  <div class="image-container reserved-container full-height">
+                    <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="reserved-image"
+                      fit="cover" />
+                    <div v-if="unit.reservedBy" class="reserved-full-overlay">
+                      RESERVED
+                    </div>
+                  </div>
+                </div>
 
-            <q-card-section class="row justify-center q-gutter-md q-pa-lg">
-              <q-input filled dense debounce="300" v-model="search" placeholder="Search by unit number, or status"
-                class="col-xs-12 col-sm-6 col-md-3">
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-              <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
-                class="col-xs-12 col-sm-6 col-md-1" emit-value map-options />
-              <q-select filled dense v-model="selectedFloor" :options="[
-                { label: '1st Floor', value: 1 },
-                { label: '2nd Floor', value: 2 },
-                { label: '3rd Floor', value: 3 },
-              ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-1" @update:model-value="goToFloor" />
-              <q-btn flat rounded icon="refresh" label="Reset" color="red"
-                class="q-py-sm custom-button col-xs-12 col-sm-6 col-md-1" @click="resetFilters" />
-            </q-card-section> -->
-
-
-              <q-list class="row justify-center">
-                <q-card
-                  v-for="unit in units"
-                  :key="unit._id"
-                  class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-6 col-12"
-                  :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
-                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }"
-                  style="max-width: 496px;"
-                  @click="openUnitImageDialog(unit)"
-                >
-                  <!-- Image -->
-                  <div class="row justify-center">
-                    <div class="image-container reserved-container full-height">
-                      <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)"
-                        class="reserved-image" fit="cover" />
-                      <div v-if="unit.reservedBy" class="reserved-full-overlay">
-                        RESERVED
+                <!-- Heading -->
+                <q-card-section style="background-color: #f8f8f8;">
+                  <div class="row justify-between">
+                    <div class="column items-start q-pa-sm">
+                      <div class="text-h6">Unit {{ unit.unitNumber }}</div>
+                      <div class="text-caption text-grey-9">
+                        <div v-if="getAvailableSubUnits(unit)">
+                          {{ unit.floorLevel }} <br>
+                          {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                            unit.unitOccupants || 0}}
+                          Available
+                        </div>
+                        <div v-else>
+                          {{ unit.floorLevel }} <br>
+                          {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                            unit.unitOccupants || 0}}
+                          Occupied
+                        </div>
                       </div>
+                    </div>
+
+                    <div class="column items-end q-pa-sm">
+                      <span v-if="getAvailableSubUnits(unit)" class="text-h6 text-primary">
+                        Available
+                      </span>
+                      <span v-else class="text-h6 text-negative">
+                        Occupied
+                      </span>
+                      <span class="text-caption" v-if="getAvailableSubUnits(unit)">
+                        <b>R{{ Number(unit.unitPrice).toLocaleString('en-ZA') }}&nbsp;/person&nbsp;/month</b>
+                      </span>
                     </div>
                   </div>
 
-                  <!-- Heading -->
-                  <q-card-section style="background-color: #f8f8f8;">
-                    <div class="row justify-between">
-                      <div class="column items-start q-pa-sm">
-                        <div class="text-h6">Unit {{ unit.unitNumber }}</div>
-                        <div class="text-caption text-grey-9">
-                          <div v-if="getAvailableSubUnits(unit)">
-                            {{ unit.floorLevel }} <br>
-                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
-                              unit.unitOccupants || 0}}
-                            Available
-                          </div>
-                          <div v-else>
-                            {{ unit.floorLevel }} <br>
-                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
-                              unit.unitOccupants || 0}}
-                            Occupied
-                          </div>
+                  <div class="row justify-center q-mt-xs">
+                    <div class="unit-meta-info row justify-between">
+
+                      <!-- Status -->
+                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                        <q-tooltip anchor="top middle" self="bottom middle">
+                          Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
+                        </q-tooltip>
+
+                        <q-icon :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
+                          :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'" size="sm" />
+
+                        <div class="text-caption">
+                          {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
                         </div>
                       </div>
 
-                      <div class="column items-end q-pa-sm">
-                        <span v-if="getAvailableSubUnits(unit)" class="text-h6 text-primary">
-                          Available
-                        </span>
-                        <span v-else class="text-h6 text-negative">
-                          Occupied
-                        </span>
-                        <span class="text-caption" v-if="getAvailableSubUnits(unit)">
-                          <b>From R {{ Number(unit.unitPrice).toFixed(2) }}</b>
-                        </span>
+                      <!-- Unit Type -->
+                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                        <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
+                        <q-icon name="home" size="sm" />
+                        <div class="text-caption">{{ unit.unitType }}</div>
                       </div>
+
+                      <!-- Occupancy -->
+                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                        <q-tooltip anchor="top middle" self="bottom middle">
+                          {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                            unit.unitOccupants || 0}}
+                          available
+                        </q-tooltip>
+
+                        <q-icon :name="unit.subUnits?.[0]?.type === 'bed' ? 'bed'
+                          : unit.subUnits?.[0]?.type === 'room' ? 'meeting_room'
+                            : 'help'" size="sm" />
+
+                        <div class="text-caption">
+                          {{unit.subUnits?.filter(su => !su.reservedBy)?.length || unit.unitOccupants || 0}}
+                          {{ unit.subUnits?.[0]?.type === 'bed' ? 'Beds'
+                            : unit.subUnits?.[0]?.type === 'room' ? 'Rooms'
+                              : 'Units' }}
+                        </div>
+                      </div>
+
+                      <!-- Gender / Access -->
+                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                        <q-tooltip anchor="top middle" self="bottom middle">
+                          <span v-if="unit.accessKey?.isShared">Access Key Required</span>
+                          <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
+                          <span v-else-if="unit.currentOccupants > 0">General Applied</span>
+                          <span v-else>Unassigned</span>
+                        </q-tooltip>
+
+                        <q-icon v-if="unit.accessKey?.isShared" name="vpn_key" color="orange" size="sm" />
+                        <q-icon v-else-if="unit.genderAssignment === 'Male'" name="male" color="blue" size="sm" />
+                        <q-icon v-else-if="unit.genderAssignment === 'Female'" name="female" color="pink" size="sm" />
+                        <q-icon v-else-if="unit.currentOccupants > 0" name="group" color="green" size="sm" />
+                        <q-icon v-else name="help" color="grey" size="sm" />
+
+                        <div class="text-caption">
+                          <span v-if="unit.accessKey?.isShared">Key</span>
+                          <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }}</span>
+                          <span v-else-if="unit.currentOccupants > 0">General</span>
+                          <span v-else>Unassigned</span>
+                        </div>
+                      </div>
+
                     </div>
+                  </div>
+                </q-card-section>
 
-                    <div class="row justify-center q-mt-xs">
-                      <div class="unit-meta-info row justify-between">
-
-                        <!-- Status -->
-                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
-                          <q-tooltip anchor="top middle" self="bottom middle">
-                            Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
-                          </q-tooltip>
-
-                          <q-icon
-                            :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
-                            :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'"
-                            size="sm"
-                          />
-
-                          <div class="text-caption">
-                            {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
-                          </div>
-                        </div>
-
-                        <!-- Unit Type -->
-                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
-                          <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
-                          <q-icon name="home" size="sm" />
-                          <div class="text-caption">{{ unit.unitType }}</div>
-                        </div>
-
-                        <!-- Occupancy -->
-                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
-                          <q-tooltip anchor="top middle" self="bottom middle">
-                            {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
-                              unit.unitOccupants || 0}}
-                            available
-                          </q-tooltip>
-
-                          <q-icon :name="unit.subUnits?.[0]?.type === 'bed' ? 'bed'
-                            : unit.subUnits?.[0]?.type === 'room' ? 'meeting_room'
-                              : 'help'" size="sm" />
-
-                          <div class="text-caption">
-                            {{unit.subUnits?.filter(su => !su.reservedBy)?.length || unit.unitOccupants || 0}}
-                            {{ unit.subUnits?.[0]?.type === 'bed' ? 'Beds'
-                              : unit.subUnits?.[0]?.type === 'room' ? 'Rooms'
-                                : 'Units' }}
-                          </div>
-                        </div>
-
-                        <!-- Gender / Access -->
-                        <div class="col-md-2 col-12 column items-center hover-scale-icon">
-                          <q-tooltip anchor="top middle" self="bottom middle">
-                            <span v-if="unit.accessKey?.isShared">Access Key Required</span>
-                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
-                            <span v-else-if="unit.currentOccupants > 0">General Applied</span>
-                            <span v-else>Unassigned</span>
-                          </q-tooltip>
-
-                          <q-icon v-if="unit.accessKey?.isShared" name="vpn_key" color="orange" size="sm" />
-                          <q-icon v-else-if="unit.genderAssignment === 'Male'" name="male" color="blue" size="sm" />
-                          <q-icon v-else-if="unit.genderAssignment === 'Female'" name="female" color="pink" size="sm" />
-                          <q-icon v-else-if="unit.currentOccupants > 0" name="group" color="green" size="sm" />
-                          <q-icon v-else name="help" color="grey" size="sm" />
-
-                          <div class="text-caption">
-                            <span v-if="unit.accessKey?.isShared">Key</span>
-                            <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }}</span>
-                            <span v-else-if="unit.currentOccupants > 0">General</span>
-                            <span v-else>Unassigned</span>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </q-card-section>
-
-                  <!-- <q-card-section>
+                <!-- <q-card-section>
                     <CustomButton label="Reserve Now" @click="handleUnitClick(unit)" />
                   </q-card-section> -->
-                </q-card>
-              </q-list>
-
+              </q-card>
+            </q-list>
           </q-card>
         </div>
       </template>
@@ -236,8 +203,7 @@
                 <q-card v-for="unit in units" :key="unit._id"
                   class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-5 col-12"
                   :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
-                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }"
-                  style="max-width: 496px;"
+                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }" style="max-width: 496px;"
                   @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
 
                   <!-- Image -->
@@ -280,7 +246,7 @@
                           Occupied
                         </span>
                         <span class="text-caption" v-if="getAvailableSubUnits(unit)">
-                          <b>From R {{ Number(unit.unitPrice).toFixed(2) }}</b>
+                        <b>R{{ Number(unit.unitPrice).toLocaleString('en-ZA') }}&nbsp;/person&nbsp;/month</b>
                         </span>
                       </div>
                     </div>
@@ -294,11 +260,8 @@
                             Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
                           </q-tooltip>
 
-                          <q-icon
-                            :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
-                            :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'"
-                            size="sm"
-                          />
+                          <q-icon :name="getAvailableSubUnits(unit) > 0 ? 'check_circle' : 'block'"
+                            :color="getAvailableSubUnits(unit) > 0 ? 'positive' : 'negative'" size="sm" />
 
                           <div class="text-caption">
                             {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
@@ -396,23 +359,22 @@
 <script>
 import BedStatsComponent from './BedStatsComponent.vue'
 import UnitDetailedApplicationForm from './UnitDetailedApplicationForm.vue'
-import UnitDetailsComponent from './UnitDetailsComponent.vue'
-import UnitApplicationFormComponent from './UnitApplicationFormComponent.vue'
+// import UnitDetailsComponent from './UnitDetailsComponent.vue'
+// import UnitApplicationFormComponent from './UnitApplicationFormComponent.vue'
 import UnitService from '../../services/UnitService'
 import RentalService from '../../services/RentalService'
 import Helper from '../../services/utils'
 import floor1 from 'src/assets/resources/floorLayout/FirstFloorLayout.png'
 import floor2 from 'src/assets/resources/floorLayout/SecondFloorLayout.png'
 import floor3 from 'src/assets/resources/floorLayout/ThirdFloorLayout.png'
-// import floorHome from 'src/assets/resources/floorLayout/FirstFloorLayoutHome.png'
 import CustomButton from '../elements/CustomButton.vue'
 import SimpleZoom from '../elements/SimpleZoom.vue'
 
 export default {
   name: 'UnitGridSection',
   components: {
-    UnitDetailsComponent,
-    UnitApplicationFormComponent,
+    // UnitDetailsComponent,
+    // UnitApplicationFormComponent,
     UnitDetailedApplicationForm,
     CustomButton, BedStatsComponent, SimpleZoom
   },
@@ -449,25 +411,16 @@ export default {
         { _id: 1, imageUrl: floor1 },
         { _id: 2, imageUrl: floor2 },
         { _id: 3, imageUrl: floor3 }
-        // { _id: 4, imageUrl: floorHome }
       ],
       currentFloor: null
     }
   },
   computed: {
-
-    // currentRoute() {
-    //   return this.$route.params.floor;
-    // },
-
-    // Check if the current user reserved any unit
     myReservedUnitId() {
       if (!this.isLoggedIn) return null;
       const unit = this.filteredUnits[0]?.find(u => u.reservedBy === this.userDetails._id);
       return unit ? unit._id : null;
     },
-
-    // Return a list of all unit IDs that are reserved (by anyone)
     reservedUnitIds() {
       return this.filteredUnits[0]
         ?.filter(u => u.reservedBy)
@@ -480,6 +433,8 @@ export default {
       return this.myRentals.some(r => r.status === 'Pending' || r.status === 'Active')
     },
     isSpecificFloorRoute() {
+
+      // digit sequence
       return this.$route.path.match(/\/units\/apply\/floor\/\d+$/)
     },
     isHomeRoute() {
@@ -488,7 +443,6 @@ export default {
     carouselFloorCards() {
       if (this.isHomePage || this.$route.path === '/units/apply') {
         return this.floorCards.filter(card => card._id === 1);
-        // return this.floorCards.filter(card => card._id === 4);
       }
       if (this.isSpecificFloorRoute) {
         return this.floorCards.filter(card => card._id === this.currentFloor);
@@ -512,7 +466,6 @@ export default {
             unit.unitStatus?.toLowerCase().includes(searchTerm)
           )
         }
-        console.log(floorUnits)
         return [floorUnits]
       }
     },
@@ -599,7 +552,6 @@ export default {
       if (matchedUnit) {
         this.selectedUnit = matchedUnit;
         this.selectedSubUnit = subUnitId;
-        // console.log('selectedSubUnit set to:', this.selectedSubUnit);
         this.detailFormDialog = true;
       } else {
         this.$q.notify({ type: 'negative', message: 'Unit not found' });
@@ -823,8 +775,6 @@ export default {
 
       this.selectedUnit = cleanUnit;
       this.detailFormDialog = true;
-      // this.detailsDialog = true
-      // this.applyDialog = true
     },
 
     handleDialogClose() {
@@ -837,14 +787,11 @@ export default {
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     parseFloorFromRoute() {
       if (this.isSpecificFloorRoute) {
+
         this.currentFloor = parseInt(this.$route.params.floor)
-
         this.selectedFloor = this.currentFloor
-
-        // Auto-expand the relevant floor section
         this.expanded = this.expanded.map((_, i) => i === this.currentFloor - 1)
 
-        // Reset carousel to first (or only) slide
         const card = this.floorCards.find(card => card._id === this.currentFloor)
         this.currentSlide = card?._id ?? 1
       }
@@ -878,6 +825,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 /* #region MAP WRAPPER */
 .map-image-wrapper {
   width: 100%;

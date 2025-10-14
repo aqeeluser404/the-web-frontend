@@ -3,7 +3,6 @@ import axios from 'axios'
 // ensures cookies & tokens are validated
 const axiosInstance = axios.create({
   baseURL: `${process.env.VUE_APP_API_BASE_URL}`,
-  // baseURL: `https://the-web-backend.onrender.com`,
   withCredentials: true
 })
 

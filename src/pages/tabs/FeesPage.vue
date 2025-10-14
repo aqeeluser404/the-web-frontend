@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import home2 from 'src/assets/resources/home/slider/2.jpg';
+import home2 from 'src/assets/resources/home/slider/2.png';
 
 export default {
   data() {

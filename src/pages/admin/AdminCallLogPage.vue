@@ -1,96 +1,102 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
-      <q-card flat bordered class="col-md-3 col-12 q-ma-sm full-height">
+    <div class="constrain-standard row justify-center q-py-md">
 
-        <q-card-section class="row justify-center">
-          <div class="text-h6">Call Log Status Distribution</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section class="row justify-center">
-          <div style="width: 300px; height: 300px;">
-            <canvas ref="pieChart"></canvas>
-          </div>
-        </q-card-section>
-      </q-card>
+      <div class="col-md-3 col-12 full-height">
+        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
 
-      <q-card flat bordered class="col-md-8 col-12 q-ma-sm full-height">
-        <q-card-section class="row justify-center">
-          <div class="text-h6">Call Log History</div>
-        </q-card-section>
-        <q-card-section class="row justify-between">
-          <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch" class="col-12 col-md-9" />
-          <q-select
-            v-model="selectedCallLogStatus"
-            :options="callLogStatus"
-            label="Call Log Status"
-            @update:model-value="filteredByCallLogStatus"
-            class="col-12 col-md-2"
-          />
-        </q-card-section>
-        <q-card-section v-if="callLogs.length > 0">
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Log Number</th>
-                <th class="text-left">Applicant</th>
-                <th class="text-left">Opened Date</th>
-                <th class="text-left">Closed Date</th>
-                <th class="text-left">Call Type </th>
-                <th class="text-left">Status</th>
-                <th class="text-left">Vendor</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(callLog, index) in filteredCallLogs" @click.stop="openUpdateCallLogNotesDialog(callLog)" :key="callLog._id">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer id">{{ callLog.logNumber }}</td>
-                <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(callLog.user)">{{ callLog.username }}</td>
-                <td class="text-left cursor-pointer">{{ formatDate(callLog.createdAt) }}</td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="callLog.closedAt">
-                    {{ formatDate(callLog.closedAt) }}
-                  </div>
-                  <div v-else>N/A</div>
-                </td>
-                <td class="text-left cursor-pointer">{{ callLog.callType }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="
-                    { 'callLog-opened': callLog.status === 'Opened'},
-                    { 'callLog-assigned': callLog.status === 'Assigned'},
-                    { 'callLog-resolved': callLog.status === 'Resolved'},
-                    { 'callLog-closed': callLog.status === 'Closed'}"
-                  >
-                  {{ callLog.status }}
-                </td>
+          <q-card-section class="row justify-center">
+            <div class="text-h6">Call Log Status Distribution</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="row justify-center">
+            <div style="width: 300px; height: 300px;">
+              <canvas ref="pieChart"></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
 
-                <td class="text-left cursor-pointer">
-                  <div v-if="callLog.vendorInfo && callLog.vendorInfo.vendorType">
-                    {{ callLog.vendorInfo.vendorType }}
-                  </div>
-                  <div v-else>N/A</div>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline" @click="deleteCallLog(callLog)" />
-                  <CustomButton v-if="callLog.status !== 'Closed'" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openUpdateCallLogDialog(callLog)" />
-                  <CustomButton v-if="callLog.status === 'Assigned'" @click="sendEmailToVendor(callLog)" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-email-outline" />
-                  <CustomButton v-if="callLog.status === 'Resolved'" @click="closeCallLog(callLog._id)" flat color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" />
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
-        <q-card-section v-else>
-          <q-card flat>
-            <q-card-section class="row justify-center">
-              <q-item>
-                <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
-              </q-item>
-            </q-card-section>
-          </q-card>
-        </q-card-section>
-      </q-card>
+      <div class="col-md-9 col-12 full-height">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="row justify-center">
+            <div class="text-h6">Call Log History</div>
+          </q-card-section>
+          <q-card-section class="row justify-between">
+            <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
+              class="col-12 col-md-9" />
+            <q-select v-model="selectedCallLogStatus" :options="callLogStatus" label="Call Log Status"
+              @update:model-value="filteredByCallLogStatus" class="col-12 col-md-2" />
+          </q-card-section>
+          <q-card-section v-if="callLogs.length > 0">
+            <q-markup-table flat bordered>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left">Log Number</th>
+                  <th class="text-left">Applicant</th>
+                  <th class="text-left">Opened Date</th>
+                  <th class="text-left">Closed Date</th>
+                  <th class="text-left">Call Type </th>
+                  <th class="text-left">Status</th>
+                  <th class="text-left">Vendor</th>
+                  <th class="text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(callLog, index) in filteredCallLogs" @click.stop="openUpdateCallLogNotesDialog(callLog)"
+                  :key="callLog._id">
+                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                  <td class="text-left cursor-pointer id">{{ callLog.logNumber }}</td>
+                  <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(callLog.user)">{{
+                    callLog.username }}</td>
+                  <td class="text-left cursor-pointer">{{ formatDate(callLog.createdAt) }}</td>
+                  <td class="text-left cursor-pointer">
+                    <div v-if="callLog.closedAt">
+                      {{ formatDate(callLog.closedAt) }}
+                    </div>
+                    <div v-else>N/A</div>
+                  </td>
+                  <td class="text-left cursor-pointer">{{ callLog.callType }}</td>
+                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'callLog-opened': callLog.status === 'Opened' },
+                    { 'callLog-assigned': callLog.status === 'Assigned' },
+                    { 'callLog-resolved': callLog.status === 'Resolved' },
+                    { 'callLog-closed': callLog.status === 'Closed' }">
+                    {{ callLog.status }}
+                  </td>
+
+                  <td class="text-left cursor-pointer">
+                    <div v-if="callLog.vendorInfo && callLog.vendorInfo.vendorType">
+                      {{ callLog.vendorInfo.vendorType }}
+                    </div>
+                    <div v-else>N/A</div>
+                  </td>
+                  <td class="text-left cursor-pointer">
+                    <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                      @click.stop="deleteCallLog(callLog)" />
+                    <CustomButton v-if="callLog.status !== 'Closed'" flat color="red" text-color="red"
+                      customStyle="width: 15%" icon="eva-edit-2-outline"
+                      @click.stop="openUpdateCallLogDialog(callLog)" />
+                    <CustomButton v-if="callLog.status === 'Assigned'" @click.stop="sendEmailToVendor(callLog)" flat
+                      color="red" text-color="red" customStyle="width: 15%" icon="eva-email-outline" />
+                    <CustomButton v-if="callLog.status === 'Resolved'" @click.stop="closeCallLog(callLog._id)" flat
+                      color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" />
+                  </td>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </q-card-section>
+          <q-card-section v-else>
+            <q-card flat>
+              <q-card-section class="row justify-center">
+                <q-item>
+                  <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
+                </q-item>
+              </q-card-section>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
 
     <q-dialog v-model="updateCallLogDialog">
@@ -244,10 +250,10 @@ export default {
           datasets: [{
             data: data,
             backgroundColor: [
-            '#CC5500', // Orange for Opened
-            '#007BFF', // Blue for Assigned
-            '#28A745', // Green for Resolved
-            '#6C757D'  // Grey for Closed
+              '#CC5500', // Orange for Opened
+              '#007BFF', // Blue for Assigned
+              '#28A745', // Green for Resolved
+              '#6C757D'  // Grey for Closed
             ]
           }]
         },
@@ -321,7 +327,7 @@ export default {
         } else {
           this.$q.notify({ type: 'negative', message: 'Delete call log failed. Please try again.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
 
     async sendEmailToVendor(callLog) {
@@ -347,7 +353,7 @@ export default {
           console.error(error);
           this.$q.notify({ type: 'negative', message: 'Failed to send this call log notification.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
 
     async closeCallLog(callLogId) {
@@ -377,7 +383,7 @@ export default {
           console.error(error);
           this.$q.notify({ type: 'negative', message: 'Failed to resolve call log.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
 
     openUpdateCallLogDialog(callLog) {

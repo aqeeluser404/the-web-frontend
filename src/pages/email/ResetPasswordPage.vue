@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="background-wrapper">
-      <q-img src="~src/assets/resources/login/outside3.jpg" alt="Hero Image" class="blurred-background"/>
+      <q-img src="~src/assets/resources/authentication/background1.jpg" alt="Hero Image" class="blurred-background"/>
     </div>
     <div class="absolute-full column justify-center items-center text-black">
       <q-card>

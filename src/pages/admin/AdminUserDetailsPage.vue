@@ -1,247 +1,219 @@
 <template>
   <q-page>
-    <div class="q-pa-md row justify-center">
+    <div class="constrain-standard row justify-center q-py-md">
 
-
-      <!-- USER DETAILS -->
-      <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
-        <q-card-section>
-          <div class="text-h6">User Details</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails.firstName" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails.lastName" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">
-              <span>Email
-                <span class="text-subtitle1 q-ml-md"
-                  v-if="userDetails && userDetails.verification && userDetails.verification.isVerified">
-                  <!-- VERIFIED  -->
-                  <q-icon color="secondary" name="eva-checkmark-circle-2-outline" />
-                </span>
-                <span class="text-subtitle1 q-ml-md" v-else>
-                  <!-- NOT VERIFIED  -->
-                  <q-icon color="negative" name="eva-alert-circle-outline" />
-                </span>
-              </span>
-            </q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails.email" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Gender</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input v-if="userDetails.gender" readonly v-model="userDetails.gender" />
-              <q-input v-else readonly value="Not specified" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Phone</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails.phone" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Username</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails.username" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Account Type</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-select v-model="userDetails.userType" :options="userTypeOptions" emit-value map-options />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Account ID</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly v-model="userDetails._id" />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Date Created</q-item-section>
-            <q-item-section class="text-left text-subtitle1">
-              <q-input readonly :model-value="formatDate(userDetails.dateCreated)" />
-            </q-item-section>
-          </q-item>
-        </q-card-section>
-        <q-card-section>
-          <div class="text-h6">Student Info</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Registered student</q-item-section>
-            <q-item-section class="text-left">
-              <q-input readonly v-model="userDetails.studentInfo.isRegisteredStudent" />
-            </q-item-section>
-          </q-item>
-
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">Bursary student</q-item-section>
-            <q-item-section class="text-left">
-              <q-input readonly v-model="userDetails.studentInfo.hasBursary" />
-            </q-item-section>
-          </q-item>
-
-          <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+      <div class="col-md-6 col-12 full-height">
+        <!-- USER DETAILS -->
+        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+          <q-card-section>
+            <div class="text-h6">User Details</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
             <q-item>
-              <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
-              <q-item-section class="text-left">
-                <q-input readonly v-model="userDetails.studentInfo.studentNumber" />
+              <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails.firstName" />
               </q-item-section>
             </q-item>
             <q-item>
-              <q-item-section class="text-left text-subtitle1">Registered Institution</q-item-section>
-              <q-item-section class="text-left">
-                <q-input readonly v-model="userDetails.studentInfo.registeredInstitution" />
+              <q-item-section class="text-left text-subtitle1">Last Name</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails.lastName" />
               </q-item-section>
             </q-item>
-          </div>
-        </q-card-section>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">
+                <span>Email
+                  <span class="text-subtitle1 q-ml-md"
+                    v-if="userDetails && userDetails.verification && userDetails.verification.isVerified">
+                    <!-- VERIFIED  -->
+                    <q-icon color="secondary" name="eva-checkmark-circle-2-outline" />
+                  </span>
+                  <span class="text-subtitle1 q-ml-md" v-else>
+                    <!-- NOT VERIFIED  -->
+                    <q-icon color="negative" name="eva-alert-circle-outline" />
+                  </span>
+                </span>
+              </q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails.email" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Gender</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input v-if="userDetails.gender" readonly v-model="userDetails.gender" />
+                <q-input v-else readonly value="Not specified" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Phone</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails.phone" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Username</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails.username" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Account Type</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-select v-model="userDetails.userType" :options="userTypeOptions" emit-value map-options />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Account ID</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly v-model="userDetails._id" />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Date Created</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-input readonly :model-value="formatDate(userDetails.dateCreated)" />
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">Student Info</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Registered student</q-item-section>
+              <q-item-section class="text-left">
+                <q-input readonly v-model="userDetails.studentInfo.isRegisteredStudent" />
+              </q-item-section>
+            </q-item>
 
-        <q-card-section class="row justify-between">
-          <CustomButton label="Update Account Type" @click="updateUserType" />
-        </q-card-section>
-      </q-card>
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Bursary student</q-item-section>
+              <q-item-section class="text-left">
+                <q-input readonly v-model="userDetails.studentInfo.hasBursary" />
+              </q-item-section>
+            </q-item>
 
+            <div v-if="userDetails.studentInfo.isRegisteredStudent === true">
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Student Number</q-item-section>
+                <q-item-section class="text-left">
+                  <q-input readonly v-model="userDetails.studentInfo.studentNumber" />
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Registered Institution</q-item-section>
+                <q-item-section class="text-left">
+                  <q-input readonly v-model="userDetails.studentInfo.registeredInstitution" />
+                </q-item-section>
+              </q-item>
+            </div>
+          </q-card-section>
 
-      <!-- USER HISTORY AND DOCUMENTS -->
-      <q-card flat bordered class="col-md-4 col-12 q-ma-sm full-height">
-        <q-card-section>
-          <div class="text-h6">Rental History</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section v-if="myRentals.length > 0">
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Status</th>
-                <th class="text-left">Application Date</th>
-                <th class="text-left">Access Key</th>
-                <!-- <th class="text-left">ID</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <!-- <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)"> -->
-              <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
-                  { 'active-status': rental.status === 'Active' },
-                  { 'rejected-status': rental.status === 'Rejected' },
-                  { 'ended-status': rental.status === 'Ended' }">
-                  {{ capitalizeFirstLetter(rental.status) }}
-                </td>
-                <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" class="id">
-                    {{ rental.accessKey }}
-                  </div>
-                  <div v-else>
-                    N/A
-                  </div>
-                </td>
-                <!-- <div class="text-left cursor-pointer id">
+          <q-card-section class="row justify-between">
+            <CustomButton label="Update Account Type" @click="updateUserType" />
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-md-6 col-12 full-height">
+
+        <DocumentsComponent :userId="userDetails._id" class="q-mb-md" />
+
+        <!-- USER HISTORY AND DOCUMENTS -->
+        <q-card flat bordered>
+          <q-card-section>
+            <div class="text-h6">Rental History</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section v-if="myRentals.length > 0">
+            <q-markup-table flat bordered>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left">Status</th>
+                  <th class="text-left">Application Date</th>
+                  <th class="text-left">Access Key</th>
+                  <!-- <th class="text-left">ID</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)"> -->
+                <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
+                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
+                    { 'active-status': rental.status === 'Active' },
+                    { 'rejected-status': rental.status === 'Rejected' },
+                    { 'ended-status': rental.status === 'Ended' }">
+                    {{ capitalizeFirstLetter(rental.status) }}
+                  </td>
+                  <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
+                  <td class="text-left cursor-pointer">
+                    <div v-if="rental.accessKey" @click.stop="copyToClipboard(rental.accessKey)" class="id">
+                      {{ rental.accessKey }}
+                    </div>
+                    <div v-else>
+                      N/A
+                    </div>
+                  </td>
+                  <!-- <div class="text-left cursor-pointer id">
                   {{ rental._id }}
                 </div> -->
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </q-card-section>
 
-        <q-card-section v-else class="row justify-start">
-          <q-item>
-            <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
-          </q-item>
-        </q-card-section>
+          <q-card-section v-else class="row justify-start">
+            <q-item>
+              <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
+            </q-item>
+          </q-card-section>
 
-        <!-- PHP CODE -->
-        <q-card-section>
-          <div class="text-h6">Call Log History</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section v-if="myCallLogs.length > 0">
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Status</th>
-                <th class="text-left">Opened Date</th>
-                <th class="text-left">Log Number</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(callLog, index) in myCallLogs" :key="callLog._id">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="{ 'callLog-opened': callLog.status === 'Opened' },
-                  { 'callLog-assigned': callLog.status === 'Assigned' },
-                  { 'callLog-resolved': callLog.status === 'Resolved' },
-                  { 'callLog-closed': callLog.status === 'Closed' }">
-                  {{ capitalizeFirstLetter(callLog.status) }}
-                </td>
-                <td class="text-left cursor-pointer">{{ formatDate(callLog.createdAt) }}</td>
-                <td class="text-left cursor-pointer id">
-                  {{ callLog.logNumber }}
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
+          <!-- PHP CODE -->
+          <q-card-section>
+            <div class="text-h6">Call Log History</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section v-if="myCallLogs.length > 0">
+            <q-markup-table flat bordered>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-left">Status</th>
+                  <th class="text-left">Opened Date</th>
+                  <th class="text-left">Log Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(callLog, index) in myCallLogs" :key="callLog._id">
+                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
+                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'callLog-opened': callLog.status === 'Opened' },
+                    { 'callLog-assigned': callLog.status === 'Assigned' },
+                    { 'callLog-resolved': callLog.status === 'Resolved' },
+                    { 'callLog-closed': callLog.status === 'Closed' }">
+                    {{ capitalizeFirstLetter(callLog.status) }}
+                  </td>
+                  <td class="text-left cursor-pointer">{{ formatDate(callLog.createdAt) }}</td>
+                  <td class="text-left cursor-pointer id">
+                    {{ callLog.logNumber }}
+                  </td>
+                </tr>
+              </tbody>
+            </q-markup-table>
+          </q-card-section>
 
-        <q-card-section v-else class="row justify-start">
-          <q-item>
-            <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
-          </q-item>
-        </q-card-section>
+          <q-card-section v-else class="row justify-start">
+            <q-item>
+              <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
+            </q-item>
+          </q-card-section>
 
-        <q-card-section>
-          <div class="text-h6">Applicant Documents</div>
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-section v-if="userDetails.documents && userDetails.documents.length > 0">
-          <q-list v-for="document in userDetails.documents" :key="document._id">
-            <q-card flat bordered class="cursor-pointer row q-ma-sm ">
-              <q-card-section>
-                <q-img :src="documentLogo" class="document" />
-              </q-card-section>
-
-              <q-card-section class="">
-                <div class="text-caption wrap-text limit-text">{{ document.documentUrl.split('/').pop() }}</div>
-
-                <div class="row justify-between q-my-md">
-                  <CustomButton flat @click="viewDocument(document.documentUrl)" label="Open" color="white"
-                    text-color="black" customStyle="width: 45%" />
-                  <!-- <CustomButton flat @click="deleteDocument(document.fileId)" label="Delete" color="white" text-color="black" customStyle="width: 45%"  /> -->
-                </div>
-
-              </q-card-section>
-            </q-card>
-          </q-list>
-        </q-card-section>
-
-        <q-card-section v-else class="row justify-start">
-          <q-item>
-            <q-item-section class="text-subtitle1">This user has no documents saved yet.</q-item-section>
-          </q-item>
-        </q-card-section>
-
-      </q-card>
+        </q-card>
+      </div>
     </div>
 
     <q-dialog v-model="viewRentalDetailsDialog">
@@ -260,6 +232,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import RentalService from 'src/services/RentalService';
 import AdminViewUserRentalComponent from 'src/components/admin/AdminViewUserRentalComponent.vue'
 import CallLogService from 'src/services/CallLogService';
+import DocumentsComponent from 'src/components/elements/DocumentsComponent.vue';
 
 export default {
   name: "AdminUserDetailsPage",
@@ -287,7 +260,8 @@ export default {
   },
   components: {
     CustomButton,
-    AdminViewUserRentalComponent
+    AdminViewUserRentalComponent,
+    DocumentsComponent
   },
   methods: {
     formatDate: Helper.formatDate,

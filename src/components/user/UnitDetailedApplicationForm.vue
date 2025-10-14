@@ -1,7 +1,9 @@
 <template>
   <q-card class="combined-unit-card">
     <div class="row">
+
       <!-- Left Side - Unit Details -->
+      <!-- ===================================================================================================== -->
       <div class="col-md-7 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
         <q-card-section class="row justify-between items-center">
           <div class="text-h6">Unit {{ unit.unitNumber }}</div>
@@ -21,20 +23,6 @@
           </div>
         </q-card-section>
 
-        <!-- <q-dialog v-model="showImageDialog" maximized>
-          <q-card flat borderless class="image-dialog-card">
-            <div class="row">
-              <q-btn icon="close" flat round v-close-popup class="close-button" />
-            </div>
-            <q-card-section class="dialog-image-section row justify-center flex-center">
-              <img v-if="currentDialogImageUrl" :src="currentDialogImageUrl" class="enlarged-image"
-                style="object-fit: contain" />
-              <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
-              <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
-            </q-card-section>
-          </q-card>
-        </q-dialog> -->
-
         <q-dialog v-model="showImageDialog" maximized>
           <q-card flat borderless class="image-dialog-card">
             <div class="row">
@@ -51,8 +39,6 @@
             </q-card-section>
           </q-card>
         </q-dialog>
-
-
 
         <q-card-section>
           <div class="text-h6 q-mb-sm">Unit Specifications</div>
@@ -126,9 +112,8 @@
                 <q-badge v-else-if="unit.genderAssignment === 'Female'" label="Assigned to Females" size="sm"
                   color="pink" text-color="white" class="q-px-sm q-py-xs" />
                 <!-- Fallback -->
-                <span v-else class="text-grey">Unassigned</span>
+                <span v-else class="text-grey">Gender</span>
               </div>
-
             </div>
 
             <!-- Availability -->
@@ -136,9 +121,9 @@
               <div class="row items-center justify-around">
                 <div class="col-md-4 col-5 text-grey-7"><b>Availability:</b></div>
                 <div class="col-md-6 col-7">
-                  {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
+                  {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
                     unit.unitOccupants || 0}}
-                  spots
+                  Available
                 </div>
               </div>
             </template>
@@ -150,12 +135,42 @@
           <q-separator class="q-mb-sm" />
           <div>
             <div v-if="selectedOption && selectedOption.price && selectedOption.price.length > 1">
-              <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
-                R {{ Number(currentPrice).toFixed(2) }} / once off
+              <!-- <div v-if="selectedOption && selectedOption?.bedType">
+                <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
+                  R {{ Number(currentPrice).toFixed(2) }} / once off / bed
+                </div>
+                <div class="text-h6 text-primary q-mb-sm" v-else>
+                  R {{ Number(currentPrice).toFixed(2) }} / month / bed
+                </div>
               </div>
-              <div class="text-h6 text-primary q-mb-sm" v-else>
-                R {{ Number(currentPrice).toFixed(2) }} / month
+
+              <div v-if="selectedOption && selectedOption?.roomType">
+                <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
+                  R {{ Number(currentPrice).toFixed(2) }} / once off / room
+                </div>
+                <div class="text-h6 text-primary q-mb-sm" v-else>
+                  R {{ Number(currentPrice).toFixed(2) }} / month / room
+                </div>
+              </div> -->
+
+              <div v-if="selectedOption && selectedOption?.bedType">
+                <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
+                  R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;once-off
+                </div>
+                <div class="text-h6 text-primary q-mb-sm" v-else>
+                  R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
+                </div>
               </div>
+
+              <div v-if="selectedOption && selectedOption?.roomType">
+                <div class="text-h6 text-primary q-mb-sm" v-if="getSelectedPriceObject()?.name === 'annual'">
+                  R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;once-off
+                </div>
+                <div class="text-h6 text-primary q-mb-sm" v-else>
+                  R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
+                </div>
+              </div>
+
 
               <div class="text-caption1 text-grey">
                 {{ capitalizeFirstLetter(getPricePlanDescription(selectedPrice)) }}
@@ -163,9 +178,9 @@
             </div>
             <div v-else>
               <div class="text-h6 text-primary q-mb-sm">
-                R {{ Number(currentPrice).toFixed(2) }} / month
+                R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
               </div>
-              <div class="text-caption1 text-grey">Starting from R {{ Number(currentPrice).toFixed(2) }} per month.
+              <div class="text-caption1 text-grey">Starting from R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
                 <br>Select
                 your preferred unit configuration and payment plan to begin.
               </div>
@@ -184,12 +199,12 @@
         </q-card-section>
       </div>
 
-      <!-- Right Side - Application Form -->
+      <!-- Right Side -->
+      <!-- ===================================================================================================== -->
       <div class="col-md-5 col-12 q-pa-md">
         <div v-if="!loading">
 
-          <!-- RENTAL FORM -->
-          <!-- ===================================================================================================== -->
+          <!-- Application Form -->
           <template v-if="isLoggedIn && !hasOngoingRentals">
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
               <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
@@ -221,9 +236,9 @@
               <q-card-section>
                 <div class="q-mb-sm"><b>Would you like to add parking?</b></div>
                 <q-radio v-if="getSelectedPriceObject()?.name === 'annual'" v-model="rentalDetails.parking.hasParking"
-                  :val="true" :label="`Include Parking (R ${rentalDetails.parking.fee.toFixed(2)} / once off)`" />
+                  :val="true" :label="`Include Parking (R{{ Number(rentalDetails.parking.fee).toLocaleString('en-ZA') }} / once-off)`" />
                 <q-radio v-else v-model="rentalDetails.parking.hasParking" :val="true"
-                  :label="`Include Parking (R ${rentalDetails.parking.fee.toFixed(2)} / mo)`" />
+                  :label="`Include Parking (R {{Number(rentalDetails.parking.fee).toLocaleString('en-ZA') }} / mo)`" />
                 <br>
                 <q-radio v-model="rentalDetails.parking.hasParking" :val="false" label="No parking needed" />
               </q-card-section>
@@ -231,8 +246,6 @@
               <q-card-section v-if="getSelectedPriceObject()?.name === 'annual'">
                 <div class="q-mb-sm"><b>Discounted Price (Payment by 30 Nov)</b></div>
                 <div>
-                  <!-- Discounted Parking: {{ (Number(rentalDetails.parking?.fee) * 0.96).toFixed(2) }}
-                  Discounted Once off rental: {{ (Number(rentalDetails.selectedS?.fee) * 0.96).toFixed(2) }} -->
                   <div class="text-grey-9">
                     <li>Upfront payment includes 11 months at discounted rate (4% off both rent and parking)</li>
                     <li>Payment must be made by 30 November to qualify for discount</li>
@@ -240,20 +253,6 @@
                   </div>
                 </div>
               </q-card-section>
-
-              <!-- <q-card-section>
-                <div class="q-mb-sm"><b>Lease Dates</b></div>
-                <div class="row q-col-gutter-md">
-                  <div class="col-6">
-                    <q-input v-model="rentalDetails.rentalStartDate" label="Start Date" type="date" :min="minDate"
-                      outlined />
-                  </div>
-                  <div class="col-6">
-                    <q-input v-model="rentalDetails.rentalEndDate" label="End Date" type="date"
-                      :min="rentalDetails.rentalStartDate || minDate" outlined />
-                  </div>
-                </div>
-              </q-card-section> -->
 
               <q-card-section>
                 <div class="q-mb-sm"><b>Lease Period</b></div>
@@ -284,16 +283,6 @@
                   Lease dates are provisional and will be updated during the application processing.
                 </div>
               </q-card-section>
-
-              <!-- <q-card-section>
-                <div class="q-mb-sm"><b>Digital Signature</b></div>
-                <SignaturePad @save="handleSignatureSave" />
-              </q-card-section>
-
-              <q-card-section v-if="userDetails.age < 21">
-                <div class="q-mb-sm"><b>Guardian Signature</b></div>
-                <SignaturePad @save="handleGuardianSignatureSave" />
-              </q-card-section> -->
 
               <q-card-section>
                 <div class="q-mb-md"><b>Verification Status</b></div>
@@ -361,7 +350,6 @@
           </template>
 
           <!-- RENTAL IN PROGRESS -->
-          <!-- ===================================================================================================== -->
           <template v-else-if="isLoggedIn && hasOngoingRentals">
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
               <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
@@ -392,7 +380,6 @@
           </template>
 
           <!-- LOGIN -->
-          <!-- ===================================================================================================== -->
           <template v-else>
             <q-card-section class="row justify-end items-center q-py-none q-py-xs">
               <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
@@ -492,9 +479,7 @@ export default {
         'bank_statements',
         'credit_check'
       ];
-
       const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
-
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
     isAccessKeyAllowed() {
@@ -526,10 +511,8 @@ export default {
         //   this.userDetails?.username === 'admin'
         // ) &&
         this.userDetails?.age &&
-        // this.userDetails.documents?.length === 3 &&
         this.rentalDetails.rentalStartDate &&
         this.rentalDetails.rentalEndDate
-      // this.signatureData
     },
 
 
@@ -538,7 +521,6 @@ export default {
 
     filteredSubUnits() {
       if (!this.unit?.subUnits) return [];
-
       return this.unit.subUnits.filter(su => {
         const matchesRoom = this.selectedRoomType
           ? su.roomType?.includes(this.selectedRoomType)
@@ -574,12 +556,11 @@ export default {
     selectLabel() {
       if (this.selectedRoomType && !this.selectedBedType) return "Choose your bed";
       if (this.selectedBedType && !this.selectedRoomType) return "Choose your room";
-      return "Select Option";
+      return "Select Room Type";
     },
 
     priceOptions() {
       if (!this.selectedOption || !this.selectedOption.price) return [];
-
       const sortedPrices = [...this.selectedOption.price].sort((a, b) => a.price - b.price);
 
       return sortedPrices.map((priceObj, index) => {
@@ -587,7 +568,7 @@ export default {
 
         return {
           value: priceObj.price,
-          label: `R ${priceObj.price.toFixed(2)}`,
+          label: `R${priceObj.price.toLocaleString('en-ZA')}`,
           description: `${priceObj.name} ${paymentPlanSuffix}`,
           index,
         };
@@ -638,7 +619,6 @@ export default {
     }
   },
   async created() {
-
     await this.checkLoginStatus()
   },
   methods: {
@@ -648,7 +628,6 @@ export default {
       if (this.subUnit && this.unit && Array.isArray(this.unit.subUnits)) {
         const floorNumber = this.$route.params.floor || '1';
 
-        // Extract prefix from first available roomType or bedType
         const sampleType = this.selectOptions[0]?.roomType || this.selectOptions[0]?.bedType || '';
         const basePrefix = sampleType.split(' ')[0];
 
@@ -698,7 +677,6 @@ export default {
 
     // IMAGES AND FULLSCREEN
     // ------------------------------------------------------------------------------------------
-
     nextImage() {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.unit.images.length
     },
@@ -774,11 +752,6 @@ export default {
 
     async createRentalApplication(unit) {
 
-      // if (this.userDetails.age < 21 && !this.guardianSignatureData) {
-      //   this.$q.notify({ type: 'negative', message: 'Guardian signature is required for applicants under 21' })
-      //   return
-      // }
-
       if (this.selectedOption.price && this.selectedOption.price.length > 1 &&
         this.selectedPrice === null) {
         this.$q.notify({ type: 'negative', message: 'Please select a price option' });
@@ -797,7 +770,6 @@ export default {
         ...this.selectedOption,
         price: matchedPriceObj || { name: 'default', price: this.selectedPrice !== null ? this.selectedPrice : (this.unit.unitPrice || 0) }
       };
-
 
       // Remove the separate selectedPrice field if it exists
       delete this.rentalDetails.selectedPrice;
@@ -835,19 +807,9 @@ export default {
         return
       }
 
-      // if (unit.accessKey.isShared && this.rentalDetails.accessKey.toLowerCase() !== unit.accessKey.assignedKey) {
-      //   this.$q.notify({ type: 'negative', message: 'Invalid access key' })
-      //   return
-      // }
       if (unit.accessKey.isShared) {
-        // console.log('[DEBUG] Input Key:', this.rentalDetails.accessKey)
-        // console.log('[DEBUG] Assigned Key:', unit.accessKey.assignedKey)
-
         const inputKey = this.rentalDetails.accessKey?.trim().toLowerCase()
         const assignedKey = unit.accessKey?.assignedKey?.trim().toLowerCase()
-
-        // console.log('[DEBUG] Normalized Input:', inputKey)
-        // console.log('[DEBUG] Normalized Assigned:', assignedKey)
 
         if (inputKey !== assignedKey) {
           this.$q.notify({ type: 'negative', message: 'Invalid access key' })
@@ -870,28 +832,8 @@ export default {
         }
       }
 
-      // if (this.signatureData) {
-      //   const signatureFile = this.base64ToFile(
-      //     this.signatureData,
-      //     `${this.userDetails.firstName}${this.userDetails.lastName}_Signature.png`
-      //   )
-      //   formData.append('signatureImage[]', signatureFile)
-      // }
-
-      // if (this.userDetails.age < 21 && this.guardianSignatureData) {
-      //   const guardianFile = this.base64ToFile(
-      //     this.guardianSignatureData,
-      //     `${this.userDetails.firstName}${this.userDetails.lastName}_GuardianSignature.png`
-      //   )
-      //   formData.append('guardianSignatureImage[]', guardianFile)
-      // }
-
       try {
-        // for (let pair of formData.entries()) {
-        //   console.log(pair[0], pair[1])
-        // }
         const response = await RentalService.createRental(formData)
-        // console.log(response)
         let message = 'Application submitted successfully'
         if (response.accessKey) {
           message += `. Your access key: ${response.accessKey}`

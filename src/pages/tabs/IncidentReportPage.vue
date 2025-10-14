@@ -116,7 +116,7 @@
 
 <script>
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import home2 from 'src/assets/resources/home/slider/2.jpg';
+import home2 from 'src/assets/resources/home/slider/2.png';
 import IncidentService from 'src/services/IncidentService';
 
 export default {

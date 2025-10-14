@@ -1,7 +1,6 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
-import axios from 'axios'
 import axiosInstance from 'src/services/axiosInstance'
 
 /*
@@ -27,46 +26,6 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
-
-  // Router.beforeEach(async (to, from, next) => {
-  //   try {
-  //     const response = await axiosInstance.get('/health')
-  //     if (response.status === 200) {
-  //       if (to.path === '/verify-email')  {
-  //         const token = to.query.token
-  //         if (token) {
-  //           next()
-  //         } else {
-  //           next(({ path: '/404'}))
-  //         }
-  //       } else if (to.path === '/resend-verification') {
-  //         if (from.path === '/verify-email') {
-  //           next()
-  //         } else {
-  //           next(({ path: '/404'}))
-  //         }
-  //       } else if (to.path === '/reset-password') {
-  //         const token = to.query.token
-  //         if (token) {
-  //           next()
-  //         } else {
-  //           next(({ path: '/404'}))
-  //         }
-  //       } else if (to.path === '/404') {
-  //         next('/');
-  //       } else {
-  //         next();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     // If the server is offline or an error occurs
-  //     if (to.path !== '/404') {
-  //       next('/404');
-  //     } else {
-  //       next();
-  //     }
-  //   }
-  // })
 
   Router.beforeEach(async (to, from, next) => {
     try {
@@ -101,7 +60,6 @@ export default route(function (/* { store, ssrContext } */) {
         }
       }
     } catch (error) {
-      // If the server is offline or an error occurs
       next(to.path !== '/404' ? '/404' : undefined);
     }
   });

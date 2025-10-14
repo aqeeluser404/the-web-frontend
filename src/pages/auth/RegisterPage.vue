@@ -1,6 +1,6 @@
 <template>
   <q-page class="relative-position" style="overflow-x: hidden; overflow-y: hidden;">
-    <q-img src="~src/assets/resources/login/outside3.jpg" alt="Hero Image" class="blurred-background absolute-full"
+    <q-img src="~src/assets/resources/authentication/background1.jpg" alt="Hero Image" class="blurred-background absolute-full"
       style="object-fit: cover; z-index: -1;" />
 
     <div class="row justify-center items-center q-pa-md" :class="{ 'items-center': $q.screen.gt.sm }"

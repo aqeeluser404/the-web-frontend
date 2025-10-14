@@ -1,0 +1,9 @@
+{
+  "appId": "co.za.theweb.androidapp",
+  "appName": "The Web",
+  "webDir": "www",
+  "server": {
+    "url": "https://the-web.co.za",
+    "cleartext": true
+  }
+}

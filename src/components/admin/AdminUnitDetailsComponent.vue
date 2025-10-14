@@ -1,110 +1,206 @@
 <template>
-  <q-card class="component-card">
+  <q-card class="combined-unit-card">
+    <div class="row">
 
-    <q-card-section>
-      <div class="text-h6">{{ unit.unitType }} Details</div>
-    </q-card-section>
-    <q-separator />
-
-    <!-- IMAGE CAROUSEL -->
-    <q-card-section>
-      <div class="image-container">
-        <q-img v-if="unit.images && unit.images.length > 0" :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
-          class="product-image cursor-zoom-in" @click="showImageDialog = true" />
-        <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
-        <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
-      </div>
-    </q-card-section>
-    <q-dialog v-model="showImageDialog" @show="logImageInfo" maximized>
-      <q-card flat borderless class="image-dialog-card">
-        <q-btn icon="close" flat round dense v-close-popup class="close-button" />
-        <q-card-section class="dialog-image-section row justify-center flex-center">
-          <img v-if="currentDialogImageUrl" :src="currentDialogImageUrl" class="enlarged-image"
-            style="object-fit: contain" />
-          <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
-          <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
+      <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
+        <q-card-section class="row justify-between items-center">
+          <div class="text-h6">{{ unit.unitType }} Details</div>
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="small-screen-only" />
         </q-card-section>
-      </q-card>
-    </q-dialog>
 
-    <!-- UNIT DETAILS FORM -->
-    <q-card-section>
-      <!-- Images Upload -->
-      <div v-for="(img, i) in 7" :key="'img' + i">
-        <q-item>
-          <q-item-section class="text-left text-subtitle1">Image {{ i + 1 }}</q-item-section>
-          <q-item-section class="text-left text-subtitle1">
-            <q-file v-model="newImages[i]" :label="'Upload Image ' + (i + 1)" label-color="black" color="black"
-              accept="image/*">
-              <template v-slot:prepend>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
-          </q-item-section>
-        </q-item>
-      </div>
+        <q-separator />
 
-      <!-- Basic Unit Fields -->
-      <q-item v-for="field in basicFields" :key="field.key">
-        <q-item-section class="text-left text-subtitle1">{{ field.label }}</q-item-section>
-        <q-item-section class="text-left text-subtitle1">
-          <q-input v-model="unit[field.key]" :readonly="field.readonly" :type="field.type || 'text'"
-            :prefix="field.prefix || ''" :rules="field.rules || []" />
-        </q-item-section>
-      </q-item>
-    </q-card-section>
-
-    <!-- Sub units -->
-    <q-card-section>
-      <div class="text-subtitle1 q-mb-md">{{ unit.subUnits?.length ? 'Edit Sub-Units' : 'Create Sub-Units' }}</div>
-
-      <!-- Existing SubUnits -->
-      <div v-if="unit.subUnits && unit.subUnits.length">
-        <div v-for="(sub, index) in unit.subUnits" :key="'existing-' + index" class="q-mb-sm">
-          <q-input v-model="sub.name" :label="sub.roomType || sub.bedType || 'Please Specify'" class="col" />
-          <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
-
-          <!-- Prices -->
-          <div class="col-4">
-            <div v-for="(priceObj, pIndex) in subUnitPrices[index]" :key="pIndex" class="row items-center q-mb-xs">
-              <q-input v-model.number="subUnitPrices[index][pIndex].price" type="number" label="Price (R)" prefix="R"
-                class="col" dense />
-              <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" class="col q-ml-sm" dense />
-              <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
-            </div>
-            <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
+        <!-- IMAGE CAROUSEL -->
+        <q-card-section>
+          <div class="image-container">
+            <q-img v-if="unit.images && unit.images.length > 0"
+              :src="getImageUrl(unit.images[currentImageIndex].imageUrl)" class="product-image cursor-zoom-in"
+              @click="showImageDialog = true" />
+            <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
+            <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
           </div>
-          <q-btn icon="delete" color="negative" flat round dense @click="deleteSubUnit(index)" />
-          <q-btn v-if="!sub.reservedBy" label="Reserve" color="primary" flat dense @click="handleReserveRoom(index)" />
-          <q-btn v-else label="Unreserve" color="negative" flat dense @click="handleCancelReserveRoom(index)" />
-        </div>
+        </q-card-section>
+        <q-dialog v-model="showImageDialog" @show="logImageInfo" maximized>
+          <q-card flat borderless class="image-dialog-card">
+            <q-btn icon="close" flat round dense v-close-popup class="close-button" />
+            <q-card-section class="dialog-image-section row justify-center flex-center">
+              <img v-if="currentDialogImageUrl" :src="currentDialogImageUrl" class="enlarged-image"
+                style="object-fit: contain" />
+              <q-btn round flat dense class="dialog-nav left" icon="chevron_left" @click="prevImage" />
+              <q-btn round flat dense class="dialog-nav right" icon="chevron_right" @click="nextImage" />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+        <!-- UNIT DETAILS FORM -->
+        <q-card-section>
+          <!-- Images Upload -->
+          <div v-for="(img, i) in 3" :key="'img' + i">
+            <!-- <div v-for="(img, i) in 7" :key="'img' + i"> -->
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Image {{ i + 1 }}</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-file v-model="newImages[i]" :label="'Upload Image ' + (i + 1)" label-color="black" color="black"
+                  accept="image/*">
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
+              </q-item-section>
+            </q-item>
+          </div>
+
+          <!-- Basic Unit Fields -->
+          <q-item v-for="field in basicFields" :key="field.key">
+            <q-item-section class="text-left text-subtitle1">{{ field.label }}</q-item-section>
+            <q-item-section class="text-left text-subtitle1">
+              <q-input v-model="unit[field.key]" :readonly="field.readonly" :type="field.type || 'text'"
+                :prefix="field.prefix || ''" :rules="field.rules || []" />
+            </q-item-section>
+          </q-item>
+        </q-card-section>
       </div>
 
-      <!-- New SubUnits -->
-      <div v-for="(sub, index) in newSubUnits" :key="'new-' + index" class="row items-center q-gutter-sm q-mb-sm">
-        <q-input v-model="sub.name" label="Subunit Name" class="col" />
-        <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-2" />
+      <div class="col-md-6 col-12 q-pa-md">
+        <q-card-section class="row justify-end items-center q-py-none q-py-sm">
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="large-screen-only" />
+        </q-card-section>
 
-        <!-- Multiple Prices -->
-        <div v-for="(priceObj, pIndex) in subUnitPrices[index]" :key="pIndex" class="row items-center q-mb-xs">
-          <q-input v-model="subUnitPrices[index][pIndex].price" type="number" label="Price (R)" prefix="R" class="col"
-            dense />
-          <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" class="col q-ml-sm" dense />
-          <q-btn icon="remove" flat dense color="negative" @click="removePrice(index, pIndex)" />
-        </div>
-        <q-btn flat dense icon="add" label="Add Price" color="primary" @click="addPrice(index)" />
+        <!-- Sub units -->
+        <q-card-section>
+          <div class="text-subtitle1 q-mb-md text-weight-bold">{{ unit.subUnits?.length ? 'Edit Sub-Units' : 'Create Sub-Units' }}</div>
+
+          <!-- Existing SubUnits -->
+          <template v-if="unit.subUnits && unit.subUnits.length">
+            <div v-for="(sub, index) in unit.subUnits" :key="'existing-room-' + index">
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Sub-Unit Name *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-input v-model="sub.name" label="Sub-Unit Name" class="col-grow" />
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Sub-Unit Type *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-grow" />
+                </q-item-section>
+              </q-item>
+
+              <!-- Multiple Prices with name and price -->
+              <div v-for="(priceEntry, pIndex) in subUnitPrices[index]" :key="'existing-price-' + index + '-' + pIndex"
+                class="">
+                <q-item>
+                  <q-item-section class="text-left text-subtitle1">
+                    Price ({{ pIndex + 1 }})
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model.number="subUnitPrices[index][pIndex].price" label="Price (R)" type="number"
+                      prefix="R" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" />
+                  </q-item-section>
+                  <q-item-section>
+                    <CustomButton color="negative" icon="delete" v-if="subUnitPrices[index].length > 1"
+                      @click="removePrice(index, pIndex)" />
+                  </q-item-section>
+                </q-item>
+              </div>
+
+              <div class="q-mx-none q-mt-md row justify-between">
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Price" icon="add" @click="addPrice(index)"
+                    :disable="subUnitPrices[index].length >= 3" />
+                </div>
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Reserve" v-if="!sub.reservedBy" icon="add" color="primary" flat dense
+                    @click="handleReserveRoom(index)" />
+                  <CustomButton label="Unreserve" v-else icon="add" color="negative" flat dense
+                    @click="handleCancelReserveRoom(index)" />
+                </div>
+                <div class="col-md-5 col-12 q-mb-sm">
+                  <CustomButton icon="delete" label="Remove Sub-Unit" color="negative" @click="deleteSubUnit(index)"
+                    class="" />
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- New SubUnits -->
+          <template v-if="!unit.subUnits || !unit.subUnits.length">
+            <div v-for="(sub, index) in newSubUnits" :key="'new-room-' + index">
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Sub-Unit Name *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-input v-model="sub.name" label="Sub-Unit Name" class="col-grow" />
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section class="text-left text-subtitle1">Sub-Unit Type *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-select v-model="sub.type" :options="['room', 'bed']" label="Type" class="col-grow" />
+                </q-item-section>
+              </q-item>
+
+              <!-- Multiple Prices with name and price -->
+              <div v-for="(priceEntry, pIndex) in subUnitPrices[index]" :key="'new-price-' + index + '-' + pIndex"
+                class="">
+                <q-item>
+                  <q-item-section class="text-left text-subtitle1">
+                    Price ({{ pIndex + 1 }})
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model.number="subUnitPrices[index][pIndex].price" label="Price (R)" type="number"
+                      prefix="R" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-input v-model="subUnitPrices[index][pIndex].name" label="Price Name" />
+                  </q-item-section>
+                  <q-item-section>
+                    <CustomButton color="negative" icon="delete" v-if="subUnitPrices[index].length > 1"
+                      @click="removePrice(index, pIndex)" />
+                  </q-item-section>
+                </q-item>
+              </div>
+
+              <div class="q-mx-none q-mt-md row justify-between">
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Price" icon="add" @click="addPrice(index)"
+                    :disable="subUnitPrices[index].length >= 3" />
+                </div>
+                <div class="col-md-3 col-12 q-mb-sm">
+                  <CustomButton label="Sub-Unit" icon="add" color="primary" @click="addNewSubUnit"
+                    :disable="newSubUnits.length >= 3" v-if="newSubUnits.length > 0" />
+                </div>
+                <div class="col-md-5 col-12 q-mb-sm">
+                  <CustomButton icon="delete" label="Remove Sub-Unit" color="negative" @click="removeNewSubUnit(index)"
+                    class="" />
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Add New Sub-Unit Button (outside loop for consistency) -->
+          <div v-if="!unit.subUnits || !unit.subUnits.length" class="q-mt-md">
+            <CustomButton icon="add" label="Add Subunit" color="primary" flat @click="addNewSubUnit" />
+          </div>
+        </q-card-section>
+
+        <q-card-section class="column items-center">
+          <CustomButton label="Update Unit" customStyle="width: 100%" @click="updateUnit" class="q-mb-sm" />
+          <CustomButton label="Reserve Unit" v-if="!unit.reservedBy" customStyle="width: 100%" @click="handleReserve"
+            class="q-mb-sm" />
+          <CustomButton label="Cancel Reserve" v-if="unit.reservedBy" customStyle="width: 100%"
+            @click="handleCancelReservation" class="q-mb-sm" />
+          <CustomButton label="Close" customStyle="width: 100%" color="white" text-color="black"
+            @click="$emit('close')" />
+        </q-card-section>
       </div>
-      <q-btn icon="add" label="Add Subunit" color="primary" flat @click="addNewSubUnit" />
-    </q-card-section>
-
-    <q-card-section class="column items-center">
-      <CustomButton label="Update Unit" customStyle="width: 100%" @click="updateUnit" class="q-mb-sm" />
-      <CustomButton label="Reserve Unit" v-if="!unit.reservedBy" customStyle="width: 100%" @click="handleReserve"
-        class="q-mb-sm" />
-      <CustomButton label="Cancel Reserve" v-if="unit.reservedBy" customStyle="width: 100%"
-        @click="handleCancelReservation" class="q-mb-sm" />
-      <CustomButton label="Close" customStyle="width: 100%" color="white" text-color="black" @click="$emit('close')" />
-    </q-card-section>
+    </div>
   </q-card>
 </template>
 
@@ -177,10 +273,10 @@ export default {
     prevImage() { this.currentImageIndex = (this.currentImageIndex - 1 + this.unit.images.length) % this.unit.images.length; },
 
     async updateUnit() {
-      if (this.unit.currentOccupants && this.unit.currentOccupants > 0) {
-        this.$q.notify({ type: 'negative', message: 'Unit cannot be updated while it has occupants.' });
-        return;
-      }
+      // if (this.unit.currentOccupants && this.unit.currentOccupants > 0) {
+      //   this.$q.notify({ type: 'negative', message: 'Unit cannot be updated while it has occupants.' });
+      //   return;
+      // }
       if (!this.unit.floorLevel || !this.unit.unitType || !this.unit.unitDescription) {
         this.$q.notify({ type: 'negative', message: 'Please fill in all fields' });
         return;
@@ -216,7 +312,8 @@ export default {
             roomType: s.type === 'room' ? (name || s.roomType || '') : null,
             bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
             price: prices,
-            isAvailable: true,
+            isAvailable: s.isAvailable ?? true,
+            reservedBy: s.reservedBy ?? null
           });
         });
 
@@ -241,7 +338,11 @@ export default {
         });
 
         // Append updated subUnits JSON to form
-        formData.append('subUnits', JSON.stringify(subUnits));
+        // formData.append('subUnits', JSON.stringify(subUnits));
+
+        if (subUnits.length > 0) {
+          formData.append('subUnits', JSON.stringify(subUnits));
+        }
         try {
           await UnitService.updateUnit(this.unit._id, formData);
           this.$q.notify({ type: 'positive', message: 'Unit updated successfully!' });
@@ -251,57 +352,6 @@ export default {
         }
       });
     },
-
-    // async handleCancelReservation() {
-    //   try {
-    //     const response = await UnitService.cancelReservation(this.unit._id, this.userDetails._id);
-    //     if (response) {
-    //       this.$q.dialog({
-    //         title: 'Success',
-    //         message: 'Unit opened',
-    //         color: 'primary',
-    //         persistent: true,
-    //       }).onOk(async () => {
-    //         this.$emit('close');
-    //       });
-    //     }
-    //   } catch (error) {
-    //     this.$q.notify({
-    //       type: 'negative',
-    //       message: error.response?.data?.error || error.message || 'Failed to cancel reservation'
-    //     });
-    //   }
-    // },
-
-    // async handleReserve() {
-    //   try {
-
-    //     this.$q.dialog({
-    //       title: 'Reserve',
-    //       message: 'Do you wish to continue?',
-    //       color: 'primary',
-    //       persistent: true,
-    //       cancel: true
-    //     }).onOk(async () => {
-    //       const response = await UnitService.reserveUnit(this.unit._id, this.userDetails._id);
-    //       if (response) {
-    //         this.$q.dialog({
-    //           title: 'Success',
-    //           message: 'Unit reserved successfully',
-    //           color: 'primary',
-    //           persistent: true,
-    //         }).onOk(async () => {
-    //           this.$emit('close');
-    //         });
-    //       }
-    //     });
-    //   } catch (error) {
-    //     this.$q.notify({
-    //       type: 'negative',
-    //       message: error.response?.data?.error || error.message || 'Failed to reserve unit'
-    //     });
-    //   }
-    // },
 
     async handleReserve() {
       try {
@@ -326,15 +376,6 @@ export default {
                 }
               }
             }
-
-            // this.$q.dialog({
-            //   title: 'Success',
-            //   message: 'Unit and available rooms reserved successfully',
-            //   color: 'primary',
-            //   persistent: true,
-            // }).onOk(() => {
-            //   this.$emit('close');
-            // });
           }
         });
       } catch (error) {
@@ -361,15 +402,6 @@ export default {
               }
             }
           }
-
-          // this.$q.dialog({
-          //   title: 'Success',
-          //   message: 'Unit and your room reservations cancelled',
-          //   color: 'primary',
-          //   persistent: true,
-          // }).onOk(() => {
-          //   this.$emit('close');
-          // });
         }
       } catch (error) {
         this.$q.notify({
@@ -439,6 +471,23 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.left-card
+  display: flex
+  flex-direction: column
+  height: 100%
+
+.combined-unit-card
+  width: 100%
+  max-width: 550px
+  padding: 16px
+
+  @media (min-width: 601px)
+    min-width: 1200px
+
+  @media (max-width: 600px)
+    min-width: unset
+    padding: 8px
+
 .wrap-text
   white-space: pre-wrap
 

@@ -6,6 +6,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/HomePage.vue') },
+      { path: 'home', redirect: '/' },
       { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
 
       { path: "/incident-report", component: () => import("src/pages/tabs/IncidentReportPage.vue"), },

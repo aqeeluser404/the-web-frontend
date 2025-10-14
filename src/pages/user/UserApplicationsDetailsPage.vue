@@ -62,11 +62,11 @@
                   </ul>
 
                   <ul class="q-mt-md" v-else>
-                    <li v-if="rental.selectedSubUnits && rental.selectedSubUnits?.roomType.startsWith('Botmaskop')">
+                    <li v-if="rental.selectedSubUnits && rental.selectedSubUnits?.roomType?.startsWith('Botmaskop')">
                       A deposit of R12 000 must be paid upon approval
                     </li>
                     <li
-                      v-else-if="rental.selectedSubUnits && rental.selectedSubUnits?.bedType.startsWith('Helshoogte')">
+                      v-else-if="rental.selectedSubUnits && rental.selectedSubUnits?.bedType?.startsWith('Helshoogte')">
                       A deposit of R6 250 must be paid upon approval
                     </li>
                     <li v-else>
