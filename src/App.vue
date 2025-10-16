@@ -12,6 +12,7 @@ defineOptions({
 
 // 📍 Patch Leaflet's default icons for Vite compatibility
 // delete L.Icon.Default.prototype._getIconUrl;
+//
 
 // L.Icon.Default.mergeOptions({
 //   iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
