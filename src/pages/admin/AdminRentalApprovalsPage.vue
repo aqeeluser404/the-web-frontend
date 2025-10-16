@@ -30,6 +30,12 @@
                     <li>Username: {{ rental.userUsername }}</li>
                     <li>Phone: {{ rental.userPhone }}</li>
                     <li>Email: {{ rental.userEmail }}</li>
+
+                    <li v-if="rental.userHasBursary">Bursary Student: Yes</li>
+                    <li v-else>Bursary Student: No</li>
+
+                    <li v-if="rental.userRegistered">Registered Student: Registered</li>
+                    <li v-else>Registered Student: Awaiting Registration</li>
                   </ul>
                 </q-card-section>
               </q-timeline-entry>
@@ -450,6 +456,7 @@ export default {
         userDocuments: user.documents,
 
         userHasBursary: user.studentInfo.hasBursary,
+        userRegistered: user.studentInfo.isRegisteredStudent,
       };
       this.loading = false;
 

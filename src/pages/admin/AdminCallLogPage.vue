@@ -19,8 +19,10 @@
 
       <div class="col-md-9 col-12 full-height">
         <q-card flat bordered class="full-height">
-          <q-card-section class="row justify-center">
+          <q-card-section class="row justify-between items-center">
             <div class="text-h6">Call Log History</div>
+            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
+              flat rounded />
           </q-card-section>
           <q-card-section class="row justify-between">
             <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
@@ -119,7 +121,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserService from 'src/services/UserService';
 import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLogComponent.vue';
 import EmailService from 'src/services/EmailService';
-
+import ExportDataService from 'src/services/ExportDataService';
 import AdminUpdateCallLogNotes from 'src/components/admin/AdminUpdateCallLogNotes.vue';
 
 export default {
@@ -154,6 +156,42 @@ export default {
     formatDate: Helper.formatDate,
     formatTime: Helper.formatTime,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    async downloadData() {
+      this.$q.dialog({
+        title: 'Download Data',
+        message: 'You are about to export all data for calllogs. Would you like to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+
+          const response = await ExportDataService.exportCalllogData();
+
+          if (!response || !response.data) {
+            throw new Error('Invalid response from server');
+          }
+
+          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `calllogs_export_${today}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 100);
+
+        } catch (error) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Export failed: ' + (error.message || 'Please try again')
+          });
+        }
+      });
+    },
 
     async getAllCallLogs() {
       const response = await CallLogService.findAllCallLogs()

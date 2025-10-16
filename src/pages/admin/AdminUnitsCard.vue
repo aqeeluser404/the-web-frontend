@@ -92,8 +92,10 @@
       <div class="col-md-4 col-12 full-height">
         <!-- add new unit -->
         <q-card flat class="q-pa-md full-height">
-          <q-card-section>
+          <q-card-section class="row justify-between items-center">
             <div class="text-h6">Add a new unit</div>
+            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
+              flat rounded />
           </q-card-section>
           <!-- <q-separator /> -->
           <q-card-section>
@@ -132,6 +134,7 @@ import Helper from 'src/services/utils';
 import AdminAddUnitComponent from 'src/components/admin/AdminAddUnitComponent.vue';
 import AdminUnitDetailsComponent from 'src/components/admin/AdminUnitDetailsComponent.vue';
 import UserService from 'src/services/UserService';
+import ExportDataService from 'src/services/ExportDataService';
 
 export default {
   name: "AdminUnitsCard",
@@ -160,6 +163,42 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    async downloadData() {
+      this.$q.dialog({
+        title: 'Download Data',
+        message: 'You are about to export all data for units. Would you like to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+
+          const response = await ExportDataService.exportUnitData();
+
+          if (!response || !response.data) {
+            throw new Error('Invalid response from server');
+          }
+
+          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `units_export_${today}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 100);
+
+        } catch (error) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Export failed: ' + (error.message || 'Please try again')
+          });
+        }
+      });
+    },
 
     getReservedSummary(subUnits) {
       const reserved = subUnits

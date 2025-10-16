@@ -68,6 +68,25 @@ class EmailService {
       Logger.error('Error sending message: ', error.message)
     }
   }
+  static async RentalApplicationEmail(userId) {
+    const ENDPOINT = '/create-rental-application'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId })
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
+  static async DocumentUploadEmail(userId) {
+    const ENDPOINT = '/document-upload-email'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId })
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
+
   // PHP VERSION
   static async RentalActionReminder(userId, message) {
     const ENDPOINT = '/rental-action-reminder'

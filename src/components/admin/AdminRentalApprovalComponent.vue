@@ -23,6 +23,12 @@
             <li>Username: {{ rental.userUsername }}</li>
             <li>Phone: {{ rental.userPhone }}</li>
             <li>Email: {{ rental.userEmail }}</li>
+
+            <li v-if="rental.userHasBursary">Bursary Student: Yes</li>
+            <li v-else>Bursary Student: No</li>
+
+            <li v-if="rental.userRegistered">Registered Student: Registered</li>
+            <li v-else>Registered Student: Awaiting Registration</li>
           </ul>
         </q-card-section>
 
@@ -36,7 +42,7 @@
           </ul>
           <div v-else class="q-mb-md">
             <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
-              <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score:{{
+              <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
                 rental.payerData.score }}/80)</span></li>
               <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
               <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>

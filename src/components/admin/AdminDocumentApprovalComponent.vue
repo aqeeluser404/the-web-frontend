@@ -1,5 +1,5 @@
 <template>
-  <DocumentsComponent :userId="userId" />
+  <DocumentsComponent :userId="userId" @close="$emit('close')" />
 
 </template>
 

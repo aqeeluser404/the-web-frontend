@@ -76,9 +76,9 @@
               rounded />
 
             <!-- PHP CODE -->
-            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
+            <!-- <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
               @click="downloadData()" class="custom-button q-py-sm large-screen-only" icon="eva-cloud-download-outline"
-              flat rounded />
+              flat rounded /> -->
 
             <!-- authentication -->
             <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"

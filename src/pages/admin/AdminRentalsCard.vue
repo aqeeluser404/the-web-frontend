@@ -22,8 +22,10 @@
       <div class="col-md-9 col-12 full-height">
         <q-card flat bordered class="full-height">
           <!-- Table Section -->
-          <q-card-section class="row justify-center">
+          <q-card-section class="row justify-between items-center">
             <div class="text-h6">Rental History</div>
+            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
+              flat rounded />
           </q-card-section>
 
           <q-card-section class="row justify-between">
@@ -42,6 +44,7 @@
                   <th class="text-left">Application Date</th>
                   <th class="text-left">Applicant</th>
                   <th class="text-left">Applicant Contact</th>
+                  <th class="text-left">Applicant Email</th>
                   <th class="text-left">Application ID</th>
                   <th class="text-left">Start Date</th>
                   <th class="text-left">End Date</th>
@@ -55,10 +58,13 @@
                 <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                   <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                   <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                  <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(rental.userId)">{{
-                    rental.username }}</td>
-                  <td class="text-left cursor-pointer" @click="copyToClipboard(currentAccessKey)">
-                    {{ rental.userPhone }}
+                  <td class="text-left cursor-pointer hover-effect" >
+                    <span @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</span></td>
+                  <td class="text-left cursor-pointer">
+                    <span @click.stop="copyToClipboard(rental.userPhone)">{{ rental.userPhone }}</span>
+                  </td>
+                  <td class="text-left cursor-pointer" @click.stop="copyToClipboard(rental.userEmail)">
+                    <span @click.stop="copyToClipboard(rental.userEmail)">{{ rental.userEmail }}</span>
                   </td>
                   <td class="text-left cursor-pointer id">{{ rental._id }}</td>
                   <td class="text-left cursor-pointer">
@@ -143,6 +149,7 @@ import UserService from 'src/services/UserService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';
+import ExportDataService from 'src/services/ExportDataService';
 
 export default {
   name: "AdminRentalsCard",
@@ -181,6 +188,42 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    async downloadData() {
+      this.$q.dialog({
+        title: 'Download Data',
+        message: 'You are about to export all data for rentals. Would you like to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+
+          const response = await ExportDataService.exportRentalData();
+
+          if (!response || !response.data) {
+            throw new Error('Invalid response from server');
+          }
+
+          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `rentals_export_${today}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 100);
+
+        } catch (error) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Export failed: ' + (error.message || 'Please try again')
+          });
+        }
+      });
+    },
+
     needsAttention(rental) {
       if (!rental) return true;
       const emailVerified = rental.userVerification?.isVerified === true;
@@ -206,7 +249,7 @@ export default {
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Copied to clipboard!' });
         }).catch(err => {
           this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
         })
@@ -223,6 +266,7 @@ export default {
           unitType: unit.unitType,
           username: user.username,
           userId: user._id,
+          userEmail: user.email,
           userPhone: user.phone,
           userVerification: user.verification,
           userDocuments: user.documents || []

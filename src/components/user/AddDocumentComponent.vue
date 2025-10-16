@@ -38,6 +38,7 @@
 <script>
 import CustomButton from '../elements/CustomButton.vue';
 import UserService from 'src/services/UserService';
+import EmailService from 'src/services/EmailService';
 
 export default {
   props: {
@@ -96,6 +97,7 @@ export default {
 
       try {
         const response = await UserService.uploadUserDocs(this.user._id, formData);
+        await EmailService.DocumentUploadEmail(this.user._id)
         if (response) {
           this.$q.notify({ type: 'positive', message: 'Document added successfully!' });
           this.$emit('document-added', { type: this.docType, file: this.file });

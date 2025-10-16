@@ -83,17 +83,35 @@
           </q-card-section>
           <q-separator />
           <q-card-section>
-            <q-item>
+            <!-- <q-item>
               <q-item-section class="text-left text-subtitle1">Registered student</q-item-section>
               <q-item-section class="text-left">
                 <q-input readonly v-model="userDetails.studentInfo.isRegisteredStudent" />
               </q-item-section>
+            </q-item> -->
+
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Registered student</q-item-section>
+              <q-item-section class="text-left">
+                <div class=" q-py-md">
+                  {{ userDetails.studentInfo.isRegisteredStudent ? 'Registered' : 'Awaiting registration' }}
+                </div>
+              </q-item-section>
             </q-item>
+
+            <!-- <q-item>
+              <q-item-section class="text-left text-subtitle1">Bursary student</q-item-section>
+              <q-item-section class="text-left">
+                <q-input readonly v-model="userDetails.studentInfo.hasBursary" />
+              </q-item-section>
+            </q-item> -->
 
             <q-item>
               <q-item-section class="text-left text-subtitle1">Bursary student</q-item-section>
               <q-item-section class="text-left">
-                <q-input readonly v-model="userDetails.studentInfo.hasBursary" />
+                <div class=" q-py-md">
+                  {{ userDetails.studentInfo.hasBursary ? 'Yes' : 'No' }}
+                </div>
               </q-item-section>
             </q-item>
 

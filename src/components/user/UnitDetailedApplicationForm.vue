@@ -235,10 +235,14 @@
 
               <q-card-section>
                 <div class="q-mb-sm"><b>Would you like to add parking?</b></div>
-                <q-radio v-if="getSelectedPriceObject()?.name === 'annual'" v-model="rentalDetails.parking.hasParking"
-                  :val="true" :label="`Include Parking (R{{ Number(rentalDetails.parking.fee).toLocaleString('en-ZA') }} / once-off)`" />
+                <q-radio
+                  v-if="getSelectedPriceObject()?.name === 'annual'"
+                  v-model="rentalDetails.parking.hasParking"
+                  :val="true"
+                  :label="`Include Parking (R${Number(rentalDetails.parking.fee).toLocaleString('en-ZA')} / once-off)`"
+                />
                 <q-radio v-else v-model="rentalDetails.parking.hasParking" :val="true"
-                  :label="`Include Parking (R {{Number(rentalDetails.parking.fee).toLocaleString('en-ZA') }} / mo)`" />
+                  :label="`Include Parking (R${Number(rentalDetails.parking.fee).toLocaleString('en-ZA')} / mo)`" />
                 <br>
                 <q-radio v-model="rentalDetails.parking.hasParking" :val="false" label="No parking needed" />
               </q-card-section>
@@ -413,6 +417,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue'
 import RentalService from 'src/services/RentalService'
 import SignaturePad from '../elements/SignaturePad.vue'
 import SimpleZoom from '../elements/SimpleZoom.vue'
+import EmailService from 'src/services/EmailService'
 
 export default {
   name: 'CombinedUnitApplication',
@@ -834,6 +839,15 @@ export default {
 
       try {
         const response = await RentalService.createRental(formData)
+        await EmailService.RentalApplicationEmail(this.userDetails._id);
+        // const rentalId = response.rental?._id;
+
+        // console.log(rentalId)
+
+        // if (rentalId) {
+        //   await EmailService.RentalApplicationEmail(this.userDetails._id, rentalId);
+        // }
+
         let message = 'Application submitted successfully'
         if (response.accessKey) {
           message += `. Your access key: ${response.accessKey}`

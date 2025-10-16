@@ -2,8 +2,9 @@
   <!-- documents section -->
   <q-card flat bordered :class="isUserDetails ? '' : 'component-card'">
     <div :class="isUserDetails ? '' : 'q-pa-md'" :style="isUserDetails ? '' : 'background-color: #f8f8f8;'">
-      <q-card-section>
+      <q-card-section class="row justify-between items-center">
         <div class="text-h6">Documents Approval</div>
+        <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
       </q-card-section>
       <q-separator />
       <q-card-section>
@@ -16,7 +17,7 @@
             <span> {{ docType.label }}</span>
           </div>
           <br>
-          <div class="cursor-pointer" @click="removeAllDocuments">
+          <div v-if="currentUser && currentUser.userType === 'user'" class="cursor-pointer" @click="removeAllDocuments">
             <q-icon class="q-mr-sm" name="eva-trash-outline" />
             <span> Clear All</span>
           </div>
@@ -39,6 +40,7 @@ import AddDocumentComponent from '../user/AddDocumentComponent.vue';
 export default {
   data() {
     return {
+      currentUser: {},
       userDetails: {
         studentInfo: {
           isRegisteredStudent: '',
@@ -77,6 +79,7 @@ export default {
   },
   methods: {
     async fetchUserDetails() {
+      this.currentUser = await Helper.fetchUserDetails();
       this.userDetails = await UserService.findUserById(this.userId)
     },
 
