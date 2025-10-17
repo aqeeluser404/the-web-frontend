@@ -629,10 +629,10 @@ import UnitCardComponentBlack from 'src/components/user/UnitCardComponentBlack.v
 
 // Hero
 import main from 'src/assets/resources/home/slider/main.png';
-import home1 from 'src/assets/resources/home/slider/1.png';
-import home2 from 'src/assets/resources/home/slider/2.png';
-import home3 from 'src/assets/resources/home/slider/3.png';
-import home4 from 'src/assets/resources/home/slider/4.png';
+import home1 from 'src/assets/resources/home/slider/1.jpg';
+import home2 from 'src/assets/resources/home/slider/2.jpg';
+import home3 from 'src/assets/resources/home/slider/3.jpg';
+import home4 from 'src/assets/resources/home/slider/4.jpg';
 
 // Amenities
 import a1 from 'src/assets/resources/home/amenities/am0.png';
@@ -1845,7 +1845,8 @@ export default {
   top: 15%
   left: 63%
   width: 59px
-  height: 53.5px
+  height: 42.5px
+  // height: 53.5px
   // padding: 3px
   background-image: url('/assets/map/web.png')
   background-color: white

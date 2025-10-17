@@ -155,9 +155,9 @@
                   </div>
                 </q-card-section>
 
-                <!-- <q-card-section>
-                    <CustomButton label="Reserve Now" @click="handleUnitClick(unit)" />
-                  </q-card-section> -->
+                <q-card-section>
+                    <CustomButton label="Reserve Now" @click.stop="handleUnitClick(unit)" />
+                  </q-card-section>
               </q-card>
             </q-list>
           </q-card>
@@ -766,6 +766,10 @@ export default {
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     handleUnitClick(unit) {
+      if (this.$route.path === '/') {
+        this.$router.push('/units/apply/floor/1')
+        return;
+      }
       // Clone the unit to avoid mutating the original reference
       const cleanUnit = { ...unit };
 

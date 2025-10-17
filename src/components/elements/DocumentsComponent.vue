@@ -4,7 +4,7 @@
     <div :class="isUserDetails ? '' : 'q-pa-md'" :style="isUserDetails ? '' : 'background-color: #f8f8f8;'">
       <q-card-section class="row justify-between items-center">
         <div class="text-h6">Documents Approval</div>
-        <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+        <q-btn v-if="!isUserDetails" flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
       </q-card-section>
       <q-separator />
       <q-card-section>

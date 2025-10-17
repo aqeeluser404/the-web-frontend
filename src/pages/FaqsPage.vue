@@ -318,7 +318,7 @@
 </template>
 
 <script>
-import home2 from 'src/assets/resources/home/slider/2.png';
+import home2 from 'src/assets/resources/home/slider/2.jpg';
 
 export default {
   data() {
