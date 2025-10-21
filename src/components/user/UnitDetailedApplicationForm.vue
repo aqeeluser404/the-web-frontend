@@ -840,6 +840,7 @@ export default {
       try {
         const response = await RentalService.createRental(formData)
         await EmailService.RentalApplicationEmail(this.userDetails._id);
+        await EmailService.RentalApplicationToUserEmail(this.userDetails._id);
         // const rentalId = response.rental?._id;
 
         // console.log(rentalId)

@@ -98,6 +98,7 @@ export default {
       try {
         const response = await UserService.uploadUserDocs(this.user._id, formData);
         await EmailService.DocumentUploadEmail(this.user._id)
+        await EmailService.DocumentUploadToUserEmail(this.user._id)
         if (response) {
           this.$q.notify({ type: 'positive', message: 'Document added successfully!' });
           this.$emit('document-added', { type: this.docType, file: this.file });

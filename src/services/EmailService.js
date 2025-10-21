@@ -77,6 +77,24 @@ class EmailService {
       Logger.error('Error sending message: ', error.message)
     }
   }
+  static async RentalApplicationToUserEmail(userId) {
+    const ENDPOINT = '/create-rental-to-user-application'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId })
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
+  static async DocumentUploadToUserEmail(userId) {
+    const ENDPOINT = '/document-upload-to-user-email'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userId })
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending message: ', error.message)
+    }
+  }
   static async DocumentUploadEmail(userId) {
     const ENDPOINT = '/document-upload-email'
     try {
