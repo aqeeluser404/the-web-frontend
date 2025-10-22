@@ -204,6 +204,48 @@
       </div>
     </q-header>
 
+
+    <q-card class="whats-app-box" style="position: fixed; bottom: 90px; right: 20px; z-index: 1000;" v-if="boxOpened">
+      <q-card-section class="row justify-between items-start q-pa-md" style="background-color: #0B5E54; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+        <div class="col-md-2">
+          <div class="justify-center row items-center logo-circle">
+            <img :src="logoSrcBlack" alt="Home" class="logo-image"></img>
+          </div>
+        </div>
+        <div class="col-md-7 text-white">
+          <div class="text-h7"><b>The-WEB</b></div>
+          <div class="text-caption">Business Account</div>
+        </div>
+        <q-btn class="" v-if="!isUserDetails" flat round icon="close" @click="toggleWhatsAppBox" size="md" color="white"
+          aria-label="Close" />
+      </q-card-section>
+
+      <q-card-section class="q-pa-md" style="background-color: #E4DDD4;">
+        <q-card class="whats-app-msg">
+          <q-card-section>
+            <div class="text-h7 text-grey-8"><b>The-WEB</b></div>
+            <div class="text-caption">Hey, how can we help you?</div>
+          </q-card-section>
+        </q-card>
+        <div class="section-spacer-sm"></div>
+      </q-card-section>
+
+      <div class="row justify-center items-center q-pa-md">
+        <a href="https://wa.me/27774623613" target="_blank" style="text-decoration: none;" class="full-width">
+          <CustomButton
+            customStyle="width: 100%;"
+            size="md"
+            label="Start Chat"
+            color="secondary"
+          />
+        </a>
+      </div>
+    </q-card>
+
+    <q-btn rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
+      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button" @click="toggleWhatsAppBox"
+      style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;" />
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -213,6 +255,7 @@
 <script>
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
+import web3dlogoBlack from '../assets/resources/logos/web3dlogoBlack.png'
 
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
@@ -232,6 +275,8 @@ export default {
       burgerMenuShown: false,
 
       logoSrc: weblogo3d,
+      logoSrcBlack: web3dlogoBlack,
+      boxOpened: false,
     }
   },
   components: {
@@ -261,6 +306,9 @@ export default {
     },
   },
   methods: {
+    toggleWhatsAppBox() {
+      this.boxOpened = !this.boxOpened
+    },
     isRouteMatch(paths) {
       return paths.includes(this.$route.path);
     },
@@ -404,6 +452,44 @@ export default {
 </script>
 
 <style lang="sass">
+.whats-app-box
+  width: 100%
+  max-width: 300px
+  // height: 300px
+  border-radius: 15px
+
+.whats-app-msg
+  width: 100%
+  max-width: 300px
+  border-radius: 15px
+.whats-app-msg::after
+  content: ''
+  position: absolute
+  top: 12px  // Adjust this to position vertically
+  left: -10px  // Move it slightly outside the container
+  width: 0
+  height: 0
+  border-top: 1px solid transparent
+  border-bottom: 10px solid transparent
+  border-right: 13px solid white  // Right border creates left-pointing triangle
+
+.logo-circle
+  width: 40px
+  height: 40px
+  border-radius: 50%
+  background: white
+  display: flex
+  justify-content: center
+  align-items: center
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+  overflow: hidden // ensures image doesn't spill out
+
+.logo-image
+  width: 70%
+  height: 80%
+  object-fit: contain
+  cursor: pointer
+
 .secondary-nav
   height: 50px
   border-bottom: 1px solid #e0e0e0

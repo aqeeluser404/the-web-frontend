@@ -93,8 +93,7 @@
             </div>
           </q-card>
           <div class="why-choose-image col-12 col-md q-pl-md mobile-no-pl flex justify-center slide-in-right">
-            <q-img :src="a1" @click="openImageDialog(a1)"
-              class="side-image" />
+            <q-img :src="a1" @click="openImageDialog(a1)" class="side-image" />
           </div>
         </div>
         <div class="section-spacer-md"></div>
@@ -509,7 +508,9 @@
           <div class="text-h4 text-weight-bold">
             Need more answers? Read our FAQs
           </div>
-          <div><CustomButton customStyle="width: 180px" label="Read FAQs" to="/frequently-asked-questions" /></div>
+          <div>
+            <CustomButton customStyle="width: 180px" label="Read FAQs" to="/frequently-asked-questions" />
+          </div>
         </div>
       </div>
     </div>
@@ -532,14 +533,14 @@
                     size="20px" /></span>
                 admin@the-web.co.za
               </a>
-              <a href="tel:+27213008801" target="_blank" class="q-mb-sm row items-center"
+              <a href="https://wa.me/27774623613" target="_blank" class="q-mb-sm row items-center"
                 style="color: white; text-decoration: none; ">
                 <span class="gold-label text-bold"><q-icon name="eva-phone-outline" class="q-mr-md"
                     size="20px" /></span>
-                (+27) 21-300-8801
+                (+27) 77-462-3613
               </a>
-              <a href="https://www.facebook.com/profile.php?id=61581033305332" target="_blank" class="q-mb-md row items-center"
-                style="text-decoration: none; color: white;">
+              <a href="https://www.facebook.com/profile.php?id=61581033305332" target="_blank"
+                class="q-mb-md row items-center" style="text-decoration: none; color: white;">
                 <span class="gold-label text-bold"><q-icon name="eva-facebook-outline" class="q-mr-md"
                     size="20px" /></span>
                 Facebook
@@ -609,7 +610,7 @@
     </div>
 
     <!-- overlay button -->
-    <CustomButton customStyle="width: 180px" label="APPLY NOW" @click="openUnitRentals"
+    <CustomButton customStyle="width: 180px" size="lg" label="Apply Now" @click="openUnitRentals"
       style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" />
   </q-page>
 </template>
@@ -812,6 +813,10 @@ export default {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    toggleWhatsAppBox() {
+      this.boxOpened = !this.boxOpened
+    },
+
     setSlide(id, event) {
       this.currentSlide3 = id
       this.walkingSlide = id
@@ -915,7 +920,6 @@ export default {
 
 <!-- home sections -->
 <style lang="scss" scoped>
-
 /* #region HERO CAROUSEL */
 .hero-carousel {
   margin-top: 0;
@@ -1590,7 +1594,6 @@ export default {
   //  invert(39%) sepia(62%) saturate(3817%) hue-rotate(28deg) brightness(100%) contrast(97%);
 }
 </style>
-
 
 <style lang="sass" scoped>
 
