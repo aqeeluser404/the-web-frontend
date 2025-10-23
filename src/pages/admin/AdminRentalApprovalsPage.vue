@@ -300,6 +300,8 @@
                   <li>Proof of Residential Address</li>
                   <li>South African Identity Document (ID) or Passport</li>
                   <li>Three Months' Bank Statements</li>
+                  <!-- <li>Six Months' Bank Statements</li> -->
+                  <li>Proof of Bursary (if applicable)</li>
                   <li>Check Credit Approval</li>
                 </ul>
               </q-timeline-entry>

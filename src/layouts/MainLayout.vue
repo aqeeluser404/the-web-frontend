@@ -205,7 +205,7 @@
     </q-header>
 
 
-    <q-card class="whats-app-box" style="position: fixed; bottom: 90px; right: 20px; z-index: 1000;" v-if="boxOpened">
+    <q-card class="whats-app-box" style="" v-if="boxOpened">
       <q-card-section class="row justify-between items-start q-pa-md" style="background-color: #0B5E54; border-top-left-radius: 12px; border-top-right-radius: 12px;">
         <div class="col-md-2">
           <div class="justify-center row items-center logo-circle">
@@ -243,8 +243,7 @@
     </q-card>
 
     <q-btn rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
-      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button" @click="toggleWhatsAppBox"
-      style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;" />
+      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn" @click="toggleWhatsAppBox" />
 
     <q-page-container>
       <router-view />
@@ -452,11 +451,32 @@ export default {
 </script>
 
 <style lang="sass">
+.whats-app-btn
+  position: fixed
+  bottom: 20px
+  right: 20px
+  z-index: 1000
+  @media (max-width: 768px)
+    bottom: 70px
+    left: 20px
+    margin: 0 auto
+    width: 89%
+
 .whats-app-box
+  position: fixed
+  bottom: 90px
+  right: 20px
+  z-index: 1000
   width: 100%
   max-width: 300px
   // height: 300px
   border-radius: 15px
+  @media (max-width: 768px)
+    border-radius: 25px
+    right: 20px
+    bottom: 130px
+    margin: 0 auto
+    max-width: 90%
 
 .whats-app-msg
   width: 100%

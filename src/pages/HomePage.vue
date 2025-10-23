@@ -610,8 +610,7 @@
     </div>
 
     <!-- overlay button -->
-    <CustomButton customStyle="width: 180px" size="lg" label="Apply Now" @click="openUnitRentals"
-      style="position: fixed; bottom: 20px; left: 20px; z-index: 1000" />
+    <CustomButton customStyle="" class="overlay-btn" size="lg" label="Apply Now" @click="openUnitRentals" />
   </q-page>
 </template>
 
@@ -1596,6 +1595,17 @@ export default {
 </style>
 
 <style lang="sass" scoped>
+
+.overlay-btn
+  position: fixed
+  bottom: 20px
+  left: 20px
+  z-index: 1000
+  width: 180px
+  @media (max-width: 768px)
+    bottom: 10px
+    margin: 0 auto
+    width: 90%
 
 .dark-wrapper
   background-color: #121212

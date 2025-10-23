@@ -56,6 +56,8 @@ export default {
         { type: 'proof_of_address', label: 'Proof of Residential Address' },
         { type: 'id_or_passport', label: 'South African Identity Document (ID) or Passport' },
         { type: 'bank_statements', label: 'Three Months\' Bank Statements' },
+        // { type: 'bank_statements_6_months', label: 'Six Months\' Bank Statements' },
+        { type: 'proof_of_bursary', label: 'Proof of Bursary (if applicable)' },
         { type: 'credit_check', label: 'Check Credit Approval' }
       ],
       activeDocType: null

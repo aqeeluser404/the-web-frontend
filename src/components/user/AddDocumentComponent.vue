@@ -63,7 +63,9 @@ export default {
         'registration': 'Registration Form',
         'proof_of_address': 'Proof of Residential Address',
         'id_or_passport': 'ID or Passport',
-        'bank_statements': 'Bank Statements',
+        'bank_statements': '3-month Bank Statement',
+        // 'bank_statements_6_months': '6-month Bank Statement',
+        'proof_of_bursary': 'Proof of Bursary',
         'credit_check': 'Credit Check'
       };
       return types[this.docType] || 'Document';
