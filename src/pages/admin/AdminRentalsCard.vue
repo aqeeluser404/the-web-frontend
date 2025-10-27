@@ -46,6 +46,8 @@
                   <th class="text-left">Applicant Contact</th>
                   <th class="text-left">Applicant Email</th>
                   <th class="text-left">Application ID</th>
+                  <th class="text-left">Unit</th>
+                  <th class="text-left">Unit Type</th>
                   <th class="text-left">Start Date</th>
                   <th class="text-left">End Date</th>
                   <th class="text-left">Before Scheduled</th>
@@ -67,6 +69,8 @@
                     <span @click.stop="copyToClipboard(rental.userEmail)">{{ rental.userEmail }}</span>
                   </td>
                   <td class="text-left cursor-pointer id">{{ rental._id }}</td>
+                  <td class="text-left cursor-pointer">Unit {{ extractFirstNumber(rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType) }}</td>
+                  <td class="text-left cursor-pointer">{{ rental.selectedSubUnits.bedType || rental.selectedSubUnits.roomType }}</td>
                   <td class="text-left cursor-pointer">
                     <div v-if="!defaultValues(rental)">
                       {{ formatDate(rental.rentalStartDate) }}
@@ -187,6 +191,13 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    extractFirstNumber(str) {
+      if (!str) return '';
+      // Look for the first number anywhere in the string
+      const match = str.match(/\d+/);
+      return match ? match[0] : str;
+    },
 
     async downloadData() {
       this.$q.dialog({

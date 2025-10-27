@@ -116,10 +116,8 @@
                     :disable="subUnitPrices[index].length >= 3" />
                 </div>
                 <div class="col-md-3 col-12 q-mb-sm">
-                  <CustomButton label="Reserve" v-if="!sub.reservedBy" icon="add" color="primary" flat dense
-                    @click="handleReserveRoom(index)" />
-                  <CustomButton label="Unreserve" v-else icon="add" color="negative" flat dense
-                    @click="handleCancelReserveRoom(index)" />
+                  <q-btn label="Reserve" rounded v-if="!sub.reservedBy" class="custom-button q-px-lg q-py-sm" color="primary" @click="handleReserveRoom(index)" />
+                  <q-btn label="Unreserve" rounded v-else color="negative" class="custom-button q-px-lg q-py-sm" @click="handleCancelReserveRoom(index)" />
                 </div>
                 <div class="col-md-5 col-12 q-mb-sm">
                   <CustomButton icon="delete" label="Remove Sub-Unit" color="negative" @click="deleteSubUnit(index)"
@@ -466,6 +464,7 @@ export default {
   },
   async created() {
     await this.checkLoginStatus();
+    console.log(this.unit)
   }
 };
 </script>

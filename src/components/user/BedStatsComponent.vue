@@ -26,7 +26,7 @@
         }"
         >
 
-        <div class="text-body1 text-center text-weight-bold">{{ floor.label }}</div>
+        <div class="text-h6 text-center text-weight-bold">{{ floor.label }}</div>
         <!-- <div class="text-subtitle2 text-center" v-if="!isHomePage">{{ floor.label }}</div>
         <div class="text-center cursor-pointer" v-if="!isHomePage">
           <q-icon name="content_paste" size="sm" class="q-mr-xs" />
@@ -34,7 +34,7 @@
         </div> -->
 
         <q-linear-progress :value="stats[floor.key].available / stats[floor.key].total"
-          :color="getProgressColor(floor.key)" class="q-mt-sm" style="border-radius: 6px; padding: 3px;" />
+          :color="getProgressColor(floor.key)" class="q-mt-sm" style="border-radius: 6px; padding: 6px;" />
       </div>
     </q-card-section>
   </q-card>
