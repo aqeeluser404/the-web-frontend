@@ -40,3 +40,10 @@ yarn-error.log*
 # local .env files
 .env.local*
 package-lock.json
+
+# ignored debug files
+/src/services/debug.log
+/src/pages/debug.log
+/src/router/debug.log
+/src/debug.log
+debug.log

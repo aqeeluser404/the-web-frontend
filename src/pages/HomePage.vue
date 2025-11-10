@@ -582,7 +582,7 @@
 
         <br><br>
 
-        <q-card flat class="bg-transparent text-white row justify-center">
+        <!-- <q-card flat class="bg-transparent text-white row justify-center">
           <div class="map-container full-width row justify-center ">
             <img src="~src/assets/resources/home/map/version1.png" alt="Map" style="background-color: #333" />
             <div class="marker marker-1" data-label="The-WEB"></div>
@@ -594,7 +594,10 @@
             <div class="marker marker-7" data-label="4.1km, 53min walk, 11min drive"></div>
             <div class="marker marker-8" data-label="300m, 4min walk, 1min drive"></div>
           </div>
-        </q-card>
+        </q-card> -->
+        <q-page padding>
+          <div id="map" style="height: 500px; width: 100%; "></div>
+        </q-page>
       </div>
       <div class="footer-section text-white constrain-standard" style="background-color: #333;">
         <q-separator color="primary" style="width: 65%; margin: auto; height: 2px;" />
@@ -618,7 +621,8 @@
 <script>
 import ImageDialog from 'src/components/elements/ImageDialog.vue';
 import 'leaflet/dist/leaflet.css';
-import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
+// import {LMap, LTileLayer, LMarker, LPopup, L } from '@vue-leaflet/vue-leaflet';
+import L from 'leaflet'
 
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
@@ -664,19 +668,21 @@ import s5 from 'src/assets/resources/home/location/sport/s5.jpg'
 import s6 from 'src/assets/resources/home/location/sport/s6.jpg'
 
 import { useMeta } from 'quasar';
+import { onMounted } from 'vue';
 
 export default {
   name: 'Homepage',
   components: {
     CustomButton,
     MaintenanceBanner,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
+    // LMap,
+    // LTileLayer,
+    // LMarker,
+    // LPopup,
     UnitCardComponent,
     UnitCardComponentBlack,
-    ImageDialog
+    ImageDialog,
+    L
   },
 
   setup() {
@@ -911,10 +917,85 @@ export default {
     elements.forEach(el => {
       observer.observe(el)
     })
-  },
+
+    //Map 
+    const map = L.map('map').setView([-33.924553, 18.881197], 16)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map)
+
+    const webIcon = L.divIcon({
+      html: '<div class="icon-map icon-map1"><img src="/assets/map/web.png" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/web.png',
+      iconSize: [30, 30], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+    const universityIcon = L.divIcon({
+      html: '<div class="icon-map icon-map2"><img src="/assets/map/university.jpeg" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/university.jpeg',
+      iconSize: [40, 40], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+    const neelsieIcon = L.divIcon({
+      html: '<div class="icon-map icon-map3"><img src="/assets/map/neelsie.jpeg" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/neelsie.jpeg',
+      iconSize: [40, 40], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+    const sparIcon = L.divIcon({
+      html: '<div class="icon-map icon-map4"><img src="/assets/map/spar.jpeg" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/spar.jpeg',
+      iconSize: [40, 40], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+    const hospital2Icon = L.divIcon({
+      html: '<div class="icon-map icon-map5"><img src="/assets/map/hospital2.png" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/hospital2.png',
+      iconSize: [40, 40], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+    const steersIcon = L.divIcon({
+      html: '<div class="icon-map icon-map6"><img src="/assets/map/steers.jpeg" alt="Icon" style="width: 30px; height: 30px;"></div>',
+      iconUrl: '/assets/map/steers.jpeg',
+      iconSize: [40, 40], // size of icon
+      iconAnchor: [10, 10], // point of icon which corresponds to marker's location
+      popupAnchor: [0, -35],
+    })
+
+    L.marker([-33.924553, 18.881197], { icon: webIcon })
+      .addTo(map)
+      .bindPopup('<b></b>The-Web<br>2 Juffernbruch St, Idasvallei, Stellenbosch')
+
+    L.marker([-33.93238933079716, 18.864473905833865], { icon: universityIcon })
+      .addTo(map)
+      .bindPopup('<b>Stellenbosch university</b><br>Stellenbosch Central, Stellenbosch, 7602')
+    
+    L.marker([-33.93226212870568, 18.865823342877476], { icon: neelsieIcon })
+      .addTo(map)
+      .bindPopup('<b>Neelsie Student Centre</b><br>Stellenbosch Central, Stellenbosch, 7602')
+    
+    L.marker([-33.92608361269667, 18.878619109476865], { icon: sparIcon })
+      .addTo(map)
+      .bindPopup('<b>Spar</b><br>Cluver Rd, Simonswyk, Stellenbosch, 7600')
+
+    L.marker([-33.929460627207696, 18.872481937180357], { icon: hospital2Icon })
+      .addTo(map)
+      .bindPopup('<b>Provincial Hospital</b><br>Universiteits Oord, Stellenbosch, 7600')
+
+    L.marker([-33.92634792964042, 18.87760756209603], { icon: steersIcon })
+      .addTo(map)
+      .bindPopup('<b>Steers</b><br>Shop 3, Simonsrust Shopping Centre, Helshoogte Rd, Simonswyk, Stellenbosch, 7600')
+    },
+
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll)
-  }
+  },
 };
 </script>
 
@@ -1947,4 +2028,87 @@ export default {
       min-width: 45px
       padding: 4px 8px
       top: -40px
+</style>
+
+//map icons
+<style lang="scss">
+.icon-map {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 45px;
+  height: 45px;
+  transition: transform 0.5s ease-in-out, box-shadow 0.3s ease;
+  /* transform: translate(-20px, 30px) !important; */
+
+  img {
+    width: 28px;
+    height: 28px;
+  }
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.leaflet-div-icon{
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+.icon-map1 {
+  border: 2px solid #000000;
+}
+.icon-map2 {
+  img{
+    width: 50px !important;
+    height: 50px !important;
+    border: #b8860b 2px solid !important;
+    border-radius: 10px !important;
+  }
+}
+.icon-map3 {
+  img{
+    width: 50px !important;
+    height: 50px !important;
+    border: #4B2E17 2px solid !important;
+    border-radius: 10px !important;
+  }
+}
+.icon-map4 {
+  img{
+    width: 50px !important;
+    height: 50px !important;
+    border: #009B77 2px solid !important;
+    border-radius: 10px !important;
+  }
+}
+.icon-map5 {
+  img{
+    width: 50px !important;
+    height: 50px !important;
+    border: #9b2400 2px solid !important;
+    border-radius: 10px !important;
+  }
+}
+.icon-map6 {
+  img{
+    width: 50px !important;
+    height: 50px !important;
+    border: #6b05be 2px solid !important;
+    border-radius: 10px !important;
+  }
+}
 </style>
