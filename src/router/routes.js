@@ -8,6 +8,7 @@ const routes = [
       { path: '', component: () => import('pages/HomePage.vue') },
       { path: 'home', redirect: '/' },
       { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
+      { path: "/install-app", component: () => import("src/pages/InstallApp.vue"), },
 
       { path: "/incident-report", component: () => import("src/pages/tabs/IncidentReportPage.vue"), },
       { path: "/resources", component: () => import("src/pages/tabs/ResourcesPage.vue"), },

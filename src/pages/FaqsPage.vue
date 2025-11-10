@@ -161,6 +161,49 @@
               <iframe title="Apply" src="/files/Disclaimer.pdf" width="100%" height="250" style="border: none"></iframe>
             </div>
           </q-expansion-item>
+
+          <!-- <q-expansion-item label="App" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Download our App</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              You can download the app by clicking the link below.
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/the-web-v3-app.apk" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download The-WEB APK here
+                </a>
+              </p>
+            </div>
+          </q-expansion-item> -->
+
+          <q-expansion-item
+            label="App"
+            header-class="text-h4 text-left q-pa-md"
+            expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px"
+          >
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Download our App</div>
+              </div>
+            </template>
+
+            <div class="q-py-lg q-px-md text-left">
+              You can download the app by clicking the link below.
+              <p class="q-my-md text-weight-bold text-body1">
+                <router-link
+                  to="/install-app"
+                  class="text-primary"
+                  style="text-decoration: underline;"
+                >
+                  Go to Install Page
+                </router-link>
+              </p>
+            </div>
+          </q-expansion-item>
         </div>
 
         <!-- Right Column -->
@@ -307,6 +350,26 @@
               </p>
 
               <iframe title="Apply" src="/files/CodeOfConduct.pdf" width="100%" height="250" style="border: none"></iframe>
+            </div>
+          </q-expansion-item>
+
+          <q-expansion-item label="CreditCheck" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+            style="border: 1px solid #222; margin-top: 16px">
+            <template v-slot:header>
+              <div class="full-width">
+                <div class="text-h5 text-left">Credit Check Form</div>
+              </div>
+            </template>
+            <div class="q-py-lg q-px-md text-left">
+              Please complete this credit check form by clicking the link below to download the document.
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Credit check form
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/CreditCheckApproval.pdf" width="100%" height="250" style="border: none"></iframe>
             </div>
           </q-expansion-item>
         </div>

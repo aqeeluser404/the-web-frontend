@@ -292,7 +292,7 @@
                 title="Documents have been Approved" side="right" icon="done_all" />
 
               <!-- Document Approvals -->
-              <q-timeline-entry v-else title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
+              <q-timeline-entry title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
                 <div class="q-mb-md" style="cursor: pointer; text-decoration: underline;"
                   @click="openUserDocumentsDialog">Please verify if the following documents are valid.</div>
                 <ul>

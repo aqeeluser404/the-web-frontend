@@ -533,11 +533,12 @@
                     size="20px" /></span>
                 admin@the-web.co.za
               </a>
-              <a href="https://wa.me/27774623613" target="_blank" class="q-mb-sm row items-center"
-                style="color: white; text-decoration: none; ">
-                <span class="gold-label text-bold"><q-icon name="eva-phone-outline" class="q-mr-md"
-                    size="20px" /></span>
-                (+27) 77-462-3613
+              <a href="tel:+27213008801" target="_blank" class="q-mb-sm row items-center"
+                style="color: white; text-decoration: none;">
+                <span class="gold-label text-bold">
+                  <q-icon name="eva-phone-outline" class="q-mr-md" size="20px" />
+                </span>
+                (+27) 21-300-8801
               </a>
               <a href="https://www.facebook.com/profile.php?id=61581033305332" target="_blank"
                 class="q-mb-md row items-center" style="text-decoration: none; color: white;">
@@ -1605,7 +1606,7 @@ export default {
   @media (max-width: 768px)
     bottom: 10px
     margin: 0 auto
-    width: 90%
+    width: 40%
 
 .dark-wrapper
   background-color: #121212

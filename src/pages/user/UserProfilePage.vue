@@ -158,8 +158,8 @@
               </p>
 
               <p class="q-mt-sm">
-                <a href="/files/Apply.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
-                  Download Application Form
+                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Credit Check Approval
                 </a>
               </p>
             </div>

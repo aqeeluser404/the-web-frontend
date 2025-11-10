@@ -7,7 +7,8 @@
         $route.path !== '/verify-email' &&
         $route.path !== '/resend-verification' &&
         $route.path !== '/reset-password' &&
-        $route.path !== '/forgot-password'
+        $route.path !== '/forgot-password' &&
+        $route.path !== '/install-app'
       ">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
 
@@ -243,7 +244,10 @@
     </q-card>
 
     <q-btn rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
-      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn" @click="toggleWhatsAppBox" />
+      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop" @click="toggleWhatsAppBox" />
+
+    <q-btn rounded color="secondary" text-color="white"
+      icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
 
     <q-page-container>
       <router-view />
@@ -451,16 +455,30 @@ export default {
 </script>
 
 <style lang="sass">
-.whats-app-btn
+.whats-app-btn-desktop
   position: fixed
   bottom: 20px
   right: 20px
   z-index: 1000
   @media (max-width: 768px)
+    display: none
     bottom: 70px
     left: 20px
     margin: 0 auto
     width: 89%
+
+.whats-app-btn-mobile
+  display: none
+  position: fixed
+  bottom: 20px
+  right: 20px
+  z-index: 1000
+  @media (max-width: 768px)
+    display: block
+    bottom: 10px
+    // left: 20px
+    margin: 0 auto
+    width: 15%
 
 .whats-app-box
   position: fixed
@@ -474,7 +492,7 @@ export default {
   @media (max-width: 768px)
     border-radius: 25px
     right: 20px
-    bottom: 130px
+    bottom: 70px
     margin: 0 auto
     max-width: 90%
 

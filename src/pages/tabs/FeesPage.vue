@@ -45,12 +45,13 @@
           { id: 2, type: 'Helshoogte', annual: 'R68 750', over10: 'R6 875', over11: 'R6 250', annually: 'R66 000' },
           { id: 3, type: 'Botmaskop', annual: 'R132 000', over10: 'R13 200', over11: 'R12 000', annually: 'R126 720' },
           { id: 4, type: 'Parking', annual: 'R4 950', over10: 'R495', over11: 'R450', annually: 'R4 752' },
+          { id: 5, type: 'Shuttle Service', annual: '', over10: 'R600', over11: 'R600', annually: '' },
 
-          { id: 5, type: 'Deposit', annual: '', over10: '', over11: '', annually: '' },
+          { id: 6, type: 'Deposit', annual: '', over10: '', over11: '', annually: '' },
 
-          { id: 6, type: 'Helshoogte', annual: '', over10: 'R6 250', over11: 'R6 250', annually: 'R6 250' },
-          { id: 7, type: 'Botmaskop', annual: '', over10: 'R12 000', over11: 'R12 000', annually: 'R12 000' },
-          { id: 8, type: 'Application Fee (Non refundable)', annual: '', over10: 'R1 200', over11: 'R1 200', annually: 'R1 200' }
+          { id: 7, type: 'Helshoogte', annual: '', over10: 'R6 250', over11: 'R6 250', annually: 'R6 250' },
+          { id: 8, type: 'Botmaskop', annual: '', over10: 'R12 000', over11: 'R12 000', annually: 'R12 000' },
+          { id: 9, type: 'Application Fee (Non refundable)', annual: '', over10: 'R1 200', over11: 'R1 200', annually: 'R1 200' }
         ]" row-key="id" flat bordered hide-pagination :pagination="{ rowsPerPage: 0 }"
           style="max-width: 900px; margin: 0 auto">
           <!-- Table header title -->
