@@ -358,16 +358,48 @@ export default {
   },
   computed: {
     hasAllRequiredDocuments() {
-      const requiredTypes = [
-        'registration',
-        'proof_of_address',
-        'id_or_passport',
-        'bank_statements',
-        'credit_check'
-      ];
+      // Define required docs per category (with prefixes)
+      const requiredDocsByCategory = {
+        'Private Client': [
+          'private_application_form',
+          'private_student_registration',
+          'private_id_student',
+          'private_id_person',
+          'private_proof_of_address',
+          'private_3_months_payslips',
+          'private_3_months_bank_statements'
+        ],
+        'Business': [
+          'business_application_form',
+          'business_student_registration',
+          'business_id_directors',
+          'business_proof_of_address',
+          'business_cipc_documents',
+          'business_6_months_bank_statements'
+        ],
+        'Bursary Application': [
+          'bursary_application_form',
+          'bursary_student_registration',
+          'bursary_confirmation',
+          'bursary_proof_of_address',
+          'bursary_id_documents'
+        ]
+      };
 
+      // Get uploaded docTypes
       const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
+      if (uploadedTypes.length === 0) return false;
 
+      // Detect category from prefix of first uploaded doc
+      let category = null;
+      const firstDoc = uploadedTypes[0];
+      if (firstDoc.startsWith('private_')) category = 'Private Client';
+      else if (firstDoc.startsWith('business_')) category = 'Business';
+      else if (firstDoc.startsWith('bursary_')) category = 'Bursary Application';
+
+      if (!category) return false;
+
+      const requiredTypes = requiredDocsByCategory[category] || [];
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
 

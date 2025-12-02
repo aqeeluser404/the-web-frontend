@@ -137,7 +137,7 @@
             <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly
               ensure
               the following documents are uploaded:</div>
-            <ul>
+            <!-- <ul>
               <div v-for="docType in requiredDocuments" :key="docType.type" class="cursor-pointer q-mb-sm"
                 style="font-weight: 500;" @click="openAddDocumentDialog(docType.type)">
                 <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary"
@@ -145,12 +145,102 @@
                 <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
                 <span> {{ docType.label }}</span>
               </div>
-              <br>
+              <div class="section-spacer-xs"></div>
+              <q-expansion-item
+                v-for="category in documentCategories"
+                :key="category.category"
+                :label="category.category"
+                expand-separator
+                icon="folder"
+                class="q-mb-md"
+                style="max-width: 60%; border: 1px solid #222; margin-top: 16px"
+              >
+                <div class="section-spacer-xs"></div>
+                <div v-for="docType in category.documents" :key="docType.type" class="cursor-pointer q-py-sm q-px-md"
+                    style="font-weight: 500;" @click="openAddDocumentDialog(docType.type)">
+
+                  <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary"
+                          name="eva-checkmark-circle-2-outline" />
+                  <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
+                  <span>{{ docType.label }}</span>
+                </div>
+                <div class="section-spacer-xs"></div>
+              </q-expansion-item>
+              <div class="section-spacer-xs"></div>
+
               <div class="cursor-pointer" @click="removeAllDocuments">
                 <q-icon class="q-mr-sm" name="eva-trash-outline" />
                 <span> Clear All</span>
               </div>
-            </ul>
+            </ul> -->
+              <div class="section-spacer-xs"></div>
+<!-- Radios outside -->
+<div class="q-mb-md" :key="categoryLock.lockedCategory ? 'locked-' + categoryLock.lockedCategory : 'unlocked'">
+  <template v-if="!categoryLock.lockedCategory">
+    <q-radio
+      v-for="cat in documentCategories"
+      :key="cat.category"
+      v-model="categoryLock.selectedCategory"
+      :val="cat.category"
+      :label="cat.category"
+      @input="chooseCategory(cat.category)"
+      class="q-mr-md"
+    />
+  </template>
+  <template v-else>
+    <q-radio
+      v-model="categoryLock.selectedCategory"
+      :val="categoryLock.lockedCategory"
+      :label="categoryLock.lockedCategory"
+      :disable="true"
+    />
+  </template>
+</div>
+
+<!-- Single expansion item for the selected/locked category -->
+<q-expansion-item
+  v-if="displayedCategory"
+  :label="displayedCategory"
+  icon="folder"
+  flat
+  class="q-mb-md documents-drop-down"
+  :default-opened="true"
+>
+  <div class="section-spacer-xs"></div>
+
+  <div
+    v-for="docType in displayedCategoryObj.documents"
+    :key="docType.type"
+    class="cursor-pointer q-py-sm q-px-md"
+    style="font-weight: 500;"
+    @click="openAddDocumentDialog(docType.type)"
+  >
+    <q-icon
+      class="q-mr-sm"
+      v-if="hasDocument(docType.type)"
+      color="secondary"
+      name="eva-checkmark-circle-2-outline"
+    />
+    <q-icon
+      class="q-mr-sm"
+      v-else
+      color="negative"
+      name="eva-alert-circle-outline"
+    />
+    <span>{{ docType.label }}</span>
+  </div>
+
+  <div class="section-spacer-xs"></div>
+</q-expansion-item>
+
+
+              <div class="section-spacer-xs"></div>
+
+              <div class="cursor-pointer" @click="removeAllDocuments">
+                <q-icon class="q-mr-sm" name="eva-trash-outline" />
+                <span> Clear All</span>
+              </div>
+
             <div class="q-mt-xl q-mb-sm">
               <p class="">
                 To view the full application process, check out our
@@ -209,6 +299,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import AddDocumentComponent from 'src/components/user/AddDocumentComponent.vue';
 import RentalService from 'src/services/RentalService';
 import { copyToClipboard } from 'quasar';
+import { useCategoryLockStore } from 'src/stores/categoryLock';
 
 export default {
   data() {
@@ -230,25 +321,185 @@ export default {
       ],
       currentAccessKey: '',
       documentLogo,
+      // requiredDocuments: [
+      //   { type: 'registration', label: 'Registration Form' },
+      //   { type: 'proof_of_address', label: 'Proof of Residential Address' },
+      //   { type: 'id_or_passport', label: 'South African Identity Document (ID) or Passport' },
+      //   { type: 'bank_statements', label: 'Three Months\' Bank Statements' },
+      //   // { type: 'bank_statements_6_months', label: 'Six Months\' Bank Statements' },
+      //   { type: 'proof_of_bursary', label: 'Proof of Bursary (if applicable)' },
+      //   { type: 'credit_check', label: 'Check Credit Approval' },
+      // ],
+      // documentCategories: [
+      //   {
+      //     category: 'Personal',
+      //     documents: [
+      //       { type: 'id_or_passport', label: 'South African Identity Document (ID) or Passport' },
+      //       { type: 'proof_of_address', label: 'Proof of Residential Address' },
+      //       { type: 'registration', label: 'Registration Form' }
+      //     ]
+      //   },
+      //   {
+      //     category: 'Company',
+      //     documents: [
+      //       { type: 'bank_statements', label: 'Three Months\' Bank Statements' },
+      //       { type: 'credit_check', label: 'Check Credit Approval' }
+      //     ]
+      //   },
+      //   {
+      //     category: 'Bursary',
+      //     documents: [
+      //       { type: 'proof_of_bursary', label: 'Proof of Bursary (if applicable)' }
+      //     ]
+      //   }
+      // ],
 
-      addDocDialog: false,
-      requiredDocuments: [
-        { type: 'registration', label: 'Registration Form' },
-        { type: 'proof_of_address', label: 'Proof of Residential Address' },
-        { type: 'id_or_passport', label: 'South African Identity Document (ID) or Passport' },
-        { type: 'bank_statements', label: 'Three Months\' Bank Statements' },
-        // { type: 'bank_statements_6_months', label: 'Six Months\' Bank Statements' },
-        { type: 'proof_of_bursary', label: 'Proof of Bursary (if applicable)' },
-        { type: 'credit_check', label: 'Check Credit Approval' },
+      documentCategories: [
+        {
+          category: 'Private Client',
+          documents: [
+            { type: 'private_application_form', label: 'Fully Completed Application Form' },
+            { type: 'private_student_registration', label: 'Student Registration Form' },
+            { type: 'private_id_student', label: 'Identity Documents - Student responsible' },
+            { type: 'private_id_person', label: 'Identity Documents - Person responsible' },
+            { type: 'private_proof_of_address', label: 'Proof of Address' },
+            { type: 'private_3_months_payslips', label: '3 months latest Payslips' },
+            { type: 'private_3_months_bank_statements', label: '3 months Bank statements' }
+          ]
+        },
+        {
+          category: 'Business',
+          documents: [
+            { type: 'business_application_form', label: 'Fully Completed Application Form' },
+            { type: 'business_student_registration', label: 'Student Registration Form' },
+            { type: 'business_id_directors', label: 'Identity Documents of all Directors' },
+            { type: 'business_proof_of_address', label: 'Proof of Address' },
+            { type: 'business_cipc_documents', label: 'CIPC Documents' },
+            { type: 'business_6_months_bank_statements', label: '6 Months Bank statements' }
+          ]
+        },
+        {
+          category: 'Bursary Application',
+          documents: [
+            { type: 'bursary_application_form', label: 'Fully Completed Application Form' },
+            { type: 'bursary_student_registration', label: 'Student Registration Form' },
+            { type: 'bursary_confirmation', label: 'Confirmation of bursary' },
+            { type: 'bursary_proof_of_address', label: 'Proof of Address' },
+            { type: 'bursary_id_documents', label: 'Identity Documents' }
+          ]
+        }
       ],
+      addDocDialog: false,
       activeDocType: null
+
     }
   },
   components: {
     CustomButton,
     AddDocumentComponent
   },
+  computed: {
+    categoryLock() {
+      return useCategoryLockStore();
+    },
+    displayedCategory() {
+      return this.categoryLock.lockedCategory || this.categoryLock.selectedCategory;
+    },
+    displayedCategoryObj() {
+      return this.documentCategories.find(c => c.category === this.displayedCategory) || { documents: [] };
+    }
+  },
+
+  async mounted() {
+    await this.fetchUserDetails();
+    this.initializeCategoryLock();
+  },
+
+  watch: {
+    'userDetails.documents': {
+      handler() { this.initializeCategoryLock(); },
+      deep: true
+    }
+  },
+
   methods: {
+    getCategoryByDocType(docType) {
+      // With prefixed docTypes, this is trivial:
+      if (docType.startsWith('private_')) return 'Private Client';
+      if (docType.startsWith('business_')) return 'Business';
+      if (docType.startsWith('bursary_')) return 'Bursary Application';
+      return null;
+    },
+
+    initializeCategoryLock() {
+      const docs = this.userDetails?.documents || [];
+      if (docs.length === 0) {
+        this.categoryLock.clearCategory();
+        return;
+      }
+      const cat = this.getCategoryByDocType(docs[0].docType);
+      if (cat) this.categoryLock.setCategory(cat);
+    },
+
+    chooseCategory(category) {
+      if (!this.categoryLock.lockedCategory) {
+        this.categoryLock.selectedCategory = category;
+      }
+    },
+
+    async removeAllDocuments() {
+      if (this.userDetails.documents.length > 0) {
+        this.$q.dialog({
+          title: 'Confirm',
+          message: `You are about to delete all your documents, continue?`,
+          color: 'primary',
+          cancel: true,
+          persistent: true
+        }).onOk(async () => {
+          const response = await UserService.clearAllUserDocs(this.userDetails._id);
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
+            await this.fetchUserDetails();
+            this.categoryLock.clearCategory();
+          }
+        });
+      }
+    },
+
+    openAddDocumentDialog(type) {
+      if (!this.categoryLock.selectedCategory) {
+        this.$q.notify({ type: 'warning', message: 'Please select a category first.' });
+        return;
+      }
+      this.activeDocType = type;
+      this.addDocDialog = true;
+    },
+
+    async handleDialogClose() {
+      this.addDocDialog = false;
+      await this.fetchUserDetails();
+      if (!this.categoryLock.lockedCategory && this.userDetails.documents.length > 0) {
+        this.categoryLock.setCategory(this.categoryLock.selectedCategory);
+      }
+    },
+
+    hasDocument(type) {
+      return this.userDetails.documents?.some(doc => doc.docType === type);
+    },
+
+    viewDocument(document) {
+      const url = Helper.getDocumentUrl(document);
+      window.open(url, '_blank');
+    },
+
+    async deleteDocument(fileId) {
+      const response = await UserService.removeUserDoc(this.userDetails._id, fileId);
+      if (response) {
+        this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
+        this.fetchUserDetails();
+      }
+    },
+
     validateText: Helper.validateText,
     validateEmail: Helper.validateEmail,
     validatePhone: Helper.validatePhone,
@@ -418,54 +669,6 @@ export default {
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
-
-    hasDocument(type) {
-      return this.userDetails.documents?.some(doc => doc.docType === type);
-    },
-    viewDocument(document) {
-      const url = Helper.getDocumentUrl(document);
-      window.open(url, '_blank');
-    },
-    async deleteDocument(fileId) {
-      // console.log(this.userDetails._id)
-      // console.log(fileId)
-      const response = await UserService.removeUserDoc(this.userDetails._id, fileId);
-      if (response) {
-        this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
-        this.fetchUserDetails();
-      }
-    },
-    async removeAllDocuments() {
-      if (this.userDetails.documents.length > 0) {
-        this.$q.dialog({
-          title: 'Confirm', message: `You are about to delete all your documents, continue?`, color: 'primary', cancel: true, persistent: true
-        }).onOk(async () => {
-          const response = await UserService.clearAllUserDocs(this.userDetails._id);
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
-            this.fetchUserDetails();
-          } else {
-            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
-          }
-        }).onCancel(() => {
-          this.fetchUserDetails();
-          return;
-        });
-      } else {
-        this.$q.notify({ type: 'negative', message: 'You have no documents to delete. Please try again.' });
-      }
-    },
-    openAddDocumentDialog(type) {
-      this.activeDocType = type;
-      this.addDocDialog = true;
-    },
-    handleDialogClose() {
-      this.addDocDialog = false;
-      this.fetchUserDetails();
-    }
-  },
-  created() {
-    this.fetchUserDetails();
   }
 };
 </script>

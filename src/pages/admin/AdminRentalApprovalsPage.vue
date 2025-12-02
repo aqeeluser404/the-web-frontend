@@ -282,8 +282,12 @@
               </q-timeline-entry>
 
               <!-- Documents upload -->
-              <q-timeline-entry v-if="rental.userDocuments && rental.userDocuments.length === 5"
-                title="Documents have been Uploaded" side="left" icon="done_all" />
+              <q-timeline-entry
+                v-if="hasAllRequiredDocuments"
+                title="Documents have been Uploaded"
+                side="left"
+                icon="done_all"
+              />
 
               <q-timeline-entry v-else title="Remaining Documents to Complete Submission" side="left" color="red"
                 icon="close" />
@@ -292,17 +296,45 @@
                 title="Documents have been Approved" side="right" icon="done_all" />
 
               <!-- Document Approvals -->
-              <q-timeline-entry title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
-                <div class="q-mb-md" style="cursor: pointer; text-decoration: underline;"
-                  @click="openUserDocumentsDialog">Please verify if the following documents are valid.</div>
+              <q-timeline-entry
+                title="Document Approval"
+                side="right"
+                color="grey"
+                icon="eva-file-text-outline"
+              >
+                <div class="q-mb-md"
+                    style="cursor: pointer; text-decoration: underline;"
+                    @click="openUserDocumentsDialog">
+                  Please verify if the following documents are valid.
+                </div>
+
                 <ul>
-                  <li>Registration Form</li>
-                  <li>Proof of Residential Address</li>
-                  <li>South African Identity Document (ID) or Passport</li>
-                  <li>Three Months' Bank Statements</li>
-                  <!-- <li>Six Months' Bank Statements</li> -->
-                  <li>Proof of Bursary (if applicable)</li>
-                  <li>Check Credit Approval</li>
+                  <!-- Private Client -->
+                  <li class="text-bold q-mt-sm">Private Client</li>
+                  <li>Fully Completed Application Form</li>
+                  <li>Student Registration Form</li>
+                  <li>Identity Documents - Student responsible</li>
+                  <li>Identity Documents - Person responsible</li>
+                  <li>Proof of Address</li>
+                  <li>3 months latest Payslips</li>
+                  <li>3 months Bank statements</li>
+
+                  <!-- Business -->
+                  <li class="text-bold q-mt-sm">Business</li>
+                  <li>Fully Completed Application Form</li>
+                  <li>Student Registration Form</li>
+                  <li>Identity Documents of all Directors</li>
+                  <li>Proof of Address</li>
+                  <li>CIPC Documents</li>
+                  <li>6 Months Bank statements</li>
+
+                  <!-- Bursary Application -->
+                  <li class="text-bold q-mt-sm">Bursary Application</li>
+                  <li>Fully Completed Application Form</li>
+                  <li>Student Registration Form</li>
+                  <li>Confirmation of bursary</li>
+                  <li>Proof of Address</li>
+                  <li>Identity Documents</li>
                 </ul>
               </q-timeline-entry>
 
@@ -383,6 +415,51 @@ export default {
     layout() {
       return this.$q.screen.lt.sm ? 'dense' : (this.$q.screen.lt.md ? 'comfortable' : 'loose');
     },
+    hasAllRequiredDocuments() {
+      // Define required docs per category
+      const requiredDocsByCategory = {
+        'Private Client': [
+          'private_application_form',
+          'private_student_registration',
+          'private_id_student',
+          'private_id_person',
+          'private_proof_of_address',
+          'private_3_months_payslips',
+          'private_3_months_bank_statements'
+        ],
+        'Business': [
+          'business_application_form',
+          'business_student_registration',
+          'business_id_directors',
+          'business_proof_of_address',
+          'business_cipc_documents',
+          'business_6_months_bank_statements'
+        ],
+        'Bursary Application': [
+          'bursary_application_form',
+          'bursary_student_registration',
+          'bursary_confirmation',
+          'bursary_proof_of_address',
+          'bursary_id_documents'
+        ]
+      };
+
+      const uploadedTypes = this.rental.userDocuments?.map(doc => doc.docType) || [];
+      if (uploadedTypes.length === 0) return false;
+
+      // Detect category from prefix
+      let category = null;
+      const firstDoc = uploadedTypes[0];
+      if (firstDoc.startsWith('private_')) category = 'Private Client';
+      else if (firstDoc.startsWith('business_')) category = 'Business';
+      else if (firstDoc.startsWith('bursary_')) category = 'Bursary Application';
+
+      if (!category) return false;
+
+      const requiredTypes = requiredDocsByCategory[category] || [];
+      return requiredTypes.every(type => uploadedTypes.includes(type));
+    },
+
     defaultValues() {
       const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
       const today = new Date();
