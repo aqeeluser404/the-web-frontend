@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="constrain-standard q-py-md">
+    <div class="constrain-standard q-py-md" v-if="hasActiveRental">
 
 
       <q-card class="col-md-4 col-12 stats-card full-height">
@@ -11,29 +11,17 @@
 
         <q-card-section>
           <div class="row q-gutter-sm justify-center">
-            <q-btn
-              v-for="option in callTypeOptions"
-              :key="option.value"
-              :color="callLog.callType === option.value ? 'primary' : 'grey-8'"
-              :icon="option.icon"
-              flat rounded
-              size="lg"
-              :label="option.label"
-              class="col-md-2 col-12 custom-button"
-              @click="callLog.callType = option.value"
-              style="border: 1px solid;"
-            >
+            <q-btn v-for="option in callTypeOptions" :key="option.value"
+              :color="callLog.callType === option.value ? 'primary' : 'grey-8'" :icon="option.icon" flat rounded
+              size="lg" :label="option.label" class="col-md-2 col-12 custom-button"
+              @click="callLog.callType = option.value" style="border: 1px solid;">
             </q-btn>
           </div>
         </q-card-section>
 
         <q-card-section class="row justify-center">
-          <CustomButton
-            label="Log Call"
-            @click="initiateCall"
-            :disabled="!callLog.callType"
-            customStyle="width: 250px; @media (max-width: 600px) { width: 100% !important; }"
-          />
+          <CustomButton label="Log Call" @click="initiateCall" :disabled="!callLog.callType"
+            customStyle="width: 250px; @media (max-width: 600px) { width: 100% !important; }" />
         </q-card-section>
       </q-card>
 
@@ -44,47 +32,18 @@
           </div>
 
           <div class="row q-gutter-md ">
-            <q-select
-              v-model="selectedStatus"
-              filled
-              :options="statusOptions"
-              label="Status"
-              @update:model-value="filterCallLogs"
-              class="col-7 col-md-2"
-              behavior="menu"
-              options-selected-class="text-weight-bold"
-              emit-value
-              map-options
-              dense
-            />
+            <q-select v-model="selectedStatus" filled :options="statusOptions" label="Status"
+              @update:model-value="filterCallLogs" class="col-7 col-md-2" behavior="menu"
+              options-selected-class="text-weight-bold" emit-value map-options dense />
 
-            <q-select
-              v-model="selectedCallType"
-              filled
-              :options="['All', ...callTypeOptions.map(option => option.label)]"
-              label="Call Type"
-              @update:model-value="filterCallLogs"
-              class="col-4 col-md-2"
-              behavior="menu"
-              options-selected-class="text-weight-bold"
-              emit-value
-              map-options
-              dense
-            />
+            <q-select v-model="selectedCallType" filled
+              :options="['All', ...callTypeOptions.map(option => option.label)]" label="Call Type"
+              @update:model-value="filterCallLogs" class="col-4 col-md-2" behavior="menu"
+              options-selected-class="text-weight-bold" emit-value map-options dense />
 
-            <q-select
-              v-model="selectedSort"
-              filled
-              :options="sortOptions"
-              label="Sort By"
-              @update:model-value="sortCallLogs"
-              class="col-4 col-md-2"
-              behavior="menu"
-              options-selected-class="text-weight-bold"
-              emit-value
-              map-options
-              dense
-            />
+            <q-select v-model="selectedSort" filled :options="sortOptions" label="Sort By"
+              @update:model-value="sortCallLogs" class="col-4 col-md-2" behavior="menu"
+              options-selected-class="text-weight-bold" emit-value map-options dense />
           </div>
 
         </q-card-section>
@@ -123,12 +82,10 @@
                   <div v-else>N/A</div>
                 </td>
                 <td class="text-left cursor-pointer">{{ callLog.callType }}</td>
-                <td class="text-left cursor-pointer text-uppercase" :class="
-                    { 'callLog-opened': callLog.status === 'Opened'},
-                    { 'callLog-assigned': callLog.status === 'Assigned'},
-                    { 'callLog-resolved': callLog.status === 'Resolved'},
-                    { 'callLog-closed': callLog.status === 'Closed'}"
-                  >
+                <td class="text-left cursor-pointer text-uppercase" :class="{ 'callLog-opened': callLog.status === 'Opened' },
+                  { 'callLog-assigned': callLog.status === 'Assigned' },
+                  { 'callLog-resolved': callLog.status === 'Resolved' },
+                  { 'callLog-closed': callLog.status === 'Closed' }">
                   {{ callLog.status }}
                 </td>
                 <td class="text-left cursor-pointer">
@@ -164,28 +121,42 @@
             <q-item>
               <q-item-section class="text-left text-subtitle1">Please describe your issue</q-item-section>
               <q-item-section>
-                <q-input
-                  v-model="customCallType"
-                  label="Other"
-                  autofocus
-                  @keyup.enter="initiateCustomCall"
-                />
+                <q-input v-model="customCallType" label="Other" autofocus @keyup.enter="initiateCustomCall" />
               </q-item-section>
             </q-item>
           </q-card-section>
 
           <q-card-section class="row justify-between">
-            <CustomButton
-              customStyle="width: 45%"
-              label="Initiate Call"
-              @click="initiateCustomCall"
-              :disabled="!customCallType"
-            />
+            <CustomButton customStyle="width: 45%" label="Initiate Call" @click="initiateCustomCall"
+              :disabled="!customCallType" />
             <CustomButton customStyle="width: 45%" color="white" text-color="primary" label="Cancel" v-close-popup />
 
           </q-card-section>
         </q-card>
       </q-dialog>
+    </div>
+
+    <div class="constrain-standard q-py-md" v-else>
+      <!-- <q-card flat>
+        <q-card-section class="row justify-center">
+          <q-item>
+            <q-item-section class="text-subtitle1">No access</q-item-section>
+          </q-item>
+        </q-card-section>
+      </q-card> -->
+
+      <q-card class="col-md-4 col-12 stats-card full-height">
+        <q-card-section class="row stats-header justify-center">
+          <div class="text-h6">Log a call</div>
+          <q-separator class="q-my-sm" style="width: 100%;" />
+        </q-card-section>
+
+        <q-card-section class="row justify-center">
+          <q-item>
+            <q-item-section class="text-subtitle1">You’ll have access to the call log system once your rental application is approved.</q-item-section>
+          </q-item>
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -194,6 +165,7 @@
 import CallLogService from 'src/services/CallLogService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
+import RentalService from 'src/services/RentalService';
 
 export default {
   data() {
@@ -204,6 +176,7 @@ export default {
         status: 'Opened',
         user: null
       },
+      myRentals: [],
       userDetails: {},
       myCallLogs: [],
       otherDialog: false,
@@ -229,6 +202,11 @@ export default {
   },
   components: {
     CustomButton,
+  },
+  computed: {
+    hasActiveRental() {
+      return Array.isArray(this.myRentals) && this.myRentals.some(r => r.status === 'Active');
+    },
   },
   watch: {
     otherDialog(newVal) {
@@ -278,7 +256,7 @@ export default {
         } else {
           this.$q.notify({ type: 'negative', message: 'Call log failed. Please try again.' });
         }
-      }).onCancel(() => {});
+      }).onCancel(() => { });
     },
     filterCallLogs() {
       this.filteredCallLogs = this.myCallLogs.filter(log => {
@@ -333,9 +311,14 @@ export default {
     async getAllMyCallLogs() {
       this.myCallLogs = await CallLogService.findMyCallLogs(this.userDetails._id);
     },
+    async getAllMyRentals() {
+      const rentals = await RentalService.findMyRentals(this.userDetails._id);
+      this.myRentals = rentals.filter(r => ['Pending', 'Active'].includes(r.status));
+    },
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails();
       await this.getAllMyCallLogs();
+      await this.getAllMyRentals();
       this.filteredCallLogs = [...this.myCallLogs];
     },
     // async deleteCallLog(callLog) {
