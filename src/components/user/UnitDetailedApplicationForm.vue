@@ -305,7 +305,9 @@
                     </span>
                   </div>
                   <div v-if="!hasAllRequiredDocuments" class="text-negative q-ml-lg">
-                    You may still apply, but please upload your documents as soon as possible for smooth processing.
+                    <!-- You may still apply, but please upload your documents as soon as possible for smooth processing. -->
+                   Please upload your documents Before making your application.
+
                   </div>
                   <div v-if="!hasAllRequiredDocuments" class="q-mb-md"></div>
                 </div>
@@ -476,17 +478,64 @@ export default {
     SimpleZoom
   },
   computed: {
+    // hasAllRequiredDocuments() {
+    //   const requiredTypes = [
+    //     'registration',
+    //     'proof_of_address',
+    //     'id_or_passport',
+    //     'bank_statements',
+    //     'proof_of_bursary',
+    //     'credit_check'
+    //   ];
+    //   const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
+    //   return requiredTypes.every(type => uploadedTypes.includes(type));
+    // },
+
     hasAllRequiredDocuments() {
-      const requiredTypes = [
-        'registration',
-        'proof_of_address',
-        'id_or_passport',
-        'bank_statements',
-        'credit_check'
-      ];
+      const requiredDocsByCategory = {
+        'Private Client': [
+          'private_application_form',
+          'private_student_registration',
+          'private_id_student',
+          'private_id_person',
+          'private_proof_of_address',
+          'private_3_months_payslips',
+          'private_3_months_bank_statements'
+        ],
+        'Business': [
+          'business_application_form',
+          'business_student_registration',
+          'business_id_directors',
+          'business_proof_of_address',
+          'business_cipc_documents',
+          'business_6_months_bank_statements'
+        ],
+        'Bursary Application': [
+          'bursary_application_form',
+          'bursary_student_registration',
+          'bursary_confirmation',
+          'bursary_proof_of_address',
+          'bursary_id_documents'
+        ]
+      };
+
+      // Get uploaded docTypes
       const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
+      if (uploadedTypes.length === 0) return false;
+
+      // Detect category from the first uploaded doc prefix
+      let category = null;
+      const firstDoc = uploadedTypes[0];
+      if (firstDoc.startsWith('private_')) category = 'Private Client';
+      else if (firstDoc.startsWith('business_')) category = 'Business';
+      else if (firstDoc.startsWith('bursary_')) category = 'Bursary Application';
+
+      if (!category) return false;
+
+      const requiredTypes = requiredDocsByCategory[category] || [];
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
+
     isAccessKeyAllowed() {
       const allowedUnits = [
         '1-04', '1-05', '1-06', '1-07',
@@ -756,6 +805,12 @@ export default {
     },
 
     async createRentalApplication(unit) {
+
+      if (!this.hasAllRequiredDocuments) {
+        this.$q.notify({ type: 'negative', message: 'Please upload all required documents before proceeding.' });
+        return;
+      }
+
 
       if (this.selectedOption.price && this.selectedOption.price.length > 1 &&
         this.selectedPrice === null) {
