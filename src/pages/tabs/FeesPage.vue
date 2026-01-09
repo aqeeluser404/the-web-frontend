@@ -45,7 +45,7 @@
           { id: 2, type: 'Helshoogte', annual: 'R68 750', over10: 'R6 875', over11: 'R6 250', annually: 'R66 000' },
           { id: 3, type: 'Botmaskop', annual: 'R132 000', over10: 'R13 200', over11: 'R12 000', annually: 'R126 720' },
           { id: 4, type: 'Parking', annual: 'R4 950', over10: 'R495', over11: 'R450', annually: 'R4 752' },
-          { id: 5, type: 'Shuttle Service', annual: '', over10: 'R600', over11: 'R600', annually: '' },
+          { id: 5, type: 'Shuttle Service', annual: '', over10: 'R800', over11: 'R800', annually: '' },
 
           { id: 6, type: 'Deposit', annual: '', over10: '', over11: '', annually: '' },
 
