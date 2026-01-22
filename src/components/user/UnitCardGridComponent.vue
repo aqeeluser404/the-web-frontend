@@ -36,17 +36,18 @@
             <q-list class="row justify-center">
               <q-card v-for="unit in units" :key="unit._id"
                 class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-6 col-12"
-                :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
-                :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }" style="max-width: 496px;"
+                :class="{ 'dimmed-unit': shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0 }"
+                :style="{ pointerEvents: (shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0) ? 'none' : 'auto' }"
+                style="max-width: 496px;"
                 @click="openUnitImageDialog(unit)">
                 <!-- Image -->
                 <div class="row justify-center">
                   <div class="image-container reserved-container full-height">
                     <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="reserved-image"
                       fit="cover" />
-                    <div v-if="unit.reservedBy" class="reserved-full-overlay">
-                      RESERVED
-                    </div>
+                      <div v-if="unit.reservedBy || getAvailableSubUnits(unit) === 0" class="reserved-full-overlay">
+                        RESERVED
+                      </div>
                   </div>
                 </div>
 
@@ -202,8 +203,9 @@
               <q-list class="row justify-center">
                 <q-card v-for="unit in units" :key="unit._id"
                   class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-5 col-12"
-                  :class="{ 'dimmed-unit': shouldDimUnit(unit) }"
-                  :style="{ pointerEvents: shouldDimUnit(unit) ? 'none' : 'auto' }" style="max-width: 496px;"
+                  :class="{ 'dimmed-unit': shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0 }"
+                  :style="{ pointerEvents: (shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0) ? 'none' : 'auto' }"
+                  style="max-width: 496px;"
                   @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
 
                   <!-- Image -->
@@ -211,7 +213,7 @@
                     <div class="image-container reserved-container full-height">
                       <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)"
                         class="reserved-image" fit="cover" />
-                      <div v-if="unit.reservedBy" class="reserved-full-overlay">
+                      <div v-if="unit.reservedBy || getAvailableSubUnits(unit) === 0" class="reserved-full-overlay">
                         RESERVED
                       </div>
                     </div>

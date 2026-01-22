@@ -436,7 +436,7 @@ export default {
   },
   data() {
     const today = new Date();
-    const nextYear = today.getFullYear() + 1;
+    const nextYear = today.getFullYear();
     return {
       pinchZoomInstance: null,
 

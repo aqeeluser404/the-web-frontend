@@ -2,15 +2,18 @@
   <q-page>
     <!-- Hero Carousel -->
     <section class="hero-carousel bg-grey">
-      <q-carousel animated v-model="currentSlide" infinite autoplay :autoplay-interval="18000"
+      <q-carousel animated v-model="currentSlide" infinite autoplay :autoplay-interval="3000"
         transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
         :height="$q.screen.lt.sm ? '340px' : '100vh'" control-color="white" class="hero-carousel__container">
-        <q-carousel-slide v-for="card in heroCards" :key="card._id" :name="card._id" class="hero-carousel__slide">
-          <q-img :src="card.imageUrl" :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-            class="hero-carousel__image" fit="cover" loading="lazy" />
+        <q-carousel-slide v-for="(card, index) in heroCards" :key="card._id || index" :name="card._id || index"
+          class="hero-carousel__slide">
+          <q-img :src="card.imageUrl" :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + (card._id || index))"
+            class="hero-carousel__image" :fit="getFit(index)" loading="lazy" />
         </q-carousel-slide>
       </q-carousel>
+
     </section>
+
 
 
 
@@ -638,6 +641,13 @@ import home1 from 'src/assets/resources/home/slider/1.jpg';
 import home2 from 'src/assets/resources/home/slider/2.jpg';
 import home3 from 'src/assets/resources/home/slider/3.jpg';
 import home4 from 'src/assets/resources/home/slider/4.jpg';
+import home6 from 'src/assets/resources/home/slider/6.jpeg';
+import home7 from 'src/assets/resources/home/slider/7.jpeg';
+import home8 from 'src/assets/resources/home/slider/8.jpeg';
+import home9 from 'src/assets/resources/home/slider/9.jpeg';
+import home10 from 'src/assets/resources/home/slider/10.jpeg';
+import home11 from 'src/assets/resources/home/slider/11.jpeg';
+
 
 // Amenities
 import a1 from 'src/assets/resources/home/amenities/am0.png';
@@ -772,7 +782,14 @@ export default {
         { _id: 3, imageUrl: home2 },
         { _id: 4, imageUrl: home3 },
         { _id: 5, imageUrl: home4 },
+        { _id: 6, imageUrl: home6 },
+        { _id: 7, imageUrl: home7 },
+        { _id: 8, imageUrl: home8 },
+        { _id: 9, imageUrl: home9 },
+        { _id: 10, imageUrl: home10 },
+        { _id: 11, imageUrl: home11 },
       ],
+      coverCount: 5,
 
       a1,
 
@@ -818,6 +835,11 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    getFit (index) {
+      return index < this.coverCount ? 'cover' : 'contain'
+    },
+
 
     toggleWhatsAppBox() {
       this.boxOpened = !this.boxOpened
@@ -918,11 +940,11 @@ export default {
       observer.observe(el)
     })
 
-    //Map 
+    //Map
     const map = L.map('map').setView([-33.924553, 18.881197], 16)
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
+      attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map)
 
     const webIcon = L.divIcon({
@@ -975,11 +997,11 @@ export default {
     L.marker([-33.93238933079716, 18.864473905833865], { icon: universityIcon })
       .addTo(map)
       .bindPopup('<b>Stellenbosch university</b><br>Stellenbosch Central, Stellenbosch, 7602')
-    
+
     L.marker([-33.93226212870568, 18.865823342877476], { icon: neelsieIcon })
       .addTo(map)
       .bindPopup('<b>Neelsie Student Centre</b><br>Stellenbosch Central, Stellenbosch, 7602')
-    
+
     L.marker([-33.92608361269667, 18.878619109476865], { icon: sparIcon })
       .addTo(map)
       .bindPopup('<b>Spar</b><br>Cluver Rd, Simonswyk, Stellenbosch, 7600')
@@ -991,7 +1013,7 @@ export default {
     L.marker([-33.92634792964042, 18.87760756209603], { icon: steersIcon })
       .addTo(map)
       .bindPopup('<b>Steers</b><br>Shop 3, Simonsrust Shopping Centre, Helshoogte Rd, Simonswyk, Stellenbosch, 7600')
-    },
+  },
 
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll)
@@ -2048,10 +2070,11 @@ export default {
     width: 28px;
     height: 28px;
   }
+
   animation: pulse 2s infinite ease-in-out;
 }
 
-.leaflet-div-icon{
+.leaflet-div-icon {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
@@ -2061,50 +2084,59 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.04);
   }
 }
+
 .icon-map1 {
   border: 2px solid #000000;
 }
+
 .icon-map2 {
-  img{
+  img {
     width: 50px !important;
     height: 50px !important;
     border: #b8860b 2px solid !important;
     border-radius: 10px !important;
   }
 }
+
 .icon-map3 {
-  img{
+  img {
     width: 50px !important;
     height: 50px !important;
     border: #4B2E17 2px solid !important;
     border-radius: 10px !important;
   }
 }
+
 .icon-map4 {
-  img{
+  img {
     width: 50px !important;
     height: 50px !important;
     border: #009B77 2px solid !important;
     border-radius: 10px !important;
   }
 }
+
 .icon-map5 {
-  img{
+  img {
     width: 50px !important;
     height: 50px !important;
     border: #9b2400 2px solid !important;
     border-radius: 10px !important;
   }
 }
+
 .icon-map6 {
-  img{
+  img {
     width: 50px !important;
     height: 50px !important;
     border: #6b05be 2px solid !important;
