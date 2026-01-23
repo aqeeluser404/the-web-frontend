@@ -69,6 +69,10 @@
               v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))"
               to="/user/call-log" class="custom-button q-py-sm large-screen-only" label="Log A Call" flat rounded />
 
+            <q-btn
+              v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))"
+              to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" flat rounded />
+
             <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'" to="/admin"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Admin" flat rounded />
 
@@ -132,6 +136,10 @@
                       v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
                       <q-item-section class="">Log A Call</q-item-section>
                     </q-item>
+                    <q-item clickable v-close-popup to='/user/shuttle-booking'
+                      v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
+                      <q-item-section class="">Shuttle Booking</q-item-section>
+                    </q-item>
                     <q-item clickable v-close-popup to="/admin"
                       v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
                       <q-item-section class="">Admin Dashboard</q-item-section>
@@ -183,6 +191,9 @@
 
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration"
                 icon="eva-settings-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/shuttle-booking')" label="Shuttle Booking Administration"
+                icon="eva-calendar-outline" />
 
               <q-breadcrumbs-el v-if="$route.path.includes('/admin/incidents')" label="Incident Administration"
                 icon="eva-settings-outline" />
