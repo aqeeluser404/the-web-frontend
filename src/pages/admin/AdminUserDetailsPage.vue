@@ -66,6 +66,12 @@
               </q-item-section>
             </q-item>
             <q-item>
+              <q-item-section class="text-left text-subtitle1">User Rights</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-select v-model="userDetails.rightsType" :options="rightsTypeOptions" emit-value map-options />
+              </q-item-section>
+            </q-item>
+            <q-item>
               <q-item-section class="text-left text-subtitle1">Account ID</q-item-section>
               <q-item-section class="text-left text-subtitle1">
                 <q-input readonly v-model="userDetails._id" />
@@ -271,6 +277,11 @@ export default {
         { label: 'Admin', value: 'admin' },
         { label: 'User', value: 'user' },
       ],
+      rightsTypeOptions: [
+        {label: 'Agent', value: 'agent'},
+        {label: 'Driver', value: 'driver'},
+        {label: '', value: ''},
+        ],
 
       viewRentalDetailsDialog: false, selectedRental: null,
       documentLogo
@@ -332,6 +343,7 @@ export default {
         username: this.userDetails.username,
         password: this.userDetails.password,
         userType: this.userDetails.userType,
+        rightsType: this.userDetails.rightsType,
         location: this.userDetails.location,
         loginInfo: this.userDetails.loginInfo,
         order: this.userDetails.order
