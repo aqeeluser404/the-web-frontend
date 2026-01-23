@@ -37,6 +37,7 @@ export default {
         { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline' },
         { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' },
         { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline' },
+        { label: 'Shuttle Booking Administration', route: '/admin/shuttle-booking', icon: 'eva-calendar-outline' },
         // { label: 'Incident Administration', route: '/admin/incidents', icon: 'eva-settings-outline' }
       ]
     }

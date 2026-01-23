@@ -28,6 +28,8 @@ const routes = [
       { path: '/user/applications/view/:id', component: () => import('src/pages/user/UserApplicationsDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser},
       { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
 
+      { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser }, //user shuttle booking
+
       { path: '/vendor', component: () => import('src/pages/vendor/VendorDashPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
       { path: '/vendor/call-log', component: () => import('src/pages/vendor/VendorCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
 
@@ -49,6 +51,9 @@ const routes = [
 
       // call log management
       { path: '/admin/call-log', component: () => import('src/pages/admin/AdminCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
+      // shuttle booking management
+      { path: '/admin/shuttle-booking', component: () => import('src/pages/admin/AdminShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // incident management
       { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
