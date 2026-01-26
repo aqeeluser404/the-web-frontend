@@ -118,6 +118,42 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
 
+    // async downloadData() {
+    //   this.$q.dialog({
+    //     title: 'Download Data',
+    //     message: 'You are about to export all data for users. Would you like to proceed?',
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(async () => {
+    //     try {
+    //       const today = new Date().toISOString().split('T')[0];
+
+    //       const response = await ExportDataService.exportUserData();
+
+    //       if (!response || !response.data) {
+    //         throw new Error('Invalid response from server');
+    //       }
+
+    //       const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = `users_export_${today}.xlsx`;
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Export failed: ' + (error.message || 'Please try again')
+    //       });
+    //     }
+    //   });
+    // },
+
     async downloadData() {
       this.$q.dialog({
         title: 'Download Data',
@@ -125,21 +161,28 @@ export default {
         color: 'primary',
         cancel: true,
         persistent: true
-      }).onOk(async () => {
+      }).onOk(() => {
         try {
           const today = new Date().toISOString().split('T')[0];
 
-          const response = await ExportDataService.exportUserData();
+          const rows = this.filteredUsers.map((user, index) => ({
+            'Field No.': index + 1,
+            Username: user.username,
+            'User/Tenant ID': user._id,
+            Email: user.email,
+            'Applications': user.rentals?.length || 0,
+            Type: user.userType,
+            Online: user.loginInfo?.isLoggedIn ? 'Yes' : 'No'
+          }));
 
-          if (!response || !response.data) {
-            throw new Error('Invalid response from server');
-          }
+          const headers = Object.keys(rows[0]).join(',') + '\n';
+          const csv = headers + rows.map(r => Object.values(r).join(',')).join('\n');
 
-          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `users_export_${today}.xlsx`;
+          link.download = `users_export_${today}.csv`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

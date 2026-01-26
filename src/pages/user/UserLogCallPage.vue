@@ -137,14 +137,6 @@
     </div>
 
     <div class="constrain-standard q-py-md" v-else>
-      <!-- <q-card flat>
-        <q-card-section class="row justify-center">
-          <q-item>
-            <q-item-section class="text-subtitle1">No access</q-item-section>
-          </q-item>
-        </q-card-section>
-      </q-card> -->
-
       <q-card class="col-md-4 col-12 stats-card full-height">
         <q-card-section class="row stats-header justify-center">
           <div class="text-h6">Log a call</div>

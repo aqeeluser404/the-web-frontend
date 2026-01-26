@@ -46,7 +46,7 @@
                   <th class="text-left">Applicant Contact</th>
                   <th class="text-left">Applicant Email</th>
                   <th class="text-left">Application ID</th>
-                  <th class="text-left">Unit</th>
+                  <th class="text-left">Floor Level</th>
                   <th class="text-left">Unit Type</th>
                   <th class="text-left">Start Date</th>
                   <th class="text-left">End Date</th>
@@ -63,13 +63,13 @@
                   <td class="text-left cursor-pointer hover-effect" >
                     <span @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</span></td>
                   <td class="text-left cursor-pointer">
-                    <span @click.stop="copyToClipboard(rental.userPhone)">{{ rental.userPhone }}</span>
+                    <span>{{ rental.userPhone }}</span>
                   </td>
-                  <td class="text-left cursor-pointer" @click.stop="copyToClipboard(rental.userEmail)">
-                    <span @click.stop="copyToClipboard(rental.userEmail)">{{ rental.userEmail }}</span>
+                  <td class="text-left cursor-pointer">
+                    <span>{{ rental.userEmail }}</span>
                   </td>
                   <td class="text-left cursor-pointer id">{{ rental._id }}</td>
-                  <td class="text-left cursor-pointer">Unit {{ extractFirstNumber(rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType) }}</td>
+                  <td class="text-center cursor-pointer">{{ extractFirstNumber(rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType) }}</td>
                   <td class="text-left cursor-pointer">{{ rental.selectedSubUnits.bedType || rental.selectedSubUnits.roomType }}</td>
                   <td class="text-left cursor-pointer">
                     <div v-if="!defaultValues(rental)">
@@ -199,28 +199,87 @@ export default {
       return match ? match[0] : str;
     },
 
+    // async downloadData() {
+    //   this.$q.dialog({
+    //     title: 'Download Data',
+    //     message: 'You are about to export all data for rentals. Would you like to proceed?',
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(async () => {
+    //     try {
+    //       const today = new Date().toISOString().split('T')[0];
+
+    //       const response = await ExportDataService.exportRentalData();
+
+    //       if (!response || !response.data) {
+    //         throw new Error('Invalid response from server');
+    //       }
+
+    //       const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = `rentals_export_${today}.xlsx`;
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Export failed: ' + (error.message || 'Please try again')
+    //       });
+    //     }
+    //   });
+    // },
+
     async downloadData() {
       this.$q.dialog({
         title: 'Download Data',
-        message: 'You are about to export all data for rentals. Would you like to proceed?',
+        message: 'You are about to export all rental history data. Would you like to proceed?',
         color: 'primary',
         cancel: true,
         persistent: true
-      }).onOk(async () => {
+      }).onOk(() => {
         try {
           const today = new Date().toISOString().split('T')[0];
 
-          const response = await ExportDataService.exportRentalData();
+          const rows = this.filteredRentals.map((rental, index) => ({
+            'Field No.': index + 1,
+            'Application Date': this.formatDate(rental.applicationDate) || '',
+            'Applicant': rental.username || 'Unassigned',
+            'Applicant Contact': `'${rental.userPhone || 'Unassigned'}`.replace(/,/g, ''),
+            'Applicant Email': rental.userEmail || 'Unassigned',
+            'Application ID': rental._id || '',
+            'Floor Level': this.extractFirstNumber(
+              rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType
+            ) || '',
+            'Unit Type': rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType || 'N/A',
+            'Start Date': !this.defaultValues(rental)
+              ? this.formatDate(rental.rentalStartDate)
+              : 'Being processed...',
+            'End Date': !this.defaultValues(rental)
+              ? this.formatDate(rental.rentalEndDate)
+              : 'Being processed...',
+            'Before Scheduled': rental.earlyEndDate !== null
+              ? this.formatDate(rental.earlyEndDate)
+              : 'N/A',
+            // 'Condition': this.needsAttention(rental) ? 'Alert' : 'All Good',
+            'Status': this.capitalizeFirstLetter(rental.status || '')
+          }));
 
-          if (!response || !response.data) {
-            throw new Error('Invalid response from server');
-          }
+          const safeRow = row => Object.values(row).map(val => `"${val}"`).join(',');
 
-          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const headers = Object.keys(rows[0]).map(h => `"${h}"`).join(',') + '\n';
+          const csv = headers + rows.map(safeRow).join('\n');
+
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `rentals_export_${today}.xlsx`;
+          link.download = `rental_history_export_${today}.csv`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

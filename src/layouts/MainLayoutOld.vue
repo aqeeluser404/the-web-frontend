@@ -20,70 +20,70 @@
         </q-toolbar-title>
 
         <div class="col-md-8">
-          <!---------------------------------------------- DESKTOP NAV SECTION -------------------------------------------------->
-
-
-
-          <!-- HOME SCREEN -->
+          <!----------------------------------------------------------- NAV SECTION -------------------------------------------------->
+          <!-- Desktop nav -->
           <div class="row justify-end items-center q-py-lg ">
             <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               @click="scrollToSection('amenities-section')" class="custom-button q-py-sm large-screen-only"
               label="Amenities" flat rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               @click="scrollToSection('units-section')" class="custom-button q-py-sm large-screen-only" label="Units"
               flat rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               @click="scrollToSection('location-section')" class="custom-button q-py-sm large-screen-only"
               label="Location" flat rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               @click="scrollToSection('contact-section')" class="custom-button q-py-sm large-screen-only"
               label="Contact" flat rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               to="/frequently-asked-questions" class="custom-button q-py-sm large-screen-only" label="FAQs" flat
               rounded />
 
             <q-btn
-              v-if="showNavigationItems"
+              v-if="isRouteMatch(['/', '/frequently-asked-questions', '/developer', '/history', '/fees', '/applications', '/resources', '/incident-report'])"
               to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees" flat rounded />
 
-
-
-            <!-- USER PROFILE AND BOOKING ROUTES -->
+            <!-- dashboards -->
             <q-btn to="/units/apply/floor/1" class="custom-button q-py-sm large-screen-only" label="Book Now" flat rounded />
             <q-btn
-              v-if="showUserDashboardItems"
+              v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log', '/user/shuttle-booking']))"
               to="/user/profile" class="custom-button q-py-sm large-screen-only" label="User Profile" flat rounded />
 
             <q-btn
-              v-if="showUserDashboardItems"
+              v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log', '/user/shuttle-booking']))"
               to="/user/applications" class="custom-button q-py-sm large-screen-only" label="Application History" flat
               rounded />
 
             <q-btn
-              v-if="showUserDashboardItems"
+              v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log', '/user/shuttle-booking']))"
               to="/user/call-log" class="custom-button q-py-sm large-screen-only" label="Log A Call" flat rounded />
 
             <q-btn
-              v-if="showUserDashboardItems"
+              v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log', '/user/shuttle-booking']))"
               to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" flat rounded />
 
-            <q-btn v-if="isAdminUser" to="/admin"
+            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'" to="/admin"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Admin" flat rounded />
 
-            <q-btn v-if="isVendorUser" to="/vendor"
+            <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'" to="/vendor"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Vendor" flat
               rounded />
+
+            <!-- PHP CODE -->
+            <!-- <q-btn v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'"
+              @click="downloadData()" class="custom-button q-py-sm large-screen-only" icon="eva-cloud-download-outline"
+              flat rounded /> -->
 
             <!-- authentication -->
             <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
@@ -91,9 +91,6 @@
             <CustomButton v-else label="Logout" @click="logout" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" />
 
-
-
-            <!---------------------------------------------- MOBILE NAV SECTION -------------------------------------------------->
             <q-btn-dropdown class="small-screen-only" dropdown-icon="menu" flat>
               <q-list style="width: 380px; padding: 8px;">
                 <div class="two-column-list">
@@ -111,54 +108,56 @@
                     <q-item clickable v-close-popup to="/" :active-class="$route.path === '/' ? 'q-item--active' : ''">
                       <q-item-section class="" >Home</q-item-section>
                     </q-item>
-
-                    <!-- Navigation items (only show on certain pages) -->
-                    <q-item clickable v-close-popup v-if="showNavigationItems">
-                      <q-item-section @click="scrollToSection('amenities-section')">Amenities</q-item-section>
+                    <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                      <q-item-section class="" @click="scrollToSection('amenities-section')">Amenities</q-item-section>
                     </q-item>
-                    <q-item clickable v-close-popup v-if="showNavigationItems">
-                      <q-item-section @click="scrollToSection('units-section')">Units</q-item-section>
+                    <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                      <q-item-section class="" @click="scrollToSection('units-section')">Units</q-item-section>
                     </q-item>
-                    <q-item clickable v-close-popup v-if="showNavigationItems">
-                      <q-item-section @click="scrollToSection('location-section')">Location</q-item-section>
+                    <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                      <q-item-section class="" @click="scrollToSection('location-section')">Location</q-item-section>
                     </q-item>
-                    <q-item clickable v-close-popup v-if="showNavigationItems">
-                      <q-item-section @click="scrollToSection('contact-section')">Contact</q-item-section>
+                    <q-item clickable v-close-popup v-if="isRouteMatch(['/', '/frequently-asked-questions'])">
+                      <q-item-section class="" @click="scrollToSection('contact-section')">Contact</q-item-section>
                     </q-item>
 
-                    <!-- Always show Book Now -->
                     <q-item clickable v-close-popup to="/units/apply/floor/1">
-                      <q-item-section>Book Now</q-item-section>
+                      <q-item-section class="">Book Now</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/user/profile"
+                      v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
+                      <q-item-section class="">User Profile</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/user/applications"
+                      v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
+                      <q-item-section class="">Application History</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to='/user/call-log'
+                      v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
+                      <q-item-section class="">Log A Call</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to='/user/shuttle-booking'
+                      v-if="isLoggedIn && ($route.path.startsWith('/user/applications/view/') || isRouteMatch(['/units/apply/floor/1', '/units/apply/floor/2', '/units/apply/floor/3', '/units/apply', '/user/profile', '/user/applications', '/user/call-log']))">
+                      <q-item-section class="">Shuttle Booking</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/admin"
+                      v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+                      <q-item-section class="">Admin Dashboard</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/vendor"
+                      v-if="userDetails && userDetails.userType != null && userDetails.userType == 'vendor'">
+                      <q-item-section class="">Vendor Dashboard</q-item-section>
                     </q-item>
 
-                    <!-- User dashboard items (only show on dashboard pages) -->
-                    <q-item clickable v-close-popup to="/user/profile" v-if="showUserDashboardItems">
-                      <q-item-section>User Profile</q-item-section>
+                    <q-item clickable v-close-popup
+                      v-if="userDetails && userDetails.userType != null && userDetails.userType == 'admin'">
+                      <q-item-section class="" @click="downloadData()">Download Data</q-item-section>
                     </q-item>
-                    <q-item clickable v-close-popup to="/user/applications" v-if="showUserDashboardItems">
-                      <q-item-section>Application History</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup to='/user/call-log' v-if="showUserDashboardItems">
-                      <q-item-section>Log A Call</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup to='/user/shuttle-booking' v-if="showUserDashboardItems">
-                      <q-item-section>Shuttle Booking</q-item-section>
-                    </q-item>
-
-                    <!-- Admin/Vendor items -->
-                    <q-item clickable v-close-popup to="/admin" v-if="isAdminUser">
-                      <q-item-section>Admin Dashboard</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup to="/vendor" v-if="isVendorUser">
-                      <q-item-section>Vendor Dashboard</q-item-section>
-                    </q-item>
-
-                    <!-- Auth items -->
                     <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
-                      <q-item-section>Login</q-item-section>
+                      <q-item-section class="">Login</q-item-section>
                     </q-item>
                     <q-item clickable v-close-popup @click="logout" v-else>
-                      <q-item-section>Logout</q-item-section>
+                      <q-item-section class="">Logout</q-item-section>
                     </q-item>
                   </div>
                 </div>
@@ -305,28 +304,17 @@ export default {
 
       return (this.isAdminRoute || this.isVendorRoute) ? baseHeight + adminExtra : baseHeight;
     },
-    // These check the USER TYPE
-    isAdminUser() {
-      return this.userDetails?.userType === 'admin';
-    },
-
-    isVendorUser() {
-      return this.userDetails?.userType === 'vendor';
-    },
-
-    // These check the CURRENT ROUTE
     isAdminRoute() {
-      return this.$route.path.startsWith('/admin');
+      return this.$route.path.startsWith('/admin')
     },
-
     isVendorRoute() {
-      return this.$route.path.startsWith('/vendor');
+      return this.$route.path.startsWith('/vendor')
     },
 
     showUserDashboardItems() {
       if (!this.isLoggedIn) return false;
-
-      const exactMatchRoutes = [
+      const userRoutes = [
+        '/user/applications/view/',
         '/units/apply/floor/1',
         '/units/apply/floor/2',
         '/units/apply/floor/3',
@@ -335,24 +323,10 @@ export default {
         '/user/applications',
         '/user/call-log',
         '/user/shuttle-booking'
-      ];
-
-      const startsWithRoutes = [
-        '/user/applications/view/'
-      ];
-
-      // Check for exact matches
-      const hasExactMatch = exactMatchRoutes.includes(this.$route.path);
-
-      // Check for startsWith matches
-      const hasStartsWithMatch = startsWithRoutes.some(route =>
-        this.$route.path.startsWith(route)
-      );
-
-      return hasExactMatch || hasStartsWithMatch;
+      ]
+      return userRoutes.some(route => this.$route.path.startsWith(route));
     },
 
-    // For navigation items (the ones using isRouteMatch)
     showNavigationItems() {
       const navRoutes = [
         '/',
@@ -366,7 +340,7 @@ export default {
       ];
 
       return navRoutes.includes(this.$route.path);
-    },
+    }
   },
   mounted() {
     this.checkLoginStatus()

@@ -497,6 +497,7 @@ export default {
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Approved!' })
             await EmailService.ApprovedRental(this.rental.userId, this.rental.unit, this.rental._id)
+            await UserService.findUserById(this.rental.userId)
             this.$emit('close')
           } else {
             this.$q.notify({ type: 'negative', message: 'Approve rental failed. Please try again.' })

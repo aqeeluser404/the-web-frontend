@@ -68,7 +68,12 @@
             <q-item>
               <q-item-section class="text-left text-subtitle1">User Rights</q-item-section>
               <q-item-section class="text-left text-subtitle1">
-                <q-select v-model="userDetails.rightsType" :options="rightsTypeOptions" emit-value map-options />
+                <q-select
+                  v-model="userDetails.rightsType"
+                  :options="rightsTypeOptions"
+                  emit-value
+                  map-options
+                />
               </q-item-section>
             </q-item>
             <q-item>
@@ -278,9 +283,9 @@ export default {
         { label: 'User', value: 'user' },
       ],
       rightsTypeOptions: [
-        {label: 'Agent', value: 'agent'},
-        {label: 'Driver', value: 'driver'},
-        {label: '', value: ''},
+        { label: 'Agent', value: 'Agent' },
+        { label: 'Driver', value: 'Driver' },
+        { label: 'Unassigned', value: '' },
         ],
 
       viewRentalDetailsDialog: false, selectedRental: null,
@@ -319,6 +324,7 @@ export default {
         return;
       }
       this.userDetails = await UserService.findUserById(decryptedId)
+      this.userDetails.rightsType = this.userDetails.rightsType ?? ''
       this.fetchRentalDetails()
 
       // PHP CODE
@@ -348,6 +354,11 @@ export default {
         loginInfo: this.userDetails.loginInfo,
         order: this.userDetails.order
       }
+
+      if (updatedUser.rightsType === 'Agent' || updatedUser.rightsType === 'Driver') {
+        updatedUser.userType = 'admin'
+      }
+
       if (updatedUser) {
         this.$q.dialog({
           title: 'Confirm', message: `You are about to update this user account type, continue?`, color: 'primary', cancel: true, persistent: true

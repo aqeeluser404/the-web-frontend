@@ -3,12 +3,12 @@
     <div class="q-pa-md column justify-center flex-center" style="width: 100%; height: 100%;">
 
       <q-card flat class="q-ma-sm">
-        <q-card-section class="row justify-center">
+        <q-card-section v-if="!loading" class="row justify-center">
           <div class="text-h4">Administration Dashboard</div>
         </q-card-section>
 
-        <q-card-section class="row justify-center flex-center constrain">
-          <q-list v-for="(card, index) in cards" :key="index">
+        <q-card-section v-if="!loading" class="row justify-center flex-center constrain">
+          <q-list v-for="(card, index) in visibleCards" :key="index">
             <q-card flat bordered class="q-ma-sm card-container text-center">
               <router-link :to="card.route" class="router-link">
                 <q-icon :name="card.icon" class="card-icon" />
@@ -32,18 +32,47 @@ export default {
 
   data() {
     return {
+      loading: true,
+      userDetails: {
+        userType: 'admin',
+        rightsType: ''
+      },
       cards: [
-        { label: 'User Administration', route: '/admin/users', icon: 'eva-people-outline' },
-        { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline' },
-        { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline' },
-        { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline' },
-        { label: 'Shuttle Booking Administration', route: '/admin/shuttle-booking', icon: 'eva-calendar-outline' },
+        { label: 'User Administration', route: '/admin/users', icon: 'eva-people-outline', key: 'user' },
+        { label: 'Unit Administration', route: '/admin/units', icon: 'eva-home-outline', key: 'unit' },
+        { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline', key: 'rental' },
+        { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline', key: 'calllog' },
+        { label: 'Shuttle Booking Administration', route: '/admin/shuttle-booking', icon: 'eva-calendar-outline', key: 'shuttle' },
         // { label: 'Incident Administration', route: '/admin/incidents', icon: 'eva-settings-outline' }
       ]
     }
   },
   components: {
     CustomButton
+  },
+  computed: {
+    visibleCards() {
+      if (!this.userDetails) return []
+      if (this.userDetails.userType === 'admin') {
+        if (this.userDetails.rightsType === 'Driver') {
+          return this.cards.filter(c => c.key === 'shuttle')
+        } else if (this.userDetails.rightsType === 'Agent') {
+          return this.cards.filter(c => ['user', 'rental', 'calllog'].includes(c.key))
+        } else {
+          return this.cards
+        }
+      }
+      return []
+    }
+  },
+  methods: {
+    async fetchUserDetails() {
+      this.userDetails = await Helper.fetchUserDetails()
+      this.loading = false
+    },
+  },
+  created() {
+    this.fetchUserDetails()
   }
 }
 </script>
