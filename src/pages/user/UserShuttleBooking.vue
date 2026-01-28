@@ -29,12 +29,16 @@
         </q-card-section>
       </q-card>
     </div>
+    
+    <!-- Shuttle booking ui -->
+    <ShuttleBooking/>
   </q-page>
 </template>
 
 <script>
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
+import ShuttleBooking from './ShuttleBooking.vue';
 
 export default {
   data() {
@@ -46,7 +50,8 @@ export default {
     }
   },
   components: {
-    CustomButton
+    CustomButton,
+    ShuttleBooking
   },
   methods: {
     async fetchUserDetails() {
