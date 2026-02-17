@@ -87,6 +87,8 @@
 import { Chart, PieController, ArcElement, Tooltip, Legend, BarController, BarElement, CategoryScale, LinearScale } from 'chart.js';
 Chart.register(PieController, ArcElement, Tooltip, Legend, BarController, BarElement, CategoryScale, LinearScale);
 
+import * as XLSX from 'xlsx';
+
 import UserService from 'src/services/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
@@ -154,6 +156,49 @@ export default {
     //   });
     // },
 
+    // async downloadData() {
+    //   this.$q.dialog({
+    //     title: 'Download Data',
+    //     message: 'You are about to export all data for users. Would you like to proceed?',
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(() => {
+    //     try {
+    //       const today = new Date().toISOString().split('T')[0];
+
+    //       const rows = this.filteredUsers.map((user, index) => ({
+    //         'Field No.': index + 1,
+    //         Username: user.username,
+    //         'User/Tenant ID': user._id,
+    //         Email: user.email,
+    //         'Applications': user.rentals?.length || 0,
+    //         Type: user.userType,
+    //         Online: user.loginInfo?.isLoggedIn ? 'Yes' : 'No'
+    //       }));
+
+    //       const headers = Object.keys(rows[0]).join(',') + '\n';
+    //       const csv = headers + rows.map(r => Object.values(r).join(',')).join('\n');
+
+    //       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = `users_export_${today}.csv`;
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Export failed: ' + (error.message || 'Please try again')
+    //       });
+    //     }
+    //   });
+    // },
+
     async downloadData() {
       this.$q.dialog({
         title: 'Download Data',
@@ -175,18 +220,15 @@ export default {
             Online: user.loginInfo?.isLoggedIn ? 'Yes' : 'No'
           }));
 
-          const headers = Object.keys(rows[0]).join(',') + '\n';
-          const csv = headers + rows.map(r => Object.values(r).join(',')).join('\n');
+          // Convert JSON to worksheet
+          const worksheet = XLSX.utils.json_to_sheet(rows);
 
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `users_export_${today}.csv`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(url), 100);
+          // Create a new workbook and append the worksheet
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+
+          // Export to Excel file
+          XLSX.writeFile(workbook, `users_export_${today}.xlsx`);
 
         } catch (error) {
           this.$q.notify({

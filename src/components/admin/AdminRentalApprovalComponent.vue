@@ -79,55 +79,6 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="q-mb-md"><b>Unit Information</b></div>
-          <ul>
-            <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
-            <li v-if="rental.accessKey">
-              This user is sharing this unit with family or acquaintances.
-            </li>
-            <li v-else>
-              This user is not sharing this unit with family or acquaintances.
-            </li>
-            <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
-            }}</span></li>
-            <li>Unit Number: {{ rental.unitNumber }}</li>
-            <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
-              Room: {{ rental.selectedSubUnits.roomType }}
-            </li>
-            <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.bedType">
-              Bed: {{ rental.selectedSubUnits.bedType }}
-            </li>
-            <!-- <li v-if="rental.selectedSubUnits?.price?.price">Unit Price: R {{
-                      Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
-                        rental.selectedSubUnits?.price?.name }}s</li>
-                    <li v-else>
-                      Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
-                    </li> -->
-
-            <li v-if="rental.selectedSubUnits?.price?.name === 'annual'">
-              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} {{
-                rental.selectedSubUnits?.price?.name }} payment
-            </li>
-
-            <li
-              v-else-if="rental.selectedSubUnits?.price?.name === '11-month' || rental.selectedSubUnits?.price?.name === '10-month'">
-              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
-                rental.selectedSubUnits?.price?.name }}
-            </li>
-
-            <li v-else>
-              Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
-            </li>
-          </ul>
-        </q-card-section>
-      </div>
-
-      <div class="col-md-6 col-12 q-pa-md">
-        <q-card-section class="row justify-end items-center q-py-none q-py-sm">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="large-screen-only" />
-        </q-card-section>
-
-        <q-card-section>
           <div class="q-mb-md"><b>Rental Information</b></div>
           <ul>
             <li>Application ID: <span class="id-underlined">{{ rental._id }}</span></li>
@@ -156,38 +107,159 @@
             </li>
           </ul>
         </q-card-section>
+      </div>
+
+      <div class="col-md-6 col-12 q-pa-md">
+        <q-card-section class="row justify-end items-center q-py-none q-py-sm">
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="large-screen-only" />
+        </q-card-section>
+
+        <q-card-section>
+          <div class="q-mb-md"><b>Unit Information</b></div>
+          <ul>
+            <li>Unit ID: <span class="id-underlined">{{ rental.unitId }}</span></li>
+            <li>Unit Number: {{ rental.unitNumber }}</li>
+            <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
+              Room: {{ rental.selectedSubUnits.roomType }}
+            </li>
+            <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.bedType">
+              Bed: {{ rental.selectedSubUnits.bedType }}
+            </li>
+            <li v-if="rental.selectedSubUnits?.price?.name === 'annual'">
+              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} {{
+                rental.selectedSubUnits?.price?.name }} payment
+            </li>
+
+            <li
+              v-else-if="rental.selectedSubUnits?.price?.name === '11-month' || rental.selectedSubUnits?.price?.name === '10-month'">
+              Unit Price: R {{ Number(rental.selectedSubUnits?.price?.price).toFixed(2) }} over {{
+                rental.selectedSubUnits?.price?.name }}
+            </li>
+
+            <li v-else>
+              Unit Price: R {{ Number(rental.selectedSubUnits?.price).toFixed(2) }}
+            </li>
+
+            <li v-if="rental.accessKey">
+              This user is sharing this unit with family or acquaintances.
+            </li>
+            <li v-else>
+              This user is not sharing this unit with family or acquaintances.
+            </li>
+            <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
+            }}</span></li>
+          </ul>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="q-mb-md"><b>Reassign Tenant's Unit</b></div>
+          <q-item>
+            This option is provided for cases where multiple pending applications of different genders exist for the same unit.
+            Once one applicant is approved, the unit becomes gender‑restricted, preventing the other applicant from being approved.
+          </q-item>
+
+          <q-item>
+            Use this option to reassign a tenant when the selected unit has reached full capacity or when their gender does not align with the unit’s restriction.
+            Ensure that the reassigned unit reflects the correct pricing and monthly payment terms to maintain consistency and accuracy in tenant records.
+          </q-item>
+
+          <q-item>
+            <q-item-section v-if="unitDetails?.genderAssignment" >
+              <div class="row items-center">
+                <div>
+                  Unit's Assignment: {{ unitDetails.genderAssignment }}
+                </div>
+                <q-icon
+                  :name="unitDetails.genderAssignment === rental.userGender ? 'check' : 'close'"
+                  :color="unitDetails.genderAssignment === rental.userGender ? 'green' : 'red'"
+                  class="q-ml-sm"
+                />
+              </div>
+            </q-item-section>
+            <q-item-section v-else>
+              <div class="row items-center">
+                <div>
+                  Unit Gender Unassigned
+                </div>
+                <q-icon
+                  name="check"
+                  color="green"
+                  class="q-ml-sm"
+                />
+              </div>
+            </q-item-section>
+
+            <q-item-section>
+              <div class="row items-center">
+                <div>
+                  Unit's Occupancy: {{ unitDetails.currentOccupants }} / {{ unitDetails.unitOccupants }}
+                </div>
+                <q-icon
+                  :name="unitDetails.currentOccupants <= unitDetails.unitOccupants ? 'check' : 'close'"
+                  :color="unitDetails.currentOccupants <= unitDetails.unitOccupants ? 'green' : 'red'"
+                  class="q-ml-sm"
+                />
+              </div>
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">
+              <q-select
+                v-model="selectedUnit"
+                :options="genderBasedUnits.map(unit => ({
+                  label: `${unit.unitNumber} - ${unit.genderAssignment || 'Unassigned'}`,
+                  value: unit._id
+                }))"
+                label="Select Unit"
+                @update:model-value="loadSubUnits"
+              />
+            </q-item-section>
+
+            <q-item-section class="text-left text-subtitle1">
+              <q-select
+                v-if="availableSubUnits.length > 0"
+                v-model="selectedSubUnit"
+                :options="availableSubUnits"
+                option-label="label"
+                option-value="value"
+                label="Select Bed/Room"
+              />
+            </q-item-section>
+          </q-item>
+
+          <q-item>
+            <div
+              :class="[
+                ((unitDetails.genderAssignment === rental.userGender || !unitDetails.genderAssignment)
+                && (unitDetails.currentOccupants < unitDetails.unitOccupants))
+                  ? 'text-green text-bold text-caption'
+                  : 'text-red text-bold text-caption'
+              ]"
+            >
+              <div class="row items-center">
+                <div>
+                  {{
+                    (unitDetails.genderAssignment === rental.userGender || !unitDetails.genderAssignment)
+                    && (unitDetails.currentOccupants < unitDetails.unitOccupants)
+                      ? "Unit is valid for approval. No reassignment needed."
+                      : "Unit has issues. Please reassign tenant."
+                  }}
+                </div>
+              </div>
+            </div>
+          </q-item>
+
+          <q-item>
+            <q-item-section>
+              <CustomButton label="Re-Assign Unit" :disable="!selectedSubUnit" @click="reassignUnit" customStyle="width: 100%" />
+            </q-item-section>
+            <q-item-section></q-item-section>
+          </q-item>
+        </q-card-section>
 
         <q-card-section>
           <div class="q-mb-md"><b>Payment Information</b></div>
-
-          <!-- Terms in list format to match above -->
-          <!-- <ul class="q-mt-md" v-if="rental.selectedSubUnits?.price.name === 'annual'">
-                    <li v-if="rental.parking?.hasParking">
-                      Upfront payment includes 11 months at discounted rate (4% off both rent and parking)
-                    </li>
-                    <li v-else>
-                      Upfront payment includes 11 months rent at discounted rate (4% off)
-                    </li>
-                    <li>Payment must be made by 30 November to qualify for discount</li>
-                    <li>Monthly payments are due on the 1st of each month</li>
-                  </ul>
-
-                  <ul class="q-mt-md" v-else>
-                    <li v-if="rental.selectedSubUnits && rental.selectedSubUnits?.roomType.startsWith('Botmaskop')">
-                      A deposit of R12 000 must be paid upon approval
-                    </li>
-                    <li
-                      v-else-if="rental.selectedSubUnits && rental.selectedSubUnits?.bedType.startsWith('Helshoogte')">
-                      A deposit of R6 250 must be paid upon approval
-                    </li>
-                    <li v-else>
-                      A deposit is required upon approval
-                    </li>
-                    <li>Discount of 4% is only applicable for annual payments</li>
-                    <li>Monthly payments are due on the 1st of each month</li>
-                  </ul>
-                  <br> -->
-
           <!-- Payment Cards -->
           <div class="row q-col-gutter-md q-mb-md">
             <!-- Upfront Payment Card -->
@@ -302,8 +374,6 @@
           <q-radio v-model="isApproved" :val="false" label="Declined" />
         </q-card-section>
 
-
-
         <q-card-section v-if="isApproved === null">
           <q-input filled label-color="black" v-model="message" label="Message to Applicant" type="textarea" stack-label
             required style="border: 2px solid white;" />
@@ -349,7 +419,13 @@ export default {
       isApproved: null,
       userDetails: {},
       message: '',
-      minDate: new Date().toISOString().split('T')[0]
+      minDate: new Date().toISOString().split('T')[0],
+
+      genderBasedUnits: [],
+      selectedUnit: null,
+      selectedSubUnit: null,
+      availableSubUnits: []
+
     }
   },
   async created() {
@@ -425,6 +501,104 @@ export default {
       this.rental.rentalEndDate = endDate;
     },
 
+    async loadSubUnits(selectedOption) {
+      this.selectedSubUnit = null;
+      this.availableSubUnits = [];
+
+      const unitId = typeof selectedOption === 'object' ? selectedOption.value : selectedOption;
+      const unit = await UnitService.getByIdUnit(unitId);
+
+      this.availableSubUnits = (unit.subUnits || [])
+        .filter(sub => sub.isAvailable)
+        .map(sub => ({
+          value: sub.roomType || sub.bedType || sub.type,
+          label: sub.roomType || sub.bedType || sub.type
+        }));
+    },
+
+    async reassignUnit() {
+      try {
+        const unit = this.genderBasedUnits.find(u => u._id === this.selectedUnit.value)
+        if (!unit) {
+          console.error("Unit not found")
+          return
+        }
+        const subUnit = (unit.subUnits || []).find(su => su.bedType === this.selectedSubUnit.value || su.roomType === this.selectedSubUnit.value);
+        if (!subUnit) {
+          console.error("Subunit not found");
+          return;
+        }
+        const rentalPrice = this.rental?.selectedSubUnits?.price;
+        const matchedPrice = (subUnit.price || []).find(
+          p => p.name === rentalPrice?.name && p.price === rentalPrice?.price
+        );
+        if (!matchedPrice) {
+          console.error("No matching price plan found for this subunit");
+          return;
+        }
+
+        this.$q.dialog({
+          title: 'Confirm', message: `You are about to reassign this tenant to another unit, continue?`, color: 'primary', cancel: true, persistent: true
+        }).onOk(async () => {
+          const payload = {
+            rentalId: this.rental._id,
+            newUnitId: unit._id,
+            newSubUnit: {
+              type: subUnit.type,
+              roomType: subUnit.roomType,
+              bedType: subUnit.bedType,
+              price: matchedPrice
+            }
+          }
+
+          const response = await RentalService.reassignUnit(payload);
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Reassign successful!' })
+            this.$emit('close')
+          } else {
+            this.$q.notify({ type: 'negative', message: 'Reassing unit failed. Please try again.' })
+          }
+        }).onCancel(() => {
+          return
+        })
+      } catch (err) {
+        console.error("Error during reassignment:", err);
+      }
+    },
+
+    async findAllGenderBasedUnits(userGender, selectedPriceName, selectedPriceValue) {
+      const response = await UnitService.getAllUnits();
+
+      this.genderBasedUnits = response
+        .filter(unit => !unit.genderAssignment || unit.genderAssignment === userGender)
+
+        .filter(unit => {
+          const subUnits = unit.subUnits || [];
+          return subUnits.some(subUnit =>
+            (subUnit.price || []).some(p =>
+              p.name === selectedPriceName && p.price === selectedPriceValue
+            )
+          );
+        })
+        .filter(unit => unit.currentOccupants < unit.unitOccupants)
+        .sort((a, b) => {
+          if (a.unitNumber < b.unitNumber) return -1;
+          if (a.unitNumber > b.unitNumber) return 1;
+          return 0;
+        });
+    },
+
+    async getUnitAvailability() {
+      const response = await UnitService.getByIdUnit(this.rental.unit)
+      this.unitDetails = response
+
+      await this.findAllGenderBasedUnits(
+        this.rental.userGender,
+        this.rental?.selectedSubUnits?.price?.name,
+        this.rental?.selectedSubUnits?.price?.price
+      );
+    },
+
     async fetchUserDetails() {
       try {
         const response = await UserService.findUserById(this.rental.userId);
@@ -435,11 +609,6 @@ export default {
           message: 'Failed to load user details.'
         });
       }
-    },
-
-    async getUnitAvailability() {
-      const response = await UnitService.getByIdUnit(this.rental.unit)
-      this.unitDetails = response
     },
 
     async requestMoreInfo() {
@@ -465,6 +634,29 @@ export default {
     },
 
     async approveRental() {
+      if (this.unitDetails.currentOccupants >= this.unitDetails.unitOccupants) {
+        this.$q.notify({
+          type: 'negative',
+          color: 'red',
+          position: 'top',
+          message: `Unit ${this.unitDetails.unitNumber} is already at max capacity (${this.unitDetails.unitOccupants}). Please Reassign this tenant to another unit.`
+        });
+        return;
+      }
+
+      if (this.unitDetails.genderAssignment) {
+        const applicant = await UserService.findUserById(this.rental.userId);
+        if (applicant && applicant.gender !== this.unitDetails.genderAssignment) {
+          this.$q.notify({
+            type: 'negative',
+            color: 'red',
+            position: 'top',
+            message: `Unit ${this.unitDetails.unitNumber} is restricted to ${this.unitDetails.genderAssignment}s.`
+          });
+          return;
+        }
+      }
+
       if (this.isApproved === true) {
         const today = new Date();
         const nextYear = today.getFullYear() + 1;
@@ -482,6 +674,13 @@ export default {
         this.$q.dialog({
           title: 'Confirm', message: `You are about to approve this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
         }).onOk(async () => {
+
+          const subUnit = this.rental.selectedSubUnits;
+          const unitTypeForRental =
+            subUnit?.roomType ||
+            subUnit?.bedType ||
+            this.unitDetails.unitType;
+
           const approvedRental = {
             applicationDate: this.rental.applicationDate,
             status: "Active",
@@ -489,8 +688,9 @@ export default {
             rentalEndDate: this.rental.rentalEndDate,
             rentalPrice: this.rental.rentalPrice,
             unit: this.rental.unit,
-            unitType: this.rental.unitType,
-            user: this.rental.user
+            unitType: unitTypeForRental,   // <-- now correct
+            user: this.rental.user,
+            selectedSubUnits: subUnit      // keep full subunit details
           }
 
           const response = await RentalService.updateRental(this.rental._id, approvedRental)

@@ -64,15 +64,23 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item label="Admission" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+          <q-expansion-item label="CreditCheck" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
             style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
-                <div class="text-h5 text-left">Is there admission criteria?</div>
+                <div class="text-h5 text-left">Application Form</div>
               </div>
             </template>
             <div class="q-py-lg q-px-md text-left">
-              Only full-time students are accepted into The-WEB.
+              Please complete this Application Form by clicking the link below to download the document.
+
+              <p class="q-my-md text-weight-bold text-body1">
+                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Download Application Form
+                </a>
+              </p>
+
+              <iframe title="Apply" src="/files/CreditCheckApproval.pdf" width="100%" height="250" style="border: none"></iframe>
             </div>
           </q-expansion-item>
 
@@ -269,7 +277,7 @@
 
               <p class="q-my-md text-weight-bold text-body1">
                 <a href="/files/Apply.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
-                  Download Application Form
+                  Download How to Apply Form
                 </a>
               </p>
 
@@ -353,23 +361,15 @@
             </div>
           </q-expansion-item>
 
-          <q-expansion-item label="CreditCheck" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
+          <q-expansion-item label="Admission" header-class="text-h4 text-left q-pa-md" expand-icon-class="text-black"
             style="border: 1px solid #222; margin-top: 16px">
             <template v-slot:header>
               <div class="full-width">
-                <div class="text-h5 text-left">Credit Check Form</div>
+                <div class="text-h5 text-left">Is there admission criteria?</div>
               </div>
             </template>
             <div class="q-py-lg q-px-md text-left">
-              Please complete this credit check form by clicking the link below to download the document.
-
-              <p class="q-my-md text-weight-bold text-body1">
-                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
-                  Download Credit check form
-                </a>
-              </p>
-
-              <iframe title="Apply" src="/files/CreditCheckApproval.pdf" width="100%" height="250" style="border: none"></iframe>
+              Only full-time students are accepted into The-WEB.
             </div>
           </q-expansion-item>
         </div>

@@ -24,6 +24,8 @@
           <!-- Table Section -->
           <q-card-section class="row justify-between items-center">
             <div class="text-h6">Rental History</div>
+            <!-- <q-btn @click="syncRentals()" label="Sync Rentals" class="custom-button"
+              flat rounded /> -->
             <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
               flat rounded />
           </q-card-section>
@@ -51,7 +53,7 @@
                   <th class="text-left">Start Date</th>
                   <th class="text-left">End Date</th>
                   <th class="text-left">Before Scheduled</th>
-                  <th class="text-left">Condition</th>
+                  <!-- <th class="text-left">Condition</th> -->
                   <th class="text-left">Status</th>
                   <th class="text-left">Actions</th>
                 </tr>
@@ -95,7 +97,7 @@
                       N/A
                     </div>
                   </td>
-                  <td class="text-center cursor-pointer">
+                  <!-- <td class="text-center cursor-pointer">
                     <div class="column items-center">
                       <q-icon :name="needsAttention(rental) ? 'error' : 'check_circle'"
                         :color="needsAttention(rental) ? 'negative' : 'positive'" size="18px" />
@@ -103,7 +105,7 @@
                         {{ needsAttention(rental) ? 'Alert' : 'All Good' }}
                       </span>
                     </div>
-                  </td>
+                  </td> -->
                   <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
                     { 'active-status': rental.status === 'Active' },
                     { 'rejected-status': rental.status === 'Rejected' },
@@ -146,6 +148,9 @@ import {
 Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
   LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
 );
+
+import * as XLSX from 'xlsx';
+
 import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
@@ -170,7 +175,7 @@ export default {
       currentRentals: [],
       extendRentalDialog: false,
       selectedRental: null,
-      rentalStatus: ['All', 'Approved', 'Pending', 'Rejected', 'Ended'],
+      rentalStatus: ['All', 'Active', 'Pending', 'Rejected', 'Ended'],
       selectedRentalStatus: 'All',
       showAllStatuses: true,
     };
@@ -235,6 +240,65 @@ export default {
     //   });
     // },
 
+    // async downloadData() {
+    //   this.$q.dialog({
+    //     title: 'Download Data',
+    //     message: 'You are about to export all rental history data. Would you like to proceed?',
+    //     color: 'primary',
+    //     cancel: true,
+    //     persistent: true
+    //   }).onOk(() => {
+    //     try {
+    //       const today = new Date().toISOString().split('T')[0];
+
+    //       const rows = this.filteredRentals.map((rental, index) => ({
+    //         'Field No.': index + 1,
+    //         'Application Date': this.formatDate(rental.applicationDate) || '',
+    //         'Applicant': rental.username || 'Unassigned',
+    //         'Applicant Contact': `'${rental.userPhone || 'Unassigned'}`.replace(/,/g, ''),
+    //         'Applicant Email': rental.userEmail || 'Unassigned',
+    //         'Application ID': rental._id || '',
+    //         'Floor Level': this.extractFirstNumber(
+    //           rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType
+    //         ) || '',
+    //         'Unit Type': rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType || 'N/A',
+    //         'Start Date': !this.defaultValues(rental)
+    //           ? this.formatDate(rental.rentalStartDate)
+    //           : 'Being processed...',
+    //         'End Date': !this.defaultValues(rental)
+    //           ? this.formatDate(rental.rentalEndDate)
+    //           : 'Being processed...',
+    //         'Before Scheduled': rental.earlyEndDate !== null
+    //           ? this.formatDate(rental.earlyEndDate)
+    //           : 'N/A',
+    //         // 'Condition': this.needsAttention(rental) ? 'Alert' : 'All Good',
+    //         'Status': this.capitalizeFirstLetter(rental.status || '')
+    //       }));
+
+    //       const safeRow = row => Object.values(row).map(val => `"${val}"`).join(',');
+
+    //       const headers = Object.keys(rows[0]).map(h => `"${h}"`).join(',') + '\n';
+    //       const csv = headers + rows.map(safeRow).join('\n');
+
+    //       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = `rental_history_export_${today}.csv`;
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       setTimeout(() => URL.revokeObjectURL(url), 100);
+
+    //     } catch (error) {
+    //       this.$q.notify({
+    //         type: 'negative',
+    //         message: 'Export failed: ' + (error.message || 'Please try again')
+    //       });
+    //     }
+    //   });
+    // },
+
     async downloadData() {
       this.$q.dialog({
         title: 'Download Data',
@@ -250,7 +314,7 @@ export default {
             'Field No.': index + 1,
             'Application Date': this.formatDate(rental.applicationDate) || '',
             'Applicant': rental.username || 'Unassigned',
-            'Applicant Contact': `'${rental.userPhone || 'Unassigned'}`.replace(/,/g, ''),
+            'Applicant Contact': (rental.userPhone || 'Unassigned').replace(/,/g, ''),
             'Applicant Email': rental.userEmail || 'Unassigned',
             'Application ID': rental._id || '',
             'Floor Level': this.extractFirstNumber(
@@ -266,24 +330,18 @@ export default {
             'Before Scheduled': rental.earlyEndDate !== null
               ? this.formatDate(rental.earlyEndDate)
               : 'N/A',
-            // 'Condition': this.needsAttention(rental) ? 'Alert' : 'All Good',
             'Status': this.capitalizeFirstLetter(rental.status || '')
           }));
 
-          const safeRow = row => Object.values(row).map(val => `"${val}"`).join(',');
+          // Convert JSON to worksheet
+          const worksheet = XLSX.utils.json_to_sheet(rows);
 
-          const headers = Object.keys(rows[0]).map(h => `"${h}"`).join(',') + '\n';
-          const csv = headers + rows.map(safeRow).join('\n');
+          // Create a new workbook and append the worksheet
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'RentalHistory');
 
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `rental_history_export_${today}.csv`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(url), 100);
+          // Trigger download as .xlsx
+          XLSX.writeFile(workbook, `rental_history_export_${today}.xlsx`);
 
         } catch (error) {
           this.$q.notify({
@@ -293,6 +351,7 @@ export default {
         }
       });
     },
+
 
     needsAttention(rental) {
       if (!rental) return true;
@@ -498,7 +557,7 @@ export default {
     filterRentalsByChart(selectedStatus) {
       this.selectedRentalStatus = selectedStatus; // Sync dropdown filter
 
-      if (selectedStatus === 'Approved') {
+      if (selectedStatus === 'Active') {
         this.filteredRentals = this.approvedRentals;
       } else if (selectedStatus === 'Pending') {
         this.filteredRentals = this.pendingRentals;
@@ -529,6 +588,25 @@ export default {
       this.findAllRentals();
     },
 
+    async syncRentals() {
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to sync all rentals. Do you wish to continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        const response = await RentalService.syncRentals();
+        if (response) {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Sync successful!' });
+          this.findAllRentals();
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Sync failed. Please try again.' });
+        }
+      }).onCancel(() => { });
+    },
+
+
     async deleteRental(rental) {
       this.$q.dialog({
         title: 'Confirm',
@@ -541,6 +619,7 @@ export default {
         if (response) {
           this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
           this.findAllRentals();
+          this.filteredByRentalStatus();
         } else {
           this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
         }

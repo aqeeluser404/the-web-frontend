@@ -210,7 +210,7 @@
               <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
                 class="large-screen-only" />
             </q-card-section>
-            <template v-if="unit.unitStatus !== 'Occupied'">
+            <template v-if="unit.unitStatus === 'Available'">
               <q-card-section>
                 <div class="q-mb-sm"><b>Confirm your information</b></div>
                 <ul>
@@ -221,11 +221,11 @@
                 </ul>
               </q-card-section>
 
-              <q-card-section v-if="isAccessKeyAllowed && !unit.accessKey.isShared && !unit.genderAssignment">
+              <!-- <q-card-section v-if="isAccessKeyAllowed && !unit.accessKey.isShared && !unit.genderAssignment">
                 <div class="q-mb-sm"><b>Generate Shared Access Key</b></div>
                 <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="true" label="Yes" />
                 <q-radio v-model="rentalDetails.accessKeyIsTrue" :val="false" label="No" />
-              </q-card-section>
+              </q-card-section> -->
 
               <q-card-section v-if="unit.accessKey.isShared">
                 <div class="q-mb-sm"><b>Provide Shared Access Key</b></div>
@@ -449,7 +449,7 @@ export default {
         unit: "",
         rentalStartDate: `${nextYear}-02-01`,
         rentalEndDate: `${nextYear}-12-15`,
-        accessKeyIsTrue: null,
+        accessKeyIsTrue: false,
         accessKey: '',
         parking: {
           hasParking: false,

@@ -1,16 +1,17 @@
 <template>
   <q-page>
-    <div class="constrain-standard q-py-md" v-if="userDetails.rightsType === 'Tenant'">
+    <!-- update the condition to userRights being tenant -->
+    <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin'">
       <q-card class="col-md-4 col-12 stats-card full-height">
         <q-card-section class="row stats-header justify-center">
           <div class="text-h6">Book a Shuttle</div>
           <q-separator class="q-my-sm" style="width: 100%;" />
         </q-card-section>
 
-        <q-card-section class="row justify-center">
-          <q-item>
-            <q-item-section class="text-subtitle1">Under Development</q-item-section>
-          </q-item>
+        <q-card-section class="full-width">
+          <div style="max-width: 1200px; margin: 0 auto;">
+            <ShuttleBooking/>
+          </div>
         </q-card-section>
       </q-card>
     </div>
@@ -29,9 +30,6 @@
         </q-card-section>
       </q-card>
     </div>
-    
-    <!-- Shuttle booking ui -->
-    <ShuttleBooking/>
   </q-page>
 </template>
 

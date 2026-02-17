@@ -1,220 +1,261 @@
 <template>
-  <q-page class="shuttleBooking q-pa-md">
-    <div class="row q-col-gutter-md q-mb-sm">
-      <div class="col-6">
-        <q-select
-          label="Pick-up"
-          v-model="pickupLocation"
-          :options="pickupOptions"
-          outlined
-        />
-      </div>
-      <div class="col-6">
-        <q-select
-          label="Drop-off"
-          v-model="dropoffLocation"
-          :options="dropoffOptions"
-          outlined
-        />
-      </div>
+
+    <!-------------------- BOOKING SHUTTLE OPTIONS -------------------->
+    <div class=" q-py-md">
+      <q-card flat bordered class="row justify-center">
+        <q-card-section class="col-md-6 col-12" >
+          <q-select
+            label="Pick-up"
+            :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'"
+            v-model="pickupLocation"
+            :options="pickupOptions"
+            outlined
+          />
+        </q-card-section>
+        <q-card-section class="col-md-6 col-12">
+          <q-select
+            label="Drop-off"
+            v-model="dropoffLocation"
+            :options="dropoffOptions"
+            outlined
+          />
+        </q-card-section>
+      </q-card>
     </div>
 
-    <div>
-      <h6>Select Date and Time</h6>
-      <q-card-section class="row q-col-gutter-lg q-mb-lg" style="height: 407px">
-        <!-- Left column/calendar column -->
-        <div
-          class="calendar-box col-6 flex items-center justify-center"
-          style="height: 100%"
-        >
-          <div class="full-width">
-            <q-date
-              v-model="selectedDate"
-              today-btn
-              class="full-width"
-              :options="dateOptions"
-            />
-          </div>
-        </div>
 
-        <!-- Right column/time slot column -->
-        <div
-          class="timeslot-box col-6 flex column shadow-2"
-          style="height: 100%"
-        >
-          <div
-            class="timeslot-heading flex items-center justify-center text-h6"
-          >
-            Available Time Slots
-          </div>
 
-          <q-scroll-area class="q-pa-sm" style="flex: 1">
-            <div class="timeslot-list flex column">
-              <q-btn
-                v-for="slot in slotsWithStatus"
-                :key="slot.id"
-                :label="slot.time"
-                :disable="slot.passed || slot.remaining === 0"
-                :color="
-                  selectedSlot === slot.id
-                    ? 'primary'
-                    : slot.passed
-                      ? 'grey-5'
-                      : 'green'
-                "
-                flat
-                @click="selectSlot(slot)"
-                class="timeslot-btn q-mb-sm"
-                :class="{ 'selected-slot': selectedSlot === slot.id }"
-              >
-                <q-badge class="q-ml-sm q-pa-sm" v-if="slot.passed" color="grey"
-                  >Passed</q-badge
-                >
-                <q-badge class="q-ml-sm q-pa-sm" v-else color="var(--q-primary)"
-                  >{{ slot.remaining }} Left</q-badge
-                >
-              </q-btn>
+    <!-------------------- BOOKING SHUTTLE -------------------->
+    <div class="q-py-md">
+      <q-card flat bordered>
+        <q-card-section>
+          <div class="text-h6">Select Date and Time</div>
+        </q-card-section>
+
+        <q-card-section class="row justify-center full-width" style="min-height: 280px;">
+
+          <!-- Left column/calendar column - AUTO HEIGHT -->
+          <div class="calendar-box col-md-9 col-12">
+            <div :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+              <q-date
+                v-model="selectedDate"
+                today-btn
+                flat bordered
+                class="full-width"
+                :options="dateOptions"
+              />
             </div>
-          </q-scroll-area>
-        </div>
-      </q-card-section>
+          </div>
+
+          <!-- Right column/time slot column - FLEXIBLE HEIGHT -->
+          <div class="timeslot-box col-md-3 col-12">
+            <q-card flat bordered class="column" style="height: 100%;">
+              <div class="timeslot-heading flex items-center justify-center text-h6 q-pb-sm">
+                Available Time Slots
+              </div>
+
+              <!-- CONTROL HEIGHT HERE ONLY -->
+              <q-scroll-area class="q-pa-sm" :style="{'height': $q.screen.lt.sm ? '300px' : '280px'}">
+                <div class="timeslot-list column">
+                  <q-btn
+                    v-for="slot in slotsWithStatus"
+                    :key="slot.id"
+                    :label="slot.time"
+                    :disable="slot.passed || slot.remaining === 0"
+                    :color="
+                      selectedSlot === slot.id
+                        ? 'primary'
+                        : slot.passed
+                          ? 'grey-5'
+                          : 'green'
+                    "
+                    flat
+                    @click="selectSlot(slot)"
+                    class="timeslot-btn q-mb-sm"
+                    :class="{ 'selected-slot': selectedSlot === slot.id }"
+                  >
+                    <q-badge
+                      class="q-ml-sm q-pa-sm"
+                      v-if="slot.remaining === null"
+                      color="grey"
+                    >
+                      Select a date
+                    </q-badge>
+
+                    <q-badge
+                      class="q-ml-sm q-pa-sm"
+                      v-else-if="slot.passed"
+                      color="grey"
+                    >
+                      Passed
+                    </q-badge>
+
+                    <q-badge
+                      class="q-ml-sm q-pa-sm"
+                      v-else
+                      color="var(--q-primary)"
+                    >
+                      {{ slot.remaining }} Left
+                    </q-badge>
+
+                  </q-btn>
+                </div>
+              </q-scroll-area>
+            </q-card>
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
 
-    <!-- user detail -->
-    <q-card flat bordered class="q-mb-lg">
-      <q-card-section>
-        <div class="text-h5 q-mb-md">User Details</div>
 
-        <div class="row q-col-gutter-md">
-          <!-- Left Column/Personal Info -->
-          <div class="col-6">
-            <q-card flat bordered class="q-pa-md">
-              <div class="text-h6 text-primary text-bold q-mb-sm">
-                <q-icon name="person" class="q-mr-sm" /> Personal Info
-              </div>
-              <q-list dense>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Name:
-                      <span class="text-grey-7">{{ user?.firstName }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Surname:
-                      <span class="text-grey-7">{{ user?.lastName }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Student Number:
-                      <span class="text-grey-7">{{ user?.studentNumber }}</span>
-                      <!-- no info/need fixing -->
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Unit Number:
-                      <span class="text-grey-7">{{ user?.unitNumber }}</span>
-                      <!-- no info/need fixing -->
-                    </div>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card>
+
+
+    <!--------------------- USER DETAILS --------------------->
+    <div class="q-py-md">
+      <q-card flat bordered>
+        <q-card-section>
+          <div class="text-h6">User Details</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="row justify-center">
+
+            <!-- Left Column/Personal Info -->
+            <div class="col-md-6 col-12">
+              <q-card flat bordered class="q-pa-md" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+                <div class="text-h6 text-primary text-bold q-mb-sm">
+                  <q-icon name="person" class="q-mr-sm" /> Personal Info
+                </div>
+                <q-list dense>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">Name:
+                        <span class="text-grey-8">{{ userDetails?.firstName }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">Surname:
+                        <span class="text-grey-8">{{ userDetails?.lastName }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">Student Number:
+                        <span class="text-grey-8">{{ userDetails?.studentInfo?.studentNumber }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">Unit Number:
+                        <span class="text-grey-8">{{ rentalDetails?.unitType }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card>
+            </div>
+
+            <!-- Right Column/Booking Info -->
+            <div class="col-md-6 col-12">
+              <q-card flat bordered class="q-pa-md">
+                <div class="text-h6 text-primary text-bold q-mb-sm">
+                  <q-icon name="event" class="q-mr-sm" /> Booking Info
+                </div>
+                <q-list dense>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">
+                        Pick-up:
+                        <span class="text-grey-8">{{ pickupLocation }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">
+                        Drop-off:
+                        <span class="text-grey-8">{{ dropoffLocation }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">
+                        Date: <span class="text-grey-8">{{ selectedDate }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <div class="text-left text-subtitle1">
+                        Time Slot:
+                        <span class="text-grey-8">{{ selectedSlotTime }}</span>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card>
+            </div>
           </div>
-
-          <!-- Right Column/Booking Info -->
-          <div class="col-6">
-            <q-card flat bordered class="q-pa-md">
-              <div class="text-h6 text-primary text-bold q-mb-sm">
-                <q-icon name="event" class="q-mr-sm" /> Booking Info
-              </div>
-              <q-list dense>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Pick-up:
-                      <span class="text-grey-7">{{ pickupLocation }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Drop-off:
-                      <span class="text-grey-7">{{ dropoffLocation }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Date: <span class="text-grey-7">{{ selectedDate }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>
-                    <div class="text-h6">
-                      Time Slot:
-                      <span class="text-grey-7">{{ selectedSlotTime }}</span>
-                    </div>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card>
-          </div>
-        </div>
-
-        <div class="row justify-end q-mt-md">
-          <q-btn
+        </q-card-section>
+        <q-card-section class="row justify-end">
+          <CustomButton
+            customStyle="width: 25%"
             label="Confirm Booking"
             color="green"
             icon="check_circle"
             :disable="!canSubmit"
             @click="confirmBooking"
           />
-        </div>
-      </q-card-section>
-    </q-card>
+        </q-card-section>
+      </q-card>
+    </div>
 
-    <!-- booking history -->
-    <q-card flat bordered>
-      <q-card-section>
-        <div class="text-h6 q-mb-md">Booking History</div>
 
-        <q-table
-          flat
-          bordered
-          :rows="bookingHistory"
-          :columns="columns"
-          row-key="id"
-        >
+
+    <!-------------------- BOOKING HISTORY -------------------->
+    <div class="q-py-md">
+      <q-card flat bordered>
+        <q-card-section>
+          <div class="text-h6">Booking History</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-table
+            flat
+            bordered
+            :rows="bookingHistory"
+            :columns="columns"
+            row-key="_id"
+          >
           <template v-slot:body-cell-actions="props">
-            <q-btn
-              flat
-              color="negative"
-              label="cancel"
-              @click="cancelBooking(props.row)"
-            />
+            <q-td :props="props" class="text-center">
+              <CustomButton
+                flat
+                color="red"
+                text-color="red"
+                customStyle="width: 15%"
+                icon="eva-trash-outline"
+                @click="cancelBooking(props.row)"
+              />
+            </q-td>
           </template>
-        </q-table>
-      </q-card-section>
-    </q-card>
-  </q-page>
+          </q-table>
+        </q-card-section>
+      </q-card>
+    </div>
 </template>
 
 <script>
 import { date } from "quasar";
-import UserService from "src/services/UserService";
+import ShutttleService from "src/services/ShuttleService";
+import Helper from "src/services/utils";
+import RentalService from "src/services/RentalService";
+import CustomButton from "src/components/elements/CustomButton.vue";
 
 export default {
   name: "BookingPage",
@@ -231,69 +272,76 @@ export default {
       selectedDate: null,
 
       slots: [
-        { id: "s1", time: "06:30", remaining: 0 },
-        { id: "s2", time: "07:30", remaining: 0 },
-        { id: "s3", time: "08:30", remaining: 2 },
-        { id: "s4", time: "14:00", remaining: 4 },
-        { id: "s5", time: "15:00", remaining: 4 },
-        { id: "s6", time: "16:00", remaining: 4 },
-        { id: "s7", time: "17:00", remaining: 4 },
+        { id: "s1", time: "06:30", remaining: 10 },
+        { id: "s2", time: "07:30", remaining: 10 },
+        { id: "s3", time: "08:30", remaining: 10 },
+        { id: "s4", time: "14:00", remaining: 10 },
+        { id: "s5", time: "15:00", remaining: 10 },
+        { id: "s6", time: "16:00", remaining: 10 },
+        { id: "s7", time: "17:00", remaining: 10 },
       ],
+      maxCapacity: 10,
 
-      // user: {
-      //   firstName: "John",
-      //   lastName: "Doe",
-      //   studentNumber: "78092874",
-      //   unitNumber: "1-03",
-      // },
-      user: null,
-
+      userDetails: {},
+      rentalDetails: [],
       bookingHistory: [],
 
       columns: [
         { name: "slot", label: "Slot", field: "slot" },
         { name: "date", label: "Date", field: "date" },
         { name: "pickupLocation", label: "Pick-up", field: "pickupLocation" },
-        {
-          name: "dropoffLocation",
-          label: "Drop-off",
-          field: "dropoffLocation",
-        },
+        { name: "dropoffLocation", label: "Drop-off", field: "dropoffLocation" },
+        { name: "status", label: "Status", field: "status" },
         { name: "student", label: "Stu No.", field: "student" },
         { name: "actions", label: "Actions", field: "actions" },
       ],
     };
   },
 
+  components: {
+    CustomButton
+  },
+
   async mounted() {
-    try {
-      const data = await UserService.FindUserByToken();
-      this.user = data;
-    } catch (err) {
-      console.error("Failed to fetch user profile:", err);
+    await this.fetchUserDetails();
+  },
+
+  watch: {
+    selectedDate() {
+      this.updateSlotAvailability();
     }
   },
 
   computed: {
+
+
+
+    // -------------------------- DATE AND SLOT SELECTION --------------------------
     slotsWithStatus() {
       const now = new Date();
-      const today = date.formatDate(now, "YYYY/MM/DD");
+      const today = date.formatDate(now, "YYYY-MM-DD");
 
-      return this.slots.map((slot) => {
-        // Date object for today & slot timee
+      // If no date selected, show placeholder slots
+      if (!this.selectedDate) {
+        return this.slots.map(slot => ({
+          ...slot,
+          remaining: null, // mark as not yet available
+          passed: false
+        }));
+      }
+
+      // Normal behavior when a date is selected
+      return this.slots.map(slot => {
         const slotDateTime = new Date(`${today} ${slot.time}`);
         const passed = slotDateTime < now;
-
         return { ...slot, passed };
       });
     },
-
     selectedSlotTime() {
       const slot = this.slots.find((slot) => slot.id === this.selectedSlot);
       return slot ? slot.time : "-";
     },
     canSubmit() {
-      //submits if all fields are filled
       return (
         this.selectedSlot &&
         this.selectedDate &&
@@ -304,62 +352,214 @@ export default {
   },
 
   methods: {
+
+
+
+    // -------------------------- DATE AND SLOT SELECTION --------------------------
     dateOptions(day) {
       const today = date.formatDate(new Date(), "YYYY/MM/DD");
       return day >= today;
     },
     selectSlot(slot) {
-      // just selects the available slot
       if (!slot.passed && slot.remaining > 0) {
         this.selectedSlot = slot.id;
       }
     },
-    confirmBooking() {
-      if (!this.canSubmit) return;
+    async updateSlotAvailability() {
+      if (!this.selectedDate) {
+        this.slots.forEach((slot) => {
+          slot.remaining = this.maxCapacity;
+        });
+        return;
+      }
 
-      const slot = this.slots.find((s) => s.id === this.selectedSlot);
-      if (!slot || slot.remaining <= 0) return;
+      try {
+        const selectedDateObj = new Date(this.selectedDate);
+        const normalizedDate = date.formatDate(selectedDateObj, "YYYY/MM/DD");
 
-      this.bookingHistory.push({
-        id: this.bookingHistory.length + 1,
-        slot: this.selectedSlotTime,
-        date: this.selectedDate,
-        pickupLocation: this.pickupLocation,
-        dropoffLocation: this.dropoffLocation,
-        student: this.user.studentNumber,
-      });
+        this.slots.forEach((slot) => {
+          slot.remaining = this.maxCapacity;
+        });
 
-      slot.remaining -= 1;
+        const allShuttles = await ShutttleService.findAllShuttles();
+        const slotBookings = {};
 
-      this.selectedSlot = null;
+        allShuttles.forEach((shuttle) => {
+          if (shuttle.bookingTimeslot) {
+            try {
+              const bookingDate = new Date(shuttle.bookingTimeslot);
+              const bookingDateStr = date.formatDate(bookingDate, "YYYY/MM/DD");
+              const bookingTimeStr = date.formatDate(bookingDate, "HH:mm");
+
+              if (bookingDateStr === normalizedDate) {
+                if (!slotBookings[bookingTimeStr]) {
+                  slotBookings[bookingTimeStr] = 0;
+                }
+                slotBookings[bookingTimeStr]++;
+              }
+            } catch (error) {
+              console.warn("Error processing shuttle booking:", shuttle);
+            }
+          }
+        });
+        this.slots.forEach((slot) => {
+          const bookedCount = slotBookings[slot.time] || 0;
+          slot.remaining = Math.max(0, this.maxCapacity - bookedCount);
+        });
+      } catch (error) {
+        console.error("Error updating slot availability:", error);
+        this.$q.notify({
+          type: 'negative',
+          message: 'Failed to update slot availability'
+        });
+      }
     },
 
-    cancelBooking(row) {
-      this.bookingHistory = this.bookingHistory.filter((b) => b.id !== row.id);
 
-      const slot = this.slots.find((s) => s.time === row.slot);
-      if (slot) {
-        slot.remaining += 1;
+
+    // -------------------------- FETCH DATA APIS --------------------------
+    async fetchUserDetails() {
+      this.userDetails = await Helper.fetchUserDetails();
+      await this.getMyRental();
+      await this.fetchMyShuttles();
+    },
+    async fetchMyShuttles() {
+      try {
+        const shuttles = await ShutttleService.findMyShuttles(this.userDetails._id);
+        const user = await Helper.fetchUserDetails();
+
+        this.bookingHistory = shuttles.map(shuttle => {
+          let dateStr = "-";
+          let timeStr = "-";
+
+          if (shuttle.bookingTimeslot) {
+            const dt = new Date(shuttle.bookingTimeslot);
+            if (!isNaN(dt.getTime())) {
+              dateStr = date.formatDate(dt, "YYYY/MM/DD");
+              timeStr = date.formatDate(dt, "HH:mm");
+            }
+          }
+          return {
+            ...shuttle,
+            date: dateStr,
+            slot: timeStr,
+            student: user.studentInfo.studentNumber
+          };
+        });
+
+        if (this.selectedDate) {
+          await this.updateSlotAvailability();
+        }
+      } catch (error) {
+        console.error("Error fetching shuttles:", error);
       }
+    },
+    async getMyRental() {
+      const rentals = await RentalService.findMyRentals(this.userDetails._id);
+      this.rentalDetails = rentals.find(r => r.status === 'Pending');
+    },
+
+
+
+    // -------------------------- BOOKING APIS --------------------------
+    async confirmBooking() {
+      if (!this.canSubmit) return;
+
+      // Might add a condition to limit the amount of bookings
+
+      const slot = this.slots.find((s) => s.id === this.selectedSlot);
+      if (!slot || slot.remaining <= 0) {
+        this.$q.notify({
+          type: 'negative',
+          message: 'This slot is no longer available'
+        });
+        return;
+      }
+
+      const combinedDateTime = new Date(`${this.selectedDate} ${slot.time}`);
+      const bookingTimeslot = combinedDateTime.toISOString();
+
+      const shuttleData = {
+        pickupLocation: this.pickupLocation,
+        dropoffLocation: this.dropoffLocation,
+        bookingTimeslot: bookingTimeslot,
+        user: this.userDetails._id
+      };
+
+      try {
+        const response = await ShutttleService.createShuttle(shuttleData);
+        if (response) {
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Your shuttle application has been submitted!'
+          });
+
+          // Refresh ALL data including slot availability
+          await this.fetchMyShuttles();
+          await this.updateSlotAvailability();
+
+          // this.selectedSlot = null;
+          // this.selectedDate = null;
+        }
+      } catch (error) {
+        console.error('Booking error:', error);
+        this.$q.notify({
+          type: 'negative',
+          message: 'Shuttle submission failed. Please try again.'
+        });
+      }
+    },
+    async cancelBooking(row) {
+      const shuttleId = row._id;
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: 'You are about to cancel this Shuttle. Do you wish to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await ShutttleService.deleteShuttle(shuttleId);
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Shuttle booking has been deleted.'
+          });
+
+          // Refresh data immediately after cancellation
+          await this.fetchMyShuttles();
+          await this.updateSlotAvailability();
+
+        } catch (error) {
+          console.error(error);
+          this.$q.notify({
+            type: 'negative',
+            message: 'Failed to cancel shuttle.'
+          });
+        }
+      }).onCancel(() => { });
     },
   },
 };
 </script>
 
+
 <style scoped>
-.shuttleBooking {
+/* .shuttleBooking {
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
-  /* max-width: 1024px; */
+
   width: 100%;
-}
+} */
 
 /* calendar */
 .calendar-box {
   padding: 0;
-  margin-left: 10px;
+  /* margin-left: 10px; */
   /* border-radius: 5px; */
   /* ensure children can stretch to same height */
 }
@@ -370,7 +570,7 @@ export default {
   padding: 0;
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
+  /* margin-left: 10px; */
   border-radius: 5px;
   /* border: 1px solid #130c0c; */
 }

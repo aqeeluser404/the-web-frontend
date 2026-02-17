@@ -2,6 +2,15 @@ import axiosInstance from "./axiosInstance"
 import Logger from "./Logger"
 
 class RentalService {
+  static async syncRentals() {
+    const ENDPOINT = "/sync/rentals"
+    try {
+      const response = await axiosInstance.post(ENDPOINT)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
   static async createRental(rentalDetails) {
     const ENDPOINT = "/rentals"
     try {
@@ -46,6 +55,15 @@ class RentalService {
     } catch (error) {
       Logger.error(error)
       throw error;
+    }
+  }
+  static async reassignUnit(reassignDetails) {
+    const ENDPOINT = `/admin/rentals/reassign/unit`
+    try {
+      const response = await axiosInstance.put(ENDPOINT, reassignDetails)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
     }
   }
   static async updateRental(rentalId, rentalDetails) {
