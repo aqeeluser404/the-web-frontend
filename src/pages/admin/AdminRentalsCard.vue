@@ -352,7 +352,6 @@ export default {
       });
     },
 
-
     needsAttention(rental) {
       if (!rental) return true;
 
