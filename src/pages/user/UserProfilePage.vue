@@ -3,7 +3,7 @@
     <div class="constrain-standard row justify-center q-py-md">
 
       <!-- user profile section -->
-      <div class="col-md-6 col-12 full-height ">
+      <div v-if="!loading" class="col-md-6 col-12 full-height ">
         <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-card-section>
             <div class="text-h6">Personal Details</div>
@@ -127,7 +127,7 @@
       </div>
 
       <!-- documents section -->
-      <div class="col-md-6 col-12 full-height">
+      <div v-if="!loading" class="col-md-6 col-12 full-height">
         <q-card flat bordered class="full-height">
           <q-card-section>
             <div class="text-h6">Instructions</div>
@@ -282,6 +282,8 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <q-inner-loading :showing="loading" color="primary" size="md" />
     </div>
     <q-dialog v-model="addDocDialog">
       <AddDocumentComponent :user="userDetails" :docType="activeDocType" @close="handleDialogClose"
@@ -304,6 +306,8 @@ import { useCategoryLockStore } from 'src/stores/categoryLock';
 export default {
   data() {
     return {
+      loading: true,
+
       userDetails: {
         studentInfo: {
           isRegisteredStudent: '',
@@ -644,6 +648,7 @@ export default {
       }
     },
     async fetchUserDetails() {
+      this.loading = true;
       this.userDetails = await Helper.fetchUserDetails();
 
       // Format date for display if it exists
@@ -655,6 +660,7 @@ export default {
       const response = await RentalService.findMyRentals(this.userDetails._id)
 
       this.currentAccessKey = response.find(rental => (rental.status === 'Pending' || rental.status === 'Active') && rental.accessKey)?.accessKey
+      this.loading = false;
     },
 
     formatDateForDisplay(date) {

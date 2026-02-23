@@ -2,7 +2,7 @@
   <q-page>
     <div class="constrain-standard row justify-center q-py-md">
 
-      <div class="col-md-8 col-12 full-height">
+      <div class="col-md-8 col-12 full-height" v-show="!loading">
         <!-- view all units -->
         <q-card flat bordered class="full-height" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
@@ -89,7 +89,7 @@
         </q-card>
       </div>
 
-      <div class="col-md-4 col-12 full-height">
+      <div class="col-md-4 col-12 full-height" v-show="!loading">
         <!-- add new unit -->
         <q-card flat class="q-pa-md full-height">
           <q-card-section class="row justify-between items-center">
@@ -117,6 +117,8 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <q-inner-loading :showing="loading" color="primary" size="md" />
     </div>
     <q-dialog v-model="updateDetailsDialog">
       <AdminUnitDetailsComponent :unit="selectedUnit" @close="handleClose" />
@@ -141,6 +143,7 @@ export default {
 
   data() {
     return {
+      loading: true,
       users: [],
       units: [],
       allUnits: [],
@@ -208,6 +211,7 @@ export default {
     },
 
     async findAllUnits() {
+      this.loading = true;
       const response = await UnitService.getAllUnits();
 
       // console.log(response)
@@ -233,6 +237,8 @@ export default {
       const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor');
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
+
+      this.loading = false;
     },
 
     getUsername(userId) {

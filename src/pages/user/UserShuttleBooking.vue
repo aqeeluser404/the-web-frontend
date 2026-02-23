@@ -1,35 +1,38 @@
 <template>
   <q-page>
-    <!-- update the condition to userRights being tenant -->
-    <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin'">
-      <q-card class="col-md-4 col-12 stats-card full-height">
-        <q-card-section class="row stats-header justify-center">
-          <div class="text-h6">Book a Shuttle</div>
-          <q-separator class="q-my-sm" style="width: 100%;" />
-        </q-card-section>
 
-        <q-card-section class="full-width">
-          <div style="max-width: 1200px; margin: 0 auto;">
-            <ShuttleBooking/>
-          </div>
-        </q-card-section>
-      </q-card>
+    <div v-if="!loading">
+      <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin' || userDetails.rightsType === 'Tenant'">
+        <q-card class="col-md-4 col-12 stats-card full-height">
+          <q-card-section class="row stats-header justify-center">
+            <div class="text-h6">Book a Shuttle</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
+          </q-card-section>
+
+          <q-card-section class="full-width">
+            <div style="max-width: 1200px; margin: 0 auto;">
+              <ShuttleBooking/>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="constrain-standard q-py-md" v-else>
+        <q-card class="col-md-4 col-12 stats-card full-height">
+          <q-card-section class="row stats-header justify-center">
+            <div class="text-h6">Book a Shuttle</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
+          </q-card-section>
+
+          <q-card-section class="row justify-center">
+            <q-item>
+              <q-item-section class="text-subtitle1">You’ll have access to the shuttle booking system once your rental application is approved.</q-item-section>
+            </q-item>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
-
-    <div class="constrain-standard q-py-md" v-else>
-      <q-card class="col-md-4 col-12 stats-card full-height">
-        <q-card-section class="row stats-header justify-center">
-          <div class="text-h6">Book a Shuttle</div>
-          <q-separator class="q-my-sm" style="width: 100%;" />
-        </q-card-section>
-
-        <q-card-section class="row justify-center">
-          <q-item>
-            <q-item-section class="text-subtitle1">You’ll have access to the shuttle booking system once your rental application is approved.</q-item-section>
-          </q-item>
-        </q-card-section>
-      </q-card>
-    </div>
+    <q-inner-loading :showing="loading" color="primary" size="md" />
   </q-page>
 </template>
 
@@ -53,6 +56,7 @@ export default {
   },
   methods: {
     async fetchUserDetails() {
+      this.loading = true
       this.userDetails = await Helper.fetchUserDetails()
       this.loading = false
     },

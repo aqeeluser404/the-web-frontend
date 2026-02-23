@@ -1,93 +1,105 @@
 <template>
   <q-page>
-    <div class="constrain-standard q-pt-md q-pb-md row justify-center">
-      <!-- Driver Approval Card -->
-      <q-card class="full-width" style="max-width: 989px" flat bordered>
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Shuttle Applications for Today</div>
-        </q-card-section>
+    <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
+      <div class="col-md-9 col-12 full-height">
+        <!-- Driver Approval Card -->
+        <q-card flat bordered>
+          <q-card-section class="bg-primary text-white">
+            <div class="text-h6">Shuttle Applications for Today</div>
+          </q-card-section>
 
-        <q-card-section>
-          <q-list
-            v-if="Object.keys(groupedApplications).length > 0"
-            bordered
-            separator
-          >
-            <q-expansion-item
-              v-for="(applications, time) in groupedApplications"
-              :key="time"
-              :label="time"
-              icon="schedule"
-              header-class="text-weight-medium text-center"
-              expand-separator
+          <q-card-section>
+            <q-list
+              v-if="Object.keys(groupedApplications).length > 0"
+              bordered
+              separator
             >
-              <!-- user info -->
-              <div
-                v-for="shuttle in applications"
-                :key="shuttle._id"
-                class="row items-center justify-between q-pa-md"
+              <q-expansion-item
+                v-for="(applications, time) in groupedApplications"
+                :key="time"
+                :label="time"
+                icon="schedule"
+                header-class="text-weight-medium text-center"
+                expand-separator
               >
-                <div>
-                  <div class="text-weight-bold">
-                    {{ capitalizeFirstLetter(shuttle.userFirstName) }}
-                    {{ capitalizeFirstLetter(shuttle.userLastName) }}
+                <!-- user info -->
+                <div
+                  v-for="shuttle in applications"
+                  :key="shuttle._id"
+                  class="row items-center justify-between q-pa-md"
+                >
+                  <div>
+                    <div class="text-weight-bold">
+                      {{ capitalizeFirstLetter(shuttle.userFirstName) }}
+                      {{ capitalizeFirstLetter(shuttle.userLastName) }}
+                    </div>
+
+                    <div class="text-grey-7 q-mt-xs">
+                      Student No: {{ shuttle.userStudentNumber }}
+                    </div>
+
+                    <div class="text-grey-7" v-if="shuttle.unitNumber">Unit: {{ shuttle.unitNumber }}</div>
+                    <div class="text-grey-7" v-else>
+                      Admin Access Account
+                    </div>
                   </div>
 
-                  <div class="text-grey-7 q-mt-xs">
-                    Student No: {{ shuttle.userStudentNumber }}
+                  <!-- buttons -->
+                  <div class="row justify-center items-center">
+                    <CustomButton
+                      :label="
+                        shuttle.status === 'Pending'
+                          ? 'Picked Up'
+                          : shuttle.status === 'Picked Up'
+                            ? 'Dropped Off'
+                            : ''
+                      "
+                      :color="
+                        shuttle.status === 'Pending'
+                          ? 'primary'
+                          : shuttle.status === 'Picked Up'
+                            ? 'secondary'
+                            : 'grey'
+                      "
+                      unelevated
+                      class=""
+                      @click="approveShuttle(shuttle)"
+                      :customStyle="
+                        shuttle.status === 'Picked Up'
+                          ? 'width: 100%'
+                          : 'width: 55%'
+                      "
+                    />
+                    <CustomButton
+                      v-if="shuttle.status !== 'Picked Up'"
+                      label="Missed"
+                      color="negative"
+                      unelevated
+                      class="q-ml-sm"
+                      @click="declineShuttle(shuttle)"
+                      customStyle="width: 40%"
+                    />
                   </div>
-
-                  <div class="text-grey-7">Unit: {{ shuttle.unitNumber }}</div>
                 </div>
-
-                <!-- buttons -->
-                <div>
-                  <q-btn
-                    :label="
-                      shuttle.status === 'Pending'
-                        ? 'Picked Up'
-                        : shuttle.status === 'Picked Up'
-                          ? 'Dropped Off'
-                          : ''
-                    "
-                    :color="
-                      shuttle.status === 'Pending'
-                        ? 'primary'
-                        : shuttle.status === 'Picked Up'
-                          ? 'secondary'
-                          : 'grey'
-                    "
-                    unelevated
-                    class="q-ml-md"
-                    @click="approveShuttle(shuttle)"
-                  />
-                  <q-btn
-                    label="Missed"
-                    color="negative"
-                    unelevated
-                    class="q-ml-md"
-                    @click="declineShuttle(shuttle)"
-                  />
-                </div>
-              </div>
-            </q-expansion-item>
-          </q-list>
-          <div v-else class="text-center text-grey-6 q-pa-lg">
-            No applications for today
-          </div>
-        </q-card-section>
-      </q-card>
+              </q-expansion-item>
+            </q-list>
+            <div v-else class="text-center text-grey-6 q-pa-lg">
+              No applications for today
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
 
     <!-- Shuttle History -->
-    <div class="constrain-standard row justify-center q-pb-md">
+    <div class="constrain-standard q-pb-md row justify-center" v-show="!loading">
       <div class="col-md-9 col-12 full-height">
         <q-card flat bordered class="full-height">
           <!-- Heading -->
           <q-card-section class="row justify-between items-center">
             <div class="text-h6">Shuttle History</div>
             <q-btn
-              @click=""
+              @click="downloadData()"
               class="custom-button"
               icon="eva-cloud-download-outline"
               flat
@@ -174,6 +186,19 @@
                   </q-badge>
                 </q-td>
               </template>
+
+              <template v-slot:body-cell-actions="props">
+                <q-td :props="props">
+                  <CustomButton
+                    flat
+                    color="red"
+                    text-color="red"
+                    customStyle="width: 15%"
+                    icon="eva-trash-outline"
+                    @click="cancelBooking(props.row)"
+                  />
+                </q-td>
+              </template>
             </q-table>
           </q-card-section>
           <q-card-section v-else class="row justify-center">
@@ -186,12 +211,14 @@
         </q-card>
       </div>
     </div>
+
+    <q-inner-loading :showing="loading" color="primary" size="md" />
   </q-page>
 </template>
 
 <script>
-// import * as XLSX from 'xlsx';
-import ShutttleService from "src/services/ShuttleService";
+import * as XLSX from 'xlsx';
+import ShuttleService from "src/services/ShuttleService";
 import Helper from "src/services/utils";
 import RentalService from "src/services/RentalService";
 import CustomButton from "src/components/elements/CustomButton.vue";
@@ -203,6 +230,7 @@ export default {
 
   data() {
     return {
+      loading: true,
       shuttles: [],
       search: "",
 
@@ -282,6 +310,12 @@ export default {
           field: "status",
           align: "left",
         },
+        {
+          name: "actions",
+          label: "Actions",
+          field: "actions",
+          align: "left",
+        },
       ],
     };
   },
@@ -292,8 +326,62 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    async downloadData() {
+      this.$q.dialog({
+        title: 'Download Data',
+        message: 'You are about to export all shuttle history data. Would you like to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+
+          // Build rows from filteredShuttles
+          const rows = this.filteredShuttles.map((shuttle, index) => {
+            const timeslot = new Date(shuttle.bookingTimeslot);
+
+            return {
+              'Field No.': index + 1,
+              'Created At': this.formatDate(shuttle.createdAt),
+              'Date For': timeslot.toISOString().split('T')[0], // just the date
+              'Time Slot': timeslot.toTimeString().split(' ')[0], // just the time (HH:mm:ss)
+              'Student': `${shuttle.userFirstName} ${shuttle.userLastName}`,
+              'Student No.': shuttle.userStudentNumber,
+              'Unit': shuttle.unitNumber || '',
+              'Pickup': shuttle.pickupLocation,
+              'Dropoff': shuttle.dropoffLocation,
+              'Status': shuttle.status,
+            };
+          });
+
+          // Convert JSON to worksheet
+          const worksheet = XLSX.utils.json_to_sheet(rows);
+
+          // Create a new workbook and append the worksheet
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'ShuttleHistory');
+
+          // Trigger download as .xlsx
+          XLSX.writeFile(workbook, `shuttle_history_export_${today}.xlsx`);
+
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Export successful!'
+          });
+        } catch (error) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Export failed: ' + (error.message || 'Please try again')
+          });
+        }
+      });
+    },
+
     async findAllShuttles() {
-      const response = await ShutttleService.findAllShuttles();
+      this.loading=true
+      const response = await ShuttleService.findAllShuttles();
       console.log(response);
 
       this.shuttles = await Promise.all(
@@ -308,14 +396,28 @@ export default {
             ? await UnitService.findUnitById(activeRental.unit)
             : null;
 
+          let userRightsType;
+
+          if (
+            user.userType === 'Admin' &&
+            (!user.rightsType || user.rightsType === '' || user.rightsType === null)
+          ) {
+            userRightsType = user.userType;
+          } else {
+            userRightsType = user.rightsType;
+          }
+
+
           return {
             ...shuttle,
+            userType: userRightsType,
             userStudentNumber: user.studentInfo.studentNumber,
             userFirstName: user.firstName,
             userLastName: user.lastName,
             unitNumber: occupiedUnit ? occupiedUnit.unitNumber : null,
           };
         }),
+
       );
 
       this.buildTodaysApplications(); //get todays applications
@@ -341,67 +443,97 @@ export default {
       this.MissedPickUpShuttles = filteredShuttles.filter(
         (shuttle) => shuttle.status === "Missed Pick Up",
       );
-
       this.filteredByShuttleStatus();
+
+      this.loading=false
     },
 
     //get todays applications
-    buildTodaysApplications() {
+    async buildTodaysApplications() {
       const today = new Date();
       const todayStr = today.toISOString().split("T")[0];
 
-      this.todaysApplications = this.shuttles.filter((shuttle) => {
-        const shuttleDate = new Date(shuttle.bookingTimeslot)
-          .toISOString()
-          .split("T")[0];
+      // Use map instead of filter so we can await updates
+      const updatedShuttles = await Promise.all(
+        this.shuttles.map(async (shuttle) => {
+          const shuttleDateStr = new Date(shuttle.bookingTimeslot)
+            .toISOString()
+            .split("T")[0];
 
-        return (
-          (shuttleDate === todayStr && shuttle.status === "Pending") ||
-          shuttle.status === "Picked Up"
-        );
-      });
-
-      this.todaysApplications.sort((a, b) => {
-        //sort time from earlist
-        return new Date(a.bookingTimeslot) - new Date(b.bookingTimeslot);
-      });
-
-      this.groupedApplications = this.todaysApplications.reduce(
-        //group applicants ot the time slots
-        (groups, shuttle) => {
-          const timeKey = this.formatTime(shuttle.bookingTimeslot);
-
-          if (!groups[timeKey]) {
-            groups[timeKey] = [];
+          // If shuttle was due before today and still Pending → mark as Missed Pick Up
+          if (shuttleDateStr < todayStr && shuttle.status === "Pending") {
+            const newStatus = "Missed Pick Up";
+            try {
+              await ShuttleService.updateShuttle(shuttle._id, { status: newStatus });
+              shuttle.status = newStatus; // update local copy after successful API call
+            } catch (err) {
+              console.error("Failed to update shuttle:", shuttle._id, err);
+            }
           }
 
-          groups[timeKey].push(shuttle);
-
-          return groups;
-        },
-        {},
+          return shuttle;
+        })
       );
+
+      // Keep only today's Pending OR any Picked Up
+      this.todaysApplications = updatedShuttles.filter(
+        (shuttle) =>
+          (new Date(shuttle.bookingTimeslot).toISOString().split("T")[0] === todayStr &&
+            shuttle.status === "Pending") ||
+          shuttle.status === "Picked Up"
+      );
+
+      // Sort by timeslot ascending
+      this.todaysApplications.sort(
+        (a, b) => new Date(a.bookingTimeslot) - new Date(b.bookingTimeslot)
+      );
+
+      // Group by formatted time
+      this.groupedApplications = this.todaysApplications.reduce((groups, shuttle) => {
+        const timeKey = this.formatTime(shuttle.bookingTimeslot);
+
+        if (!groups[timeKey]) {
+          groups[timeKey] = [];
+        }
+
+        groups[timeKey].push(shuttle);
+
+        return groups;
+      }, {});
     },
+
 
     //approve shuttle
     async approveShuttle(shuttle) {
       try {
-        let newStatus = "";
+        this.$q.dialog({
+          title: 'Confirm',
+          message: `You are about update the status of this application. Do you wish to continue?`,
+          color: 'primary',
+          cancel: true,
+          persistent: true
+        }).onOk(async () => {
 
-        if (shuttle.status === "Pending") {
-          newStatus = "Picked Up";
-        } else if (shuttle.status === "Picked Up") {
-          newStatus = "Dropped Off";
-        } else {
-          return;
-        }
+          let newStatus = "";
+          if (shuttle.status === "Pending") {
+            newStatus = "Picked Up";
+          } else if (shuttle.status === "Picked Up") {
+            newStatus = "Dropped Off";
+          } else {
+            return;
+          }
+          shuttle.status = newStatus;
+          await this.buildTodaysApplications();
+          this.filteredByShuttleStatus();
 
-        shuttle.status = newStatus;
-
-        this.buildTodaysApplications();
-        this.filteredByShuttleStatus();
-
-        await ShutttleService.updateShuttle(shuttle._id, { status: newStatus });
+          const response = await ShuttleService.updateShuttle(shuttle._id, { status: newStatus });
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Status update successful!' });
+            this.findAllShuttles();
+          } else {
+            this.$q.notify({ type: 'negative', message: 'Status update failed. Please try again.' });
+          }
+        }).onCancel(() => { });
       } catch (error) {
         console.error("Error approving shuttle:", error);
       }
@@ -410,25 +542,71 @@ export default {
     // missed pickup
     async declineShuttle(shuttle) {
       try {
-        let newStatus = "";
+        this.$q.dialog({
+          title: 'Confirm',
+          message: `You are about update the status of this application. Do you wish to continue?`,
+          color: 'primary',
+          cancel: true,
+          persistent: true
+        }).onOk(async () => {
 
-        if (shuttle.status === "Pending") {
-          newStatus = "Missed Pick Up";
-        } else {
-          return;
-        }
+          let newStatus = "";
+          if (shuttle.status === "Pending") {
+            newStatus = "Missed Pick Up";
+          } else {
+            return;
+          }
+          shuttle.status = newStatus;
+          await this.buildTodaysApplications();
+          this.filteredByShuttleStatus();
 
-        shuttle.status = newStatus;
+          const response = await ShuttleService.updateShuttle(shuttle._id, {
+            status: newStatus,
+          });
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Status update successful!' });
+            this.findAllShuttles();
+          } else {
+            this.$q.notify({ type: 'negative', message: 'Status update failed. Please try again.' });
+          }
+        }).onCancel(() => { });
 
-        this.buildTodaysApplications();
-        this.filteredByShuttleStatus();
-
-        await ShutttleService.updateShuttle(shuttle._id, {
-          status: newStatus,
-        });
       } catch {
         console.error("Error declining shuttle:", error);
       }
+    },
+
+    async cancelBooking(row) {
+      const shuttleId = row._id;
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: 'You are about to cancel this Shuttle. Do you wish to proceed?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await ShuttleService.deleteShuttle(shuttleId);
+          this.$q.notify({
+            type: 'positive',
+            color: 'primary',
+            message: 'Shuttle booking has been deleted.'
+          });
+
+          // Refresh data immediately after cancellation
+          await this.buildTodaysApplications();
+          this.filteredByShuttleStatus();
+          this.findAllShuttles();
+
+        } catch (error) {
+          console.error(error);
+          this.$q.notify({
+            type: 'negative',
+            message: 'Failed to cancel shuttle.'
+          });
+        }
+      }).onCancel(() => { });
     },
 
     //missed pickup
@@ -443,7 +621,7 @@ export default {
     //     const pickupTime = new Date(shuttle.bookingTimeslot);
     //     const cutoffTime = new Date(pickupTime.getTime() + 2 * 60 * 1000);
     //     if (now > cutoffTime) {
-    //       await ShutttleService.updateShuttle(shuttle._id, {
+    //       await ShuttleService.updateShuttle(shuttle._id, {
     //         status: "Missed Pick Up",
     //       });
 
@@ -457,7 +635,7 @@ export default {
     filteredByShuttleStatus() {
       if (this.selectedShuttleStatus === "All") {
         this.filteredShuttles = this.currentShuttles;
-        console.log("all", this.currentShuttles);
+        // console.log("all", this.currentShuttles);
       } else {
         this.filterRentalsByChart(this.selectedShuttleStatus);
       }
@@ -468,16 +646,16 @@ export default {
 
       if (selectedStatus === "Picked Up") {
         this.filteredShuttles = this.pickedUpShuttles;
-        console.log("pickedup", this.pickedUpShuttles);
+        // console.log("pickedup", this.pickedUpShuttles);
       } else if (selectedStatus === "Pending") {
         this.filteredShuttles = this.pendingShuttles;
-        console.log("pending", this.pendingShuttles);
+        // console.log("pending", this.pendingShuttles);
       } else if (selectedStatus === "Dropped Off") {
         this.filteredShuttles = this.droppedOffShuttles;
-        console.log("dropped off", this.droppedOffShuttles);
+        // console.log("dropped off", this.droppedOffShuttles);
       } else if (selectedStatus === "Missed Pick Up") {
         this.filteredShuttles = this.MissedPickUpShuttles;
-        console.log("missed pick ups", this.MissedPickUpShuttles);
+        // console.log("missed pick ups", this.MissedPickUpShuttles);
       } else {
         this.filteredShuttles = this.currentShuttles;
       }
@@ -528,15 +706,16 @@ export default {
   created() {
     this.findAllShuttles();
   },
-
-  //   mounted() { //added this for refresh
-  //     this.interval = setInterval(() => {
-  //       this.findAllShuttles();
-  //     },5000);
-  //   },
-  //   beforeUnmount() {
-  //     clearInterval(this.interval);
-  //   },
+  // mounted() {
+  //   const refresh = async () => {
+  //     await this.findAllShuttles();
+  //     this.interval = setTimeout(refresh, 5000);
+  //   };
+  //   refresh();
+  // },
+  // beforeUnmount() {
+  //   clearTimeout(this.interval);
+  // }
 };
 </script>
 

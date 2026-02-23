@@ -2,9 +2,9 @@
   <q-page>
 
     <div class="constrain-standard row justify-center q-py-md">
-      <q-card flat class="col-md-12 col-12">
+      <q-card v-if="!loading" flat class="col-md-12 col-12">
         <q-card-section>
-          <div v-if="!loading">
+          <div>
 
             <q-timeline :layout="layout" color="secondary">
 
@@ -318,10 +318,9 @@
                 color="orange" />
             </q-timeline>
           </div>
-
-          <q-inner-loading :showing="loading" color="primary" size="md" />
         </q-card-section>
       </q-card>
+      <q-inner-loading :showing="loading" color="primary" size="md" />
     </div>
   </q-page>
 </template>

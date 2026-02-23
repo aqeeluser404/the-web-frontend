@@ -1,8 +1,8 @@
 <template>
-  <div class="">
+  <div>
     <!-- Carousel section (always shown) -->
     <div class="q-py-md">
-      <div class="carousel-wrapper row justify-center bg-grey-3">
+      <div class="carousel-wrapper row justify-center bg-grey-3 soft-shadow-card">
         <q-carousel v-show="!isSpecificFloorRoute" animated v-model="currentSlide" infinite
           :autoplay="!isSpecificFloorRoute" :autoplay-interval="5000" transition-prev="slide-right"
           transition-next="slide-left" transition-duration="1800" control-color="white" class="carousel col-md-9"
@@ -166,11 +166,11 @@
       </template>
     </div>
 
-    <div v-if="isSpecificFloorRoute" class="q-py-lg">
+    <div v-if="isSpecificFloorRoute" class="q-py-md">
       <BedStatsComponent />
     </div>
 
-    <div v-if="isSpecificFloorRoute" class="q-pb-md">
+    <div v-if="isSpecificFloorRoute" class="q-py-md">
       <template v-if="isSpecificFloorRoute">
         <div>
           <q-card v-for="(units, floorIndex) in filteredUnits" :key="floorIndex" class="soft-shadow-card">
@@ -375,11 +375,10 @@ import SimpleZoom from '../elements/SimpleZoom.vue'
 export default {
   name: 'UnitGridSection',
   components: {
-    // UnitDetailsComponent,
-    // UnitApplicationFormComponent,
     UnitDetailedApplicationForm,
     CustomButton, BedStatsComponent, SimpleZoom
   },
+  emits: ['update:loading'],
   data() {
     return {
       isLoggedIn: '',
@@ -731,13 +730,20 @@ export default {
     // ------------------------------------------------------------------------------------------
 
     async fetchUnits() {
-      const response = await UnitService.getAllUnits()
-      this.units = response
-      this.allReservedUnits = response.filter(u => u.reservedBy)
-      this.organizeUnitsByFloor()
+      try {
+        this.$emit('update:loading', true)   // start spinner
+        const response = await UnitService.getAllUnits()
+        this.units = response
+        this.allReservedUnits = response.filter(u => u.reservedBy)
+        this.organizeUnitsByFloor()
 
-      if (this.isLoggedIn) {
-        await this.fetchMyRentals()
+        if (this.isLoggedIn) {
+          await this.fetchMyRentals()
+        }
+      } catch (err) {
+        console.error('Error fetching units:', err)
+      } finally {
+
       }
     },
 
@@ -745,6 +751,7 @@ export default {
       const user = await Helper.fetchUserDetails()
       await this.checkLoginStatus()
       this.myRentals = await RentalService.findMyRentals(user._id)
+      this.$emit('update:loading', false)  // always stop spinner
     },
 
     // FILTER BY FLOOR

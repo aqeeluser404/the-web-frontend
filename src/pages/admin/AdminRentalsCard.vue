@@ -1,10 +1,12 @@
 <template>
   <q-page>
-    <div class="constrain-standard q-pt-md q-pb-md row justify-center">
+
+
+    <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
       <BedGraphComponent />
     </div>
 
-    <div class="constrain-standard row justify-center q-pb-md">
+    <div class="constrain-standard row justify-center q-pb-md" v-show="!loading">
       <div class="col-md-3 col-12 full-height">
         <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-card-section class="row justify-center">
@@ -134,6 +136,8 @@
       </div>
     </div>
 
+    <q-inner-loading :showing="loading" color="primary" size="md" />
+
     <q-dialog v-model="extendRentalDialog">
       <AdminExtendRentalComponent :rental="selectedRental" @close="handleClose" />
     </q-dialog>
@@ -165,6 +169,7 @@ export default {
 
   data() {
     return {
+      loading: true,
       rentals: [],
       search: '',
       filteredRentals: [],
@@ -428,6 +433,7 @@ export default {
     },
 
     async findAllRentals() {
+      this.loading = true
       const response = await RentalService.findAllRentals();
 
       this.rentals = await Promise.all(response.map(async rental => {
@@ -455,6 +461,7 @@ export default {
 
       this.filteredByRentalStatus();
       this.updateChart();
+      this.loading = false
     },
 
     updateChart() {

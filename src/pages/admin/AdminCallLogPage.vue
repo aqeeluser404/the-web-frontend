@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="constrain-standard row justify-center q-py-md">
+    <div class="constrain-standard row justify-center q-py-md" v-show="!loading">
 
       <div class="col-md-3 col-12 full-height">
         <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
@@ -100,7 +100,7 @@
         </q-card>
       </div>
     </div>
-
+    <q-inner-loading :showing="loading" color="primary" size="md" />
     <q-dialog v-model="updateCallLogDialog">
       <AdminUpdateCallLogComponent :callLog="selectedCallLog" @close="handleDialogClose" />
     </q-dialog>
@@ -127,6 +127,7 @@ import AdminUpdateCallLogNotes from 'src/components/admin/AdminUpdateCallLogNote
 export default {
   data() {
     return {
+      loading: true,
       updateCallLogDialog: false,
       updateCallLogNotesDialog: false,
       selectedCallLog: null,
@@ -239,6 +240,7 @@ export default {
     },
 
     async getAllCallLogs() {
+      this.loading = true
       const response = await CallLogService.findAllCallLogs()
 
       this.callLogs = await Promise.all(response.map(async callLog => {
@@ -260,6 +262,7 @@ export default {
 
       this.filteredByCallLogStatus()
       this.updateChart()
+      this.loading = false
     },
 
     filteredByCallLogStatus() {

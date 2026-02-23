@@ -1,13 +1,15 @@
 <template>
   <q-page>
-    <div class="q-pa-md column justify-center flex-center" style="width: 100%; height: 100%;">
+    <div class="q-pa-md column justify-center flex-center" style="width: 100%; height: 100%;" v-show="!loading">
+      <q-card flat class="q-ma-sm" style="min-height: 300px; position: relative;">
 
-      <q-card flat class="q-ma-sm">
-        <q-card-section v-if="!loading" class="row justify-center">
+        <!-- Dashboard Title -->
+        <q-card-section class="row justify-center">
           <div class="text-h4">Administration Dashboard</div>
         </q-card-section>
 
-        <q-card-section v-if="!loading" class="row justify-center flex-center constrain">
+        <!-- Cards -->
+        <q-card-section class="row justify-center flex-center constrain">
           <q-list v-for="(card, index) in visibleCards" :key="index">
             <q-card flat bordered class="q-ma-sm card-container text-center">
               <router-link :to="card.route" class="router-link">
@@ -17,8 +19,11 @@
             </q-card>
           </q-list>
         </q-card-section>
+
       </q-card>
     </div>
+    <!-- Spinner Overlay -->
+    <q-inner-loading :showing="loading" color="primary" size="md" />
   </q-page>
 </template>
 

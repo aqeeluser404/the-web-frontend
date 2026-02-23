@@ -2,7 +2,7 @@
   <q-page>
     <div class="constrain-standard row justify-center q-py-md">
 
-      <div class="col-md-6 col-12 full-height">
+      <div class="col-md-6 col-12 full-height" v-show="!loading">
         <!-- USER DETAILS -->
         <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-card-section>
@@ -148,7 +148,7 @@
         </q-card>
       </div>
 
-      <div class="col-md-6 col-12 full-height">
+      <div class="col-md-6 col-12 full-height" v-show="!loading">
 
         <DocumentsComponent :userId="userDetails._id" class="q-mb-md" />
 
@@ -245,6 +245,7 @@
       </div>
     </div>
 
+    <q-inner-loading :showing="loading" color="primary" size="md" />
     <q-dialog v-model="viewRentalDetailsDialog">
       <AdminViewUserRentalComponent :rental="selectedRental" @close="handleClose" />
     </q-dialog>
@@ -268,6 +269,7 @@ export default {
 
   data() {
     return {
+      loading: true,
       // PHP CODE
       myCallLogs: [],
       userDetails: {
@@ -315,24 +317,35 @@ export default {
       this.myCallLogs = await CallLogService.findMyCallLogs(this.userDetails._id);
     },
     async fetchUserDetails() {
-      const encryptedId = this.$route.params.id;
-      const decryptedBytes = AES.decrypt(decodeURIComponent(encryptedId), 'secret-key');
-      const decryptedId = decryptedBytes.toString(Utf8);
+      this.loading = true
+      try {
+        const encryptedId = this.$route.params.id
+        const decryptedBytes = AES.decrypt(decodeURIComponent(encryptedId), 'secret-key')
+        const decryptedId = decryptedBytes.toString(Utf8)
 
-      if (!decryptedId) {
-        console.error("Decryption failed or ID is missing.");
-        return;
+        if (!decryptedId) {
+          console.error("Decryption failed or ID is missing.")
+          return
+        }
+
+        this.userDetails = await UserService.findUserById(decryptedId)
+        this.userDetails.rightsType = this.userDetails.rightsType ?? ''
+
+        // Wait for both async calls to finish before continuing
+        await Promise.all([
+          this.fetchRentalDetails(),
+          this.getAllMyCallLogs()
+        ])
+
+        // Now everything is ready
+      } catch (err) {
+        console.error("Failed to fetch user details:", err)
+      } finally {
+        this.loading = false
       }
-      this.userDetails = await UserService.findUserById(decryptedId)
-      this.userDetails.rightsType = this.userDetails.rightsType ?? ''
-      this.fetchRentalDetails()
-
-      // PHP CODE
-      this.getAllMyCallLogs()
     },
     async fetchRentalDetails() {
       this.myRentals = await RentalService.findMyRentals(this.userDetails._id)
-      // console.log(this.myRentals)
     },
 
     viewDocument(document) {

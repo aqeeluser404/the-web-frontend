@@ -15,7 +15,7 @@
       </div>
     </q-banner>
 
-    <div class="constrain-standard row justify-center q-py-md">
+    <div v-if="!loading" class="constrain-standard row justify-center q-py-md">
       <q-card flat bordered class="col-md-12 col-12">
 
         <q-card-section class="row justify-center">
@@ -140,6 +140,9 @@
         </q-card-section>
       </q-card>
     </div>
+
+    <q-inner-loading :showing="loading" color="primary" size="md" />
+
     <q-dialog v-model="requestDialog">
       <UserRequestComponent :rental="selectedRental" @close="handleDialogClose" />
     </q-dialog>
@@ -160,6 +163,7 @@ import AddPayerComponent from 'src/components/user/AddPayerComponent.vue';
 export default {
   data() {
     return {
+      loading: true,
       rentals: [],
       userDetails: {
         studentInfo: {
@@ -223,6 +227,7 @@ export default {
         })
     },
     async findMyRentals() {
+      this.loading = true;
       const response = await RentalService.findMyRentals(this.userDetails._id);
 
       this.rentals = await Promise.all(response.map(async rental => {
@@ -241,6 +246,7 @@ export default {
           };
         }
       }));
+      this.loading = false;
     },
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()

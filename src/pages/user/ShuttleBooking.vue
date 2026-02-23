@@ -232,6 +232,30 @@
             :columns="columns"
             row-key="_id"
           >
+
+              <!-- status -->
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="
+                      props.row.status === 'Pending'
+                        ? 'orange'
+                        : props.row.status === 'Picked Up'
+                          ? 'primary'
+                          : props.row.status === 'Dropped Off'
+                            ? 'green'
+                            : props.row.status === 'Missed Pick Up'
+                              ? 'red'
+                              : 'grey'
+                    "
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.status }}
+                  </q-badge>
+                </q-td>
+              </template>
+
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="text-center">
               <CustomButton
@@ -314,8 +338,6 @@ export default {
 
   computed: {
 
-
-
     // -------------------------- DATE AND SLOT SELECTION --------------------------
     slotsWithStatus() {
       const now = new Date();
@@ -330,9 +352,11 @@ export default {
         }));
       }
 
-      // Normal behavior when a date is selected
+      // Use the selected date instead of today
+      const selectedDateStr = date.formatDate(this.selectedDate, "YYYY-MM-DD");
+
       return this.slots.map(slot => {
-        const slotDateTime = new Date(`${today} ${slot.time}`);
+        const slotDateTime = new Date(`${selectedDateStr} ${slot.time}`);
         const passed = slotDateTime < now;
         return { ...slot, passed };
       });
@@ -352,8 +376,6 @@ export default {
   },
 
   methods: {
-
-
 
     // -------------------------- DATE AND SLOT SELECTION --------------------------
     dateOptions(day) {
@@ -450,6 +472,8 @@ export default {
         if (this.selectedDate) {
           await this.updateSlotAvailability();
         }
+
+        console.log(this.bookingHistory)
       } catch (error) {
         console.error("Error fetching shuttles:", error);
       }
@@ -465,50 +489,68 @@ export default {
     async confirmBooking() {
       if (!this.canSubmit) return;
 
-      // Might add a condition to limit the amount of bookings
-
-      const slot = this.slots.find((s) => s.id === this.selectedSlot);
-      if (!slot || slot.remaining <= 0) {
-        this.$q.notify({
-          type: 'negative',
-          message: 'This slot is no longer available'
-        });
-        return;
-      }
-
-      const combinedDateTime = new Date(`${this.selectedDate} ${slot.time}`);
-      const bookingTimeslot = combinedDateTime.toISOString();
-
-      const shuttleData = {
-        pickupLocation: this.pickupLocation,
-        dropoffLocation: this.dropoffLocation,
-        bookingTimeslot: bookingTimeslot,
-        user: this.userDetails._id
-      };
-
-      try {
-        const response = await ShutttleService.createShuttle(shuttleData);
-        if (response) {
+      this.$q.dialog({
+        title: 'Confirm',
+        message: `You are about to confirm the booking of this application. Do you wish to continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        if (this.pickupLocation === this.dropoffLocation) {
           this.$q.notify({
-            type: 'positive',
-            color: 'primary',
-            message: 'Your shuttle application has been submitted!'
+            type: 'negative',
+            message: 'Pick-up and drop-off locations cannot be the same. Please choose different locations.'
           });
-
-          // Refresh ALL data including slot availability
-          await this.fetchMyShuttles();
-          await this.updateSlotAvailability();
-
-          // this.selectedSlot = null;
-          // this.selectedDate = null;
+          return;
         }
-      } catch (error) {
-        console.error('Booking error:', error);
-        this.$q.notify({
-          type: 'negative',
-          message: 'Shuttle submission failed. Please try again.'
-        });
-      }
+
+        // Might add a condition to limit the amount of bookings
+
+        const slot = this.slots.find((s) => s.id === this.selectedSlot);
+        if (!slot || slot.remaining <= 0) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'This slot is no longer available'
+          });
+          return;
+        }
+
+        const combinedDateTime = new Date(`${this.selectedDate} ${slot.time}`);
+        const bookingTimeslot = combinedDateTime.toISOString();
+
+        const shuttleData = {
+          pickupLocation: this.pickupLocation,
+          dropoffLocation: this.dropoffLocation,
+          bookingTimeslot: bookingTimeslot,
+          user: this.userDetails._id
+        };
+
+        try {
+          const response = await ShutttleService.createShuttle(shuttleData);
+          if (response) {
+            this.$q.notify({
+              type: 'positive',
+              color: 'primary',
+              message: 'Your shuttle application has been submitted!'
+            });
+
+            // Refresh ALL data including slot availability
+            await this.fetchMyShuttles();
+            await this.updateSlotAvailability();
+
+            // this.selectedSlot = null;
+            // this.selectedDate = null;
+          }
+        } catch (error) {
+          console.error('Booking error:', error);
+          this.$q.notify({
+            type: 'negative',
+            message: 'Shuttle submission failed. Please try again.'
+          });
+        }
+      }).onCancel(() => { });
+
+
     },
     async cancelBooking(row) {
       const shuttleId = row._id;

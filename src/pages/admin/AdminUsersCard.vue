@@ -1,8 +1,8 @@
 <template>
   <q-page>
-    <div class="constrain-standard row justify-center q-py-md">
+    <div class="constrain-standard row justify-center q-py-md" v-show="!loading">
 
-      <div class="col-md-3 col-12 full-height">
+      <div class="col-md-3 col-12 full-height"  >
         <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-card-section class="row justify-center">
             <div class="text-h6">User Online Status</div>
@@ -77,6 +77,9 @@
         </q-card>
       </div>
     </div>
+
+    <q-inner-loading :showing="loading" color="primary" size="md" />
+
     <q-dialog v-model="addUsersDialog">
       <AdminAddUserComponent @close="handleClose" />
     </q-dialog>
@@ -100,6 +103,8 @@ export default {
 
   data() {
     return {
+      loading: true,
+
       users: [],
       search: '',
       filteredUsers: [],
@@ -240,15 +245,21 @@ export default {
     },
 
     async findAllUsers() {
-      this.users = await UserService.findAllUsers();
-      const adminUsersTemp = this.users.filter(user => user.userType === 'admin');
-      const regularUsersTemp = this.users.filter(user => user.userType === 'user');
-      this.allUsers = [...this.users];
-      this.adminUsers = adminUsersTemp;
-      this.regularUsers = regularUsersTemp;
-      this.filteredUsers = this.allUsers;
-      this.updateUserChart();
-      // this.updateLoginBarChart();
+
+        this.loading = true;
+        this.users = await UserService.findAllUsers();
+
+        const adminUsersTemp = this.users.filter(user => user.userType === 'admin');
+        const regularUsersTemp = this.users.filter(user => user.userType === 'user');
+
+        this.allUsers = [...this.users];
+        this.adminUsers = adminUsersTemp;
+        this.regularUsers = regularUsersTemp;
+        this.filteredUsers = this.allUsers;
+
+        this.updateUserChart();
+        this.loading = false;
+
     },
 
     // updateLoginBarChart() {
@@ -529,7 +540,9 @@ export default {
     },
   },
   created() {
+
     this.findAllUsers();
+
   }
 };
 </script>
