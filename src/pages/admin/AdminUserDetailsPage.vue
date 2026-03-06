@@ -1,14 +1,15 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md">
 
       <div class="col-md-6 col-12 full-height" v-show="!loading">
         <!-- USER DETAILS -->
-        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
-          <q-card-section>
+        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
+          <q-card-section class="stats-header">
             <div class="text-h6">User Details</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+          <!-- <q-separator /> -->
           <q-card-section>
             <q-item>
               <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
@@ -153,12 +154,13 @@
         <DocumentsComponent :userId="userDetails._id" class="q-mb-md" />
 
         <!-- USER HISTORY AND DOCUMENTS -->
-        <q-card flat bordered>
-          <q-card-section>
+        <q-card class="soft-shadow-card">
+          <q-card-section class="stats-header">
             <div class="text-h6">Rental History</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
-          <q-card-section v-if="myRentals.length > 0">
+
+          <!-- <q-card-section v-if="myRentals.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -166,11 +168,9 @@
                   <th class="text-left">Status</th>
                   <th class="text-left">Application Date</th>
                   <th class="text-left">Access Key</th>
-                  <!-- <th class="text-left">ID</th> -->
                 </tr>
               </thead>
               <tbody>
-                <!-- <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="OpenViewRentalDetailsDialog(rental)"> -->
                 <tr v-for="(rental, index) in myRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
                   <td class="text-left cursor-pointer">{{ index + 1 }}</td>
                   <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
@@ -188,9 +188,6 @@
                       N/A
                     </div>
                   </td>
-                  <!-- <div class="text-left cursor-pointer id">
-                  {{ rental._id }}
-                </div> -->
                 </tr>
               </tbody>
             </q-markup-table>
@@ -200,14 +197,78 @@
             <q-item>
               <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
             </q-item>
+          </q-card-section> -->
+
+          <q-card-section>
+            <q-table
+              flat bordered :rows="myRentals" :columns="rentalColumns" row-key="_id" @row-click="viewUserTimeline"
+            >
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-id="props">
+                <q-td :props="props" class="" >
+                  <q-badge
+                    color="text-primary"
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    <div @click.stop="copyToClipboard(props.row._id)">
+                      {{ props.row._id }}
+                    </div>
+                  </q-badge>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-applicationDate="props">
+                <q-td :props="props">
+                  {{ formatDate(props.row.applicationDate) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-accessKey="props">
+                <q-td :props="props">
+                  <div v-if="!props.row.accessKey">
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="
+                      props.row.status === 'Active'
+                        ? 'green'
+                        : props.row.status === 'Pending'
+                          ? 'orange'
+                          : props.row.status === 'Rejected'
+                            ? 'red'
+                            : props.row.status === 'Ended'
+                              ? 'grey'
+
+                              : 'red'
+                    "
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.status }}
+                  </q-badge>
+                </q-td>
+              </template>
+            </q-table>
           </q-card-section>
 
           <!-- PHP CODE -->
-          <q-card-section>
+          <q-card-section class="stats-header">
             <div class="text-h6">Call Log History</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
-          <q-card-section v-if="myCallLogs.length > 0">
+
+          <!-- <q-card-section v-if="myCallLogs.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -239,8 +300,73 @@
             <q-item>
               <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
             </q-item>
-          </q-card-section>
+          </q-card-section> -->
 
+          <q-card-section>
+            <q-table
+              flat bordered :rows="myCallLogs" :columns="callLogColumns" row-key="_id"
+            >
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="
+                      props.row.status === 'Opened'
+                        ? 'orange'
+                        : props.row.status === 'Assigned'
+                          ? 'blue'
+                          : props.row.status === 'Resolved'
+                            ? 'green'
+                            : props.row.status === 'Closed'
+                              ? 'grey'
+
+                              : 'red'
+                    "
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.status }}
+                  </q-badge>
+                </q-td>
+              </template>
+
+              <!-- <template v-slot:body-cell-status="props">
+                <q-td :props="props" :class="
+                  { 'callLog-opened': props.row.status === 'Opened' },
+                  { 'callLog-assigned': props.row.status === 'Assigned' },
+                  { 'callLog-resolved': props.row.status === 'Resolved' },
+                  { 'callLog-closed': props.row.status === 'Closed' }"
+                >
+                  {{ props.row.status }}
+                </q-td>
+              </template> -->
+
+              <template v-slot:body-cell-createdAt="props">
+                <q-td :props="props">
+                  {{ formatDate(props.row.createdAt) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-logNumber="props">
+                <q-td :props="props" class="cursor-pointer">
+                  <q-badge
+                    color="text-primary"
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    <div @click.stop="copyToClipboard(props.row.logNumber)">
+                      {{ props.row.logNumber }}
+                    </div>
+                  </q-badge>
+                </q-td>
+              </template>
+            </q-table>
+          </q-card-section>
         </q-card>
       </div>
     </div>
@@ -270,7 +396,22 @@ export default {
   data() {
     return {
       loading: true,
-      // PHP CODE
+
+      rentalColumns: [
+        { name: "index", label: "#", field: "index" },
+        { name: "id", label: "Rental Number", field: "_id" },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate" },
+        { name: "accessKey", label: "Access Key", field: "accessKey" },
+        { name: "status", label: "Status", field: "status" },
+      ],
+
+      callLogColumns: [
+        { name: "index", label: "#", field: "index"},
+        { name: "logNumber", label: "Log Number", field: "logNumber"},
+        { name: "createdAt", label: "Created Date", field: "createdAt"},
+        { name: "status", label: "Status", field: "status"},
+      ],
+
       myCallLogs: [],
       userDetails: {
         studentInfo: {
@@ -306,7 +447,7 @@ export default {
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Copied to clipboard!' });
         }).catch(err => {
           this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
         })

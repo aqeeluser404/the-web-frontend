@@ -2,7 +2,7 @@
   <div>
     <!-- Carousel section (always shown) -->
     <div class="q-py-md">
-      <div class="carousel-wrapper row justify-center bg-grey-3 soft-shadow-card">
+      <q-card class="carousel-wrapper row justify-center bg-grey-3 soft-shadow-card">
         <q-carousel v-show="!isSpecificFloorRoute" animated v-model="currentSlide" infinite
           :autoplay="!isSpecificFloorRoute" :autoplay-interval="5000" transition-prev="slide-right"
           transition-next="slide-left" transition-duration="1800" control-color="white" class="carousel col-md-9"
@@ -22,7 +22,7 @@
             @click="openImageDialog(0)">
           </q-img>
         </div>
-      </div>
+      </q-card>
     </div>
 
     <div v-if="isHomeRoute" class="q-py-lg">
@@ -731,7 +731,7 @@ export default {
 
     async fetchUnits() {
       try {
-        this.$emit('update:loading', true)   // start spinner
+        this.$emit('update:loading', true)
         const response = await UnitService.getAllUnits()
         this.units = response
         this.allReservedUnits = response.filter(u => u.reservedBy)
@@ -743,7 +743,7 @@ export default {
       } catch (err) {
         console.error('Error fetching units:', err)
       } finally {
-
+        this.$emit('update:loading', false)
       }
     },
 
@@ -751,7 +751,6 @@ export default {
       const user = await Helper.fetchUserDetails()
       await this.checkLoginStatus()
       this.myRentals = await RentalService.findMyRentals(user._id)
-      this.$emit('update:loading', false)  // always stop spinner
     },
 
     // FILTER BY FLOOR

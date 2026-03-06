@@ -23,12 +23,12 @@ const routes = [
       { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue') },
       { path: '/units/apply/floor/:floor', component: () => import('src/pages/user/UnitFloorPage.vue')},
 
-      { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },            // user profile page (update and view), documents
-      { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
+      { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
+      { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
       { path: '/user/applications/view/:id', component: () => import('src/pages/user/UserApplicationsDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser},
-      { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },  // user applications page
+      { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
 
-      { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser }, //user shuttle booking
+      { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
 
       { path: '/vendor', component: () => import('src/pages/vendor/VendorDashPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
       { path: '/vendor/call-log', component: () => import('src/pages/vendor/VendorCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },

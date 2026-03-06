@@ -1,13 +1,16 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md" v-show="!loading">
 
       <div class="col-md-3 col-12 full-height"  >
-        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
-          <q-card-section class="row justify-center">
+        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
+
+          <q-card-section class="row stats-header justify-center">
             <div class="text-h6">User Online Status</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+
+          <!-- <q-separator /> -->
           <q-card-section class="row justify-center">
             <div style="width: 300px; height: 300px;">
               <canvas ref="userPieChart"></canvas>
@@ -21,12 +24,17 @@
 
       <div class="col-md-9 col-12 full-height">
         <!-- USER TABLE -->
-        <q-card flat bordered class="full-height">
-          <q-card-section class="row justify-between items-center">
-            <div class="text-h6">Registered Users</div>
-            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-              flat rounded />
+        <q-card bordered class="full-height soft-shadow-card">
+
+          <q-card-section class="row justify-between stats-header items-center">
+            <div class="row justify-between items-center full-width">
+              <div class="text-h6">Registered Users</div>
+              <q-btn @click="downloadData()" size="12px" icon="eva-cloud-download-outline"
+                flat rounded />
+            </div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
+
           <q-card-section class="row justify-between">
             <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
               class="col-12 col-md-9" />
@@ -34,7 +42,7 @@
               @update:model-value="filteredByUserType" class="col-12 col-md-2" />
           </q-card-section>
 
-          <q-card-section>
+          <!-- <q-card-section>
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -73,7 +81,85 @@
                 </tr>
               </tbody>
             </q-markup-table>
+          </q-card-section> -->
+
+          <q-card-section>
+            <q-table
+              flat bordered :rows="filteredUsers" :columns="userColumns" row-key="_id" @row-click="viewUserDetails"
+            >
+
+            <template v-slot:body-cell-index="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+
+            <!-- Approved Applications -->
+            <template v-slot:body-cell-approved="props">
+              <q-td :props="props">
+                <div v-if="props.row.rentals.length > 0">
+                  <b>This user has {{ props.row.rentals.length }} application(s)</b>
+                </div>
+                <div v-else>
+                  This user has no applications
+                </div>
+              </q-td>
+            </template>
+
+            <!-- Type -->
+            <template v-slot:body-cell-type="props">
+              <q-td :props="props">
+                <q-badge
+                  :color="props.row.userType === 'admin' ? 'green' : 'grey'"
+                  class="q-pa-xs q-px-sm"
+                >
+                  {{ props.row.userType }}
+                </q-badge>
+              </q-td>
+            </template>
+
+            <!-- Online -->
+            <template v-slot:body-cell-online="props">
+              <q-td :props="props">
+                <div class="row justify-center">
+                  <span v-if="props.row.loginInfo && props.row.loginInfo.isLoggedIn" class="green-dot"></span>
+                  <span v-else class="red-dot"></span>
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-id="props">
+              <q-td :props="props" class="">
+                <div class="id">
+                    <q-badge
+                      color="text-primary"
+                      align="middle"
+                      class="q-pa-xs q-px-sm"
+                    >
+                      {{ props.row._id }}
+                    </q-badge>
+                </div>
+              </q-td>
+            </template>
+
+            <!-- Actions -->
+            <template v-slot:body-cell-actions="props">
+              <q-td :props="props" class="text-center">
+                <div class="row justify-center">
+                  <CustomButton
+                    flat
+                    color="red"
+                    text-color="red"
+                    customStyle="width: 15%"
+                    icon="eva-trash-outline"
+                    @click.stop="deleteUser(props.row)"
+                  />
+                </div>
+              </q-td>
+            </template>
+            </q-table>
           </q-card-section>
+
         </q-card>
       </div>
     </div>
@@ -104,6 +190,21 @@ export default {
   data() {
     return {
       loading: true,
+
+      userColumns: [
+        {
+          name: "index",
+          label: "#",
+          field: "index"
+        },
+        { name: "username", label: "Username", field: "username" },
+        { name: "id", label: "User/Tenant ID", field: "_id" },
+        { name: "email", label: "Email", field: "email" },
+        { name: "approved", label: "Approved Applications", field: "rentals" },
+        { name: "type", label: "Type", field: "userType" },
+        { name: "online", label: "Online", field: "loginInfo" },
+        { name: "actions", label: "Actions", field: "actions" },
+      ],
 
       users: [],
       search: '',
@@ -525,7 +626,8 @@ export default {
       }).onCancel(() => { });
     },
 
-    viewUserDetails(id) {
+    viewUserDetails(evt, row) {
+      const id = row._id;
       Helper.adminUserDetails(id, this.$router);
     },
 

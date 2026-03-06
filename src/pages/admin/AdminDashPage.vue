@@ -1,17 +1,17 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="q-pa-md column justify-center flex-center" style="width: 100%; height: 100%;" v-show="!loading">
-      <q-card flat class="q-ma-sm" style="min-height: 300px; position: relative;">
+      <div class="q-ma-sm" style="min-height: 300px; position: relative;">
 
         <!-- Dashboard Title -->
         <q-card-section class="row justify-center">
-          <div class="text-h4">Administration Dashboard</div>
+          <div class="text-h4 text-weight-bold">Administration Dashboard</div>
         </q-card-section>
 
         <!-- Cards -->
         <q-card-section class="row justify-center flex-center constrain">
           <q-list v-for="(card, index) in visibleCards" :key="index">
-            <q-card flat bordered class="q-ma-sm card-container text-center">
+            <q-card class="q-ma-sm card-container text-center soft-shadow-card">
               <router-link :to="card.route" class="router-link">
                 <q-icon :name="card.icon" class="card-icon" />
                 <div class="text-subtitle1 card-label">{{ card.label }}</div>
@@ -20,7 +20,7 @@
           </q-list>
         </q-card-section>
 
-      </q-card>
+      </div>
     </div>
     <!-- Spinner Overlay -->
     <q-inner-loading :showing="loading" color="primary" size="md" />
@@ -88,10 +88,12 @@ export default {
   flex-direction: row
   align-items: center
   padding: 40px
-  width: 220px
+  width: 200px
+  height: 250px
   transition: all 0.3s ease
   &:hover
     background-color: var(--q-primary) !important
+    transform: scale(1.05)
     .card-icon, .card-label
       color: white !important
 

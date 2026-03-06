@@ -1,12 +1,13 @@
 <template>
   <!-- documents section -->
-  <q-card flat bordered :class="isUserDetails ? '' : 'component-card'">
+  <q-card :class="isUserDetails ? '' : 'component-card'" class="soft-shadow-card">
     <div :class="isUserDetails ? '' : 'q-pa-md'" :style="isUserDetails ? '' : 'background-color: #f8f8f8;'">
-      <q-card-section class="row justify-between items-center">
+      <q-card-section class="row justify-between stats-header items-center">
         <div class="text-h6">Documents Approval</div>
         <q-btn v-if="!isUserDetails" flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" />
+        <q-separator class="q-my-sm" style="width: 100%;" />
       </q-card-section>
-      <q-separator />
+      <!-- <q-separator /> -->
       <q-card-section v-if="userCategory">
         <ul>
           <!-- Detect category -->

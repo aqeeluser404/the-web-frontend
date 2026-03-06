@@ -1,8 +1,8 @@
 <template>
-  <q-page>
-
+  <q-page class="bg-grey-3">
     <div v-if="!loading">
-      <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin' || userDetails.rightsType === 'Tenant'">
+      <!-- || userDetails.rightsType === 'Tenant' -->
+      <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin' ">
         <q-card class="col-md-4 col-12 stats-card full-height">
           <q-card-section class="row stats-header justify-center">
             <div class="text-h6">Book a Shuttle</div>

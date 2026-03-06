@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
 
 
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
@@ -8,11 +8,12 @@
 
     <div class="constrain-standard row justify-center q-pb-md" v-show="!loading">
       <div class="col-md-3 col-12 full-height">
-        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
-          <q-card-section class="row justify-center">
+        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
+          <q-card-section class="row stats-header justify-center">
             <div class="text-h6">Rental Status Distribution</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+          <!-- <q-separator /> -->
           <q-card-section class="row justify-center">
             <div style="width: 300px; height: 300px;">
               <canvas ref="pieChart"></canvas>
@@ -22,14 +23,17 @@
       </div>
 
       <div class="col-md-9 col-12 full-height">
-        <q-card flat bordered class="full-height">
+        <q-card class="full-height soft-shadow-card">
           <!-- Table Section -->
-          <q-card-section class="row justify-between items-center">
-            <div class="text-h6">Rental History</div>
-            <!-- <q-btn @click="syncRentals()" label="Sync Rentals" class="custom-button"
-              flat rounded /> -->
-            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-              flat rounded />
+          <q-card-section class="row justify-between items-center stats-header">
+            <div class="row justify-between items-center full-width">
+              <div class="text-h6">Rental History</div>
+              <!-- <q-btn @click="syncRentals()" label="Sync Rentals" class="custom-button"
+                flat rounded /> -->
+              <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
+                flat rounded />
+            </div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
 
           <q-card-section class="row justify-between">
@@ -40,7 +44,7 @@
               @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
           </q-card-section>
 
-          <q-card-section v-if="rentals.length > 0">
+          <!-- <q-card-section v-if="rentals.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -55,7 +59,7 @@
                   <th class="text-left">Start Date</th>
                   <th class="text-left">End Date</th>
                   <th class="text-left">Before Scheduled</th>
-                  <!-- <th class="text-left">Condition</th> -->
+
                   <th class="text-left">Status</th>
                   <th class="text-left">Actions</th>
                 </tr>
@@ -99,15 +103,6 @@
                       N/A
                     </div>
                   </td>
-                  <!-- <td class="text-center cursor-pointer">
-                    <div class="column items-center">
-                      <q-icon :name="needsAttention(rental) ? 'error' : 'check_circle'"
-                        :color="needsAttention(rental) ? 'negative' : 'positive'" size="18px" />
-                      <span class="text-caption" :class="needsAttention(rental) ? 'text-negative' : 'text-positive'">
-                        {{ needsAttention(rental) ? 'Alert' : 'All Good' }}
-                      </span>
-                    </div>
-                  </td> -->
                   <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
                     { 'active-status': rental.status === 'Active' },
                     { 'rejected-status': rental.status === 'Rejected' },
@@ -131,7 +126,160 @@
             <q-item>
               <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
             </q-item>
+          </q-card-section> -->
+
+          <q-card-section>
+            <q-table
+              flat bordered :rows="filteredRentals" :columns="rentalColumns" row-key="_id" @row-click="viewUserTimeline"
+            >
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-applicationDate="props">
+                <q-td :props="props">
+                  <div>
+                    {{ formatDate(props.row.applicationDate) }}
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-applicant="props">
+                <q-td :props="props">
+                  <div @click.stop="viewUserDetails(props.row.userId)">
+                    {{ capitalizeFirstLetter(props.row.username) }}
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-id="props">
+                <q-td :props="props">
+                  <div class="id">
+                    <q-badge
+                      color="text-primary"
+                      align="middle"
+                      class="q-pa-xs q-px-sm"
+                    >
+                      {{ props.row._id }}
+                    </q-badge>
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-floorLevel="props">
+                <q-td :props="props">
+                  <div class="text-center">
+                    {{ extractFirstNumber(props.row.selectedSubUnits?.bedType || props.row.selectedSubUnits?.roomType) }}
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-unitType="props">
+                <q-td :props="props">
+                  <div>
+                    {{ props.row.selectedSubUnits.bedType || props.row.selectedSubUnits.roomType }}
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-startDate="props">
+                <q-td :props="props">
+                  <div v-if="defaultValues(props.row)">
+                    Being Processed...
+                  </div>
+                  <div v-else>
+                    {{ formatDate(props.row.rentalStartDate) }}
+                  </div>
+                </q-td>
+              </template>
+
+
+              <template v-slot:body-cell-endDate="props">
+                <q-td :props="props">
+                  <div v-if="defaultValues(props.row)">
+                    Being Processed...
+                  </div>
+                  <div v-else>
+                    {{ formatDate(props.row.rentalEndDate) }}
+                  </div>
+                </q-td>
+              </template>
+
+               <template v-slot:body-cell-beforeScheduled="props">
+                <q-td :props="props">
+                  <div v-if="props.row.earlyEndDate !== null" style="text-decoration: underline;">
+                    {{ formatDate(props.row.earlyEndDate) }}
+                  </div>
+                  <div v-else class="text-center">
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="
+                      props.row.status === 'Active'
+                        ? 'green'
+                        : props.row.status === 'Pending'
+                          ? 'orange'
+                          : props.row.status === 'Rejected'
+                            ? 'red'
+                            : props.row.status === 'Ended'
+                              ? 'grey'
+
+                              : 'red'
+                    "
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.status }}
+                  </q-badge>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-actions="props">
+                <q-td :props="props">
+                  <div class="row justify-center items-center q-gutter-sm no-wrap">
+                    <CustomButton
+                      flat
+                      color="red"
+                      text-color="red"
+                      class="inline-btn"
+                      icon="eva-trash-outline"
+                      @click.stop="deleteRental(props.row)"
+                    />
+
+                    <CustomButton
+                      :disable="props.row.status !== 'Active'"
+                      flat
+                      color="red"
+                      text-color="red"
+                      class="inline-btn"
+                      icon="eva-edit-2-outline"
+                      @click.stop="openExtendRentalDialog(props.row)"
+                    />
+
+                    <CustomButton
+                      :disable="props.row.status !== 'Active'"
+                      flat
+                      color="red"
+                      text-color="red"
+                      class="inline-btn"
+                      icon="eva-archive-outline"
+                      @click.stop="endRental(props.row)"
+                    />
+
+                  </div>
+                </q-td>
+              </template>
+
+            </q-table>
           </q-card-section>
+
         </q-card>
       </div>
     </div>
@@ -183,6 +331,22 @@ export default {
       rentalStatus: ['All', 'Active', 'Pending', 'Rejected', 'Ended'],
       selectedRentalStatus: 'All',
       showAllStatuses: true,
+
+      rentalColumns: [
+        { name: "index", label: "#", field: "index" },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate" },
+        { name: "applicant", label: "Applicant", field: "username" },
+        { name: "applicantContact", label: "Applicant Contact", field: "userPhone"},
+        { name: "applicantEmail", label: "Applicant Email", field: "userEmail"},
+        { name: "id", label: "Application ID", field: "_id" },
+        { name: "floorLevel", label: "Floor Level", field: "selectedSubUnits" },
+        { name: "unitType", label: "Unit Type", field: "selectedSubUnits" },
+        { name: "startDate", label: "Start Date", field: "rentalStartDate" },
+        { name: "endDate", label: "End Date", field: "rentalEndDate" },
+        { name: "beforeScheduled", label: "Before Scheduled", field: "earlyEndDate" },
+        { name: "status", label: "Status", field: "status" },
+        { name: "actions", label: "Actions", field: "actions" },
+      ],
     };
   },
   components: {
@@ -411,16 +575,27 @@ export default {
     },
 
     defaultValues(rental) {
-      const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
-      const today = new Date();
-      const nextYear = today.getFullYear() + 1;
-      const defaultStart = `${nextYear}-01-01`;
-      const defaultEnd = `${nextYear}-12-31`;
+      if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
 
-      const start = toDateOnly(rental?.rentalStartDate);
-      const end = toDateOnly(rental?.rentalEndDate);
+      if (rental?.status === "Active") {
+        return false;
+      }
 
-      return start === defaultStart && end === defaultEnd;
+      const toDateObj = (dateStr) => new Date(dateStr);
+
+      const start = toDateObj(rental.rentalStartDate);
+      const end = toDateObj(rental.rentalEndDate);
+
+      // Default is always Feb 1 → Dec 15 (any year)
+      const isDefaultStart =
+        start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
+      const isDefaultEnd =
+        end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
+
+      console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
+                  "Default?", isDefaultStart && isDefaultEnd);
+
+      return isDefaultStart && isDefaultEnd;
     },
 
     copyToClipboard(text) {
@@ -653,7 +828,8 @@ export default {
         this.$q.notify({ type: 'negative', message: 'End rental failed. You can only end an active rental.' });
       }
     },
-    viewUserTimeline(id) {
+    viewUserTimeline(evt, row) {
+      const id = row._id
       Helper.adminRentalDetails(id, this.$router);
     },
 
@@ -663,3 +839,11 @@ export default {
   }
 };
 </script>
+
+<style>
+.inline-btn {
+  display: inline-flex; /* ensures they sit side by side */
+  width: auto;          /* prevents full-width stretching */
+}
+
+</style>

@@ -436,7 +436,11 @@ export default {
   },
   data() {
     const today = new Date();
-    const nextYear = today.getFullYear();
+    const month = today.getMonth();
+    let year = today.getFullYear();
+    if (month >= 10) {
+      year = year + 1;
+    }
     return {
       pinchZoomInstance: null,
 
@@ -447,8 +451,8 @@ export default {
       rentalDetails: {
         user: "",
         unit: "",
-        rentalStartDate: `${nextYear}-02-01`,
-        rentalEndDate: `${nextYear}-12-15`,
+        rentalStartDate: `${year}-02-01`,
+        rentalEndDate: `${year}-12-15`,
         accessKeyIsTrue: false,
         accessKey: '',
         parking: {

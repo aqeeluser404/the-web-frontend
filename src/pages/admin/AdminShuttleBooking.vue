@@ -1,9 +1,9 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
       <div class="col-md-9 col-12 full-height">
         <!-- Driver Approval Card -->
-        <q-card flat bordered>
+        <q-card class="soft-shadow-card">
           <q-card-section class="bg-primary text-white">
             <div class="text-h6">Shuttle Applications for Today</div>
           </q-card-section>
@@ -94,17 +94,20 @@
     <!-- Shuttle History -->
     <div class="constrain-standard q-pb-md row justify-center" v-show="!loading">
       <div class="col-md-9 col-12 full-height">
-        <q-card flat bordered class="full-height">
+        <q-card class="full-height soft-shadow-card">
           <!-- Heading -->
-          <q-card-section class="row justify-between items-center">
-            <div class="text-h6">Shuttle History</div>
-            <q-btn
-              @click="downloadData()"
-              class="custom-button"
-              icon="eva-cloud-download-outline"
-              flat
-              rounded
-            />
+          <q-card-section class="row justify-between stats-header items-center">
+            <div class="row justify-between items-center  full-width">
+              <div class="text-h6">Shuttle History</div>
+              <q-btn
+                @click="downloadData()"
+                class="custom-button"
+                icon="eva-cloud-download-outline"
+                flat
+                rounded
+              />
+            </div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
 
           <!-- Filtering methods -->
@@ -153,6 +156,17 @@
               <template v-slot:body-cell-bookingTimeslot="props">
                 <q-td :props="props">
                   {{ formatTime(props.row.bookingTimeslot) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-unitNumber="props">
+                <q-td :props="props">
+                  <div v-if="props.row.unitNumber">
+                    {{ props.row.unitNumber }}
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
                 </q-td>
               </template>
 

@@ -1,14 +1,17 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md">
 
       <!-- user profile section -->
       <div v-if="!loading" class="col-md-6 col-12 full-height ">
-        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
-          <q-card-section>
+        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
+
+          <q-card-section class="row stats-header justify-start">
             <div class="text-h6">Personal Details</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+
+          <!-- <q-separator /> -->
           <q-card-section>
             <q-item>
               <q-item-section class="text-left text-subtitle1">First Name</q-item-section>
@@ -128,11 +131,13 @@
 
       <!-- documents section -->
       <div v-if="!loading" class="col-md-6 col-12 full-height">
-        <q-card flat bordered class="full-height">
-          <q-card-section>
+        <q-card class="full-height soft-shadow-card">
+          <q-card-section class="row stats-header justify-start">
             <div class="text-h6">Instructions</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+
+          <!-- <q-separator /> -->
           <q-card-section>
             <div class="q-mb-sm">Please verify that all provided information is accurate before proceeding. Kindly
               ensure
@@ -174,65 +179,65 @@
               </div>
             </ul> -->
               <div class="section-spacer-xs"></div>
-<!-- Radios outside -->
-<div class="q-mb-md" :key="categoryLock.lockedCategory ? 'locked-' + categoryLock.lockedCategory : 'unlocked'">
-  <template v-if="!categoryLock.lockedCategory">
-    <q-radio
-      v-for="cat in documentCategories"
-      :key="cat.category"
-      v-model="categoryLock.selectedCategory"
-      :val="cat.category"
-      :label="cat.category"
-      @input="chooseCategory(cat.category)"
-      class="q-mr-md"
-    />
-  </template>
-  <template v-else>
-    <q-radio
-      v-model="categoryLock.selectedCategory"
-      :val="categoryLock.lockedCategory"
-      :label="categoryLock.lockedCategory"
-      :disable="true"
-    />
-  </template>
-</div>
 
-<!-- Single expansion item for the selected/locked category -->
-<q-expansion-item
-  v-if="displayedCategory"
-  :label="displayedCategory"
-  icon="folder"
-  flat
-  class="q-mb-md documents-drop-down"
-  :default-opened="true"
->
-  <div class="section-spacer-xs"></div>
+              <!-- Radios outside -->
+              <div class="q-mb-md" :key="categoryLock.lockedCategory ? 'locked-' + categoryLock.lockedCategory : 'unlocked'">
+                <template v-if="!categoryLock.lockedCategory">
+                  <q-radio
+                    v-for="cat in documentCategories"
+                    :key="cat.category"
+                    v-model="categoryLock.selectedCategory"
+                    :val="cat.category"
+                    :label="cat.category"
+                    @input="chooseCategory(cat.category)"
+                    class="q-mr-md"
+                  />
+                </template>
+                <template v-else>
+                  <q-radio
+                    v-model="categoryLock.selectedCategory"
+                    :val="categoryLock.lockedCategory"
+                    :label="categoryLock.lockedCategory"
+                    :disable="true"
+                  />
+                </template>
+              </div>
 
-  <div
-    v-for="docType in displayedCategoryObj.documents"
-    :key="docType.type"
-    class="cursor-pointer q-py-sm q-px-md"
-    style="font-weight: 500;"
-    @click="openAddDocumentDialog(docType.type)"
-  >
-    <q-icon
-      class="q-mr-sm"
-      v-if="hasDocument(docType.type)"
-      color="secondary"
-      name="eva-checkmark-circle-2-outline"
-    />
-    <q-icon
-      class="q-mr-sm"
-      v-else
-      color="negative"
-      name="eva-alert-circle-outline"
-    />
-    <span>{{ docType.label }}</span>
-  </div>
+              <!-- Single expansion item for the selected/locked category -->
+              <q-expansion-item
+                v-if="displayedCategory"
+                :label="displayedCategory"
+                icon="folder"
+                flat
+                class="q-mb-md documents-drop-down"
+                :default-opened="true"
+              >
+                <div class="section-spacer-xs"></div>
 
-  <div class="section-spacer-xs"></div>
-</q-expansion-item>
+                <div
+                  v-for="docType in displayedCategoryObj.documents"
+                  :key="docType.type"
+                  class="cursor-pointer q-py-sm q-px-md"
+                  style="font-weight: 500;"
+                  @click="openAddDocumentDialog(docType.type)"
+                >
+                  <q-icon
+                    class="q-mr-sm"
+                    v-if="hasDocument(docType.type)"
+                    color="secondary"
+                    name="eva-checkmark-circle-2-outline"
+                  />
+                  <q-icon
+                    class="q-mr-sm"
+                    v-else
+                    color="negative"
+                    name="eva-alert-circle-outline"
+                  />
+                  <span>{{ docType.label }}</span>
+                </div>
 
+                <div class="section-spacer-xs"></div>
+              </q-expansion-item>
 
               <div class="section-spacer-xs"></div>
 

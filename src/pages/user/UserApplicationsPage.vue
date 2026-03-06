@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <!-- Banner for rejected rentals -->
     <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
       class="bg-black text-white full-width" @click="openAddPayer">
@@ -16,13 +16,14 @@
     </q-banner>
 
     <div v-if="!loading" class="constrain-standard row justify-center q-py-md">
-      <q-card flat bordered class="col-md-12 col-12">
+      <q-card class="col-md-12 col-12 soft-shadow-card">
 
-        <q-card-section class="row justify-center">
+        <q-card-section class="row stats-header justify-center">
           <div class="text-h6">Rental Information</div>
+          <q-separator class="q-my-sm" style="width: 100%;" />
         </q-card-section>
 
-        <q-separator />
+        <!-- <q-separator /> -->
 
         <q-card-section class="row text-left">
           <div>

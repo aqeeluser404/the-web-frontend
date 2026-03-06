@@ -1,10 +1,11 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md">
 
       <div class="col-md-8 col-12 full-height" v-show="!loading">
+
         <!-- view all units -->
-        <q-card flat bordered class="full-height" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+        <q-card class="full-height soft-shadow-card" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
           <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
             :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator
             v-model="expanded[floorIndex]" @show="handleExpansion(floorIndex)">
@@ -91,14 +92,15 @@
 
       <div class="col-md-4 col-12 full-height" v-show="!loading">
         <!-- add new unit -->
-        <q-card flat class="q-pa-md full-height">
-          <q-card-section class="row justify-between items-center">
+        <q-card class="full-height soft-shadow-card">
+          <q-card-section class="row justify-between stats-header items-center">
             <div class="text-h6">Add a new unit</div>
             <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
               flat rounded />
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
           <!-- <q-separator /> -->
-          <q-card-section>
+          <q-card-section class="q-pa-">
             <div class="q-mb-sm">When adding new units to the system, please note the following guidelines:</div>
             <ul>
               <li class="q-mb-sm">Units will be assigned the next available unit number based on the highest existing

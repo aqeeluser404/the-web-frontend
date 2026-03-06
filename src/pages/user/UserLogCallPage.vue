@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div v-if="!loading">
       <div class="constrain-standard q-py-md" v-if="hasActiveRental || userDetails.userType === 'admin'">
         <q-card class="col-md-4 col-12 stats-card full-height">
@@ -24,12 +24,11 @@
           </q-card-section>
         </q-card>
 
-        <q-card flat class="col-md-4 col-12 full-height q-my-md">
+        <q-card flat class="col-md-4 col-12 full-height q-my-md bg-grey-3">
           <q-card-section class="q-px-none">
             <div class="q-mb-sm ">
               <div class="text-h6 text-subtitle1">Filter with:</div>
             </div>
-
             <div class="row q-gutter-md ">
               <q-select v-model="selectedStatus" filled :options="statusOptions" label="Status"
                 @update:model-value="filterCallLogs" class="col-7 col-md-2" behavior="menu"
@@ -44,21 +43,21 @@
                 @update:model-value="sortCallLogs" class="col-4 col-md-2" behavior="menu"
                 options-selected-class="text-weight-bold" emit-value map-options dense />
             </div>
-
           </q-card-section>
         </q-card>
 
-        <q-card flat bordered class="col-md-4 col-12 full-height">
-          <q-card-section class="row justify-center">
+        <q-card class="col-md-4 col-12 full-height stats-card">
+          <q-card-section class="row justify-center stats-header">
             <div class="text-h6">Call Log History</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+
+          <!-- <q-separator /> -->
           <q-card-section v-if="filteredCallLogs.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
                   <th></th>
-
                   <th class="text-left">Log Number</th>
                   <th class="text-left">Opened Date</th>
                   <th class="text-left">Opened Time</th>
@@ -300,7 +299,7 @@ export default {
       }
     },
     openWhatsApp() {
-      const phoneNumber = '+27823433945'; // Replace with your company phone number
+      const phoneNumber = '+27657207713'; // Replace with your company phone number
       const url = `https://wa.me/${phoneNumber}`;
       window.open(url, '_blank');
     },

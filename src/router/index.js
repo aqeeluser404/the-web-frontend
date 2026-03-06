@@ -2,7 +2,7 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import axiosInstance from 'src/services/axiosInstance'
-
+import Helper from 'src/services/utils'
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -64,5 +64,81 @@ export default route(function (/* { store, ssrContext } */) {
     }
   });
 
-  return Router
-})
+// Router.beforeEach(async (to, from, next) => {
+//   try {
+//     const response = await axiosInstance.get('/health');
+//     if (response.status === 200) {
+//       // Public routes that should always be accessible
+//       const publicPaths = [
+//         "/",
+//         "/verify-email",
+//         "/reset-password",
+//         "/resend-verification",
+//         "/404",
+//         "/auth/login", // <-- add your public units page here
+//         "/auth/register",
+//         "/units/apply",
+//         '/units/apply/floor/:floor',
+//       ];
+
+//       if (publicPaths.includes(to.path)) {
+//         return next();
+//       }
+
+//       switch (to.path) {
+//         case "/verify-email":
+//         case "/reset-password": {
+//           const token = to.query.token;
+//           if (token) {
+//             return next();
+//           } else {
+//             return next({ path: "/404" });
+//           }
+//         }
+
+//         case "/resend-verification":
+//           if (from.path === "/verify-email") {
+//             return next();
+//           } else {
+//             return next({ path: "/404" });
+//           }
+
+//         case "/404":
+//           return next("/");
+
+//         default:
+//           // ✅ Only check login for protected routes
+//           const user = await Helper.checkLoginStatus(Router);
+
+//           if (user) {
+//             // Role-based checks
+//             if (to.path.startsWith("/vendor") && user.userType !== "vendor") {
+//               return next({ path: "/" });
+//             }
+//             if (to.path.startsWith("/admin") && user.userType !== "admin") {
+//               return next({ path: "/" });
+//             }
+//             if (to.path.startsWith("/user") && user.userType !== "user") {
+//               return next({ path: "/" });
+//             }
+
+//             return next();
+//           } else {
+//             // If not logged in, send to login only if route is protected
+//             return next({ path: "/" });
+//           }
+//       }
+//     } else {
+//       return next({ path: "/404" });
+//     }
+//   } catch (error) {
+//     console.error("Router guard error:", error);
+//     return next(to.path !== "/404" ? "/404" : undefined);
+//   }
+// });
+
+
+
+  return Router;
+});
+

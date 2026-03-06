@@ -1,14 +1,15 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md" v-show="!loading">
 
       <div class="col-md-3 col-12 full-height">
-        <q-card flat bordered :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
 
-          <q-card-section class="row justify-center">
+          <q-card-section class="row stats-header justify-center">
             <div class="text-h6">Call Log Status Distribution</div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <q-separator />
+          <!-- <q-separator /> -->
           <q-card-section class="row justify-center">
             <div style="width: 300px; height: 300px;">
               <canvas ref="pieChart"></canvas>
@@ -18,11 +19,14 @@
       </div>
 
       <div class="col-md-9 col-12 full-height">
-        <q-card flat bordered class="full-height">
-          <q-card-section class="row justify-between items-center">
-            <div class="text-h6">Call Log History</div>
-            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-              flat rounded />
+        <q-card class="full-height soft-shadow-card">
+          <q-card-section class="row justify-between items-center stats-header">
+            <div class="row justify-between items-center full-width">
+              <div class="text-h6">Call Log History</div>
+              <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
+                flat rounded />
+            </div>
+            <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
           <q-card-section class="row justify-between">
             <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
@@ -30,7 +34,7 @@
             <q-select v-model="selectedCallLogStatus" :options="callLogStatus" label="Call Log Status"
               @update:model-value="filteredByCallLogStatus" class="col-12 col-md-2" />
           </q-card-section>
-          <q-card-section v-if="callLogs.length > 0">
+          <!-- <q-card-section v-if="callLogs.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -96,6 +100,105 @@
                 </q-item>
               </q-card-section>
             </q-card>
+          </q-card-section> -->
+
+          <q-card-section>
+            <q-table
+              flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id"
+            >
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-logNumber="props">
+                <q-td :props="props" class="cursor-pointer">
+                  <q-badge
+                    color="text-primary"
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    <div @click.stop="copyToClipboard(props.row.logNumber)">
+                      {{ props.row.logNumber }}
+                    </div>
+                  </q-badge>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="
+                      props.row.status === 'Opened'
+                        ? 'orange'
+                        : props.row.status === 'Assigned'
+                          ? 'blue'
+                          : props.row.status === 'Resolved'
+                            ? 'green'
+                            : props.row.status === 'Closed'
+                              ? 'grey'
+
+                              : 'red'
+                    "
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.status }}
+                  </q-badge>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-createdAt="props">
+                <q-td :props="props">
+                  <div v-if="props.row.createdAt">
+                    {{ formatDate(props.row.createdAt) }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-closedAt="props">
+                <q-td :props="props">
+                  <div v-if="props.row.closedAt">
+                    {{ formatDate(props.row.closedAt) }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-vendorType="props">
+                <q-td :props="props">
+                  <div v-if="props.row.vendorInfo && props.row.vendorInfo.vendorType">
+                    {{ props.row.vendorInfo.vendorType }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-actions="props">
+                <q-td :props="props">
+                  <div class="row justify-center items-center q-gutter-sm no-wrap">
+
+
+
+                    <CustomButton :disable="props.row.status === 'Closed'" flat color="red" text-color="red"
+                      class="inline-btn" icon="eva-edit-2-outline"
+                      @click.stop="openUpdateCallLogDialog(props.row)" />
+
+                    <CustomButton :disable="props.row.status !== 'Assigned'" @click.stop="sendEmailToVendor(props.row)" flat
+                      color="red" text-color="red" class="inline-btn" icon="eva-email-outline" />
+
+                    <CustomButton :disable="props.row.status !== 'Resolved'" @click.stop="closeCallLog(props.row._id)" flat
+                      color="red" text-color="red" class="inline-btn" icon="eva-archive-outline" />
+
+                    <CustomButton flat color="red" text-color="red" class="inline-btn" icon="eva-trash-outline"
+                      @click.stop="deleteCallLog(props.row)" />
+                  </div>
+                </q-td>
+              </template>
+            </q-table>
+
           </q-card-section>
         </q-card>
       </div>
@@ -128,6 +231,20 @@ export default {
   data() {
     return {
       loading: true,
+
+
+      callLogColumns: [
+        { name: "index", label: "#", field: "index"},
+        { name: "logNumber", label: "Log Number", field: "logNumber"},
+        { name: "username", label: "Applicant", field: "username"},
+        { name: "createdAt", label: "Opened Date", field: "createdAt"},
+        { name: "closedAt", label: "Closed Date", field: "closedAt"},
+        { name: "callType", label: "Call Type", field: "callType"},
+        { name: "status", label: "Status", field: "status"},
+        { name: "vendorType", label: "Vendor Type", field: "vendorType"},
+        { name: "actions", label: "Actions", field: "actions"},
+      ],
+
       updateCallLogDialog: false,
       updateCallLogNotesDialog: false,
       selectedCallLog: null,
@@ -247,7 +364,8 @@ export default {
         const user = await UserService.findUserById(callLog.user)
         return {
           ...callLog,
-          username: user.username
+          username: user.username,
+          vendorType: callLog.vendorInfo?.vendorType
         }
       }))
 

@@ -3,6 +3,9 @@ import axios from 'axios'
 import UserService from './UserService'
 import UnitService from './UnitService';
 import CryptoJS from 'crypto-js';
+import { jwtDecode } from "jwt-decode";
+
+let logoutTimer = null;
 
 class Helper {
 
@@ -282,5 +285,59 @@ class Helper {
       next(false);
     }
   }
+
+  // static async checkLoginStatus(router) {
+  //   const isLoggedIn = await Helper.checkCookie();
+  //   if (!isLoggedIn)
+  //     return null
+
+  //   const token = await this.getCookie("token");
+  //   if (!token) {
+  //     return this.handleLogout(router);
+  //   }
+
+  //   try {
+  //     const decoded = jwtDecode(token);
+  //     const exp = decoded.exp * 1000;
+  //     const timeLeft = exp - Date.now();
+
+  //     if (timeLeft <= 0) {
+  //       return this.handleLogout(router);
+  //     }
+
+  //     const user = await UserService.FindUserByToken();
+  //     if (!user) {
+  //       return this.handleLogout(router);
+  //     }
+
+  //     // Return user so the router guard can check roles
+  //     this.startLogoutTimer(timeLeft, router);
+  //     return user;
+  //   } catch (err) {
+  //     console.error("Error decoding token:", err);
+  //     this.handleLogout(router);
+  //   }
+  // }
+
+  // static startLogoutTimer(duration, router) {
+  //   if (logoutTimer) clearTimeout(logoutTimer);
+
+  //   logoutTimer = setTimeout(() => {
+  //     console.info("Auto-logging out due to token expiration");
+  //     this.handleLogout(router);
+  //   }, duration);
+  // }
+
+  // static handleLogout(router) {
+  //   this.removeCookie("token");
+
+  //   if (logoutTimer) {
+  //     clearTimeout(logoutTimer);
+  //     logoutTimer = null;
+  //   }
+
+  //   router.push("/"); // redirect to home/login
+  // }
+
 }
 export default Helper

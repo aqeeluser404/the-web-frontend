@@ -1,11 +1,10 @@
 <template>
-  <q-page>
-
+  <q-page class="bg-grey-2">
     <div class="constrain-standard row justify-center q-py-md">
-      <q-card v-if="!loading" flat class="col-md-12 col-12">
+      <q-card flat v-if="!loading" class="col-md-12 col-12" style="background: transparent; box-shadow: none;"
+>
         <q-card-section>
           <div>
-
             <q-timeline :layout="layout" color="secondary">
 
               <q-timeline-entry heading>
@@ -13,7 +12,6 @@
                   Rental Application Process
                 </div>
               </q-timeline-entry>
-
 
               <!-- Account creation -->
               <q-timeline-entry title="Account Creation" icon="eva-people" side="right" color="orange"
