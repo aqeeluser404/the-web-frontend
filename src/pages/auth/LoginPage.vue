@@ -39,7 +39,7 @@
               type="password"
             /> -->
 
-            <q-item class="input-container q-px-none">
+            <!-- <q-item class="input-container q-px-none">
               <div class="input-wrapper">
                 <q-input
                   filled
@@ -57,7 +57,13 @@
                   @click="toggleVisibility"
                 />
               </div>
-            </q-item>
+            </q-item> -->
+
+            <VisibilityPasswordInput
+              v-model="user.password"
+              label="Password *"
+              inputWidth="100%"
+            />
 
             <div
               class="q-my-md q-mb-xl column text-left"
@@ -93,55 +99,6 @@
 </template>
 
 <style scoped lang="sass">
-.input-container
-  display: flex
-  flex-direction: column
-
-.input-wrapper
-  position: relative
-  display: flex
-  align-items: center
-  width: 100%
-
-.custom-input
-  flex: 1
-  width: 100%
-  appearance: none
-  // padding: 12px
-  font-size: 16px
-  // border: 1px solid rgba(0, 0, 0, 0.2)
-  // border-radius: 4px
-  outline: none
-  transition: border-color 0.3s ease-in-out
-
-  // 🔑 force selects and textareas to shrink
-  &::-webkit-input-placeholder
-    font-size: inherit
-
-  &,
-  select,
-  textarea
-    min-width: 0 !important
-    width: 100% !important
-    max-width: 100% !important
-
-  &:focus
-    border-color: #009B77
-
-
-  &:focus
-    border-color: #009B77
-
-.eye-icon
-  position: absolute
-  right: 12px
-  cursor: pointer
-  font-size: 20px
-  color: rgba(0, 0, 0, 0.5)
-
-  &:hover
-    color: #009B77
-
 .right-section
   display: flex
   @media (max-width: 1024px)
@@ -174,6 +131,7 @@
   import theWeb3d from '../../assets/resources/logos/web3dlogo.png'
   import UserService from 'src/services/UserService'
   import CustomButton from 'src/components/elements/CustomButton.vue'
+  import VisibilityPasswordInput from 'src/components/elements/VisibilityPasswordInput.vue';
 
   export default {
     name: "LoginPage",
@@ -190,7 +148,7 @@
       }
     },
     components: {
-      CustomButton
+      CustomButton, VisibilityPasswordInput
     },
     methods: {
       async onSubmit() {

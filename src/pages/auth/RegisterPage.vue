@@ -30,10 +30,26 @@
               label="Gender *" :options="userGenderOptions" emit-value map-options />
             <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="user.phone"
               label="Phone Number *" />
-            <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="user.password"
-              label="Password *" type="password" />
-            <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="confirmPassword"
-              label="Confirm Password *" type="password" />
+
+
+            <!-- <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="user.password"
+              label="Password *" type="password" /> -->
+
+            <VisibilityPasswordInput
+              class="col-md-12 col-12"
+              v-model="user.password"
+              label="Password *"
+              inputWidth="100%"
+            />
+            <VisibilityPasswordInput
+              class="col-md-12 col-12"
+              v-model="confirmPassword"
+              label="Confirm Password *"
+              inputWidth="100%"
+            />
+
+            <!-- <q-input filled class="col-md-12 col-12" label-color="black" color="black" v-model="confirmPassword"
+              label="Confirm Password *" type="password" /> -->
           </q-card-section>
           <q-card-section class="row justify-between q-py-none q-gutter-y-sm q-px-none q-px-sm">
             <q-radio class="col-md-6 col-12" v-model="user.studentInfo.isRegisteredStudent" :val="true"
@@ -86,6 +102,7 @@
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
+import VisibilityPasswordInput from 'src/components/elements/VisibilityPasswordInput.vue';
 
 export default {
   name: "RegisterPage",
@@ -117,7 +134,8 @@ export default {
     }
   },
   components: {
-    CustomButton
+    CustomButton,
+    VisibilityPasswordInput
   },
   methods: {
     validateText: Helper.validateText,
