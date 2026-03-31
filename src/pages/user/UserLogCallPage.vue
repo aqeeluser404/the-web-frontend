@@ -53,7 +53,94 @@
           </q-card-section>
 
           <!-- <q-separator /> -->
-          <q-card-section v-if="filteredCallLogs.length > 0">
+
+        <q-card-section>
+          <q-table flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id"
+          >
+            <template v-slot:body-cell-index="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-logNumber="props">
+              <q-td :props="props">
+                <div class="id">
+                  <q-badge
+                    color="text-primary"
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row.logNumber }}
+                  </q-badge>
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-createdDate="props">
+              <q-td :props="props">
+                {{ formatDate(props.row.createdAt) }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-createdTime="props">
+              <q-td :props="props">
+                {{ formatTime(props.row.createdAt) }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-closedDate="props">
+              <q-td :props="props">
+                <div v-if="props.row.closedAt">
+                  {{ formatDate(props.row.closedAt) }}
+                </div>
+                <div v-else>N/A</div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-closedTime="props">
+              <q-td :props="props">
+                <div v-if="props.row.closedAt">
+                  {{ formatTime(props.row.closedAt) }}
+                </div>
+                <div v-else>N/A</div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-status="props">
+              <q-td :props="props">
+                <q-badge
+                  :color="
+                    props.row.status === 'Resolved'
+                      ? 'green'
+                      : props.row.status === 'Opened'
+                        ? 'orange'
+                        : props.row.status === 'Assigned'
+                          ? 'blue'
+                          : props.row.status === 'Closed'
+                            ? 'grey'
+                            : 'red'
+                  "
+                  align="middle"
+                  class="q-pa-xs q-px-sm"
+                >
+                  {{ props.row.status }}
+                </q-badge>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-vendorType="props">
+              <q-td :props="props">
+                <div v-if="props.row.vendorInfo && props.row.vendorInfo.vendorType">
+                  {{ props.row.vendorInfo.vendorType }}
+                </div>
+                <div v-else>N/A</div>
+              </q-td>
+            </template>
+          </q-table>
+        </q-card-section>
+
+          <!-- <q-card-section v-if="filteredCallLogs.length > 0">
             <q-markup-table flat bordered>
               <thead>
                 <tr>
@@ -104,7 +191,7 @@
                 </q-item>
               </q-card-section>
             </q-card>
-          </q-card-section>
+          </q-card-section> -->
         </q-card>
 
         <q-dialog v-model="otherDialog">
@@ -192,7 +279,19 @@ export default {
       selectedSort: null, // was 'Newest First'
 
       statusOptions: ['All', 'Opened', 'Assigned', 'Resolved', 'Closed'],
-      sortOptions: ['Newest First', 'Oldest First']
+      sortOptions: ['Newest First', 'Oldest First'],
+
+      callLogColumns: [
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left' },
+        { name: "createdDate", label: "Opened Date", field: "createdAt", align: 'left' },
+        { name: "createdTime", label: "Opened Time", field: "createdAt", align: 'left' },
+        { name: "closedDate", label: "Closed Date", field: "closedAt", align: 'left' },
+        { name: "closedTime", label: "Closed Time", field: "closedAt", align: 'left' },
+        { name: "callType", label: "Call Type", field: "callType", align: 'left' },
+        { name: "status", label: "Status", field: "status", align: 'center' },
+        { name: "vendorType", label: "Vendor", field: "vendorInfo", align: 'left' },
+      ]
     }
   },
   components: {

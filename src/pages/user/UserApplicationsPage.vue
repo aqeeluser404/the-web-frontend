@@ -63,7 +63,7 @@
 
         <!-- <q-separator /> -->
 
-        <q-card-section v-if="userDetails.rentals && userDetails.rentals.length > 0">
+        <!-- <q-card-section v-if="userDetails.rentals && userDetails.rentals.length > 0">
           <q-markup-table flat bordered>
             <thead>
               <tr>
@@ -72,7 +72,6 @@
                 <th class="text-left">Application ID</th>
                 <th class="text-left">Start Date</th>
                 <th class="text-left">End Date</th>
-                <!-- <th class="text-left">Before Scheduled</th> -->
                 <th class="text-left">Parking</th>
                 <th class="text-left">Bed/Room Price</th>
                 <th class="text-left">Payment Plan</th>
@@ -138,6 +137,154 @@
           <q-item>
             <q-item-section class="text-subtitle1">You currently have no rental applications on file.</q-item-section>
           </q-item>
+        </q-card-section> -->
+
+        <q-card-section>
+          <q-table
+            flat bordered :rows="rentals" :columns="rentalColumns" @click="viewRentalDetails" row-key="_id"
+          >
+            <template v-slot:body-cell-index="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-applicationDate="props">
+              <q-td :props="props">
+                <div>
+                  {{ formatDate(props.row.applicationDate) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-id="props">
+              <q-td :props="props">
+                <div class="id">
+                  <q-badge
+                    color="text-primary"
+                    align="middle"
+                    class="q-pa-xs q-px-sm"
+                  >
+                    {{ props.row._id }}
+                  </q-badge>
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-startDate="props">
+              <q-td :props="props">
+                <div v-if="defaultValues(props.row)">
+                  Being Processed...
+                </div>
+                <div v-else>
+                  {{ formatDate(props.row.rentalStartDate) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-endDate="props">
+              <q-td :props="props">
+                <div v-if="defaultValues(props.row)">
+                  Being Processed...
+                </div>
+                <div v-else>
+                  {{ formatDate(props.row.rentalEndDate) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-parking="props">
+              <q-td :props="props">
+                <div v-if="props.row.parking?.hasParking">
+                  R {{ Number(props.row.parking?.fee).toFixed(2) }}
+                </div>
+                <div v-else>
+                  No
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-unitPrice="props">
+              <q-td :props="props">
+                <div>
+                  {{ Number(props.row.selectedSubUnits.price.price).toFixed(2) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-paymentPlan="props">
+              <q-td :props="props">
+                <div>
+                  {{ capitalizeFirstLetter(props.row.selectedSubUnits.price.name) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-unitNumber="props">
+              <q-td :props="props">
+                <div>
+                  {{ capitalizeFirstLetter(props.row.unitNumber) }}
+                </div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-status="props">
+              <q-td :props="props">
+                <q-badge
+                  :color="
+                    props.row.status === 'Active'
+                      ? 'green'
+                      : props.row.status === 'Pending'
+                        ? 'orange'
+                        : props.row.status === 'Rejected'
+                          ? 'red'
+                          : props.row.status === 'Ended'
+                            ? 'grey'
+                            : 'red'
+                  "
+                  align="middle"
+                  class="q-pa-xs q-px-sm"
+                >
+                  {{ props.row.status }}
+                </q-badge>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-actions="props">
+              <q-td :props="props">
+                <div class="row justify-center items-center q-gutter-sm no-wrap">
+                  <CustomButton
+                    :disable="props.row.status !== 'Pending'"
+                    flat
+                    color="red"
+                    text-color="red"
+                    class="inline-btn"
+                    icon="eva-trash-outline"
+                    @click.stop="deleteRental(props.row)"
+                  />
+
+                  <CustomButton
+                    flat
+                    color="black"
+                    text-color="positive"
+                    class="inline-btn"
+                    icon="eva-cloud-upload-outline"
+                    to="/user/profile"
+                  />
+
+                  <CustomButton
+                    :disable="!( (props.row.status === 'Pending' || props.row.status === 'Active') && props.row.payerData.isValidated === false )"
+                    flat
+                    color="red"
+                    text-color="red"
+                    class="inline-btn"
+                    icon="eva-edit-2-outline"
+                    @click.stop="openAddPayer"
+                  />
+                </div>
+              </q-td>
+            </template>
+          </q-table>
         </q-card-section>
       </q-card>
     </div>
@@ -177,7 +324,23 @@ export default {
       requestDialog: false,
       addPayerDialog: false,
       addPayerRental: null,
-      selectedRental: null
+      selectedRental: null,
+
+      rentalColumns: [
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
+        { name: "id", label: "Application ID", field: "_id", align: 'left' },
+        { name: "startDate", label: "Start Date", field: "rentalStartDate", align: 'left' },
+        { name: "endDate", label: "End Date", field: "rentalEndDate", align: 'left' },
+        { name: "parking", label: "Parking", field: "parking", align: 'left' },
+
+        { name: "unitPrice", label: "Bed/Room Price", field: "selectedSubUnits", align: 'left' },
+        { name: "paymentPlan", label: "Payment Plan", field: "selectedSubUnits", align: 'left' },
+        { name: "unitNumber", label: "Unit Number", field: "unitNumber", align: 'center' },
+
+        { name: "status", label: "Status", field: "status", align: 'center' },
+        { name: "actions", label: "Actions", field: "actions", align: 'center' },
+      ]
     }
   },
   components: {
@@ -207,18 +370,43 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    // defaultValues(rental) {
+    //   const toDateOnly = (dateStr) => (dateStr?.split('T')[0] || '');
+    //   const today = new Date();
+    //   const nextYear = today.getFullYear() + 1;
+    //   const defaultStart = `${nextYear}-01-01`;
+    //   const defaultEnd = `${nextYear}-12-31`;
+
+    //   const start = toDateOnly(rental?.rentalStartDate);
+    //   const end = toDateOnly(rental?.rentalEndDate);
+
+    //   return start === defaultStart && end === defaultEnd;
+    // },
+
     defaultValues(rental) {
-      const toDateOnly = (dateStr) => (dateStr?.split('T')[0] || '');
-      const today = new Date();
-      const nextYear = today.getFullYear() + 1;
-      const defaultStart = `${nextYear}-01-01`;
-      const defaultEnd = `${nextYear}-12-31`;
+      if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
 
-      const start = toDateOnly(rental?.rentalStartDate);
-      const end = toDateOnly(rental?.rentalEndDate);
+      if (rental?.status === "Active") {
+        return false;
+      }
 
-      return start === defaultStart && end === defaultEnd;
+      const toDateObj = (dateStr) => new Date(dateStr);
+
+      const start = toDateObj(rental.rentalStartDate);
+      const end = toDateObj(rental.rentalEndDate);
+
+      // Default is always Feb 1 → Dec 15 (any year)
+      const isDefaultStart =
+        start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
+      const isDefaultEnd =
+        end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
+
+      console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
+                  "Default?", isDefaultStart && isDefaultEnd);
+
+      return isDefaultStart && isDefaultEnd;
     },
+
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
@@ -290,7 +478,8 @@ export default {
       this.fetchUserDetails()
     },
 
-    viewRentalDetails(id) {
+    viewRentalDetails(evt, row) {
+      const id = row._id
       Helper.viewRentalDetails(id, this.$router);
     },
   },
@@ -299,3 +488,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.inline-btn {
+  display: inline-flex; /* ensures they sit side by side */
+  width: auto;          /* prevents full-width stretching */
+}
+
+</style>
