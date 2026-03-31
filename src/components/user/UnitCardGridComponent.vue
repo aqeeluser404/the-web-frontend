@@ -189,12 +189,12 @@
                 </template>
               </q-input>
               <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
-                class="col-xs-12 col-sm-6 col-md-1" emit-value map-options />
+                class="col-xs-12 col-sm-6 col-md-2" emit-value map-options />
               <q-select filled dense v-model="selectedFloor" :options="[
                 { label: '1st Floor', value: 1 },
                 { label: '2nd Floor', value: 2 },
                 { label: '3rd Floor', value: 3 },
-              ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-1" @update:model-value="goToFloor" />
+              ]" emit-value map-options class="col-xs-12 col-sm-6 col-md-2" @update:model-value="goToFloor" />
               <q-btn flat rounded icon="refresh" label="Reset" color="red"
                 class="q-py-sm custom-button col-xs-12 col-sm-6 col-md-1" @click="resetFilters" />
             </q-card-section>

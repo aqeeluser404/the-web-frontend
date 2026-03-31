@@ -13,13 +13,13 @@
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
 
         <!-- title and avatar -->
-        <q-toolbar-title class="col-md-4 row items-center">
+        <q-toolbar-title class="col-md-3 row items-center">
           <router-link to="/" class="row items-center">
             <img :src="logoSrc" alt="Home" style="width: 40%; cursor: pointer;">
           </router-link>
         </q-toolbar-title>
 
-        <div class="col-md-8">
+        <div class="col-md-9">
           <!---------------------------------------------- DESKTOP NAV SECTION -------------------------------------------------->
 
 
@@ -255,10 +255,10 @@
       </div>
     </q-card>
 
-    <q-btn rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
+    <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop" @click="toggleWhatsAppBox" />
 
-    <q-btn rounded color="secondary" text-color="white"
+    <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
 
     <q-page-container>
