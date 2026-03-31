@@ -212,7 +212,9 @@ export default {
       allUsers: [],
       adminUsers: [],
       regularUsers: [],
-      userSelectors: ['All', 'Admin', 'User'],
+      onlineUsers: [],
+      offlineUsers: [],
+      userSelectors: ['All', 'Admin', 'User', 'Online', 'Offline'],
       selectedUser: 'All',
       userPieChart: null,
       loginBarChart: null,
@@ -353,9 +355,15 @@ export default {
         const adminUsersTemp = this.users.filter(user => user.userType === 'admin');
         const regularUsersTemp = this.users.filter(user => user.userType === 'user');
 
+        const onlineUsersTemp = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn === true)
+        const offlineUsersTemp = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn === false)
+
         this.allUsers = [...this.users];
         this.adminUsers = adminUsersTemp;
         this.regularUsers = regularUsersTemp;
+        this.onlineUsers = onlineUsersTemp;
+        this.offlineUsers = offlineUsersTemp;
+
         this.filteredUsers = this.allUsers;
 
         this.updateUserChart();
@@ -594,7 +602,12 @@ export default {
         this.filteredUsers = this.adminUsers;
       } else if (this.selectedUser === 'User') {
         this.filteredUsers = this.regularUsers;
-      } else {
+      } else if (this.selectedUser === 'Online') {
+        this.filteredUsers = this.onlineUsers;
+      } else if (this.selectedUser === 'Offline') {
+        this.filteredUsers = this.offlineUsers;
+      }
+      else {
         this.filterUsersByChart(this.selectedUser); // Handle chart selection
       }
     },

@@ -30,14 +30,35 @@
               v-model="user.usernameOrEmail"
               label="Username or Email *"
             />
-            <q-input
+            <!-- <q-input
               filled
               label-color="black"
               color="black"
               v-model="user.password"
               label="Password *"
               type="password"
-            />
+            /> -->
+
+            <q-item class="input-container q-px-none">
+              <div class="input-wrapper">
+                <q-input
+                  filled
+                  label-color="black"
+                  color="black"
+                  :type="inputType"
+                  label="Password"
+                  v-model="user.password"
+                  class="custom-input"
+                  :style="{ width: inputWidth }"
+                />
+                <q-icon
+                  :name="inputType === 'password' ? 'visibility' : 'visibility_off'"
+                  class="eye-icon"
+                  @click="toggleVisibility"
+                />
+              </div>
+            </q-item>
+
             <div
               class="q-my-md q-mb-xl column text-left"
               style="transform: translateY(-1px);"
@@ -72,6 +93,55 @@
 </template>
 
 <style scoped lang="sass">
+.input-container
+  display: flex
+  flex-direction: column
+
+.input-wrapper
+  position: relative
+  display: flex
+  align-items: center
+  width: 100%
+
+.custom-input
+  flex: 1
+  width: 100%
+  appearance: none
+  // padding: 12px
+  font-size: 16px
+  // border: 1px solid rgba(0, 0, 0, 0.2)
+  // border-radius: 4px
+  outline: none
+  transition: border-color 0.3s ease-in-out
+
+  // 🔑 force selects and textareas to shrink
+  &::-webkit-input-placeholder
+    font-size: inherit
+
+  &,
+  select,
+  textarea
+    min-width: 0 !important
+    width: 100% !important
+    max-width: 100% !important
+
+  &:focus
+    border-color: #009B77
+
+
+  &:focus
+    border-color: #009B77
+
+.eye-icon
+  position: absolute
+  right: 12px
+  cursor: pointer
+  font-size: 20px
+  color: rgba(0, 0, 0, 0.5)
+
+  &:hover
+    color: #009B77
+
 .right-section
   display: flex
   @media (max-width: 1024px)
@@ -116,6 +186,7 @@
         },
         confirmPassword: '',
         logoSrc: theWeb3d,
+        inputType: 'password'
       }
     },
     components: {
@@ -147,6 +218,14 @@
           }
           this.onReset();
         }
+      },
+
+      toggleVisibility() {
+        this.inputType = this.inputType === "password" ? "text" : "password";
+      },
+      onReset() {
+        this.user.usernameOrEmail = '';
+        this.user.password = '';
       },
 
       onReset() {
