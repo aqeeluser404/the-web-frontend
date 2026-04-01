@@ -398,18 +398,18 @@ export default {
       loading: true,
 
       rentalColumns: [
-        { name: "index", label: "#", field: "index" },
-        { name: "id", label: "Rental Number", field: "_id" },
-        { name: "applicationDate", label: "Application Date", field: "applicationDate" },
-        { name: "accessKey", label: "Access Key", field: "accessKey" },
-        { name: "status", label: "Status", field: "status" },
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "id", label: "Rental Number", field: "_id", align: 'left' },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
+        { name: "accessKey", label: "Access Key", field: "accessKey", align: 'center' },
+        { name: "status", label: "Status", field: "status", align: 'center' },
       ],
 
       callLogColumns: [
-        { name: "index", label: "#", field: "index"},
-        { name: "logNumber", label: "Log Number", field: "logNumber"},
-        { name: "createdAt", label: "Created Date", field: "createdAt"},
-        { name: "status", label: "Status", field: "status"},
+        { name: "index", label: "#", field: "index", align: 'center'},
+        { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left' },
+        { name: "createdAt", label: "Created Date", field: "createdAt", align: 'left' },
+        { name: "status", label: "Status", field: "status", align: 'center' },
       ],
 
       myCallLogs: [],

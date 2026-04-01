@@ -195,15 +195,17 @@ export default {
         {
           name: "index",
           label: "#",
-          field: "index"
+          field: "index",
+          align: 'center'
+
         },
-        { name: "username", label: "Username", field: "username" },
-        { name: "id", label: "User/Tenant ID", field: "_id" },
-        { name: "email", label: "Email", field: "email" },
-        { name: "approved", label: "Approved Applications", field: "rentals" },
-        { name: "type", label: "Type", field: "userType" },
-        { name: "online", label: "Online", field: "loginInfo" },
-        { name: "actions", label: "Actions", field: "actions" },
+        { name: "username", label: "Username", field: "username", align: 'left' },
+        { name: "id", label: "User/Tenant ID", field: "_id", align: 'left' },
+        { name: "email", label: "Email", field: "email", align: 'left' },
+        { name: "approved", label: "Approved Applications", field: "rentals", align: 'left' },
+        { name: "type", label: "Type", field: "userType", align: 'left' },
+        { name: "online", label: "Online", field: "loginInfo", align: 'center' },
+        { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
 
       users: [],

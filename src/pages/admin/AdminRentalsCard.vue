@@ -212,7 +212,7 @@
                   <div v-if="props.row.earlyEndDate !== null" style="text-decoration: underline;">
                     {{ formatDate(props.row.earlyEndDate) }}
                   </div>
-                  <div v-else class="text-center">
+                  <div v-else>
                     N/A
                   </div>
                 </q-td>
@@ -333,19 +333,19 @@ export default {
       showAllStatuses: true,
 
       rentalColumns: [
-        { name: "index", label: "#", field: "index" },
-        { name: "applicationDate", label: "Application Date", field: "applicationDate" },
-        { name: "applicant", label: "Applicant", field: "username" },
-        { name: "applicantContact", label: "Applicant Contact", field: "userPhone"},
-        { name: "applicantEmail", label: "Applicant Email", field: "userEmail"},
-        { name: "id", label: "Application ID", field: "_id" },
-        { name: "floorLevel", label: "Floor Level", field: "selectedSubUnits" },
-        { name: "unitType", label: "Unit Type", field: "selectedSubUnits" },
-        { name: "startDate", label: "Start Date", field: "rentalStartDate" },
-        { name: "endDate", label: "End Date", field: "rentalEndDate" },
-        { name: "beforeScheduled", label: "Before Scheduled", field: "earlyEndDate" },
-        { name: "status", label: "Status", field: "status" },
-        { name: "actions", label: "Actions", field: "actions" },
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
+        { name: "applicant", label: "Applicant", field: "username", align: 'left' },
+        { name: "applicantContact", label: "Applicant Contact", field: "userPhone", align: 'left' },
+        { name: "applicantEmail", label: "Applicant Email", field: "userEmail", align: 'left' },
+        { name: "id", label: "Application ID", field: "_id", align: 'left' },
+        { name: "floorLevel", label: "Floor Level", field: "selectedSubUnits", align: 'center' },
+        { name: "unitType", label: "Unit Type", field: "selectedSubUnits", align: 'left' },
+        { name: "startDate", label: "Start Date", field: "rentalStartDate", align: 'left' },
+        { name: "endDate", label: "End Date", field: "rentalEndDate", align: 'left' },
+        { name: "beforeScheduled", label: "Before Scheduled", field: "earlyEndDate", align: 'left' },
+        { name: "status", label: "Status", field: "status", align: 'center' },
+        { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
     };
   },

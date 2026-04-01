@@ -232,42 +232,71 @@
             :columns="columns"
             row-key="_id"
           >
+            <template v-slot:body-cell-index="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
 
-              <!-- status -->
-              <template v-slot:body-cell-status="props">
-                <q-td :props="props">
+            <template v-slot:body-cell-id="props">
+              <q-td :props="props">
+                <div class="id">
                   <q-badge
-                    :color="
-                      props.row.status === 'Pending'
-                        ? 'orange'
-                        : props.row.status === 'Picked Up'
-                          ? 'primary'
-                          : props.row.status === 'Dropped Off'
-                            ? 'green'
-                            : props.row.status === 'Missed Pick Up'
-                              ? 'red'
-                              : 'grey'
-                    "
+                    color="text-primary"
                     align="middle"
                     class="q-pa-xs q-px-sm"
                   >
-                    {{ props.row.status }}
+                    {{ props.row._id }}
                   </q-badge>
+                </div>
+              </q-td>
+            </template>
+
+              <template v-slot:body-cell-unitNumber="props">
+                <q-td :props="props">
+                  <div v-if="props.row.unitNumber">
+                    {{ props.row.unitNumber }}
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
                 </q-td>
               </template>
 
-          <template v-slot:body-cell-actions="props">
-            <q-td :props="props" class="text-center">
-              <CustomButton
-                flat
-                color="red"
-                text-color="red"
-                customStyle="width: 15%"
-                icon="eva-trash-outline"
-                @click="cancelBooking(props.row)"
-              />
-            </q-td>
-          </template>
+            <template v-slot:body-cell-status="props">
+              <q-td :props="props">
+                <q-badge
+                  :color="
+                    props.row.status === 'Pending'
+                      ? 'orange'
+                      : props.row.status === 'Picked Up'
+                        ? 'primary'
+                        : props.row.status === 'Dropped Off'
+                          ? 'green'
+                          : props.row.status === 'Missed Pick Up'
+                            ? 'red'
+                            : 'grey'
+                  "
+                  align="middle"
+                  class="q-pa-xs q-px-sm"
+                >
+                  {{ props.row.status }}
+                </q-badge>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-actions="props">
+              <q-td :props="props" class="text-center">
+                <CustomButton
+                  flat
+                  color="red"
+                  text-color="red"
+                  customStyle="width: 15%"
+                  icon="eva-trash-outline"
+                  @click="cancelBooking(props.row)"
+                />
+              </q-td>
+            </template>
           </q-table>
         </q-card-section>
       </q-card>
@@ -311,13 +340,23 @@ export default {
       bookingHistory: [],
 
       columns: [
-        { name: "slot", label: "Slot", field: "slot" },
-        { name: "date", label: "Date", field: "date" },
-        { name: "pickupLocation", label: "Pick-up", field: "pickupLocation" },
-        { name: "dropoffLocation", label: "Drop-off", field: "dropoffLocation" },
-        { name: "status", label: "Status", field: "status" },
-        { name: "student", label: "Stu No.", field: "student" },
-        { name: "actions", label: "Actions", field: "actions" },
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "id", label: "Shuttle ID", field: "_id", align: 'left' },
+        { name: "student", label: "Stu No.", field: "student", align: 'left' },
+        { name: "slot", label: "Slot", field: "slot", align: 'left' },
+        { name: "date", label: "Date", field: "date", align: 'left' },
+        { name: "pickupLocation", label: "Pick-up", field: "pickupLocation", align: 'left' },
+        { name: "dropoffLocation", label: "Drop-off", field: "dropoffLocation", align: 'left' },
+
+        {
+          name: "unitNumber",
+          label: "Unit",
+          field: "unitNumber",
+          align: "left",
+        },
+        { name: "status", label: "Status", field: "status", align: 'center' },
+
+        { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
     };
   },

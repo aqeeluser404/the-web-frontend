@@ -138,10 +138,31 @@
               flat
               bordered
             >
+
+            <template v-slot:body-cell-index="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+
               <!-- created date -->
               <template v-slot:body-cell-createdAt="props">
-                <q-td :props="props" class="text-grey-8">
+                <q-td :props="props">
                   {{ formatDate(props.row.createdAt) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-id="props">
+                <q-td :props="props">
+                  <div class="id">
+                    <q-badge
+                      color="text-primary"
+                      align="middle"
+                      class="q-pa-xs q-px-sm"
+                    >
+                      {{ props.row._id }}
+                    </q-badge>
+                  </div>
                 </q-td>
               </template>
 
@@ -271,23 +292,18 @@ export default {
 
       columns: [
         {
-          name: "createdAt",
-          label: "CreatedAt",
-          field: "createdAt",
-          align: "left",
+          name: "index",
+          label: "#",
+          field: "index",
+          align: 'center'
         },
-        {
-          name: "bookingDate",
-          label: "Date For",
-          field: "bookingDate",
-          align: "left",
-        },
-        {
-          name: "bookingTimeslot",
-          label: "Time Slot",
-          field: "bookingTimeslot",
-          align: "left",
-        },
+        { name: "id", label: "Shuttle ID", field: "_id", align: 'left' },
+        // {
+        //   name: "createdAt",
+        //   label: "CreatedAt",
+        //   field: "createdAt",
+        //   align: "left",
+        // },
         {
           name: "student",
           label: "Student",
@@ -301,14 +317,20 @@ export default {
           align: "left",
         },
         {
-          name: "unitNumber",
-          label: "Unit",
-          field: "unitNumber",
+          name: "bookingTimeslot",
+          label: "Slot",
+          field: "bookingTimeslot",
+          align: "left",
+        },
+        {
+          name: "bookingDate",
+          label: "Date",
+          field: "bookingDate",
           align: "left",
         },
         {
           name: "pickupLocation",
-          label: "Pickup",
+          label: "Pick-up",
           field: "pickupLocation",
           align: "left",
         },
@@ -318,17 +340,24 @@ export default {
           field: "dropoffLocation",
           align: "left",
         },
+
+        {
+          name: "unitNumber",
+          label: "Unit",
+          field: "unitNumber",
+          align: "center",
+        },
         {
           name: "status",
           label: "Status",
           field: "status",
-          align: "left",
+          align: "center",
         },
         {
           name: "actions",
           label: "Actions",
           field: "actions",
-          align: "left",
+          align: "center",
         },
       ],
     };

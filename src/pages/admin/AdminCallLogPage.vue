@@ -234,15 +234,15 @@ export default {
 
 
       callLogColumns: [
-        { name: "index", label: "#", field: "index"},
-        { name: "logNumber", label: "Log Number", field: "logNumber"},
-        { name: "username", label: "Applicant", field: "username"},
-        { name: "createdAt", label: "Opened Date", field: "createdAt"},
-        { name: "closedAt", label: "Closed Date", field: "closedAt"},
-        { name: "callType", label: "Call Type", field: "callType"},
-        { name: "status", label: "Status", field: "status"},
-        { name: "vendorType", label: "Vendor Type", field: "vendorType"},
-        { name: "actions", label: "Actions", field: "actions"},
+        { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left'},
+        { name: "username", label: "Applicant", field: "username", align: 'left'},
+        { name: "createdAt", label: "Opened Date", field: "createdAt", align: 'left'},
+        { name: "closedAt", label: "Closed Date", field: "closedAt", align: 'left'},
+        { name: "callType", label: "Call Type", field: "callType", align: 'left'},
+        { name: "status", label: "Status", field: "status", align: 'center'},
+        { name: "vendorType", label: "Vendor Type", field: "vendorType", align: 'left'},
+        { name: "actions", label: "Actions", field: "actions", align: 'center'},
       ],
 
       updateCallLogDialog: false,
