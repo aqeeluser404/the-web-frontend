@@ -141,7 +141,7 @@
 
         <q-card-section>
           <q-table
-            flat bordered :rows="rentals" :columns="rentalColumns" @click="viewRentalDetails" row-key="_id"
+            flat bordered :rows="rentals" :columns="rentalColumns" @row-click="viewRentalDetails" row-key="_id"
           >
             <template v-slot:body-cell-index="props">
               <q-td :props="props">
