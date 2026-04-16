@@ -62,6 +62,7 @@ const routes = [
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
       { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },
+      // { path: "/auth/otp-verification" , component: () => import("pages/auth/OtpPage.vue") },
 
       { path: '/forgot-password', component: () => import('src/pages/email/ForgotPasswordPage.vue') },
       { path: '/reset-password', component: () => import('pages/email/ResetPasswordPage.vue') },

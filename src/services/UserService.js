@@ -29,6 +29,25 @@ class UserService {
       Logger.error(error)
     }
   }
+  // static async login(usernameOrEmail, password) {
+  //   const ENDPOINT = "/auth/login";
+  //   try {
+  //     const response = await axiosInstance.post(ENDPOINT, { username: usernameOrEmail, email: usernameOrEmail, password })
+  //     return response.data
+  //   } catch (error) {
+  //     Logger.error(error);
+  //     throw error.response?.data || { error: "Login failed" };
+  //   }
+  // }
+  // static async verifyOtp(userId, otp) {
+  //   const ENDPOINT = "/auth/verify-otp"
+  //   try {
+  //     const response = await axiosInstance.post(ENDPOINT, {userId, otp})
+  //     return response.data
+  //   } catch (error) {
+  //     Logger.error(error)
+  //   }
+  // }
   static async logout(userId) {
     const ENDPOINT = `/auth/logout/${userId}`
     try {

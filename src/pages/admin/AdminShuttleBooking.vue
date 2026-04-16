@@ -3,31 +3,18 @@
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
       <div class="col-md-9 col-12 full-height">
         <!-- Driver Approval Card -->
-        <q-card class="soft-shadow-card">
+        <q-card class="soft-shadow-card full-height">
           <q-card-section class="bg-primary text-white">
             <div class="text-h6">Shuttle Applications for Today</div>
           </q-card-section>
 
           <q-card-section>
-            <q-list
-              v-if="Object.keys(groupedApplications).length > 0"
-              bordered
-              separator
-            >
-              <q-expansion-item
-                v-for="(applications, time) in groupedApplications"
-                :key="time"
-                :label="time"
-                icon="schedule"
-                header-class="text-weight-medium text-center"
-                expand-separator
-              >
+            <q-list v-if="Object.keys(groupedApplications).length > 0" bordered separator>
+              <q-expansion-item v-for="(applications, time) in groupedApplications" :key="time" :label="time"
+                icon="schedule" header-class="text-weight-medium text-center" expand-separator>
                 <!-- user info -->
-                <div
-                  v-for="shuttle in applications"
-                  :key="shuttle._id"
-                  class="row items-center justify-between q-pa-md"
-                >
+                <div v-for="shuttle in applications" :key="shuttle._id"
+                  class="row items-center justify-between q-pa-md">
                   <div>
                     <div class="text-weight-bold">
                       {{ capitalizeFirstLetter(shuttle.userFirstName) }}
@@ -46,39 +33,22 @@
 
                   <!-- buttons -->
                   <div class="row justify-center items-center">
-                    <CustomButton
-                      :label="
-                        shuttle.status === 'Pending'
-                          ? 'Picked Up'
-                          : shuttle.status === 'Picked Up'
-                            ? 'Dropped Off'
-                            : ''
-                      "
-                      :color="
-                        shuttle.status === 'Pending'
-                          ? 'primary'
-                          : shuttle.status === 'Picked Up'
-                            ? 'secondary'
-                            : 'grey'
-                      "
-                      unelevated
-                      class=""
-                      @click="approveShuttle(shuttle)"
-                      :customStyle="
-                        shuttle.status === 'Picked Up'
+                    <CustomButton :label="shuttle.status === 'Pending'
+                      ? 'Picked Up'
+                      : shuttle.status === 'Picked Up'
+                        ? 'Dropped Off'
+                        : ''
+                      " :color="shuttle.status === 'Pending'
+                        ? 'primary'
+                        : shuttle.status === 'Picked Up'
+                          ? 'secondary'
+                          : 'grey'
+                        " unelevated class="" @click="approveShuttle(shuttle)" :customStyle="shuttle.status === 'Picked Up'
                           ? 'width: 100%'
                           : 'width: 55%'
-                      "
-                    />
-                    <CustomButton
-                      v-if="shuttle.status !== 'Picked Up'"
-                      label="Missed"
-                      color="negative"
-                      unelevated
-                      class="q-ml-sm"
-                      @click="declineShuttle(shuttle)"
-                      customStyle="width: 40%"
-                    />
+                          " />
+                    <CustomButton v-if="shuttle.status !== 'Picked Up'" label="Missed" color="negative" unelevated
+                      class="q-ml-sm" @click="declineShuttle(shuttle)" customStyle="width: 40%" />
                   </div>
                 </div>
               </q-expansion-item>
@@ -89,6 +59,8 @@
           </q-card-section>
         </q-card>
       </div>
+
+
     </div>
 
     <!-- Shuttle History -->
@@ -99,51 +71,29 @@
           <q-card-section class="row justify-between stats-header items-center">
             <div class="row justify-between items-center  full-width">
               <div class="text-h6">Shuttle History</div>
-              <q-btn
-                @click="downloadData()"
-                class="custom-button"
-                icon="eva-cloud-download-outline"
-                flat
-                rounded
-              />
+              <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline" flat rounded />
             </div>
             <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
 
           <!-- Filtering methods -->
           <q-card-section class="row justify-between">
-            <q-input
-              filled
-              v-model="search"
-              placeholder="Search"
-              @update:model-value="filterBySearch"
-              class="col-12 col-md-9"
-            />
-            <q-select
-              v-model="selectedShuttleStatus"
-              :options="shuttleStatus"
-              label="Shuttle Status"
-              @update:model-value="filteredByShuttleStatus"
-              class="col-12 col-md-2"
-            />
+            <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
+              class="col-12 col-md-9" />
+            <q-select v-model="selectedShuttleStatus" :options="shuttleStatus" label="Shuttle Status"
+              @update:model-value="filteredByShuttleStatus" class="col-12 col-md-2" />
           </q-card-section>
 
           <!-- shuttle history table -->
           <!-- loop using the filteredShuttles -->
           <q-card-section v-if="filteredShuttles.length > 0">
-            <q-table
-              :rows="filteredShuttles"
-              :columns="columns"
-              row-key="_id"
-              flat
-              bordered
-            >
+            <q-table :rows="filteredShuttles" :columns="columns" row-key="_id" flat bordered>
 
-            <template v-slot:body-cell-index="props">
-              <q-td :props="props">
-                {{ props.rowIndex + 1 }}
-              </q-td>
-            </template>
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
 
               <!-- created date -->
               <template v-slot:body-cell-createdAt="props">
@@ -155,11 +105,7 @@
               <template v-slot:body-cell-id="props">
                 <q-td :props="props">
                   <div class="id">
-                    <q-badge
-                      color="text-primary"
-                      align="middle"
-                      class="q-pa-xs q-px-sm"
-                    >
+                    <q-badge color="text-primary" align="middle" class="q-pa-xs q-px-sm">
                       {{ props.row._id }}
                     </q-badge>
                   </div>
@@ -202,21 +148,16 @@
               <!-- status -->
               <template v-slot:body-cell-status="props">
                 <q-td :props="props">
-                  <q-badge
-                    :color="
-                      props.row.status === 'Pending'
-                        ? 'orange'
-                        : props.row.status === 'Picked Up'
-                          ? 'primary'
-                          : props.row.status === 'Dropped Off'
-                            ? 'green'
-                            : props.row.status === 'Missed Pick Up'
-                              ? 'red'
-                              : 'grey'
-                    "
-                    align="middle"
-                    class="q-pa-xs q-px-sm"
-                  >
+                  <q-badge :color="props.row.status === 'Pending'
+                    ? 'orange'
+                    : props.row.status === 'Picked Up'
+                      ? 'primary'
+                      : props.row.status === 'Dropped Off'
+                        ? 'green'
+                        : props.row.status === 'Missed Pick Up'
+                          ? 'red'
+                          : 'grey'
+                    " align="middle" class="q-pa-xs q-px-sm">
                     {{ props.row.status }}
                   </q-badge>
                 </q-td>
@@ -224,27 +165,38 @@
 
               <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
-                  <CustomButton
-                    flat
-                    color="red"
-                    text-color="red"
-                    customStyle="width: 15%"
-                    icon="eva-trash-outline"
-                    @click="cancelBooking(props.row)"
-                  />
+                  <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                    @click="cancelBooking(props.row)" />
                 </q-td>
               </template>
             </q-table>
           </q-card-section>
           <q-card-section v-else class="row justify-center">
             <q-item>
-              <q-item-section class="text-subtitle1"
-                >No shuttle booking has been placed yet.</q-item-section
-              >
+              <q-item-section class="text-subtitle1">No shuttle booking has been placed yet.</q-item-section>
             </q-item>
           </q-card-section>
         </q-card>
       </div>
+
+      <!-- <q-card bordered class="col-md-3 col-12 soft-shadow-card">
+
+        <q-card-section class="row justify-between stats-header items-center">
+          <div class="row justify-between items-center full-width">
+            <div class="text-h6">Tenant List</div>
+            <q-btn @click="downloadData()" size="12px" icon="eva-cloud-download-outline" flat rounded />
+          </div>
+          <q-separator class="q-my-sm" style="width: 100%;" />
+        </q-card-section>
+
+        <q-table flat bordered :rows="filteredUsers" :columns="userColumns" row-key="_id">
+          <template v-slot:body-cell-index="props">
+            <q-td :props="props">
+              {{ props.rowIndex + 1 }}
+            </q-td>
+          </template>
+        </q-table>
+      </q-card> -->
     </div>
 
     <q-inner-loading :showing="loading" color="primary" size="md" />
@@ -289,6 +241,29 @@ export default {
       ],
       selectedShuttleStatus: "All",
       showAllStatuses: true,
+
+      userColumns: [
+        {
+          name: "index",
+          label: "#",
+          field: "index",
+          align: 'center'
+
+        },
+        // { name: "username", label: "Username", field: "username", align: 'left' },
+        { name: "firstName", label: "First Name", field: "firstName", align: 'left' },
+        { name: "lastName", label: "Last Name", field: "lastName", align: 'left' },
+        // { name: "id", label: "User/Tenant ID", field: "_id", align: 'left' },
+        // { name: "email", label: "Email", field: "email", align: 'left' },
+        // { name: "approved", label: "Approved Applications", field: "rentals", align: 'left' },
+        // { name: "type", label: "Type", field: "userType", align: 'left' },
+        // { name: "rightsType", label: "Rights", field: "rightsType", align: 'left' },
+        // { name: "online", label: "Online", field: "loginInfo", align: 'center' },
+        // { name: "actions", label: "Actions", field: "actions", align: 'center' },
+      ],
+
+      users: [],
+      filteredUsers: [],
 
       columns: [
         {
@@ -423,9 +398,9 @@ export default {
     },
 
     async findAllShuttles() {
-      this.loading=true
+      this.loading = true
       const response = await ShuttleService.findAllShuttles();
-      console.log(response);
+      // console.log(response);
 
       this.shuttles = await Promise.all(
         response.map(async (shuttle) => {
@@ -488,7 +463,13 @@ export default {
       );
       this.filteredByShuttleStatus();
 
-      this.loading=false
+      this.loading = false
+    },
+
+    async findAllUsers() {
+      const response = await UserService.findAllUsers();
+
+      this.filteredUsers = response.filter(user => user.rightsType === 'Tenant');
     },
 
     //get todays applications
@@ -748,6 +729,7 @@ export default {
   },
   created() {
     this.findAllShuttles();
+    this.findAllUsers()
   },
   // mounted() {
   //   const refresh = async () => {

@@ -118,6 +118,18 @@
               </q-td>
             </template>
 
+            <!-- Type -->
+            <template v-slot:body-cell-rightsType="props">
+              <q-td :props="props">
+                <div v-if="props.row.rightsType">
+                  {{ props.row.rightsType }}
+                </div>
+                <div v-else>
+                  Unassigned
+                </div>
+              </q-td>
+            </template>
+
             <!-- Online -->
             <template v-slot:body-cell-online="props">
               <q-td :props="props">
@@ -204,6 +216,7 @@ export default {
         { name: "email", label: "Email", field: "email", align: 'left' },
         { name: "approved", label: "Approved Applications", field: "rentals", align: 'left' },
         { name: "type", label: "Type", field: "userType", align: 'left' },
+        { name: "rightsType", label: "Rights", field: "rightsType", align: 'left' },
         { name: "online", label: "Online", field: "loginInfo", align: 'center' },
         { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
@@ -212,11 +225,14 @@ export default {
       search: '',
       filteredUsers: [],
       allUsers: [],
-      adminUsers: [],
-      regularUsers: [],
+      adminUsers: [], regularUsers: [],
+
+      tenantUsers: [], driverUsers: [], agentUsers: [],
+
       onlineUsers: [],
       offlineUsers: [],
-      userSelectors: ['All', 'Admin', 'User', 'Online', 'Offline'],
+      // userSelectors: ['All', 'Admin', 'User', 'Tenant', 'Driver', 'Agent', 'Online', 'Offline', ],
+      userSelectors: ['All', 'Admin', 'User', 'Tenant', 'Driver', 'Agent' ],
       selectedUser: 'All',
       userPieChart: null,
       loginBarChart: null,
@@ -357,12 +373,21 @@ export default {
         const adminUsersTemp = this.users.filter(user => user.userType === 'admin');
         const regularUsersTemp = this.users.filter(user => user.userType === 'user');
 
+        const tenantUsersTemp = this.users.filter(user => user.rightsType === 'Tenant');
+        const driverUsersTemp = this.users.filter(user => user.rightsType === 'Driver');
+        const agentUsersTemp = this.users.filter(user => user.rightsType === 'Agent');
+
         const onlineUsersTemp = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn === true)
         const offlineUsersTemp = this.users.filter(user => user.loginInfo && user.loginInfo.isLoggedIn === false)
 
         this.allUsers = [...this.users];
         this.adminUsers = adminUsersTemp;
         this.regularUsers = regularUsersTemp;
+
+        this.tenantUsers = tenantUsersTemp;
+        this.driverUsers = driverUsersTemp
+        this.agentUsers = agentUsersTemp;
+
         this.onlineUsers = onlineUsersTemp;
         this.offlineUsers = offlineUsersTemp;
 
@@ -370,7 +395,6 @@ export default {
 
         this.updateUserChart();
         this.loading = false;
-
     },
 
     // updateLoginBarChart() {
@@ -604,7 +628,15 @@ export default {
         this.filteredUsers = this.adminUsers;
       } else if (this.selectedUser === 'User') {
         this.filteredUsers = this.regularUsers;
-      } else if (this.selectedUser === 'Online') {
+      } else if (this.selectedUser === 'Tenant') {
+        this.filteredUsers = this.tenantUsers
+      } else if (this.selectedUser === 'Driver') {
+        this.filteredUsers = this.driverUsers
+      } else if (this.selectedUser === 'Agent') {
+        this.filteredUsers = this.agentUsers
+      }
+
+      else if (this.selectedUser === 'Online') {
         this.filteredUsers = this.onlineUsers;
       } else if (this.selectedUser === 'Offline') {
         this.filteredUsers = this.offlineUsers;

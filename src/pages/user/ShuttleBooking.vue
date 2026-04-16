@@ -315,8 +315,8 @@ export default {
 
   data() {
     return {
-      pickupLocation: "University",
-      dropoffLocation: "Residence",
+      pickupLocation: "Residence",
+      dropoffLocation: "University",
 
       pickupOptions: ["University", "Residence"],
       dropoffOptions: ["University", "Residence"],

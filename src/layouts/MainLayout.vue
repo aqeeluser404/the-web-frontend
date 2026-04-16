@@ -79,7 +79,7 @@
               to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" flat rounded />
 
             <q-btn v-if="isAdminUser" to="/admin"
-              class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Admin" flat rounded />
+              class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" :label="portalName" flat rounded />
 
             <q-btn v-if="isVendorUser" to="/vendor"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Vendor" flat
@@ -147,7 +147,7 @@
 
                     <!-- Admin/Vendor items -->
                     <q-item clickable v-close-popup to="/admin" v-if="isAdminUser">
-                      <q-item-section>Admin Dashboard</q-item-section>
+                      <q-item-section>{{ portalName }}</q-item-section>
                     </q-item>
                     <q-item clickable v-close-popup to="/vendor" v-if="isVendorUser">
                       <q-item-section>Vendor Dashboard</q-item-section>
@@ -367,6 +367,21 @@ export default {
 
       return navRoutes.includes(this.$route.path);
     },
+
+    portalName() {
+      if (!this.userDetails) return ""
+      if (this.userDetails.userType === "admin") {
+        switch (this.userDetails.rightsType) {
+          case "Driver":
+            return "Driver Portal"
+          case "Agent":
+            return "Agent Portal"
+          default:
+            return "Admin Portal"
+        }
+      }
+      return ""
+    }
   },
   mounted() {
     this.checkLoginStatus()

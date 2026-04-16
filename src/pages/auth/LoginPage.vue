@@ -178,6 +178,45 @@
         }
       },
 
+      // async onSubmit() {
+      //   try {
+      //     const response = await UserService.login(this.user.usernameOrEmail, this.user.password);
+
+      //     if (response === 'otp_required' || response.status === 'otp_required') {
+      //       this.$q.dialog({
+      //         title: 'OTP Required',
+      //         message: 'Check your email for the OTP code.',
+      //         color: 'primary',
+      //         persistent: true,
+      //       }).onOk(() => {
+      //         this.$router.push('/auth/otp-verification');
+      //       });
+      //     }
+
+      //     if (response) {
+      //       this.$q.dialog({
+      //         title: 'Success',
+      //         message: 'Login successful!',
+      //         color: 'primary',
+      //         persistent: true,
+      //       }).onOk(() => {
+      //         this.$router.push('/units/apply/floor/1');
+      //       });
+      //     }
+      //     else {
+      //       this.$q.notify({ type: 'negative', color: 'red', message: 'Login failed. Please try again!' });
+      //       this.onReset();
+      //     }
+      //   } catch (error) {
+      //     if (error.response && (error.response.status === 401 || error.response.status === 400)) {
+      //       this.$q.notify({ type: 'negative', color: 'red', message: 'Login failed. Incorrect username or password.' });
+      //     } else {
+      //       this.$q.notify({ type: 'negative', color: 'red', message: 'Login failed. Please try again!' });
+      //     }
+      //     this.onReset();
+      //   }
+      // },
+
       toggleVisibility() {
         this.inputType = this.inputType === "password" ? "text" : "password";
       },
