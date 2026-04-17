@@ -285,6 +285,22 @@
               </q-td>
             </template>
 
+            <!-- QR Code Column -->
+            <template v-slot:body-cell-qr="props">
+              <q-td :props='props'>
+                <q-btn
+                round
+                flat
+                icon="qr_code_2"
+                :color="props.row.status === 'Dropped Off'|| props.row.status === 'Missed Pick Up' ? 'grey' : 'primary'"
+                :disable="props.row.status === 'Dropped Off' || props.row.status === 'Missed Pick Up'"
+                @click="openQRDialog(props.row)" >
+                  <q-tooltip>View Shuttle Pass</q-tooltip>
+                </q-btn>
+              </q-td>
+            </template>
+
+
             <template v-slot:body-cell-actions="props">
               <q-td :props="props" class="text-center">
                 <CustomButton
@@ -301,6 +317,83 @@
         </q-card-section>
       </q-card>
     </div>
+
+    <q-dialog v-model="showQRDialog" persistent>
+      <q-card style="min-width: 340px; max-width: 420px; width: 100%">
+
+        <q-card-section class="bg-primary text-white text-center q-pa-md">
+          <q-icon name="qr_code_2" size="28px" class="q-mb-xs"/>
+          <div class="text-h6">Shuttle Pass</div>
+          <div class="text-caption">Show this QR code to the Shuttle Driver</div>
+        </q-card-section>
+
+        <q-card-section class="column items-center q-pa-lg">
+
+        <!-- Loading spinner while QR generates -->
+        <div v-if="qrGenerating" class="column items-center q-pa-xl">
+          <q-spinner color="primary" size="48px" />
+          <div class="text-grey-6 q-mt-sm">Generating pass...</div>
+        </div>
+
+        <!-- QR Canvas -->
+        <canvas
+          v-show="!qrGenerating"
+          ref="qrCanvas"
+          class="qr-canvas"
+        />
+
+        <!-- Booking Info Below QR -->
+        <div
+          v-if="selectedShuttle && !qrGenerating"
+          class="q-mt-md text-center full-width"
+        >
+          <q-badge
+            :color="
+              selectedShuttle.status === 'Pending'
+                ? 'orange'
+                : selectedShuttle.status === 'Picked Up'
+                ? 'primary'
+                : 'grey'
+            "
+            class="q-pa-sm q-mb-sm"
+            style="font-size: 13px"
+          >
+            {{ selectedShuttle.status }}
+          </q-badge>
+
+          <div class="text-subtitle1 text-weight-bold q-mt-sm">
+            {{ selectedShuttle.pickupLocation }} →
+            {{ selectedShuttle.dropoffLocation }}
+          </div>
+
+          <div class="text-grey-7 q-mt-xs">
+            {{ formatDate(selectedShuttle.bookingTimeslot) }} at
+            {{ formatTime(selectedShuttle.bookingTimeslot) }}
+          </div>
+
+          <div class="text-grey-6 q-mt-xs" style="font-size: 11px">
+            ID: {{ selectedShuttle._id }}
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="row justify-between q-pt-none q-pb-md q-px-md">
+        <q-btn
+          flat
+          label="Close"
+          color="grey"
+          @click="closeQRDialog"
+        />
+        <q-btn
+          unelevated
+          label="Download Pass"
+          color="primary"
+          icon="download"
+          @click="downloadQR"
+        />
+      </q-card-section>
+      </q-card>
+    </q-dialog>
 </template>
 
 <script>
@@ -309,6 +402,7 @@ import ShutttleService from "src/services/ShuttleService";
 import Helper from "src/services/utils";
 import RentalService from "src/services/RentalService";
 import CustomButton from "src/components/elements/CustomButton.vue";
+import QRCode from 'qrcode'
 
 export default {
   name: "BookingPage",
@@ -339,6 +433,11 @@ export default {
       rentalDetails: [],
       bookingHistory: [],
 
+      //QR dialog state
+      showQRDialog: false,
+      selectedShuttle: null,
+      qrGenerating: false,
+
       columns: [
         { name: "index", label: "#", field: "index", align: 'center' },
         { name: "id", label: "Shuttle ID", field: "_id", align: 'left' },
@@ -355,6 +454,8 @@ export default {
           align: "left",
         },
         { name: "status", label: "Status", field: "status", align: 'center' },
+
+        { name: "qr", label: "Pass", field: "qr", align: "center" },
 
         { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
@@ -415,6 +516,8 @@ export default {
   },
 
   methods: {
+    formatDate: Helper.formatDate,
+    formatTime: Helper.formatTime,
 
     // -------------------------- DATE AND SLOT SELECTION --------------------------
     dateOptions(day) {
@@ -622,6 +725,60 @@ export default {
         }
       }).onCancel(() => { });
     },
+
+    // ---------QR Code---------------
+    openQRDialog(shuttle) {
+      this.selectedShuttle = shuttle
+      this.showQRDialog = true
+      this.qrGenerating = true
+      this.$nextTick(async () => {
+        await this.generateQR()
+      })
+    },
+    closeQRDialog() {
+      this.showQRDialog = false
+      this.selectedShuttle = null
+    },
+
+    async generateQR() {
+      try {
+        const canvas = this.$refs.qrCanvas
+        if (!canvas) return
+
+        // encode the shuttle _id into the QR
+        const payload = JSON.stringify({
+          shuttleId: this.selectedShuttle._id,
+          userId: this.selectedShuttle.user,
+          timeslot: this.selectedShuttle.bookingTimeslot,
+          pickup: this.selectedShuttle.pickupLocation,
+          dropoff: this.selectedShuttle.dropoffLocation,
+        })
+
+        await QRCode.toCanvas(canvas, payload, {
+          width: 240,
+          margin: 2,
+          color: {
+            dark: '#1a1a1a',
+            light: '#ffffff',
+          },
+          errorCorrectionLevel: 'M',
+        })
+      } catch (error) {
+        console.error('QR generation failed:', error)
+        this.$q.notify({ type: 'negative', message: 'Failed to generate QR code' })
+      } finally {
+        this.qrGenerating = false
+      }
+    },
+
+    downloadQR() {
+      const canvas = this.$refs.qrCanvas
+      if (!canvas) return
+      const link = document.createElement('a')
+      link.download = `shuttle-pass-${this.selectedShuttle._id}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    },
   },
 };
 </script>
@@ -671,5 +828,11 @@ export default {
 .selected-slot {
   background-color: #d2f0ee;
   border-radius: 6px;
+}
+.qr-canvas {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  padding: 8px;
+  
 }
 </style>
