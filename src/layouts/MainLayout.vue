@@ -76,7 +76,7 @@
 
             <q-btn
               v-if="showUserDashboardItems"
-              to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" flat rounded />
+              to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" icon="directions_bus" flat rounded />
 
             <q-btn v-if="isAdminUser" to="/admin"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" :label="portalName" flat rounded />

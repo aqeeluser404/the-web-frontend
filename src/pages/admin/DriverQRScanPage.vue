@@ -24,7 +24,7 @@
 
           <!-- Start / Stop button -->
           <q-btn
-            :label="scanning ? 'Stop Scanner' : 'Start Camera Scanner'"
+            :label="scanning ? 'Stop Scanner' : 'Scan QR Code'"
             :color="scanning ? 'negative' : 'primary'"
             :icon="scanning ? 'stop' : 'qr_code_scanner'"
             unelevated
