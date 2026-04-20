@@ -5,7 +5,7 @@
         <!-- Driver Approval Card -->
         <q-card class="soft-shadow-card full-height">
           <q-card-section class="bg-primary text-white">
-            <div class="text-h6">Shuttle Applications for Today</div>
+            <div class="text-h6">Today {{ new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }}</div>
           </q-card-section>
 
           <q-card-section>

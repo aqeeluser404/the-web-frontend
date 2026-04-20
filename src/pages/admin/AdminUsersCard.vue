@@ -211,7 +211,9 @@ export default {
           align: 'center'
 
         },
-        { name: "username", label: "Username", field: "username", align: 'left' },
+        // { name: "username", label: "Username", field: "username", align: 'left' },
+        { name: "firstName", label: "First Name", field: "firstName", align: 'left' },
+        { name: "lastName", label: "Last Name", field: "lastName", align: 'left' },
         { name: "id", label: "User/Tenant ID", field: "_id", align: 'left' },
         { name: "email", label: "Email", field: "email", align: 'left' },
         { name: "approved", label: "Approved Applications", field: "rentals", align: 'left' },

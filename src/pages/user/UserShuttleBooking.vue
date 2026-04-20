@@ -2,7 +2,7 @@
   <q-page class="bg-grey-3">
     <div v-if="!loading">
       <!-- || userDetails.rightsType === 'Tenant' -->
-      <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin' || userDetails.rightsType === 'Tenant'">
+      <div class="constrain-standard q-py-md" v-if="userDetails.userType === 'admin' || (userDetails.rightsType === 'Tenant' && userDetails.hasShuttle === true)" >
         <q-card class="col-md-4 col-12 stats-card full-height">
           <q-card-section class="row stats-header justify-center">
             <div class="text-h6">Book a Shuttle</div>
@@ -46,7 +46,8 @@ export default {
     return {
       loading: true,
       userDetails: {
-        rightsType: ''
+        rightsType: '',
+        hasShuttle: ''
       },
     }
   },

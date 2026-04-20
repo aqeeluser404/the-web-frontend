@@ -146,13 +146,13 @@
                 </q-td>
               </template>
 
-              <template v-slot:body-cell-applicant="props">
+              <!-- <template v-slot:body-cell-applicant="props">
                 <q-td :props="props">
                   <div @click.stop="viewUserDetails(props.row.userId)">
                     {{ capitalizeFirstLetter(props.row.username) }}
                   </div>
                 </q-td>
-              </template>
+              </template> -->
 
               <template v-slot:body-cell-id="props">
                 <q-td :props="props">
@@ -335,7 +335,9 @@ export default {
       rentalColumns: [
         { name: "index", label: "#", field: "index", align: 'center' },
         { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
-        { name: "applicant", label: "Applicant", field: "username", align: 'left' },
+        // { name: "applicant", label: "Username", field: "username", align: 'left' },
+        { name: "userFirstName", label: "First Name", field: "userFirstName", align: 'left' },
+        { name: "userLastName", label: "Last Name", field: "userLastName", align: 'left' },
         { name: "applicantContact", label: "Applicant Contact", field: "userPhone", align: 'left' },
         { name: "applicantEmail", label: "Applicant Email", field: "userEmail", align: 'left' },
         { name: "id", label: "Application ID", field: "_id", align: 'left' },
@@ -618,6 +620,8 @@ export default {
           ...rental,
           unitType: unit.unitType,
           username: user.username,
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
           userId: user._id,
           userEmail: user.email,
           userPhone: user.phone,

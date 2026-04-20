@@ -78,6 +78,18 @@
               </q-item-section>
             </q-item>
             <q-item>
+              <q-item-section class="text-left text-subtitle1">Shuttle Service</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <q-select
+                  v-model="userDetails.hasShuttle"
+                  :options="shuttleTypeOptions"
+                  emit-value
+                  map-options
+                />
+              </q-item-section>
+            </q-item>
+
+            <q-item>
               <q-item-section class="text-left text-subtitle1">Account ID</q-item-section>
               <q-item-section class="text-left text-subtitle1">
                 <q-input readonly v-model="userDetails._id" />
@@ -420,6 +432,12 @@ export default {
           registeredInstitution: ''
         }
       },
+
+      shuttleTypeOptions: [
+        { label: 'Has shuttle service', value: true },
+        { label: 'No shuttle service', value: false },
+      ],
+
       myRentals: [],
       userTypeOptions: [
         { label: 'Admin', value: 'admin' },
@@ -471,6 +489,7 @@ export default {
 
         this.userDetails = await UserService.findUserById(decryptedId)
         this.userDetails.rightsType = this.userDetails.rightsType ?? ''
+        this.userDetails.hasShuttle = this.userDetails.hasShuttle ?? false
 
         // Wait for both async calls to finish before continuing
         await Promise.all([
@@ -504,6 +523,7 @@ export default {
         password: this.userDetails.password,
         userType: this.userDetails.userType,
         rightsType: this.userDetails.rightsType,
+        hasShuttle: this.userDetails.hasShuttle,
         location: this.userDetails.location,
         loginInfo: this.userDetails.loginInfo,
         order: this.userDetails.order
@@ -515,7 +535,7 @@ export default {
 
       if (updatedUser) {
         this.$q.dialog({
-          title: 'Confirm', message: `You are about to update this user account type, continue?`, color: 'primary', cancel: true, persistent: true
+          title: 'Confirm', message: `You are about to update this user account, continue?`, color: 'primary', cancel: true, persistent: true
         }).onOk(async () => {
           const response = await UserService.updateUserDetails(this.userDetails._id, updatedUser)
           if (response) {

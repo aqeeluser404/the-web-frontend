@@ -339,21 +339,47 @@
               </q-timeline-entry>
 
               <!-- Rental Approvals -->
-              <q-timeline-entry v-if="rental.status === 'Pending'" title="Approve Rental" color="grey"
-                icon="eva-briefcase-outline" side="left">
+              <!-- <q-timeline-entry v-if="rental.status === 'Pending' || 'Active'" title="Approve Rental" color="grey" icon="eva-briefcase-outline" side="left">
                 <div class="q-mb-md"></div>
                 <div @click="openRentalApprovalDialog" style="cursor: pointer; text-decoration: underline;">
                   Approve the rental information and desired lease period.
                 </div>
-              </q-timeline-entry>
+              </q-timeline-entry> -->
+
+<q-timeline-entry
+  v-if="rental.status === 'Pending' || rental.status === 'Active'"
+  :title="rental.status === 'Pending' ? 'Approve Rental' : 'Rental has been Approved'"
+  :subtitle="rental.status === 'Active' ? formatDate(rental.rentalStartDate) : ''"
+  :icon="rental.status === 'Active' ? 'done_all' : 'eva-briefcase-outline'"
+  :color="rental.status === 'Active' ? 'green' : 'grey'"
+  side="left"
+>
+  <div class="q-mb-md">
+    <p class="q-mb-none">
+      <span v-if="rental.status === 'Pending'">
+        Approve the rental information and desired lease period.
+      </span>
+      <span v-else>
+        The rental application can still be modified following approval.
+      </span>
+
+    <q-icon
+      name="edit"
+      size="xs"
+      class="cursor-pointer q-ml-sm"
+      @click="openRentalApprovalDialog"
+    />
+    </p>
+  </div>
+</q-timeline-entry>
 
               <!-- rejected rental -->
               <q-timeline-entry v-if="rental.status === 'Rejected'" title="Rental has been Rejected" icon="close"
                 color="red" side="left" />
 
               <!-- approved rental -->
-              <q-timeline-entry v-if="rental.status === 'Active'" title="Rental has been Approved"
-                :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" />
+              <!-- <q-timeline-entry v-if="rental.status === 'Active'" title="Rental has been Approved"
+                :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" /> -->
 
               <!-- scheduled ended rental -->
               <q-timeline-entry v-if="rental.status === 'Ended' && rental.earlyEndDate === null"
