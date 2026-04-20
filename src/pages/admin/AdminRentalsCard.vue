@@ -730,7 +730,9 @@ export default {
         rental.rentalStartDate?.toLowerCase().includes(searchTerm) ||
         rental.rentalEndDate?.toLowerCase().includes(searchTerm) ||
         rental.earlyEndDate?.toLowerCase().includes(searchTerm) ||
-        rental._id?.toLowerCase().includes(searchTerm)
+        rental._id?.toLowerCase().includes(searchTerm) ||
+        rental.userFirstName?.toLowerCase().includes(searchTerm) ||
+        rental.userLastName?.toLowerCase().includes(searchTerm)
       );
     },
 

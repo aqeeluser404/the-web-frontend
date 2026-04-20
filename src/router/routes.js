@@ -58,6 +58,9 @@ const routes = [
       // incident management
       { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
+      // qr scan
+      {path: '/scan', component: () => import('src/pages/admin/DriverQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },

@@ -507,22 +507,34 @@ export default {
           shuttle.status === "Picked Up"
       );
 
-      // Sort by timeslot ascending
+      // Sort by timeslot ascending(within the time groups)
       this.todaysApplications.sort(
         (a, b) => new Date(a.bookingTimeslot) - new Date(b.bookingTimeslot)
       );
 
-      // Group by formatted time
-      this.groupedApplications = this.todaysApplications.reduce((groups, shuttle) => {
+      //group by timeslot
+      const sortTimeslotGroups = this.todaysApplications.reduce((groups, shuttle) => {
         const timeKey = this.formatTime(shuttle.bookingTimeslot);
 
-        if (!groups[timeKey]) {
+        if(!groups[timeKey]) {
           groups[timeKey] = [];
         }
 
         groups[timeKey].push(shuttle);
 
         return groups;
+      }, {});
+
+      //sort by earliest first
+      this.groupedApplications = Object.keys(sortTimeslotGroups)
+      .sort((a,b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+      })
+      .reduce((sorted, key) => {
+        sorted[key] = sortTimeslotGroups[key];
+        return sorted;
       }, {});
     },
 

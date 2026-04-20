@@ -76,10 +76,12 @@
 
             <q-btn
               v-if="showUserDashboardItems"
-              to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" flat rounded />
+              to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" icon="directions_bus" flat rounded />
 
             <q-btn v-if="isAdminUser" to="/admin"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" :label="portalName" flat rounded />
+
+            <q-btn v-if="isAdminUser && userDetails.rightsType === 'Driver'" to="/scan" class="custom-button q-py-sm large-screen-only" icon="qr_code_scanner" flat rounded/>
 
             <q-btn v-if="isVendorUser" to="/vendor"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" label="Vendor" flat
@@ -153,6 +155,15 @@
                       <q-item-section>Vendor Dashboard</q-item-section>
                     </q-item>
 
+                    <q-item
+                      clickable
+                      v-close-popup
+                      to="/scan"
+                      v-if="isAdminUser && userDetails.rightsType === 'Driver'"
+                    >
+                      <q-item-section>Scan QR</q-item-section>
+                    </q-item>
+
                     <!-- Auth items -->
                     <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
                       <q-item-section>Login</q-item-section>
@@ -211,6 +222,7 @@
               <q-breadcrumbs-el v-if="$route.path.includes('/vendor')" label="Vendor" to="/vendor" icon="home" />
               <q-breadcrumbs-el v-if="$route.path.includes('/vendor/call-log')" label="Call Log Administration"
                 icon="eva-settings-outline" />
+                <q-breadcrumbs-el v-if="$route.path.includes('/scan')" label="QR Scanner" icon="qr_code_scanner"/>
             </q-breadcrumbs>
           </q-toolbar>
         </div>
