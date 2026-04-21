@@ -609,6 +609,66 @@ export default {
         })
     },
 
+// async findAllRentals() {
+//   try {
+//     this.loading = true;
+
+//     // Step 1: Fetch all rentals
+//     const response = await RentalService.findAllRentals();
+
+//     // Step 2: Prepare caches
+//     const unitCache = {};
+//     const userCache = {};
+
+//     // Step 3: Enrich rentals with unit + user data
+//     this.rentals = await Promise.all(response.map(async rental => {
+//       // Fetch unit (with caching)
+//       if (!unitCache[rental.unit]) {
+//         unitCache[rental.unit] = await UnitService.getByIdUnit(rental.unit);
+//       }
+//       const unit = unitCache[rental.unit];
+
+//       // Fetch user (with caching)
+//       if (!userCache[rental.user]) {
+//         userCache[rental.user] = await UserService.findUserById(rental.user);
+//       }
+//       const user = userCache[rental.user];
+
+//       return {
+//         ...rental,
+//         unitType: unit?.unitType,
+//         username: user?.username,
+//         userFirstName: user?.firstName,
+//         userLastName: user?.lastName,
+//         userId: user?._id,
+//         userEmail: user?.email,
+//         userPhone: user?.phone,
+//         userVerification: user?.verification,
+//         userDocuments: user?.documents || []
+//       };
+//     }));
+
+//     // Step 4: Filter rentals by status
+//     const filteredRentals = this.rentals.filter(rental =>
+//       ['Pending', 'Active', 'Rejected', 'Ended'].includes(rental.status)
+//     );
+
+//     this.currentRentals = filteredRentals;
+//     this.approvedRentals = filteredRentals.filter(r => r.status === 'Active');
+//     this.pendingRentals = filteredRentals.filter(r => r.status === 'Pending');
+//     this.rejectedRentals = filteredRentals.filter(r => r.status === 'Rejected');
+//     this.endedRentals = filteredRentals.filter(r => r.status === 'Ended');
+
+//     // Step 5: Update UI
+//     this.filteredByRentalStatus();
+//     this.updateChart();
+//   } catch (error) {
+//     console.error('Error loading rentals:', error);
+//   } finally {
+//     this.loading = false;
+//   }
+// },
+
     async findAllRentals() {
       this.loading = true
       const response = await RentalService.findAllRentals();
@@ -736,7 +796,9 @@ export default {
         rental.earlyEndDate?.toLowerCase().includes(searchTerm) ||
         rental._id?.toLowerCase().includes(searchTerm) ||
         rental.userFirstName?.toLowerCase().includes(searchTerm) ||
-        rental.userLastName?.toLowerCase().includes(searchTerm)
+        rental.userLastName?.toLowerCase().includes(searchTerm) ||
+        rental.userEmail?.toLowerCase().includes(searchTerm) ||
+        rental.userPhone?.toLowerCase().includes(searchTerm)
       );
     },
 

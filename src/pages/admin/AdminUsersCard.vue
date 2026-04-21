@@ -608,6 +608,8 @@ export default {
         user.firstName.toUpperCase().includes(searchTerm) ||
         user.lastName.toLowerCase().includes(searchTerm) ||
         user.lastName.toUpperCase().includes(searchTerm) ||
+        user.phone.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm) ||
         user.userType.toLowerCase().includes(searchTerm) ||
         user.userType.toUpperCase().includes(searchTerm)
       );

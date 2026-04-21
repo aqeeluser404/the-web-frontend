@@ -562,12 +562,12 @@ export default {
     },
     canSubmit() {
       return this.userDetails.verification?.isVerified &&
-        // (
-        //   this.userDetails?.username === 'testuser' ||
-        //   this.userDetails?.username === 'WayneL' ||
-        //   this.userDetails?.username === 'yusri' ||
-        //   this.userDetails?.username === 'admin'
-        // ) &&
+        (
+          this.userDetails?.username === 'testuser' ||
+          this.userDetails?.username === 'WayneL' ||
+          this.userDetails?.username === 'yusri' ||
+          this.userDetails?.username === 'admin'
+        ) &&
         this.userDetails?.age &&
         this.rentalDetails.rentalStartDate &&
         this.rentalDetails.rentalEndDate
