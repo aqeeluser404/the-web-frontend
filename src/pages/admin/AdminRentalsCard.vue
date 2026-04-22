@@ -30,6 +30,7 @@
               <div class="text-h6">Rental History</div>
               <!-- <q-btn @click="syncRentals()" label="Sync Rentals" class="custom-button"
                 flat rounded /> -->
+              <q-btn to="/admin/rentals/clean" class="custom-button" icon="eva-options-2-outline" flat rounded />
               <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
                 flat rounded />
             </div>

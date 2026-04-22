@@ -161,7 +161,8 @@
               color: 'primary',
               persistent: true,
             }).onOk(() => {
-              this.$router.push('/units/apply/floor/1');
+              // this.$router.push('/units/apply/floor/1');
+              this.$router.push('/');
             });
           }
           else {

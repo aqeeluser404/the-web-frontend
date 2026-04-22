@@ -44,6 +44,7 @@ const routes = [
 
       // rental management
       { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      { path: '/admin/rentals/clean', component: () => import('src/pages/admin/AdminRentalCleanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
       { path: '/admin/rentals/view/:id', component: () => import('src/pages/admin/AdminRentalApprovalsPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // unit management

@@ -89,6 +89,21 @@
                 </q-item-section>
               </q-item>
 
+              <q-item>
+                <q-item-section class="text-left text-subtitle1 text-bold">isAvailable *</q-item-section>
+                <q-item-section class="text-left text-subtitle1">
+                  <q-select
+                    v-model="sub.isAvailable"
+                    :options="[
+                      { label: 'true', value: true },
+                      { label: 'false', value: false }
+                    ]"
+                    emit-value
+                    map-options
+                  />
+                </q-item-section>
+              </q-item>
+
               <!-- Multiple Prices with name and price -->
               <div v-for="(priceEntry, pIndex) in subUnitPrices[index]" :key="'existing-price-' + index + '-' + pIndex"
                 class="">
@@ -238,6 +253,7 @@ export default {
         { key: 'currentOccupants', label: 'Current Occupants', readonly: true },
         { key: 'unitOccupants', label: 'Maximum Unit Occupancy', readonly: true },
         { key: 'unitType', label: 'Unit Type' },
+        { key: 'genderAssignment', label: 'Gender Assignment' },
         // { key: 'unitPrice', label: 'Unit Price', type: 'number', prefix: 'R', rules: [val => val > 0 || 'Price must be positive'] },
         { key: 'unitDescription', label: 'Unit Description', type: 'textarea' }
       ]
@@ -307,12 +323,18 @@ export default {
 
           subUnits.push({
             type: s.type,
+            // If it's a bed, force roomType to null
             roomType: s.type === 'room' ? (name || s.roomType || '') : null,
             bedType: s.type === 'bed' ? (name || s.bedType || '') : null,
             price: prices,
             isAvailable: s.isAvailable ?? true,
             reservedBy: s.reservedBy ?? null
           });
+
+          // Explicitly clear roomType if bedType is set
+          if (subUnits[subUnits.length - 1].bedType) {
+            subUnits[subUnits.length - 1].roomType = null;
+          }
         });
 
 
