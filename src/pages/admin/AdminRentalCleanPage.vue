@@ -1,7 +1,7 @@
 <template>
   <q-page class="bg-grey-3">
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
-      <div class="col-md-9 col-12 full-height">
+      <div class="col-md-12 col-12 full-height">
         <q-card class="full-height soft-shadow-card">
 
           <q-card-section class="row justify-between stats-header items-center">
@@ -47,14 +47,16 @@
               <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                   <div class="row justify-center items-center q-gutter-sm no-wrap">
-                    <CustomButton
-                      flat
-                      color="red"
-                      text-color="red"
-                      class="inline-btn"
-                      icon="eva-edit-2-outline"
-                      @click.stop="moveToPending(props.row)"
-                    />
+<CustomButton
+  v-show="props.row && props.row.firstName"
+  flat
+  color="red"
+  text-color="red"
+  class="inline-btn"
+  label="Move to Pending"
+  @click.stop="moveToPending(props.row)"
+/>
+
                   </div>
                 </q-td>
               </template>

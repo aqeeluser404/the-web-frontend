@@ -222,8 +222,23 @@
                 v-model="selectedSubUnit"
                 :options="availableSubUnits"
                 option-label="label"
+                emit-value="false"
+                map-options
                 option-value="value"
                 label="Select Bed/Room"
+                @update:model-value="onSubUnitSelected"
+              />
+            </q-item-section>
+
+            <q-item-section class="text-left text-subtitle1">
+              <q-select
+                v-if="selectedSubUnit"
+                v-model="selectedPricePlan"
+                :options="availablePrices"
+                option-label="name"
+                emit-value="false"
+                map-options
+                label="Select Payment Plan"
               />
             </q-item-section>
           </q-item>
@@ -424,7 +439,10 @@ export default {
       genderBasedUnits: [],
       selectedUnit: null,
       selectedSubUnit: null,
-      availableSubUnits: []
+      availableSubUnits: [],
+      availablePrices: [],
+
+      selectedPricePlan: null
 
     }
   },
@@ -504,6 +522,7 @@ export default {
     async loadSubUnits(selectedOption) {
       this.selectedSubUnit = null;
       this.availableSubUnits = [];
+      this.availablePrices = [];
 
       const unitId = typeof selectedOption === 'object' ? selectedOption.value : selectedOption;
       const unit = await UnitService.getByIdUnit(unitId);
@@ -512,33 +531,95 @@ export default {
         .filter(sub => sub.isAvailable)
         .map(sub => ({
           value: sub.roomType || sub.bedType || sub.type,
-          label: sub.roomType || sub.bedType || sub.type
+          label: sub.roomType || sub.bedType || sub.type,
+          prices: sub.price || []
         }));
     },
 
+    onSubUnitSelected(sub) {
+      this.availablePrices = sub?.prices || [];
+      this.selectedPricePlan = null;
+    },
+
+    // async reassignUnit() {
+    //   try {
+    //     const unit = this.genderBasedUnits.find(u => u._id === this.selectedUnit.value)
+    //     if (!unit) {
+    //       console.error("Unit not found")
+    //       return
+    //     }
+    //     const subUnit = (unit.subUnits || []).find(su => su.bedType === this.selectedSubUnit.value || su.roomType === this.selectedSubUnit.value);
+    //     if (!subUnit) {
+    //       console.error("Subunit not found");
+    //       return;
+    //     }
+    //     const rentalPrice = this.rental?.selectedSubUnits?.price;
+    //     const matchedPrice = (subUnit.price || []).find(
+    //       p => p.name === rentalPrice?.name && p.price === rentalPrice?.price
+    //     );
+    //     if (!matchedPrice) {
+    //       console.error("No matching price plan found for this subunit");
+    //       return;
+    //     }
+
+    //     this.$q.dialog({
+    //       title: 'Confirm', message: `You are about to reassign this tenant to another unit, continue?`, color: 'primary', cancel: true, persistent: true
+    //     }).onOk(async () => {
+    //       const payload = {
+    //         rentalId: this.rental._id,
+    //         newUnitId: unit._id,
+    //         newSubUnit: {
+    //           type: subUnit.type,
+    //           roomType: subUnit.roomType,
+    //           bedType: subUnit.bedType,
+    //           price: matchedPrice
+    //         }
+    //       }
+
+    //       const response = await RentalService.reassignUnit(payload);
+    //       if (response) {
+    //         this.$q.notify({ type: 'positive', color: 'primary', message: 'Reassign successful!' })
+    //         this.$emit('close')
+    //       } else {
+    //         this.$q.notify({ type: 'negative', message: 'Reassing unit failed. Please try again.' })
+    //       }
+    //     }).onCancel(() => {
+    //       return
+    //     })
+    //   } catch (err) {
+    //     console.error("Error during reassignment:", err);
+    //   }
+    // },
+
     async reassignUnit() {
       try {
-        const unit = this.genderBasedUnits.find(u => u._id === this.selectedUnit.value)
+        const unit = this.genderBasedUnits.find(u => u._id === this.selectedUnit.value);
         if (!unit) {
-          console.error("Unit not found")
-          return
+          console.error("Unit not found");
+          return;
         }
-        const subUnit = (unit.subUnits || []).find(su => su.bedType === this.selectedSubUnit.value || su.roomType === this.selectedSubUnit.value);
+
+        const subUnit = (unit.subUnits || []).find(
+          su => su.bedType === this.selectedSubUnit.value || su.roomType === this.selectedSubUnit.value
+        );
         if (!subUnit) {
           console.error("Subunit not found");
           return;
         }
-        const rentalPrice = this.rental?.selectedSubUnits?.price;
-        const matchedPrice = (subUnit.price || []).find(
-          p => p.name === rentalPrice?.name && p.price === rentalPrice?.price
-        );
+
+        // Use the selected payment plan instead of defaulting
+        const matchedPrice = this.selectedPricePlan;
         if (!matchedPrice) {
-          console.error("No matching price plan found for this subunit");
+          console.error("No payment plan selected");
           return;
         }
 
         this.$q.dialog({
-          title: 'Confirm', message: `You are about to reassign this tenant to another unit, continue?`, color: 'primary', cancel: true, persistent: true
+          title: 'Confirm',
+          message: `You are about to reassign this tenant to another unit, continue?`,
+          color: 'primary',
+          cancel: true,
+          persistent: true
         }).onOk(async () => {
           const payload = {
             rentalId: this.rental._id,
@@ -549,18 +630,18 @@ export default {
               bedType: subUnit.bedType,
               price: matchedPrice
             }
-          }
+          };
 
           const response = await RentalService.reassignUnit(payload);
           if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Reassign successful!' })
-            this.$emit('close')
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Reassign successful!' });
+            this.$emit('close');
           } else {
-            this.$q.notify({ type: 'negative', message: 'Reassing unit failed. Please try again.' })
+            this.$q.notify({ type: 'negative', message: 'Reassign unit failed. Please try again.' });
           }
         }).onCancel(() => {
-          return
-        })
+          return;
+        });
       } catch (err) {
         console.error("Error during reassignment:", err);
       }
