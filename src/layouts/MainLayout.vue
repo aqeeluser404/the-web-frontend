@@ -143,7 +143,7 @@
                     <q-item clickable v-close-popup to='/user/call-log' v-if="showUserDashboardItems">
                       <q-item-section>Log A Call</q-item-section>
                     </q-item>
-                    <q-item clickable v-close-popup to='/user/shuttle-booking' v-if="showUserDashboardItems">
+                    <q-item clickable v-close-popup to='/user/shuttle-booking' v-if="isLoggedIn">
                       <q-item-section>Shuttle Booking</q-item-section>
                     </q-item>
 

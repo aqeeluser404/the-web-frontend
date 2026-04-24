@@ -561,15 +561,18 @@ export default {
       return this.getImageUrl(image.imageUrl)
     },
     canSubmit() {
-      return this.userDetails.verification?.isVerified &&
-        (
-          this.userDetails?.username === 'testuser' ||
-          this.userDetails?.username === 'WayneL' ||
-          this.userDetails?.username === 'yusri' ||
-          this.userDetails?.username === 'admin'
-        ) &&
-        this.userDetails?.age &&
-        this.rentalDetails.rentalStartDate &&
+      // return this.userDetails.verification?.isVerified &&
+      //   (
+      //     this.userDetails?.username === 'testuser' ||
+      //     this.userDetails?.username === 'WayneL' ||
+      //     this.userDetails?.username === 'yusri' ||
+      //     this.userDetails?.username === 'admin'
+      //   ) &&
+      //   this.userDetails?.age &&
+      //   this.rentalDetails.rentalStartDate &&
+      //   this.rentalDetails.rentalEndDate
+
+      return this.rentalDetails.rentalStartDate &&
         this.rentalDetails.rentalEndDate
     },
 
@@ -810,10 +813,10 @@ export default {
 
     async createRentalApplication(unit) {
 
-      if (!this.hasAllRequiredDocuments) {
-        this.$q.notify({ type: 'negative', message: 'Please upload all required documents before proceeding.' });
-        return;
-      }
+      // if (!this.hasAllRequiredDocuments) {
+      //   this.$q.notify({ type: 'negative', message: 'Please upload all required documents before proceeding.' });
+      //   return;
+      // }
 
 
       if (this.selectedOption.price && this.selectedOption.price.length > 1 &&
