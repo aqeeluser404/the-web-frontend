@@ -419,15 +419,14 @@ export default {
       selectedDate: null,
 
       slots: [
-        { id: "s1", time: "06:30", remaining: 10 },
-        { id: "s2", time: "07:30", remaining: 10 },
-        { id: "s3", time: "08:30", remaining: 10 },
-        { id: "s4", time: "14:00", remaining: 10 },
-        { id: "s5", time: "15:00", remaining: 10 },
-        { id: "s6", time: "16:00", remaining: 10 },
-        { id: "s7", time: "17:00", remaining: 10 },
+        { id: "s1", time: "07:20", remaining: 15 },
+        { id: "s2", time: "07:40", remaining: 15 },
+        { id: "s3", time: "08:45", remaining: 15 },
+        { id: "s4", time: "14:15", remaining: 15 },
+        { id: "s6", time: "16:15", remaining: 15 },
+        { id: "s7", time: "17:15", remaining: 15 },
       ],
-      maxCapacity: 10,
+      maxCapacity: 15,
 
       userDetails: {},
       rentalDetails: [],
