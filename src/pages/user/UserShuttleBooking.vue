@@ -26,7 +26,7 @@
 
           <q-card-section class="row justify-center">
             <q-item>
-              <q-item-section class="text-subtitle1">You’ll have access to the shuttle booking system once your rental application is approved.</q-item-section>
+              <q-item-section class="text-subtitle1">You’ll have access to the shuttle booking system only if you’ve chosen to include the shuttle service as part of your rental package. If you require access, please contact the admin team to enable it.</q-item-section>
             </q-item>
           </q-card-section>
         </q-card>

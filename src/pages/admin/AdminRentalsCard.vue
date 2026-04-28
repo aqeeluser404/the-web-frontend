@@ -276,6 +276,16 @@
                       @click.stop="endRental(props.row)"
                     />
 
+                  <CustomButton
+                    flat
+                    color="primary"
+                    text-color="primary"
+                    class="inline-btn"
+                    icon="open_in_new"
+                    label="Open"
+                    @click.stop="openInNewTab(props.row)"
+                  />
+
                   </div>
                 </q-td>
               </template>
@@ -305,7 +315,7 @@ Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Le
 );
 
 import * as XLSX from 'xlsx';
-
+import CryptoJS from 'crypto-js';
 import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
@@ -376,6 +386,16 @@ export default {
       // Look for the first number anywhere in the string
       const match = str.match(/\d+/);
       return match ? match[0] : str;
+    },
+
+    openInNewTab(row) {
+      try {
+        const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), 'secret-key').toString();
+        const url = `/admin/rentals/view/${encodeURIComponent(encryptedId)}`;
+        window.open(url, '_blank'); // open in new tab
+      } catch (error) {
+        console.error("Failed to open rental in new tab:", error);
+      }
     },
 
     // async downloadData() {

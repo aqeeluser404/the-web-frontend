@@ -8,6 +8,7 @@
         $route.path !== '/resend-verification' &&
         $route.path !== '/reset-password' &&
         $route.path !== '/forgot-password' &&
+        $route.path !== '/admin/auth/login' &&
         $route.path !== '/install-app'
       ">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
@@ -78,7 +79,7 @@
               v-if="isLoggedIn"
               to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only" label="Shuttle Booking" icon="directions_bus" flat rounded />
 
-            <q-btn v-if="showUserDashboardItems" to="/admin"
+            <q-btn v-if="isAdminUser" to="/admin"
               class="custom-button q-py-sm large-screen-only" icon="eva-pie-chart-outline" :label="portalName" flat rounded />
 
             <q-btn v-if="isAdminUser && userDetails.rightsType === 'Driver'" to="/scan" class="custom-button q-py-sm large-screen-only" icon="qr_code_scanner" flat rounded/>

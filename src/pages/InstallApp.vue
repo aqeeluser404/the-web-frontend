@@ -55,8 +55,8 @@ export default {
   methods: {
     downloadApk() {
       const link = document.createElement('a')
-      link.href = '/files/the-web-v3-app.apk'
-      link.download = 'the-web-v3-app.apk'
+      link.href = '/files/the-web-v4-app.apk'
+      link.download = 'the-web-v4-app.apk'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

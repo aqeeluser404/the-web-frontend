@@ -65,6 +65,7 @@ const routes = [
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
+      { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue"), beforeEnter: Helper.beforeRouteEnterAdmin },
       { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },
       // { path: "/auth/otp-verification" , component: () => import("pages/auth/OtpPage.vue") },
 

@@ -657,7 +657,7 @@ export default {
           const subUnits = unit.subUnits || [];
           return subUnits.some(subUnit =>
             (subUnit.price || []).some(p =>
-              p.name === selectedPriceName && p.price === selectedPriceValue
+              p.name === selectedPriceName || p.price === Number(selectedPriceValue)
             )
           );
         })

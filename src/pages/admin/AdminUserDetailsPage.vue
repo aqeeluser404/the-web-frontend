@@ -101,6 +101,12 @@
                 <q-input readonly :model-value="formatDate(userDetails.dateCreated)" />
               </q-item-section>
             </q-item>
+            <q-item v-if="myDetails.userType === 'admin' && myDetails.username === userDetails.username">
+              <q-item-section class="text-left text-subtitle1">Admin Login Access</q-item-section>
+              <q-item-section class="text-left text-subtitle1">
+                <CustomButton to="/admin/auth/login" label="Bypass Login"/>
+              </q-item-section>
+            </q-item>
           </q-card-section>
           <q-card-section>
             <div class="text-h6">Student Info</div>
@@ -409,6 +415,8 @@ export default {
     return {
       loading: true,
 
+      myDetails: {},
+
       rentalColumns: [
         { name: "index", label: "#", field: "index", align: 'center' },
         { name: "id", label: "Rental Number", field: "_id", align: 'left' },
@@ -494,7 +502,8 @@ export default {
         // Wait for both async calls to finish before continuing
         await Promise.all([
           this.fetchRentalDetails(),
-          this.getAllMyCallLogs()
+          this.getAllMyCallLogs(),
+          this.fetchMyDetails()
         ])
 
         // Now everything is ready
@@ -549,6 +558,10 @@ export default {
           return
         })
       }
+    },
+
+    async fetchMyDetails() {
+      this.myDetails = await Helper.fetchUserDetails();
     },
     viewUserTimeline(id) {
       Helper.adminRentalDetails(id, this.$router);
