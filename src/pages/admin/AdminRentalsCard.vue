@@ -187,6 +187,14 @@
                 </q-td>
               </template>
 
+              <!-- <template v-slot:body-cell-applicantEmail="props">
+                <q-td :props="props" @click.stop="copyToClipboard(props.row.userEmail)">
+                  <div>
+                    {{ props.row.userEmail }}
+                  </div>
+                </q-td>
+              </template> -->
+
               <template v-slot:body-cell-startDate="props">
                 <q-td :props="props">
                   <div v-if="defaultValues(props.row)">
@@ -381,6 +389,15 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    // copyToClipboard(text) {
+    //   navigator.clipboard.writeText(text)
+    //     .then(() => {
+    //       this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
+    //     }).catch(err => {
+    //       this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+    //     })
+    // },
+
     extractFirstNumber(str) {
       if (!str) return '';
       // Look for the first number anywhere in the string
@@ -388,6 +405,15 @@ export default {
       return match ? match[0] : str;
     },
 
+    openInNewTab(row) {
+      try {
+        const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), 'secret-key').toString();
+        const url = `/admin/rentals/view/${encodeURIComponent(encryptedId)}`;
+        window.open(url, '_blank'); // open in new tab
+      } catch (error) {
+        console.error("Failed to open rental in new tab:", error);
+      }
+    },
     openInNewTab(row) {
       try {
         const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), 'secret-key').toString();

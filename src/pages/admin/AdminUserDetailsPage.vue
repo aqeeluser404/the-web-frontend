@@ -101,12 +101,12 @@
                 <q-input readonly :model-value="formatDate(userDetails.dateCreated)" />
               </q-item-section>
             </q-item>
-            <q-item v-if="myDetails.userType === 'admin' && myDetails.username === userDetails.username">
+            <!-- <q-item v-if="myDetails.userType === 'admin' && myDetails.username === userDetails.username">
               <q-item-section class="text-left text-subtitle1">Admin Login Access</q-item-section>
               <q-item-section class="text-left text-subtitle1">
                 <CustomButton to="/admin/auth/login" label="Bypass Login"/>
               </q-item-section>
-            </q-item>
+            </q-item> -->
           </q-card-section>
           <q-card-section>
             <div class="text-h6">Student Info</div>

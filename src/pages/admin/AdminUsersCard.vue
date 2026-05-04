@@ -118,6 +118,15 @@
               </q-td>
             </template>
 
+              <template v-slot:body-cell-email="props">
+                <q-td :props="props" @click.stop="copyToClipboard(props.row.email)">
+                  <div>
+                    {{ props.row.email }}
+                  </div>
+                </q-td>
+              </template>
+
+
             <!-- Type -->
             <template v-slot:body-cell-rightsType="props">
               <q-td :props="props">
@@ -326,6 +335,16 @@ export default {
     //     }
     //   });
     // },
+
+
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$q.notify({ type: 'positive', color: 'primary', message: 'Email copied to clipboard!' });
+        }).catch(err => {
+          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+        })
+    },
 
     async downloadData() {
       this.$q.dialog({

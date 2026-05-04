@@ -72,7 +72,12 @@
               <router-link to="/forgot-password" style="text-decoration: none; color: black;">
                 Forgot password?
               </router-link>
+
+              <!-- <router-link to="/admin/auth/login" style="text-decoration: none; color: black;">
+                Bypass Login
+              </router-link> -->
             </div>
+
 
             <div>
               <CustomButton

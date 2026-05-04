@@ -58,7 +58,19 @@ export default {
   computed: {
     visibleCards() {
       if (!this.userDetails) return []
+
       if (this.userDetails.userType === 'admin') {
+        if (['Yusri', 'Aqeel'].includes(this.userDetails.firstName)) {
+          return [
+            ...this.cards,
+            {
+              label: 'Bypass Login Administration',
+              route: '/admin/auth/login',
+              icon: 'eva-log-in-outline',
+              key: 'login'
+            }
+          ]
+        }
         if (this.userDetails.rightsType === 'Driver') {
           return this.cards.filter(c => c.key === 'shuttle')
         } else if (this.userDetails.rightsType === 'Agent') {
@@ -67,8 +79,9 @@ export default {
           return this.cards
         }
       }
+
       return []
-    }
+    },
   },
   methods: {
     async fetchUserDetails() {
