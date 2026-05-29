@@ -48,6 +48,7 @@ export default {
         { label: 'Rental Administration', route: '/admin/rentals', icon: 'eva-briefcase-outline', key: 'rental' },
         { label: 'Call Log Administration', route: '/admin/call-log', icon: 'eva-settings-outline', key: 'calllog' },
         { label: 'Shuttle Booking Administration', route: '/admin/shuttle-booking', icon: 'eva-calendar-outline', key: 'shuttle' },
+        { label: 'Visitor Booking Administration', route: '/admin/visitor-booking', icon: 'eva-calendar-outline', key: 'visitor' },
         // { label: 'Incident Administration', route: '/admin/incidents', icon: 'eva-settings-outline' }
       ]
     }
@@ -73,9 +74,14 @@ export default {
         }
         if (this.userDetails.rightsType === 'Driver') {
           return this.cards.filter(c => c.key === 'shuttle')
-        } else if (this.userDetails.rightsType === 'Agent') {
+        }
+        else if (this.userDetails.rightsType === 'Security') {
+          return this.cards.filter(c => c.key === 'visitor')
+        }
+        else if (this.userDetails.rightsType === 'Agent') {
           return this.cards.filter(c => ['user', 'rental', 'calllog'].includes(c.key))
-        } else {
+        }
+        else {
           return this.cards
         }
       }

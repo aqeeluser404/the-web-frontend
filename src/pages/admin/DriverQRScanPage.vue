@@ -342,42 +342,40 @@ export default {
     //   }
     // },
 
-async startScanner() {
-  this.scanning = true
-  this.scannedShuttle = null
-  await this.$nextTick()
+    async startScanner() {
+      this.scanning = true
+      this.scannedShuttle = null
+      await this.$nextTick()
 
-  try {
-    this.html5QrCode = new Html5Qrcode('qr-reader')
+      try {
+        this.html5QrCode = new Html5Qrcode('qr-reader')
 
-    const devices = await Html5Qrcode.getCameras()
+        const devices = await Html5Qrcode.getCameras()
 
-    if (!devices || devices.length === 0) {
-      throw new Error('No camera found')
-    }
+        if (!devices || devices.length === 0) {
+          throw new Error('No camera found')
+        }
 
-    const backCamera = devices.find(d => d.label.toLowerCase().includes('back'))
-    const cameraId = backCamera ? backCamera.id : devices[0].id
+        const backCamera = devices.find(d => d.label.toLowerCase().includes('back'))
+        const cameraId = backCamera ? backCamera.id : devices[0].id
 
-    await this.html5QrCode.start(
-      cameraId,
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      async (decodedText) => {
-        await this.stopScanner()
-        await this.processQRData(decodedText)
+        await this.html5QrCode.start(
+          cameraId,
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          async (decodedText) => {
+            await this.stopScanner()
+            await this.processQRData(decodedText)
+          }
+        )
+      } catch (err) {
+        console.error('Camera error:', err)
+        this.scanning = false
+        this.$q.notify({
+          type: 'negative',
+          message: 'Camera access denied. Please enable camera permission in your phone settings.',
+        })
       }
-    )
-  } catch (err) {
-    console.error('Camera error:', err)
-    this.scanning = false
-    this.$q.notify({
-      type: 'negative',
-      message: 'Camera access denied. Please enable camera permission in your phone settings.',
-    })
-  }
-},
-
-
+    },
 
     async stopScanner() {
       if (this.html5QrCode) {

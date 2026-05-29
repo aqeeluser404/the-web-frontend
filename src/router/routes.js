@@ -29,6 +29,7 @@ const routes = [
       { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
 
       { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
+      { path: '/user/visitor-booking', component: () => import('src/pages/user/UserVisitorBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
 
       { path: '/vendor', component: () => import('src/pages/vendor/VendorDashPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
       { path: '/vendor/call-log', component: () => import('src/pages/vendor/VendorCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
@@ -61,6 +62,7 @@ const routes = [
 
       // qr scan
       {path: '/scan', component: () => import('src/pages/admin/DriverQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      {path: '/security/scan', component: () => import('src/pages/admin/SecurityQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 

@@ -454,6 +454,8 @@ export default {
       rightsTypeOptions: [
         { label: 'Agent', value: 'Agent' },
         { label: 'Driver', value: 'Driver' },
+        { label: 'Security', value: 'Security' },
+        // { label: 'Tenant', value: 'Tenant' },
         { label: 'Unassigned', value: '' },
         ],
 
@@ -538,9 +540,13 @@ export default {
         order: this.userDetails.order
       }
 
-      if (updatedUser.rightsType === 'Agent' || updatedUser.rightsType === 'Driver') {
+      if (updatedUser.rightsType === 'Agent' || updatedUser.rightsType === 'Driver' || updatedUser.rightsType === 'Security') {
         updatedUser.userType = 'admin'
       }
+
+      // if (updatedUser.rightsType === 'Tenant') {
+      //   const hasActiveRentals = this.myRentals.some(rental => rental.status === 'pending')
+      // }
 
       if (updatedUser) {
         this.$q.dialog({
