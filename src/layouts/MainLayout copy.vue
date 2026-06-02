@@ -22,57 +22,67 @@
         <div class="col-md-9">
           <!---------------------------------------------- DESKTOP NAV SECTION -------------------------------------------------->
 
+
+
+          <!-- HOME SCREEN -->
           <div class="row justify-end items-center q-py-lg ">
+            <!-- <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat rounded />
 
-            <!-- Home Icons -->
-            <UniversalMenu :items="homeItems" :hover="true" class="large-screen-only" v-if="$route.path !== '/' && $route.path !== '/frequently-asked-questions' && $route.path !== '/fees'">
+            <q-btn v-if="showNavigationItems" @click="scrollToSection('amenities-section')"
+              class="custom-button q-py-sm large-screen-only" label="Amenities" flat rounded />
+
+            <q-btn v-if="showNavigationItems" @click="scrollToSection('units-section')"
+              class="custom-button q-py-sm large-screen-only" label="Units" flat rounded />
+
+            <q-btn v-if="showNavigationItems" @click="scrollToSection('location-section')"
+              class="custom-button q-py-sm large-screen-only" label="Location" flat rounded />
+
+            <q-btn v-if="showNavigationItems" @click="scrollToSection('contact-section')"
+              class="custom-button q-py-sm large-screen-only" label="Contact" flat rounded />
+
+            <q-btn v-if="showNavigationItems" to="/frequently-asked-questions"
+              class="custom-button q-py-sm large-screen-only" label="FAQs" flat rounded />
+
+            <q-btn v-if="showNavigationItems" to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees"
+              flat rounded /> -->
+
+            <UniversalMenu :items="homeItems" :hover="true">
               <template #trigger>
-                <q-btn flat label="Explore" class="custom-button q-py-sm q-px-md" />
+                <q-btn flat round label="Home" class="custom-button q-py-sm q-px-sm" />
               </template>
             </UniversalMenu>
 
-            <div v-else class="row justify-end items-center">
-              <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat />
 
-              <q-btn @click="scrollToSection('amenities-section')"
-                class="custom-button q-py-sm large-screen-only" label="Amenities" flat />
 
-              <q-btn @click="scrollToSection('units-section')"
-                class="custom-button q-py-sm large-screen-only" label="Units" flat />
+            <!-- USER PROFILE AND BOOKING ROUTES -->
+            <q-btn to="/units/apply/floor/1" class="custom-button q-py-sm large-screen-only" label="Book Now" flat
+              rounded />
+            <q-btn v-if="showUserDashboardItems" to="/user/profile" class="custom-button q-py-sm large-screen-only"
+              label="User Profile" flat rounded />
 
-              <q-btn @click="scrollToSection('location-section')"
-                class="custom-button q-py-sm large-screen-only" label="Location" flat />
+            <q-btn v-if="showUserDashboardItems" to="/user/applications" class="custom-button q-py-sm large-screen-only"
+              label="Application History" flat rounded />
 
-              <q-btn @click="scrollToSection('contact-section')"
-                class="custom-button q-py-sm large-screen-only" label="Contact" flat />
+            <q-btn v-if="showUserDashboardItems" to="/user/call-log" class="custom-button q-py-sm large-screen-only"
+              label="Log A Call" flat rounded />
 
-              <q-btn to="/frequently-asked-questions"
-                class="custom-button q-py-sm large-screen-only" label="FAQs" flat />
+            <q-btn v-if="isLoggedIn" to="/user/shuttle-booking" class="custom-button q-py-sm large-screen-only"
+              label="Shuttle Booking" icon="directions_bus" flat rounded />
 
-              <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees"
-                flat />
-            </div>
+            <q-btn v-if="isLoggedIn" to="/user/visitor-booking" class="custom-button q-py-sm large-screen-only"
+              label="Visitor Booking" flat rounded />
 
-            <!-- Book Icons -->
-            <UniversalMenu :items="bookItems" :hover="true" class="large-screen-only">
-              <template #trigger>
-                <q-btn flat label="Book Now" class="custom-button q-py-sm q-px-md" />
-              </template>
-            </UniversalMenu>
+            <q-btn v-if="isAdminUser" to="/admin" class="custom-button q-py-sm large-screen-only"
+              icon="eva-pie-chart-outline" :label="portalName" flat rounded />
 
-            <!-- Accounts Icons -->
-            <UniversalMenu :items="accountItems" :hover="true" class="large-screen-only" v-show="isLoggedIn">
-              <template #trigger>
-                <q-btn flat label="Account" class="custom-button q-py-sm q-px-md" />
-              </template>
-            </UniversalMenu>
+            <q-btn v-if="(isAdminUser && userDetails.rightsType === 'Driver') || isAdminUser" to="/scan"
+              class="custom-button q-py-sm large-screen-only" label="Driver" icon="qr_code_scanner" flat rounded />
 
-            <!-- Admin Icons -->
-            <UniversalMenu :items="adminItems" :hover="true" class="large-screen-only" v-show="isLoggedIn && isAdminUser">
-              <template #trigger>
-                <q-btn flat label="Administration" class="custom-button q-py-sm q-px-md" />
-              </template>
-            </UniversalMenu>
+            <q-btn v-if="(isAdminUser && userDetails.rightsType === 'Security') || isAdminUser" to="/security/scan"
+              class="custom-button q-py-sm large-screen-only" label="Security" icon="qr_code_scanner" flat rounded />
+
+            <!-- <q-btn v-if="isVendorUser" to="/vendor" class="custom-button q-py-sm large-screen-only"
+              icon="eva-pie-chart-outline" label="Vendor" flat rounded /> -->
 
             <!-- authentication -->
             <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
@@ -80,14 +90,39 @@
             <CustomButton v-else label="Logout" @click="logout" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" />
 
+
+
             <!---------------------------------------------- MOBILE NAV SECTION -------------------------------------------------->
             <q-btn-dropdown class="small-screen-only" dropdown-icon="menu" flat>
               <q-list style="width: 380px; padding: 8px;">
                 <div class="two-column-list">
 
-                  <div class="column wide q-pa-md" style="background-color: #f8f8f8;">
+                  <div class="column q-pa-md" style="background-color: #f8f8f8;">
+                    <q-item clickable v-close-popup to='/frequently-asked-questions'>
+                      <q-item-section class="">FAQs</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/fees">
+                      <q-item-section>Fees</q-item-section>
+                    </q-item>
+                  </div>
 
-                    <!-- Home Icons -->
+                  <div class="column q-pa-md">
+                    <!-- <q-item clickable v-close-popup to="/" :active-class="$route.path === '/' ? 'q-item--active' : ''">
+                      <q-item-section class="">Home</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup v-if="showNavigationItems">
+                      <q-item-section @click="scrollToSection('amenities-section')">Amenities</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup v-if="showNavigationItems">
+                      <q-item-section @click="scrollToSection('units-section')">Units</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup v-if="showNavigationItems">
+                      <q-item-section @click="scrollToSection('location-section')">Location</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup v-if="showNavigationItems">
+                      <q-item-section @click="scrollToSection('contact-section')">Contact</q-item-section>
+                    </q-item> -->
+
                     <QListItems
                       :noPadding="false"
                       :items="homeItemsMobile"
@@ -95,40 +130,49 @@
                       class="text-light"
                       :includeIcons="false"
                       :underline="true"
+                      @logout="$emit('logout')"
                     />
 
-                    <!-- Book Icons -->
-                    <QListItems
-                      :noPadding="false"
-                      :items="bookItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <!-- Always show Book Now -->
+                    <q-item clickable v-close-popup to="/units/apply/floor/1">
+                      <q-item-section>Book Now</q-item-section>
+                    </q-item>
 
-                    <!-- Account Icons -->
-                    <QListItems v-show="isLoggedIn"
-                      :noPadding="false"
-                      :items="accountItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <!-- User dashboard items (only show on dashboard pages) -->
+                    <q-item clickable v-close-popup to="/user/profile" v-if="showUserDashboardItems">
+                      <q-item-section>User Profile</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to="/user/applications" v-if="showUserDashboardItems">
+                      <q-item-section>Application History</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to='/user/call-log' v-if="showUserDashboardItems">
+                      <q-item-section>Log A Call</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to='/user/shuttle-booking' v-if="isLoggedIn">
+                      <q-item-section>Shuttle Booking</q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup to='/user/visitor-booking' v-if="isLoggedIn">
+                      <q-item-section>Visitor Booking</q-item-section>
+                    </q-item>
 
-                    <!-- Admin Icons -->
-                    <QListItems v-show="isLoggedIn && isAdminUser"
-                      :noPadding="false"
-                      :items="adminItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
-                  </div>
 
-                  <div class="column narrow q-pa-md">
+                    <!-- Admin/Vendor items -->
+                    <q-item clickable v-close-popup to="/admin" v-if="isAdminUser">
+                      <q-item-section>{{ portalName }}</q-item-section>
+                    </q-item>
+                    <!-- <q-item clickable v-close-popup to="/vendor" v-if="isVendorUser">
+                      <q-item-section>Vendor Dashboard</q-item-section>
+                    </q-item> -->
+
+                    <q-item clickable v-close-popup to="/scan"
+                      v-if="isAdminUser && userDetails.rightsType === 'Driver'">
+                      <q-item-section>Scan Driver QR</q-item-section>
+                    </q-item>
+
+                    <q-item clickable v-close-popup to="/security/scan"
+                      v-if="isAdminUser && userDetails.rightsType === 'Security'">
+                      <q-item-section>Scan Visitor QR</q-item-section>
+                    </q-item>
 
                     <!-- Auth items -->
                     <q-item clickable v-close-popup to="/auth/login" v-if="!isLoggedIn">
@@ -152,17 +196,50 @@
         <div class="text-black bg-white text-caption">
           <q-toolbar class="constrain-standard">
             <q-breadcrumbs flat active-color="black">
-              <q-breadcrumbs-el
-                v-for="(crumb, idx) in adminBreadcrumbs"
-                :key="idx"
-                :label="crumb.label"
-                :to="crumb.to"
-                :icon="crumb.icon"
-              />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin')" label="Admin" to="/admin" icon="home" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users')" label="User Administration"
+                to="/admin/users" icon="eva-people-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/users/view/')" label="User Details"
+                icon="eva-person" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/units')" label="Unit Administration"
+                icon="eva-home-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals')" label="Rental Administration"
+                to="/admin/rentals" icon="eva-briefcase-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/rentals/view/')" label="Rental Details"
+                icon="eva-briefcase" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/call-log')" label="Call Log Administration"
+                icon="eva-settings-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/shuttle-booking')"
+                label="Shuttle Booking Administration" icon="eva-calendar-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/visitor-booking')"
+                label="Visitor Booking Administration" icon="eva-calendar-outline" />
+
+              <q-breadcrumbs-el v-if="$route.path.includes('/admin/incidents')" label="Incident Administration"
+                icon="eva-settings-outline" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>
       </div>
+
+      <!-- breadcrumbs -->
+      <!-- <div v-if="isVendorRoute">
+        <div class="text-black text-caption">
+          <q-toolbar class="constrain-standard">
+            <q-breadcrumbs flat active-color="black">
+              <q-breadcrumbs-el v-if="$route.path.includes('/vendor')" label="Vendor" to="/vendor" icon="home" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/vendor/call-log')" label="Call Log Administration"
+                icon="eva-settings-outline" />
+              <q-breadcrumbs-el v-if="$route.path.includes('/scan')" label="QR Scanner" icon="qr_code_scanner" />
+            </q-breadcrumbs>
+          </q-toolbar>
+        </div>
+      </div> -->
     </q-header>
 
 
@@ -248,9 +325,10 @@ export default {
         { label: 'FAQs', to: '/frequently-asked-questions' },
         { label: 'Fees', to: '/fees' }
       ],
+
       homeItemsMobile: [
         {
-          label: 'Explore',
+          label: 'Home',
           isMenuGroup: true,
           // icon: 'explore',
           children: [
@@ -266,158 +344,13 @@ export default {
       ]
     }
   },
-  components: { CustomButton, MaintenanceBanner, UniversalMenu, QListItems },
-
+  components: {
+    CustomButton,
+    MaintenanceBanner,
+    UniversalMenu,
+    QListItems
+  },
   computed: {
-    bookItems() {
-      const items = [{ label: 'Book a Unit', to: '/units/apply/floor/1' }]
-      if (this.isLoggedIn) {
-        items.push(
-          { label: 'Shuttle Booking', to: '/user/shuttle-booking' },
-          { label: 'Visitor Booking', to: '/user/visitor-booking' }
-        )
-      }
-      return items
-    },
-    bookItemsMobile() {
-      const children = [
-        { label: 'Book a Unit', to: '/units/apply/floor/1' }
-      ]
-      if (this.isLoggedIn) {
-        children.push(
-          { label: 'Shuttle Booking', to: '/user/shuttle-booking' },
-          { label: 'Visitor Booking', to: '/user/visitor-booking' }
-        )
-      }
-      return [
-        {
-          label: 'Book Now',
-          isMenuGroup: true,
-          // icon: 'event', // optional icon if we want one
-          children
-        }
-      ]
-    },
-    accountItems() {
-      const children = []
-      if (this.isLoggedIn) {
-        children.push(
-          { label: 'My Profile', to: '/user/profile' },
-          { label: 'Application History', to: '/user/applications' },
-          { label: 'Log a call', to: '/user/call-log' }
-        )
-      }
-      return children
-    },
-    accountItemsMobile() {
-      const children = []
-      if (this.isLoggedIn) {
-        children.push(
-          { label: 'My Profile', to: '/user/profile' },
-          { label: 'Application History', to: '/user/applications' },
-          { label: 'Log A Call', to: '/user/call-log' }
-        )
-      }
-      return [
-        {
-          label: 'Account',
-          isMenuGroup: true,
-          // icon: 'event', // optional icon if we want one
-          children
-        }
-      ]
-    },
-    adminItems() {
-      const children = []
-
-      if (this.isLoggedIn && this.userDetails?.userType === 'admin') {
-        // Always show Admin Portal
-        children.push({
-          label: this.portalName,
-          to: '/admin',
-          // icon: 'eva-pie-chart-outline'
-        })
-
-        // Driver-specific
-        if (this.userDetails.rightsType === 'Driver') {
-          children.push({
-            label: 'Driver Scanner',
-            to: '/scan',
-            // icon: 'qr_code_scanner'
-          })
-        }
-
-        // Security-specific
-        if (this.userDetails.rightsType === 'Security') {
-          children.push({
-            label: 'Security Scanner',
-            to: '/security/scan',
-            // icon: 'qr_code_scanner'
-          })
-        }
-      }
-
-      return children;
-    },
-    adminItemsMobile() {
-      const children = []
-
-      if (this.isLoggedIn && this.userDetails?.userType === 'admin') {
-
-        // Always show Admin Portal
-        children.push({
-          label: this.portalName,
-          to: '/admin',
-          // icon: 'eva-pie-chart-outline'
-        })
-
-        // Driver-specific
-        if (this.userDetails.rightsType === 'Driver') {
-          children.push({
-            label: 'Driver',
-            to: '/scan',
-            // icon: 'qr_code_scanner'
-          })
-        }
-
-        // Security-specific
-        if (this.userDetails.rightsType === 'Security') {
-          children.push({
-            label: 'Security',
-            to: '/security/scan',
-            // icon: 'qr_code_scanner'
-          })
-        }
-      }
-
-      return [
-        {
-          label: 'Administration',
-          isMenuGroup: true,
-          children
-        }
-      ]
-    },
-
-    adminBreadcrumbs() {
-      const path = this.$route.path
-      const crumbs = [
-        { match: '/admin', label: 'Admin', to: '/admin', icon: 'home' },
-        { match: '/admin/users', label: 'User Administration', to: '/admin/users', icon: 'eva-people-outline' },
-        { match: '/admin/users/view/', label: 'User Details', icon: 'eva-person' },
-        { match: '/admin/units', label: 'Unit Administration', icon: 'eva-home-outline' },
-        { match: '/admin/rentals', label: 'Rental Administration', to: '/admin/rentals', icon: 'eva-briefcase-outline' },
-        { match: '/admin/rentals/view/', label: 'Rental Details', icon: 'eva-briefcase' },
-        { match: '/admin/call-log', label: 'Call Log Administration', icon: 'eva-settings-outline' },
-        { match: '/admin/shuttle-booking', label: 'Shuttle Booking Administration', icon: 'eva-calendar-outline' },
-        { match: '/admin/visitor-booking', label: 'Visitor Booking Administration', icon: 'eva-calendar-outline' },
-        { match: '/admin/incidents', label: 'Incident Administration', icon: 'eva-settings-outline' }
-      ]
-
-      // Only return those that match the current route
-      return crumbs.filter(c => path.includes(c.match))
-    },
-
     headerHeight() {
       const baseHeight = this.showMaintenanceBanner ? 150 : 75;
       const adminExtra = 50;
@@ -425,13 +358,68 @@ export default {
       return (this.isAdminRoute) ? baseHeight + adminExtra : baseHeight;
       // return (this.isAdminRoute || this.isVendorRoute) ? baseHeight + adminExtra : baseHeight;
     },
-
+    // These check the USER TYPE
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
     },
 
+    // isVendorUser() {
+    //   return this.userDetails?.userType === 'vendor';
+    // },
+
+    // These check the CURRENT ROUTE
     isAdminRoute() {
       return this.$route.path.startsWith('/admin');
+    },
+
+    // isVendorRoute() {
+    //   return this.$route.path.startsWith('/vendor');
+    // },
+
+    showUserDashboardItems() {
+      if (!this.isLoggedIn) return false;
+
+      const exactMatchRoutes = [
+        '/units/apply/floor/1',
+        '/units/apply/floor/2',
+        '/units/apply/floor/3',
+        '/units/apply',
+        '/user/profile',
+        '/user/applications',
+        '/user/call-log',
+        '/user/shuttle-booking',
+        '/user/visitor-booking'
+      ];
+
+      const startsWithRoutes = [
+        '/user/applications/view/'
+      ];
+
+      // Check for exact matches
+      const hasExactMatch = exactMatchRoutes.includes(this.$route.path);
+
+      // Check for startsWith matches
+      const hasStartsWithMatch = startsWithRoutes.some(route =>
+        this.$route.path.startsWith(route)
+      );
+
+      return hasExactMatch || hasStartsWithMatch;
+    },
+
+    // For navigation items (the ones using isRouteMatch)
+    showNavigationItems() {
+      const navRoutes = [
+        '/',
+        '/frequently-asked-questions',
+        '/developer',
+        '/history',
+        '/fees',
+        '/applications',
+        '/resources',
+        '/incident-report'
+      ];
+
+      return navRoutes.includes(this.$route.path);
     },
 
     portalName() {
@@ -450,14 +438,6 @@ export default {
       }
       return ""
     }
-
-    // isVendorUser() {
-    //   return this.userDetails?.userType === 'vendor';
-    // },
-
-    // isVendorRoute() {
-    //   return this.$route.path.startsWith('/vendor');
-    // },
   },
   mounted() {
     this.checkLoginStatus()
@@ -703,11 +683,6 @@ export default {
   flex-direction: column
   gap: 8px
   box-sizing: border-box
-
-.column.wide
-  flex: 3   // takes 3 parts
-.column.narrow
-  flex: 1   // takes 1 part
 
 .full-width
   width: 100%

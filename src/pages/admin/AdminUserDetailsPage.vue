@@ -74,8 +74,22 @@
                   :options="rightsTypeOptions"
                   emit-value
                   map-options
+                  @update:model-value="onRightsTypeChange"
                 />
               </q-item-section>
+
+              <q-dialog v-model="showTenantDialog" persistent>
+                <q-card class="soft-shadow-card">
+                  <q-card-section class="row justify-between items-center">
+                    <div class="text-h6">Tenant Selected</div>
+                    <q-btn flat round icon="close" @click="showTenantDialog = false" size="md" color="grey-10" aria-label="Close" />
+                    <q-separator class="q-my-sm" style="width: 100%;" />
+                  </q-card-section>
+
+                  <q-card-section>
+                  </q-card-section>
+                </q-card>
+              </q-dialog>
             </q-item>
             <q-item>
               <q-item-section class="text-left text-subtitle1">Shuttle Service</q-item-section>
@@ -441,6 +455,8 @@ export default {
         }
       },
 
+      showTenantDialog: false,
+
       shuttleTypeOptions: [
         { label: 'Has shuttle service', value: true },
         { label: 'No shuttle service', value: false },
@@ -455,7 +471,7 @@ export default {
         { label: 'Agent', value: 'Agent' },
         { label: 'Driver', value: 'Driver' },
         { label: 'Security', value: 'Security' },
-        // { label: 'Tenant', value: 'Tenant' },
+        { label: 'Tenant', value: 'Tenant' },
         { label: 'Unassigned', value: '' },
         ],
 
@@ -479,6 +495,16 @@ export default {
         }).catch(err => {
           this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
         })
+    },
+
+    onRightsTypeChange (val) {
+      if (val === 'Tenant') {
+        this.showTenantDialog = true
+      }
+    },
+    confirmTenant () {
+      this.showTenantDialog = false
+      // Add your confirmation logic here
     },
 
     // PHP CODE

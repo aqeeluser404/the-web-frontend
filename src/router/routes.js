@@ -57,6 +57,9 @@ const routes = [
       // shuttle booking management
       { path: '/admin/shuttle-booking', component: () => import('src/pages/admin/AdminShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
+      // shuttle booking management
+      { path: '/admin/visitor-booking', component: () => import('src/pages/admin/AdminVisitorBooking.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+
       // incident management
       { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
