@@ -61,7 +61,6 @@ export default {
       link.click()
       document.body.removeChild(link)
     }
-
   }
 }
 </script>

@@ -51,6 +51,9 @@
 
               <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees"
                 flat />
+
+              <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="App"
+                flat />
             </div>
 
             <!-- Book Icons -->
@@ -246,7 +249,8 @@ export default {
         { label: 'Location', handler: () => this.scrollToSection('location-section') },
         { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
         { label: 'FAQs', to: '/frequently-asked-questions' },
-        { label: 'Fees', to: '/fees' }
+        { label: 'Fees', to: '/fees' },
+        { label: 'App', click: this.downloadApk }
       ],
       homeItemsMobile: [
         {
@@ -260,7 +264,8 @@ export default {
             { label: 'Location', handler: () => this.scrollToSection('location-section') },
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
-            { label: 'Fees', to: '/fees' }
+            { label: 'Fees', to: '/fees' },
+            { label: 'App', click: this.downloadApk }
           ]
         },
       ]
@@ -468,6 +473,15 @@ export default {
     },
   },
   methods: {
+    downloadApk() {
+      const link = document.createElement('a')
+      link.href = '/files/the-web-v4-app.apk'
+      link.download = 'the-web-v4-app.apk'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    },
+
     toggleWhatsAppBox() {
       this.boxOpened = !this.boxOpened
     },

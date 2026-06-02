@@ -11,9 +11,9 @@
           background: rgba(34, 34, 34, 0.6);
         " class="text-white text-center column justify-center items-center q-pa-xl">
         <q-card-section>
-          <div class="text-h3 hero-heading">Residence Fees Schedule</div>
+          <div class="text-h3">Residence Fees Schedule</div>
           <br />
-          <div class="text-body1 q-mb-lg hero-subheading">
+          <div class="text-body1 q-mb-lg">
             We have various payment plans with discount offered for upfront payments, returning
             residents as well as siblings.
           </div>
