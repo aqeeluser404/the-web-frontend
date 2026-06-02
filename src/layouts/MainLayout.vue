@@ -344,7 +344,7 @@ export default {
         })
 
         // Driver-specific
-        if (this.userDetails.rightsType === 'Driver') {
+        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.userType === 'admin') {
           children.push({
             label: 'Driver Scanner',
             to: '/scan',
@@ -353,7 +353,7 @@ export default {
         }
 
         // Security-specific
-        if (this.userDetails.rightsType === 'Security') {
+        if (this.userDetails.rightsType === 'Security' || this.userDetails?.userType === 'admin') {
           children.push({
             label: 'Security Scanner',
             to: '/security/scan',
@@ -377,18 +377,18 @@ export default {
         })
 
         // Driver-specific
-        if (this.userDetails.rightsType === 'Driver') {
+        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.userType === 'admin') {
           children.push({
-            label: 'Driver',
+            label: 'Driver Scanner',
             to: '/scan',
             // icon: 'qr_code_scanner'
           })
         }
 
         // Security-specific
-        if (this.userDetails.rightsType === 'Security') {
+        if (this.userDetails.rightsType === 'Security' || this.userDetails?.userType === 'admin') {
           children.push({
-            label: 'Security',
+            label: 'Security Scanner',
             to: '/security/scan',
             // icon: 'qr_code_scanner'
           })
