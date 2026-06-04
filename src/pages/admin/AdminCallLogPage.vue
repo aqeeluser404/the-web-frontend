@@ -1,15 +1,12 @@
 <template>
   <q-page class="bg-grey-3">
     <div class="constrain-standard row justify-center q-py-md" v-show="!loading">
-
       <div class="col-md-3 col-12 full-height">
         <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
-
           <q-card-section class="row stats-header justify-center">
             <div class="text-h6">Call Log Status Distribution</div>
             <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
-          <!-- <q-separator /> -->
           <q-card-section class="row justify-center">
             <div style="width: 300px; height: 300px;">
               <canvas ref="pieChart"></canvas>
@@ -18,6 +15,7 @@
         </q-card>
       </div>
 
+      <!-- heading -->
       <div class="col-md-9 col-12 full-height">
         <q-card class="full-height soft-shadow-card">
           <q-card-section class="row justify-between items-center stats-header">
@@ -34,73 +32,6 @@
             <q-select v-model="selectedCallLogStatus" :options="callLogStatus" label="Call Log Status"
               @update:model-value="filteredByCallLogStatus" class="col-12 col-md-2" />
           </q-card-section>
-          <!-- <q-card-section v-if="callLogs.length > 0">
-            <q-markup-table flat bordered>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-left">Log Number</th>
-                  <th class="text-left">Applicant</th>
-                  <th class="text-left">Opened Date</th>
-                  <th class="text-left">Closed Date</th>
-                  <th class="text-left">Call Type </th>
-                  <th class="text-left">Status</th>
-                  <th class="text-left">Vendor</th>
-                  <th class="text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(callLog, index) in filteredCallLogs" @click.stop="openUpdateCallLogNotesDialog(callLog)"
-                  :key="callLog._id">
-                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                  <td class="text-left cursor-pointer id">{{ callLog.logNumber }}</td>
-                  <td class="text-left cursor-pointer hover-effect" @click.stop="viewUserDetails(callLog.user)">{{
-                    callLog.username }}</td>
-                  <td class="text-left cursor-pointer">{{ formatDate(callLog.createdAt) }}</td>
-                  <td class="text-left cursor-pointer">
-                    <div v-if="callLog.closedAt">
-                      {{ formatDate(callLog.closedAt) }}
-                    </div>
-                    <div v-else>N/A</div>
-                  </td>
-                  <td class="text-left cursor-pointer">{{ callLog.callType }}</td>
-                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'callLog-opened': callLog.status === 'Opened' },
-                    { 'callLog-assigned': callLog.status === 'Assigned' },
-                    { 'callLog-resolved': callLog.status === 'Resolved' },
-                    { 'callLog-closed': callLog.status === 'Closed' }">
-                    {{ callLog.status }}
-                  </td>
-
-                  <td class="text-left cursor-pointer">
-                    <div v-if="callLog.vendorInfo && callLog.vendorInfo.vendorType">
-                      {{ callLog.vendorInfo.vendorType }}
-                    </div>
-                    <div v-else>N/A</div>
-                  </td>
-                  <td class="text-left cursor-pointer">
-                    <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
-                      @click.stop="deleteCallLog(callLog)" />
-                    <CustomButton v-if="callLog.status !== 'Closed'" flat color="red" text-color="red"
-                      customStyle="width: 15%" icon="eva-edit-2-outline"
-                      @click.stop="openUpdateCallLogDialog(callLog)" />
-                    <CustomButton v-if="callLog.status === 'Assigned'" @click.stop="sendEmailToVendor(callLog)" flat
-                      color="red" text-color="red" customStyle="width: 15%" icon="eva-email-outline" />
-                    <CustomButton v-if="callLog.status === 'Resolved'" @click.stop="closeCallLog(callLog._id)" flat
-                      color="red" text-color="red" customStyle="width: 15%" icon="eva-archive-outline" />
-                  </td>
-                </tr>
-              </tbody>
-            </q-markup-table>
-          </q-card-section>
-          <q-card-section v-else>
-            <q-card flat>
-              <q-card-section class="row justify-center">
-                <q-item>
-                  <q-item-section class="text-subtitle1">No call log has been placed yet.</q-item-section>
-                </q-item>
-              </q-card-section>
-            </q-card>
-          </q-card-section> -->
 
           <q-card-section>
             <q-table
@@ -203,6 +134,7 @@
         </q-card>
       </div>
     </div>
+
     <q-inner-loading :showing="loading" color="primary" size="md" />
     <q-dialog v-model="updateCallLogDialog">
       <AdminUpdateCallLogComponent :callLog="selectedCallLog" @close="handleDialogClose" />
@@ -226,6 +158,7 @@ import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLog
 import EmailService from 'src/services/EmailService';
 import ExportDataService from 'src/services/ExportDataService';
 import AdminUpdateCallLogNotes from 'src/components/admin/AdminUpdateCallLogNotes.vue';
+import RentalService from 'src/services/RentalService';
 
 export default {
   data() {
@@ -236,7 +169,8 @@ export default {
       callLogColumns: [
         { name: "index", label: "#", field: "index", align: 'center' },
         { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left'},
-        { name: "username", label: "Applicant", field: "username", align: 'left'},
+        { name: "firstName", label: "First Name", field: "firstName", align: 'left'},
+        { name: "lastName", label: "Last Name", field: "lastName", align: 'left'},
         { name: "createdAt", label: "Opened Date", field: "createdAt", align: 'left'},
         { name: "closedAt", label: "Closed Date", field: "closedAt", align: 'left'},
         { name: "callType", label: "Call Type", field: "callType", align: 'left'},
@@ -360,11 +294,16 @@ export default {
       this.loading = true
       const response = await CallLogService.findAllCallLogs()
 
+      console.log(response)
+
       this.callLogs = await Promise.all(response.map(async callLog => {
         const user = await UserService.findUserById(callLog.user)
+        // const myRentals = await RentalService.findMyRentals(user._id)
+        // const activeRental = this.myRentals.find(r => r.status === 'Active');
         return {
           ...callLog,
-          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
           vendorType: callLog.vendorInfo?.vendorType
         }
       }))

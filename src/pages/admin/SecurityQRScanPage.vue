@@ -1,5 +1,18 @@
 <template>
   <q-page class="bg-grey-3">
+
+    <q-banner
+      class="bg-black text-white full-width" @click="openAddPayer">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Visiting hours are strictly observed from 09:00 AM to 05:00 PM
+          </span>
+        </div>
+      </div>
+    </q-banner>
+
     <div class="constrain-standard q-py-md">
       <q-card class="soft-shadow-card">
         <!-- Header -->
@@ -21,45 +34,22 @@
           </div>
 
           <!-- Start / Stop button -->
-          <q-btn
-            :label="scanning ? 'Stop Scanner' : 'Scan QR Code'"
-            :color="scanning ? 'negative' : 'primary'"
-            :icon="scanning ? 'stop' : 'qr_code_scanner'"
-            unelevated
-            class="q-mb-md"
-            style="min-width: 220px"
-            @click="toggleScanner"
-          />
+          <q-btn :label="scanning ? 'Stop Scanner' : 'Scan QR Code'" :color="scanning ? 'negative' : 'primary'"
+            :icon="scanning ? 'stop' : 'qr_code_scanner'" unelevated class="q-mb-md" style="min-width: 220px"
+            @click="toggleScanner" />
 
-          <div
-            class="row items-center full-width q-mb-md"
-            style="max-width: 400px"
-          >
+          <div class="row items-center full-width q-mb-md" style="max-width: 400px">
             <q-separator class="col" />
-            <span class="text-grey-6 q-mx-sm text-caption"
-              >or enter manually</span
-            >
+            <span class="text-grey-6 q-mx-sm text-caption">or enter manually</span>
             <q-separator class="col" />
           </div>
 
           <!-- Manual ID entry -->
           <div class="full-width" style="max-width: 400px">
-            <q-input
-              v-model="manualId"
-              outlined
-              label="Paste or type Shuttle ID"
-              clearable
-              @keyup.enter="lookupByManualId"
-            >
+            <q-input v-model="manualId" outlined label="Paste or type Shuttle ID" clearable
+              @keyup.enter="lookupByManualId">
               <template v-slot:append>
-                <q-btn
-                  flat
-                  round
-                  icon="search"
-                  color="primary"
-                  :loading="lookingUp"
-                  @click="lookupByManualId"
-                />
+                <q-btn flat round icon="search" color="primary" :loading="lookingUp" @click="lookupByManualId" />
               </template>
             </q-input>
           </div>
@@ -72,16 +62,8 @@
             <q-card-section>
               <!-- Status -->
               <div class="row items-center q-mb-md">
-                <q-icon
-                  :name="resultIcon"
-                  :color="resultColor"
-                  size="30px"
-                  class="q-mr-sm"
-                />
-                <div
-                  class="text-h6 text-weight-bold"
-                  :class="`text-${resultColor}`"
-                >
+                <q-icon :name="resultIcon" :color="resultColor" size="30px" class="q-mr-sm" />
+                <div class="text-h6 text-weight-bold" :class="`text-${resultColor}`">
                   {{ resultMessage }}
                 </div>
               </div>
@@ -96,7 +78,7 @@
                     <q-item-label class="text-weight-medium">
                       {{ scannedVisitor.firstName }}
                       {{ scannedVisitor.lastName }}
-                    <q-item-label caption>Full Name</q-item-label>
+                      <q-item-label caption>Full Name</q-item-label>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -127,39 +109,15 @@
               </q-list>
 
               <!-- ACTION BUTTONS -->
-              <div
-                v-if="scannedVisitor.status === 'Pending'"
-                class="row q-gutter-sm justify-end"
-              >
-                <q-btn
-                  label="Mark Entry"
-                  color="primary"
-                  icon="login"
-                  :loading="updating"
-                  @click="confirmEntry"
-                />
+              <div v-if="scannedVisitor.status === 'Pending'" class="row q-gutter-sm justify-end">
+                <q-btn label="Mark Entry" color="primary" icon="login" :loading="updating" @click="confirmEntry" />
 
-                <q-btn
-                  label="Mark Missed"
-                  color="negative"
-                  flat
-                  icon="cancel"
-                  :loading="updating"
-                  @click="markMissed"
-                />
+                <q-btn label="Mark Missed" color="negative" flat icon="cancel" :loading="updating"
+                  @click="markMissed" />
               </div>
 
-              <div
-                v-else-if="scannedVisitor.status === 'Visiting'"
-                class="row justify-end"
-              >
-                <q-btn
-                  label="Mark Exit"
-                  color="green"
-                  icon="logout"
-                  :loading="updating"
-                  @click="confirmExit"
-                />
+              <div v-else-if="scannedVisitor.status === 'Visiting'" class="row justify-end">
+                <q-btn label="Mark Exit" color="green" icon="logout" :loading="updating" @click="confirmExit" />
               </div>
 
               <div v-else class="text-center text-grey-6 q-mt-sm">
@@ -168,13 +126,7 @@
 
               <!-- Reset -->
               <div class="row justify-center q-mt-md">
-                <q-btn
-                  flat
-                  label="Scan Another"
-                  color="primary"
-                  icon="qr_code_scanner"
-                  @click="resetScanner"
-                />
+                <q-btn flat label="Scan Another" color="primary" icon="qr_code_scanner" @click="resetScanner" />
               </div>
             </q-card-section>
           </q-card>
@@ -529,17 +481,20 @@ export default {
 .border-orange {
   border-left: 5px solid orange !important;
 }
+
 .border-primary {
   border-left: 5px solid var(--q-primary) !important;
 }
+
 .border-green {
   border-left: 5px solid green !important;
 }
+
 .border-red {
   border-left: 5px solid red !important;
 }
+
 .border-grey {
   border-left: 5px solid grey !important;
 }
-
 </style>

@@ -1,5 +1,18 @@
 <template>
   <q-page class="bg-grey-3">
+
+    <q-banner
+      class="bg-black text-white full-width" @click="openAddPayer">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Visiting hours are strictly observed from 09:00 AM to 05:00 PM
+          </span>
+        </div>
+      </div>
+    </q-banner>
+
     <div v-if="!loading">
       <div
         class="constrain-standard q-py-md"

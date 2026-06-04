@@ -52,7 +52,7 @@
               <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees"
                 flat />
 
-              <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="App"
+              <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App"
                 flat />
             </div>
 
@@ -250,7 +250,7 @@ export default {
         { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
         { label: 'FAQs', to: '/frequently-asked-questions' },
         { label: 'Fees', to: '/fees' },
-        { label: 'App', click: this.downloadApk }
+        { label: 'Download App', click: this.downloadApk }
       ],
       homeItemsMobile: [
         {
@@ -265,7 +265,7 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            { label: 'App', click: this.downloadApk }
+            { label: 'Download App', click: this.downloadApk }
           ]
         },
       ]
@@ -344,7 +344,7 @@ export default {
         })
 
         // Driver-specific
-        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.userType === 'admin') {
+        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.username === 'admin') {
           children.push({
             label: 'Driver Scanner',
             to: '/scan',
@@ -353,7 +353,7 @@ export default {
         }
 
         // Security-specific
-        if (this.userDetails.rightsType === 'Security' || this.userDetails?.userType === 'admin') {
+        if (this.userDetails.rightsType === 'Security' || this.userDetails?.username === 'admin') {
           children.push({
             label: 'Security Scanner',
             to: '/security/scan',
@@ -377,7 +377,7 @@ export default {
         })
 
         // Driver-specific
-        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.userType === 'admin') {
+        if (this.userDetails.rightsType === 'Driver' || this.userDetails?.username === 'admin') {
           children.push({
             label: 'Driver Scanner',
             to: '/scan',
@@ -386,7 +386,7 @@ export default {
         }
 
         // Security-specific
-        if (this.userDetails.rightsType === 'Security' || this.userDetails?.userType === 'admin') {
+        if (this.userDetails.rightsType === 'Security' || this.userDetails?.username === 'admin') {
           children.push({
             label: 'Security Scanner',
             to: '/security/scan',

@@ -121,23 +121,21 @@ export default {
         { label: 'Closed', value: 'Closed' },
       ],
       vendorTypeOptions: [
-        { label: 'IT Support Company', value: 'IT Support Company' },
-        { label: 'Maintenance Company', value: 'Maintenance Company' },
-        { label: 'Plumbing Company', value: 'Plumbing Company' },
-        { label: 'Electrical Company', value: 'Electrical Company' },
-        { label: 'Security Company', value: 'Security Company' },
-        { label: 'Cleaning Company', value: 'Cleaning Company' },
-        { label: 'Test Company', value: 'Test Company' },
+        { label: 'IT Support', value: 'IT Support' },
+        { label: 'Maintenance', value: 'Maintenance' },
+        { label: 'Plumbing', value: 'Plumbing' },
+        { label: 'Electrical', value: 'Electrical' },
+        { label: 'Security', value: 'Security' },
+        { label: 'Cleaning', value: 'Cleaning' },
         { label: 'Other', value: 'Other' }
       ],
       vendorContacts: {
-        'IT Support Company': 'itsupport@company.com',
-        'Maintenance Company': 'maintenance@company.com',
-        'Plumbing Company': 'plumbing@company.com',
-        'Electrical Company': 'electrical@company.com',
-        'Security Company': 'security@company.com',
-        'Cleaning Company': 'cleaning@company.com',
-        'Test Company': 'tamakikotatsu404@gmail.com',
+        'IT Support': 'TheWeb@trafalgar.co.za',
+        'Maintenance': 'TheWeb@trafalgar.co.za',
+        'Plumbing': 'TheWeb@trafalgar.co.za',
+        'Electrical': 'TheWeb@trafalgar.co.za',
+        'Security': 'TheWeb@trafalgar.co.za',
+        'Cleaning': 'TheWeb@trafalgar.co.za',
         'Other': 'vendors@company.com'
       }
     }
