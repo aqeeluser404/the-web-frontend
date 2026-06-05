@@ -439,6 +439,7 @@ export default {
 
       columns: [
         { name: "index", label: "#", field: "index", align: 'center' },
+        { name: "qr", label: "Pass", field: "qr", align: "center" },
         { name: "id", label: "Shuttle ID", field: "_id", align: 'left' },
         { name: "student", label: "Stu No.", field: "student", align: 'left' },
         { name: "slot", label: "Slot", field: "slot", align: 'left' },
@@ -453,8 +454,6 @@ export default {
           align: "left",
         },
         { name: "status", label: "Status", field: "status", align: 'center' },
-
-        { name: "qr", label: "Pass", field: "qr", align: "center" },
 
         { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
@@ -832,6 +831,6 @@ export default {
   border-radius: 8px;
   border: 2px solid #e0e0e0;
   padding: 8px;
-  
+
 }
 </style>

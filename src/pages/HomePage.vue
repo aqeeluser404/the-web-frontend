@@ -618,7 +618,7 @@
 
     <!-- overlay button -->
     <CustomButton customStyle="" class="overlay-btn" size="lg" label="Apply Now" @click="openUnitRentals" />
-    <CustomButton customStyle="" class="overlay-btn-2" size="lg" label="Download App" @click="downloadApk" />
+    <CustomButton customStyle="" class="overlay-btn-2" size="lg" label="Download App" @click="downloadApk()" />
   </q-page>
 </template>
 
@@ -836,6 +836,24 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    downloadApk() {
+      this.$q.dialog({
+        title: 'Preparing Download',
+        message: 'Your app is being prepared, please wait...',
+        color: 'primary',
+        persistent: true
+      }).onOk(() => {
+        const link = document.createElement('a')
+        link.href = '/files/the-web-v4-app.apk'
+        link.setAttribute('download', 'the-web-v4-app.apk')
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+    },
+
 
     getFit (index) {
       return index < this.coverCount ? 'cover' : 'contain'

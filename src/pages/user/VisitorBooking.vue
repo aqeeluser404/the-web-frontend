@@ -27,21 +27,11 @@
         <div class="text-h6">Select Date</div>
       </q-card-section>
 
-      <q-card-section
-        class="row justify-center full-width"
-        style="min-height: 280px"
-      >
+      <q-card-section class="row justify-center full-width" style="min-height: 280px">
         <!-- Left column/calendar column - AUTO HEIGHT -->
         <div class="calendar-box col-md-9 col-12">
           <div :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
-            <q-date
-              v-model="selectedDate"
-              today-btn
-              flat
-              bordered
-              class="full-width"
-              :options="dateOptions"
-            />
+            <q-date v-model="selectedDate" today-btn flat bordered class="full-width" :options="dateOptions" />
           </div>
         </div>
       </q-card-section>
@@ -59,12 +49,7 @@
         <div class="row justify-center">
           <!-- Left Column/Personal Info -->
           <div class="col-md-6 col-12">
-            <q-card
-              flat
-              bordered
-              class="q-pa-md"
-              :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'"
-            >
+            <q-card flat bordered class="q-pa-md" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
               <div class="text-h6 text-primary text-bold q-mb-sm">
                 <q-icon name="person" class="q-mr-sm" /> Personal Info
               </div>
@@ -75,7 +60,7 @@
                       Full Name:
                       <span class="text-grey-8">{{
                         userDetails?.firstName + " " + userDetails?.lastName
-                      }}</span>
+                        }}</span>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -85,8 +70,8 @@
                     <div class="text-left text-subtitle1">
                       Student Number:
                       <span class="text-grey-8">{{
-                        userDetails?.studentInfo?.studentNumber
-                      }}</span>
+                        userDetails?.studentInfo?.studentNumber || "N/A"
+                        }}</span>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -96,7 +81,7 @@
                       Unit Number:
                       <span class="text-grey-8">{{
                         rentalDetails?.unitType
-                      }}</span>
+                        }}</span>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -151,14 +136,8 @@
         </div>
       </q-card-section>
       <q-card-section class="row justify-end">
-        <CustomButton
-          customStyle="width: 19%"
-          label="Confirm Booking"
-          color="green"
-          icon="check_circle"
-          :disable="!canSubmit"
-          @click="confirmBooking"
-        />
+        <CustomButton customStyle="width: 19%" label="Confirm Booking" color="green" icon="check_circle"
+          :disable="!canSubmit" @click="confirmBooking" />
       </q-card-section>
     </q-card>
   </div>
@@ -171,13 +150,7 @@
       </q-card-section>
 
       <q-card-section>
-        <q-table
-          flat
-          bordered
-          :rows="bookingHistory"
-          :columns="columns"
-          row-key="_id"
-        >
+        <q-table flat bordered :rows="bookingHistory" :columns="columns" row-key="_id">
           <template v-slot:body-cell-index="props">
             <q-td :props="props">
               {{ props.rowIndex + 1 }}
@@ -187,11 +160,7 @@
           <template v-slot:body-cell-id="props">
             <q-td :props="props">
               <div class="id">
-                <q-badge
-                  color="text-primary"
-                  align="middle"
-                  class="q-pa-xs q-px-sm"
-                >
+                <q-badge color="text-primary" align="middle" class="q-pa-xs q-px-sm">
                   {{ props.row._id }}
                 </q-badge>
               </div>
@@ -209,19 +178,14 @@
 
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
-              <q-badge
-                :color="
-                  props.row.status === 'Pending'
-                    ? 'orange'
-                    : props.row.status === 'Visiting'
-                      ? 'primary'
-                      : props.row.status === 'Completed'
-                        ? 'green'
-                        : 'grey'
-                "
-                align="middle"
-                class="q-pa-xs q-px-sm"
-              >
+              <q-badge :color="props.row.status === 'Pending'
+                  ? 'orange'
+                  : props.row.status === 'Visiting'
+                    ? 'primary'
+                    : props.row.status === 'Completed'
+                      ? 'green'
+                      : 'grey'
+                " align="middle" class="q-pa-xs q-px-sm">
                 {{ props.row.status }}
               </q-badge>
             </q-td>
@@ -230,22 +194,14 @@
           <!-- QR Code Column -->
           <template v-slot:body-cell-qr="props">
             <q-td :props="props">
-              <q-btn
-                round
-                flat
-                icon="qr_code_2"
-                :color="
-                  props.row.status === 'Pending'
-                    ? 'orange'
-                    : props.row.status === 'Visiting'
-                      ? 'primary'
-                      : props.row.status === 'Completed'
-                        ? 'green'
-                        : 'grey'
-                "
-                :disable="props.row.status === 'Completed'"
-                @click="openQRDialog(props.row)"
-              >
+              <q-btn round flat icon="qr_code_2" :color="props.row.status === 'Pending'
+                  ? 'orange'
+                  : props.row.status === 'Visiting'
+                    ? 'primary'
+                    : props.row.status === 'Completed'
+                      ? 'green'
+                      : 'grey'
+                " :disable="props.row.status === 'Completed'" @click="openQRDialog(props.row)">
                 <q-tooltip>View Visitor Pass</q-tooltip>
               </q-btn>
             </q-td>
@@ -253,14 +209,8 @@
 
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="text-center">
-              <CustomButton
-                flat
-                color="red"
-                text-color="red"
-                customStyle="width: 15%"
-                icon="eva-trash-outline"
-                @click="cancelBooking(props.row)"
-              />
+              <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
+                @click="cancelBooking(props.row)" />
             </q-td>
           </template>
         </q-table>
@@ -287,35 +237,38 @@
         <canvas v-show="!qrGenerating" ref="qrCanvas" class="qr-canvas" />
 
         <!-- Booking Info Below QR -->
-        <div
-          v-if="selectedVisitor && !qrGenerating"
-          class="q-mt-md text-center full-width"
-        >
-          <q-badge
-            :color="
-              selectedVisitor.status === 'Pending'
-                ? 'orange'
-                : selectedVisitor.status === 'Visiting'
-                  ? 'primary'
-                  : selectedVisitor.status === 'Completed'
-                    ? 'green'
-                    : 'grey'
-            "
-            class="q-pa-sm q-mb-sm"
-            style="font-size: 13px"
-          >
+        <div v-if="selectedVisitor && !qrGenerating" class="q-mt-md text-center full-width">
+          <q-badge :color="selectedVisitor.status === 'Pending'
+              ? 'orange'
+              : selectedVisitor.status === 'Visiting'
+                ? 'primary'
+                : selectedVisitor.status === 'Completed'
+                  ? 'green'
+                  : 'grey'
+            " class="q-pa-sm q-mb-sm" style="font-size: 13px">
             {{ selectedVisitor.status }}
           </q-badge>
 
-          <div class="text-subtitle1 text-weight-bold q-mt-sm">
+          <!-- <div class="text-subtitle1 text-weight-bold q-mt-sm">
             {{ selectedVisitor.firstName }}
             {{ selectedVisitor.lastName }}
-          </div>
+          </div> -->
 
-          <div class="text-grey-7 q-mt-xs">
-            {{ formatDate(selectedVisitor.bookingTimeslot) }}
-          </div>
+<div class="text-subtitle1">
+  <span class="text-weight-bold">{{ selectedVisitor.firstName }} {{ selectedVisitor.lastName }}</span>
+  (Visitor)
+  <br>
+  <span>to visit</span>
+  <br>
+  <span class="text-weight-bold">{{ selectedVisitor.userFirstName }} {{ selectedVisitor.userLastName }}</span>
+  (Tenant)
+</div>
 
+<div class="text-grey-7 q-mt-xs">
+  Scheduled Date: {{ formatDate(selectedVisitor.bookingTimeslot) }}
+</div>
+
+          <br>
           <div class="text-grey-6 q-mt-xs" style="font-size: 11px">
             ID: {{ selectedVisitor._id }}
           </div>
@@ -324,13 +277,7 @@
 
       <q-card-section class="row justify-between q-pt-none q-pb-md q-px-md">
         <q-btn flat label="Close" color="grey" @click="closeQRDialog" />
-        <q-btn
-          unelevated
-          label="Download Pass"
-          color="primary"
-          icon="download"
-          @click="downloadQR"
-        />
+        <q-btn unelevated label="Download Pass" color="primary" icon="download" @click="downloadQR" />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -367,6 +314,7 @@ export default {
 
       columns: [
         { name: "index", label: "#", field: "index", align: "center" },
+        { name: "qr", label: "Pass", field: "qr", align: "center" },
         { name: "id", label: "Visitor ID", field: "_id", align: "left" },
         { name: "student", label: "Stu No.", field: "student", align: "left" },
         {
@@ -384,7 +332,7 @@ export default {
         },
         { name: "status", label: "Status", field: "status", align: "center" },
 
-        { name: "qr", label: "Pass", field: "qr", align: "center" },
+
 
         {
           name: "actions",
@@ -455,9 +403,12 @@ export default {
           }
           return {
             ...visitor,
+            userFirstName: user.firstName,
+            userLastName: user.lastName,
+            unitNumber: this.rentalDetails.unitType,
             date: dateStr,
             slot: timeStr,
-            student: user.studentInfo.studentNumber,
+            student: user.studentInfo.studentNumber || "N/A",
           };
         });
 
@@ -468,7 +419,7 @@ export default {
     },
     async getMyRental() {
       const rentals = await RentalService.findMyRentals(this.userDetails._id);
-      this.rentalDetails = rentals.find((r) => r.status === "Pending");
+      this.rentalDetails = rentals.find((r) => r.status === "Active");
     },
 
     // -------------------------- BOOKING APIS --------------------------
@@ -521,7 +472,7 @@ export default {
             });
           }
         })
-        .onCancel(() => {});
+        .onCancel(() => { });
     },
     async cancelBooking(row) {
       const visitorId = row._id;
@@ -554,7 +505,7 @@ export default {
             });
           }
         })
-        .onCancel(() => {});
+        .onCancel(() => { });
     },
 
     // ---------QR Code---------------
@@ -663,6 +614,7 @@ export default {
   background-color: #d2f0ee;
   border-radius: 6px;
 }
+
 .qr-canvas {
   border-radius: 8px;
   border: 2px solid #e0e0e0;

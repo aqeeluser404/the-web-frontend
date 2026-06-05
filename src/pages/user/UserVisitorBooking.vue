@@ -7,7 +7,7 @@
         <div class="text-center">
           <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
           <span>
-            Visiting hours are strictly observed from 09:00 AM to 05:00 PM
+            Visiting hours are strictly observed from 09:00 AM to 21:30 PM
           </span>
         </div>
       </div>

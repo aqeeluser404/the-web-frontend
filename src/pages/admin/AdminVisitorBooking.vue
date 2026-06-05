@@ -1,11 +1,24 @@
 <template>
   <q-page class="bg-grey-3">
+
+    <q-banner
+      class="bg-black text-white full-width" @click="openAddPayer">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Visiting hours are strictly observed from 09:00 AM to 21:30 PM
+          </span>
+        </div>
+      </div>
+    </q-banner>
+
     <div
       class="constrain-standard q-pt-md q-pb-md row justify-center"
       v-show="!loading"
     >
       <div class="col-md-9 col-12 full-height">
-        <!-- Driver Approval Card -->
+
         <q-card class="soft-shadow-card full-height">
           <q-card-section class="bg-primary text-white">
             <div class="text-h6">
@@ -41,18 +54,25 @@
                   class="row items-center justify-between q-pa-md"
                 >
                   <div>
-                    <div class="text-weight-bold">
-                      {{ capitalizeFirstLetter(visitor.firstName) }} {{ capitalizeFirstLetter(visitor.lastName) }} -
-                      {{ capitalizeFirstLetter(visitor.userFirstName) }}
-                      {{ capitalizeFirstLetter(visitor.userLastName) }}
+
+                    <div class="text-subtitle1">
+                      <span class="text-weight-bold">{{ capitalizeFirstLetter(visitor.firstName) }} {{ capitalizeFirstLetter(visitor.lastName) }}</span>
+                      <span> is visiting currently </span>
+                      <span class="text-weight-bold">{{ capitalizeFirstLetter(visitor.userFirstName) }} {{ capitalizeFirstLetter(visitor.userLastName) }}</span>
                     </div>
 
-                    <div class="text-grey-7 q-mt-xs">
+                    <br>
+
+                    <!-- <div class="text-grey-7 q-mt-xs">
                       Student No: {{ visitor.userStudentNumber }}
+                    </div> -->
+
+                    <div class="text-grey-7 q-mt-xs">
+                      Entry Timeslot: {{ new Date(visitor.entryTimeslot).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) }}
                     </div>
 
                     <div class="text-grey-7" v-if="visitor.unitNumber">
-                      Unit: {{ visitor.unitNumber }}
+                      Tenant Unit: {{ visitor.unitNumber }}
                     </div>
                     <div class="text-grey-7" v-else>Admin Access Account</div>
                   </div>
@@ -207,6 +227,28 @@
                 </q-td>
               </template>
 
+              <template v-slot:body-cell-entryTimeslot="props">
+                <q-td :props="props">
+                  <div v-if="props.row.entryTimeslot">
+                    {{ new Date(props.row.entryTimeslot).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) }}
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-exitTimeslot="props">
+                <q-td :props="props">
+                  <div v-if="props.row.exitTimeslot">
+                    {{ new Date(props.row.exitTimeslot).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) }}
+                  </div>
+                  <div v-else>
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
               <template v-slot:body-cell-unitNumber="props">
                 <q-td :props="props">
                   <div v-if="props.row.unitNumber">
@@ -332,26 +374,26 @@ export default {
       users: [],
       filteredUsers: [],
 
-      userColumns: [
-        {
-          name: "index",
-          label: "#",
-          field: "index",
-          align: "center",
-        },
-        {
-          name: "firstName",
-          label: "First Name",
-          field: "firstName",
-          align: "left",
-        },
-        {
-          name: "lastName",
-          label: "Last Name",
-          field: "lastName",
-          align: "left",
-        },
-      ],
+      // userColumns: [
+      //   {
+      //     name: "index",
+      //     label: "#",
+      //     field: "index",
+      //     align: "center",
+      //   },
+      //   {
+      //     name: "firstName",
+      //     label: "First Name",
+      //     field: "firstName",
+      //     align: "left",
+      //   },
+      //   {
+      //     name: "lastName",
+      //     label: "Last Name",
+      //     field: "lastName",
+      //     align: "left",
+      //   },
+      // ],
 
       columns: [
         {
@@ -369,15 +411,27 @@ export default {
         {
           name: "visitorName",
           label: "Visitor",
-          field: (row) => `${row.firstName} ${row.lastName}`,
+          field: (row) =>
+            `${row.firstName.charAt(0).toUpperCase() + row.firstName.slice(1)} ${
+              row.lastName.charAt(0).toUpperCase() + row.lastName.slice(1)
+            }`,
           align: "left",
         },
         {
-          name: "studentNumber",
-          label: "Student No.",
-          field: "userStudentNumber",
+          name: "tenantName",
+          label: "Tenant",
+          field: (row) =>
+            `${row.userFirstName.charAt(0).toUpperCase() + row.userFirstName.slice(1)} ${
+              row.userLastName.charAt(0).toUpperCase() + row.userLastName.slice(1)
+            }`,
           align: "left",
         },
+        // {
+        //   name: "studentNumber",
+        //   label: "Student No.",
+        //   field: "userStudentNumber",
+        //   align: "left",
+        // },
         {
           name: "unitNumber",
           label: "Unit",
@@ -390,12 +444,18 @@ export default {
           field: "bookingTimeslot",
           align: "left",
         },
-        // {
-        //   name: "visitTime",
-        //   label: "Visit Time",
-        //   field: "bookingTimeslot",
-        //   align: "left",
-        // },
+        {
+          name: "entryTimeslot",
+          label: "Entry Timeslot",
+          field: "entryTimeslot",
+          align: "left"
+        },
+        {
+          name: "exitTimeslot",
+          label: "Exit Timeslot",
+          field: "exitTimeslot",
+          align: "left"
+        },
         {
           name: "status",
           label: "Status",
@@ -485,22 +545,29 @@ export default {
               (rental) => rental.status === "Active",
             );
 
-            const occupiedUnit = activeRental
-              ? await UnitService.findUnitById(activeRental.unit)
-              : null;
-
             return {
               ...visitor,
-
-              userStudentNumber: user?.studentInfo?.studentNumber || "N/A",
-
               userFirstName: user?.firstName || "",
               userLastName: user?.lastName || "",
-
-              unitNumber: occupiedUnit
-                ? occupiedUnit.unitNumber
-                : "Admin Access Account",
+              unitNumber: activeRental?.unitType || "Admin Access Account",
             };
+
+            // const occupiedUnit = activeRental
+            //   ? await UnitService.getByIdUnit(activeRental.unit)
+            //   : null;
+
+            // return {
+            //   ...visitor,
+
+            //   // userStudentNumber: user?.studentInfo?.studentNumber || "N/A",
+
+            //   userFirstName: user?.firstName || "",
+            //   userLastName: user?.lastName || "",
+
+            //   unitNumber: occupiedUnit
+            //     ? occupiedUnit.unitNumber
+            //     : "Admin Access Account",
+            // };
           }),
         );
 
@@ -628,108 +695,94 @@ export default {
     },
 
     // Approve visitor
-    async approveVisitor(visitor) {
-      try {
-        this.$q
-          .dialog({
-            title: "Confirm",
-            message:
-              "You are about to update the status of this visitor. Do you wish to continue?",
-            color: "primary",
-            cancel: true,
-            persistent: true,
-          })
-          .onOk(async () => {
-            let newStatus = "";
 
-            if (visitor.status === "Pending") {
-              newStatus = "Visiting";
-            } else if (visitor.status === "Visiting") {
-              newStatus = "Completed";
-            } else {
-              return;
-            }
+async approveVisitor(visitor) {
+  try {
+    this.$q.dialog({
+      title: "Confirm",
+      message: "You are about to update the status of this visitor. Do you wish to continue?",
+      color: "primary",
+      cancel: true,
+      persistent: true,
+    }).onOk(async () => {
+      let newStatus = "";
 
-            visitor.status = newStatus;
+      if (visitor.status === "Pending") {
+        newStatus = "Visiting";
 
-            await this.buildTodaysApplications();
-            this.filteredByVisitorStatus();
+        await VisitorService.updateVisitor(visitor._id, {
+          status: newStatus,
+          entryTimeslot: new Date(),
+        });
 
-            const response = await VisitorService.updateVisitor(visitor._id, {
-              status: newStatus,
-            });
+      } else if (visitor.status === "Visiting") {
+        newStatus = "Completed";
 
-            if (response) {
-              this.$q.notify({
-                type: "positive",
-                color: "primary",
-                message: "Status update successful!",
-              });
+        await VisitorService.updateVisitor(visitor._id, {
+          status: newStatus,
+          exitTimeslot: new Date(),
+        });
 
-              this.findAllVisitors();
-            } else {
-              this.$q.notify({
-                type: "negative",
-                message: "Status update failed. Please try again.",
-              });
-            }
-          })
-          .onCancel(() => {});
-      } catch (error) {
-        console.error("Error approving visitor:", error);
+      } else {
+        return;
       }
-    },
+
+      visitor.status = newStatus;
+
+      await this.buildTodaysApplications();
+      this.filteredByVisitorStatus();
+
+      this.$q.notify({
+        type: "positive",
+        color: "primary",
+        message: "Status update successful!",
+      });
+
+      this.findAllVisitors();
+    }).onCancel(() => {});
+  } catch (error) {
+    console.error("Error approving visitor:", error);
+  }
+},
+
 
     // Mark visitor as missed
-    async declineVisitor(visitor) {
-      try {
-        this.$q
-          .dialog({
-            title: "Confirm",
-            message:
-              "You are about to update the status of this visitor. Do you wish to continue?",
-            color: "primary",
-            cancel: true,
-            persistent: true,
-          })
-          .onOk(async () => {
-            let newStatus = "";
+async declineVisitor(visitor) {
+  try {
+    this.$q.dialog({
+      title: "Confirm",
+      message: "You are about to update the status of this visitor. Do you wish to continue?",
+      color: "primary",
+      cancel: true,
+      persistent: true,
+    }).onOk(async () => {
+      if (visitor.status !== "Pending") return;
 
-            if (visitor.status === "Pending") {
-              newStatus = "Missed";
-            } else {
-              return;
-            }
+      const newStatus = "Missed";
 
-            visitor.status = newStatus;
+      await VisitorService.updateVisitor(visitor._id, {
+        status: newStatus,
+        exitTimeslot: new Date(), // optional: record when they were marked missed
+      });
 
-            await this.buildTodaysApplications();
-            this.filteredByVisitorStatus();
+      visitor.status = newStatus;
 
-            const response = await VisitorService.updateVisitor(visitor._id, {
-              status: newStatus,
-            });
+      await this.buildTodaysApplications();
+      this.filteredByVisitorStatus();
 
-            if (response) {
-              this.$q.notify({
-                type: "positive",
-                color: "primary",
-                message: "Status update successful!",
-              });
+      this.$q.notify({
+        type: "positive",
+        color: "primary",
+        message: "Status update successful!",
+      });
 
-              this.findAllVisitors();
-            } else {
-              this.$q.notify({
-                type: "negative",
-                message: "Status update failed. Please try again.",
-              });
-            }
-          })
-          .onCancel(() => {});
-      } catch (error) {
-        console.error("Error declining visitor:", error);
-      }
-    },
+      this.findAllVisitors();
+    }).onCancel(() => {});
+  } catch (error) {
+    console.error("Error declining visitor:", error);
+  }
+},
+
     async cancelBooking(row) {
       const visitorId = row._id;
 

@@ -474,12 +474,20 @@ export default {
   },
   methods: {
     downloadApk() {
-      const link = document.createElement('a')
-      link.href = '/files/the-web-v4-app.apk'
-      link.download = 'the-web-v4-app.apk'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      this.$q.dialog({
+        title: 'Preparing Download',
+        message: 'Your app is being prepared, please wait...',
+        color: 'primary',
+        persistent: true
+      }).onOk(() => {
+        const link = document.createElement('a')
+        link.href = '/files/the-web-v4-app.apk'
+        link.setAttribute('download', 'the-web-v4-app.apk')
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     },
 
     toggleWhatsAppBox() {
