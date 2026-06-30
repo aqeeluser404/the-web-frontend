@@ -202,7 +202,7 @@
       </div>
     </q-card>
 
-    <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? 'Chat with us' : ''" color="secondary" text-color="white"
+    <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? '' : ''" color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop"
       @click="toggleWhatsAppBox" />
     <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white" icon="img:/assets/elements/whatsapp.png"
@@ -638,99 +638,86 @@ export default {
 <style lang="sass">
 .whats-app-btn-desktop
   position: fixed
-  bottom: 20px
-  right: 20px
+  bottom: 80px
+  right: 10px
   z-index: 1000
+  width: 60px
+  height: 60px
+  border-radius: 100%
+
   @media (max-width: 768px)
     display: none
-    bottom: 70px
-    left: 20px
-    margin: 0 auto
-    width: 89%
 
 .whats-app-btn-mobile
   display: none
-  position: fixed
-  bottom: 20px
-  right: 20px
-  z-index: 1000
+
   @media (max-width: 768px)
-    display: block
-    bottom: 10px
-    // left: 20px
-    margin: 0 auto
-    width: 15%
+    display: flex
+    position: fixed
+    bottom: 80px
+    right: 10px
+    z-index: 1000
+
+    width: 60px
+    height: 60px
+    border-radius: 50%
+
+    justify-content: center
+    align-items: center
+
+    background: #25D366
+    box-shadow: 0 4px 12px rgba(0,0,0,.25)
 
 .whats-app-box
   position: fixed
-  bottom: 90px
-  right: 20px
+  bottom: 155px
+  right: 10px
   z-index: 1000
-  width: 100%
-  max-width: 300px
-  // height: 300px
+  width: 300px
+  max-width: calc(100vw - 40px)
   border-radius: 15px
+
   @media (max-width: 768px)
-    border-radius: 25px
-    right: 20px
-    bottom: 70px
-    margin: 0 auto
-    max-width: 90%
+    right: 10px
+    left: 20px
+    width: auto
+    max-width: none
+    bottom: 155px
+    border-radius: 20px
 
 .whats-app-msg
+  position: relative
   width: 100%
-  max-width: 300px
   border-radius: 15px
+
 .whats-app-msg::after
   content: ''
   position: absolute
-  top: 12px  // Adjust this to position vertically
-  left: -10px  // Move it slightly outside the container
+  top: 20px
+  right: -10px
   width: 0
   height: 0
-  border-top: 1px solid transparent
+  border-top: 10px solid transparent
   border-bottom: 10px solid transparent
-  border-right: 13px solid white  // Right border creates left-pointing triangle
+  border-left: 12px solid white
 
 .logo-circle
-  width: 40px
-  height: 40px
+  width: 60px
+  height: 60px
   border-radius: 50%
+
   background: white
   display: flex
   justify-content: center
   align-items: center
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
-  overflow: hidden // ensures image doesn't spill out
 
-.logo-image
-  width: 70%
-  height: 80%
-  object-fit: contain
+  overflow: hidden
   cursor: pointer
 
-.secondary-nav
-  height: 50px
-  border-bottom: 1px solid #e0e0e0
-  padding: 0 16px
+  box-shadow: 0 4px 12px rgba(0,0,0,.25)
 
-.two-column-list
-  display: flex
-  gap: 8px
-  box-sizing: border-box
-
-.column
-  flex: 1
-  display: flex
-  flex-direction: column
-  gap: 8px
-  box-sizing: border-box
-
-.column.wide
-  flex: 3   // takes 3 parts
-.column.narrow
-  flex: 1   // takes 1 part
-
-.full-width
-  width: 100%
+.logo-image
+  width: 65%
+  height: 65%
+  object-fit: contain
 </style>
