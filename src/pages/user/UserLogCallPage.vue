@@ -28,6 +28,7 @@
               autogrow
               outlined
               placeholder="Provide more details about the issue..."
+              maxlength="20"
             />
             <q-input
               rounded
@@ -38,6 +39,7 @@
               autogrow
               outlined
               placeholder="Enter a short summary of the issue..."
+              maxlength="100"
             />
             <q-input
               rounded
@@ -109,91 +111,99 @@
 
           <!-- <q-separator /> -->
 
-        <q-card-section>
-          <q-table flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id"
-          >
-            <template v-slot:body-cell-index="props">
-              <q-td :props="props">
-                {{ props.rowIndex + 1 }}
-              </q-td>
-            </template>
+          <q-card-section>
+            <q-table flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id"
+            >
+              <template v-slot:body-cell-index="props">
+                <q-td :props="props">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+              </template>
 
-            <template v-slot:body-cell-logNumber="props">
-              <q-td :props="props">
-                <div class="id">
+              <template v-slot:body-cell-logNumber="props">
+                <q-td :props="props">
+                  <div class="id">
+                    <q-badge
+                      color="text-primary"
+                      align="middle"
+                      class="q-pa-xs q-px-sm"
+                    >
+                      {{ props.row.logNumber }}
+                    </q-badge>
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-createdDate="props">
+                <q-td :props="props">
+                  {{ formatDate(props.row.createdAt) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-createdTime="props">
+                <q-td :props="props">
+                  {{ formatTime(props.row.createdAt) }}
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-closedDate="props">
+                <q-td :props="props">
+                  <div v-if="props.row.closedAt">
+                    {{ formatDate(props.row.closedAt) }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-closedTime="props">
+                <q-td :props="props">
+                  <div v-if="props.row.closedAt">
+                    {{ formatTime(props.row.closedAt) }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-summary="props">
+                <q-td :props="props">
+                  <div class="text-left" style="white-space: normal;">
+                    {{ props.row.summary }}
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
                   <q-badge
-                    color="text-primary"
+                    :color="
+                      props.row.status === 'Resolved'
+                        ? 'green'
+                        : props.row.status === 'Opened'
+                          ? 'orange'
+                          : props.row.status === 'Assigned'
+                            ? 'blue'
+                            : props.row.status === 'Closed'
+                              ? 'grey'
+                              : 'red'
+                    "
                     align="middle"
                     class="q-pa-xs q-px-sm"
                   >
-                    {{ props.row.logNumber }}
+                    {{ props.row.status }}
                   </q-badge>
-                </div>
-              </q-td>
-            </template>
+                </q-td>
+              </template>
 
-            <template v-slot:body-cell-createdDate="props">
-              <q-td :props="props">
-                {{ formatDate(props.row.createdAt) }}
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-createdTime="props">
-              <q-td :props="props">
-                {{ formatTime(props.row.createdAt) }}
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-closedDate="props">
-              <q-td :props="props">
-                <div v-if="props.row.closedAt">
-                  {{ formatDate(props.row.closedAt) }}
-                </div>
-                <div v-else>N/A</div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-closedTime="props">
-              <q-td :props="props">
-                <div v-if="props.row.closedAt">
-                  {{ formatTime(props.row.closedAt) }}
-                </div>
-                <div v-else>N/A</div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-status="props">
-              <q-td :props="props">
-                <q-badge
-                  :color="
-                    props.row.status === 'Resolved'
-                      ? 'green'
-                      : props.row.status === 'Opened'
-                        ? 'orange'
-                        : props.row.status === 'Assigned'
-                          ? 'blue'
-                          : props.row.status === 'Closed'
-                            ? 'grey'
-                            : 'red'
-                  "
-                  align="middle"
-                  class="q-pa-xs q-px-sm"
-                >
-                  {{ props.row.status }}
-                </q-badge>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-vendorType="props">
-              <q-td :props="props">
-                <div v-if="props.row.vendorInfo && props.row.vendorInfo.vendorType">
-                  {{ props.row.vendorInfo.vendorType }}
-                </div>
-                <div v-else>N/A</div>
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
+              <template v-slot:body-cell-vendorType="props">
+                <q-td :props="props">
+                  <div v-if="props.row.vendorInfo && props.row.vendorInfo.vendorType">
+                    {{ props.row.vendorInfo.vendorType }}
+                  </div>
+                  <div v-else>N/A</div>
+                </q-td>
+              </template>
+            </q-table>
+          </q-card-section>
         </q-card>
 
         <q-dialog v-model="otherDialog">

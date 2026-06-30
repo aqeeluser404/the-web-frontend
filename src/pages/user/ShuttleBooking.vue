@@ -404,6 +404,11 @@ import RentalService from "src/services/RentalService";
 import CustomButton from "src/components/elements/CustomButton.vue";
 import QRCode from 'qrcode'
 
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Browser } from '@capacitor/browser';
+
 export default {
   name: "BookingPage",
 
@@ -769,14 +774,88 @@ export default {
       }
     },
 
-    downloadQR() {
-      const canvas = this.$refs.qrCanvas
-      if (!canvas) return
-      const link = document.createElement('a')
-      link.download = `shuttle-pass-${this.selectedShuttle._id}.png`
-      link.href = canvas.toDataURL('image/png')
-      link.click()
+    // downloadQR() {
+    //   const canvas = this.$refs.qrCanvas
+    //   if (!canvas) return
+    //   const link = document.createElement('a')
+    //   link.download = `shuttle-pass-${this.selectedShuttle._id}.png`
+    //   link.href = canvas.toDataURL('image/png')
+    //   link.click()
+    // },
+
+    async ensureStoragePermission() {
+      // On Android 13+, Capacitor maps "photos" to READ_MEDIA_IMAGES
+      // On older Android, it maps to WRITE_EXTERNAL_STORAGE
+      const perm = await Capacitor.Plugins.Permissions?.query({ name: 'photos' });
+      if (perm?.state !== 'granted') {
+        await Capacitor.Plugins.Permissions?.request({ name: 'photos' });
+      }
     },
+
+    // async downloadQR() {
+    //   const canvas = this.$refs.qrCanvas;
+    //   if (!canvas) return;
+
+    //   const dataUrl = canvas.toDataURL("image/png");
+    //   const base64Data = dataUrl.split(",")[1];
+    //   const fileName = `shuttle-pass-${this.selectedShuttle._id}.png`;
+
+    //   const isNative = Capacitor.isNativePlatform();
+
+    //   if (isNative) {
+    //     try {
+    //       await this.ensureStoragePermission();
+
+    //       await Filesystem.writeFile({
+    //         path: fileName,
+    //         data: base64Data,
+    //         directory: Directory.Documents
+    //         // directory: Capacitor.getPlatform() === 'ios' ? Directory.Documents : Directory.External,
+    //       });
+
+    //       this.$q.notify({ type: 'positive', message: 'QR saved to device storage!' });
+    //     } catch (err) {
+    //       console.error("Filesystem error:", err);
+    //       this.$q.notify({ type: 'warning', message: 'Could not save, opening share options...' });
+    //       try {
+    //         await Share.share({ title: 'Shuttle Pass', url: dataUrl });
+    //       } catch {
+    //         await Browser.open({ url: dataUrl });
+    //       }
+    //     }
+    //   } else {
+    //     const link = document.createElement("a");
+    //     link.download = fileName;
+    //     link.href = dataUrl;
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    //     this.$q.notify({ type: 'positive', message: 'QR downloaded!' });
+    //   }
+    // }
+
+    async downloadQR() {
+      const canvas = this.$refs.qrCanvas;
+      if (!canvas) return;
+
+      const dataUrl = canvas.toDataURL("image/png");
+      const fileName = `shuttle-pass-${this.selectedShuttle._id}.png`;
+
+      if (Capacitor.isNativePlatform()) {
+        // On Android/iOS app → open in browser so user can save/share
+        await Browser.open({ url: dataUrl });
+        this.$q.notify({ type: 'info', message: 'Shuttle QR opened in browser — save it from there.' });
+      } else {
+        // On web/desktop → trigger normal download
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.$q.notify({ type: 'positive', message: 'Shuttle QR downloaded!' });
+      }
+    }
   },
 };
 </script>

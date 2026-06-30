@@ -498,7 +498,7 @@ export default {
     hasAllRequiredDocuments() {
       const requiredDocsByCategory = {
         'Private Client': [
-          'private_application_form',
+          // 'private_application_form',
           'private_student_registration',
           'private_id_student',
           'private_id_person',
@@ -507,7 +507,7 @@ export default {
           'private_3_months_bank_statements'
         ],
         'Business': [
-          'business_application_form',
+          // 'business_application_form',
           'business_student_registration',
           'business_id_directors',
           'business_proof_of_address',
@@ -515,7 +515,7 @@ export default {
           'business_6_months_bank_statements'
         ],
         'Bursary Application': [
-          'bursary_application_form',
+          // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',

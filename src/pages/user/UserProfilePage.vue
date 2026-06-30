@@ -252,11 +252,19 @@
                 <a target="_blank" href="/frequently-asked-questions" class="text-primary">How to Apply guide</a>.
               </p>
 
-              <p class="q-mt-sm">
+              <!-- <p class="q-mt-sm">
                 <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
                   Download Credit Check Approval
                 </a>
-              </p>
+              </p> -->
+
+              <!-- <p class="q-mt-sm">
+                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
+                  Fill in Application Form
+                </a>
+              </p> -->
+
+              <CustomButton v-if="isEditingDisabled" label="Fill in Application Form" customStyle="width: 200px" @click="openApplicationForm" />
             </div>
             <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
             <br>Once your rental application has been submitted; <br> No further changes to your <span
@@ -294,6 +302,10 @@
       <AddDocumentComponent :user="userDetails" :docType="activeDocType" @close="handleDialogClose"
         @document-added="fetchUserDetails" />
     </q-dialog>
+
+    <q-dialog v-model="applicationForm">
+      <DigitalApplicationForm @close="closeApplicationForm" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -307,11 +319,13 @@ import AddDocumentComponent from 'src/components/user/AddDocumentComponent.vue';
 import RentalService from 'src/services/RentalService';
 import { copyToClipboard } from 'quasar';
 import { useCategoryLockStore } from 'src/stores/categoryLock';
+import DigitalApplicationForm from 'src/components/user/DigitalApplicationForm.vue';
 
 export default {
   data() {
     return {
       loading: true,
+      applicationForm: false,
 
       userDetails: {
         studentInfo: {
@@ -367,7 +381,7 @@ export default {
         {
           category: 'Private Client',
           documents: [
-            { type: 'private_application_form', label: 'Fully Completed Application Form' },
+            // { type: 'private_application_form', label: 'Fully Completed Application Form' },
             { type: 'private_student_registration', label: 'Student Registration Form' },
             { type: 'private_id_student', label: 'Identity Documents - Student responsible' },
             { type: 'private_id_person', label: 'Identity Documents - Person responsible' },
@@ -379,7 +393,7 @@ export default {
         {
           category: 'Business',
           documents: [
-            { type: 'business_application_form', label: 'Fully Completed Application Form' },
+            // { type: 'business_application_form', label: 'Fully Completed Application Form' },
             { type: 'business_student_registration', label: 'Student Registration Form' },
             { type: 'business_id_directors', label: 'Identity Documents of all Directors' },
             { type: 'business_proof_of_address', label: 'Proof of Address' },
@@ -390,7 +404,7 @@ export default {
         {
           category: 'Bursary Application',
           documents: [
-            { type: 'bursary_application_form', label: 'Fully Completed Application Form' },
+            // { type: 'bursary_application_form', label: 'Fully Completed Application Form' },
             { type: 'bursary_student_registration', label: 'Student Registration Form' },
             { type: 'bursary_confirmation', label: 'Confirmation of bursary' },
             { type: 'bursary_proof_of_address', label: 'Proof of Address' },
@@ -405,7 +419,8 @@ export default {
   },
   components: {
     CustomButton,
-    AddDocumentComponent
+    AddDocumentComponent,
+    DigitalApplicationForm
   },
   computed: {
     categoryLock() {
@@ -432,6 +447,13 @@ export default {
   },
 
   methods: {
+    openApplicationForm() {
+      this.applicationForm = true
+    },
+    closeApplicationForm() {
+      this.applicationForm = false;
+    },
+
     getCategoryByDocType(docType) {
       // With prefixed docTypes, this is trivial:
       if (docType.startsWith('private_')) return 'Private Client';

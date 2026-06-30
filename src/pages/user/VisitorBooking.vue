@@ -79,9 +79,9 @@
                   <q-item-section>
                     <div class="text-left text-subtitle1">
                       Unit Number:
-                      <span class="text-grey-8">{{
-                        rentalDetails?.unitType
-                        }}</span>
+                      <span class="text-grey-8">
+                        {{ rentalDetails?.unitType || "Admin Access Account" }}
+                      </span>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -136,8 +136,17 @@
         </div>
       </q-card-section>
       <q-card-section class="row justify-end">
-        <CustomButton customStyle="width: 19%" label="Confirm Booking" color="green" icon="check_circle"
-          :disable="!canSubmit" @click="confirmBooking" />
+<CustomButton
+  label="Confirm Booking"
+  color="green"
+  icon="check_circle"
+  :disable="!canSubmit"
+  @click="confirmBooking"
+  :style="{
+    width: $q.screen.gt.sm ? '19%' : '100%'
+  }"
+/>
+
       </q-card-section>
     </q-card>
   </div>
@@ -291,6 +300,11 @@ import RentalService from "src/services/RentalService";
 import CustomButton from "src/components/elements/CustomButton.vue";
 import QRCode from "qrcode";
 
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Browser } from '@capacitor/browser';
+
 export default {
   name: "BookingPage",
 
@@ -405,10 +419,10 @@ export default {
             ...visitor,
             userFirstName: user.firstName,
             userLastName: user.lastName,
-            unitNumber: this.rentalDetails.unitType,
+            unitNumber: this.rentalDetails?.unitType || "N/A",
             date: dateStr,
             slot: timeStr,
-            student: user.studentInfo.studentNumber || "N/A",
+            student: user.studentInfo?.studentNumber || "N/A",
           };
         });
 
@@ -419,8 +433,10 @@ export default {
     },
     async getMyRental() {
       const rentals = await RentalService.findMyRentals(this.userDetails._id);
-      this.rentalDetails = rentals.find((r) => r.status === "Active");
+      const activeRental = rentals.find((r) => r.status === "Active");
+      this.rentalDetails = activeRental || null; // or "N/A" if you prefer
     },
+
 
     // -------------------------- BOOKING APIS --------------------------
     async confirmBooking() {
@@ -557,14 +573,88 @@ export default {
       }
     },
 
-    downloadQR() {
+    async ensureStoragePermission() {
+      // On Android 13+, Capacitor maps "photos" to READ_MEDIA_IMAGES
+      // On older Android, it maps to WRITE_EXTERNAL_STORAGE
+      const perm = await Capacitor.Plugins.Permissions?.query({ name: 'photos' });
+      if (perm?.state !== 'granted') {
+        await Capacitor.Plugins.Permissions?.request({ name: 'photos' });
+      }
+    },
+
+    async downloadQR() {
       const canvas = this.$refs.qrCanvas;
       if (!canvas) return;
-      const link = document.createElement("a");
-      link.download = `visitor-pass-${this.selectedVisitor._id}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+
+      const dataUrl = canvas.toDataURL("image/png");
+      const fileName = `visitor-pass-${this.selectedVisitor._id}.png`;
+
+      // For native apps, just open the image in the system browser
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({ url: dataUrl });
+        this.$q.notify({ type: 'info', message: 'QR opened in browser — save it from there.' });
+      } else {
+        // For web/desktop, trigger a normal download
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.$q.notify({ type: 'positive', message: 'QR downloaded!' });
+      }
     },
+
+
+    // async downloadQR() {
+    //   const canvas = this.$refs.qrCanvas;
+    //   if (!canvas) return;
+
+    //   const dataUrl = canvas.toDataURL("image/png");
+    //   const base64Data = dataUrl.split(",")[1];
+    //   const fileName = `visitor-pass-${this.selectedVisitor._id}.png`;
+
+    //   const isNative = Capacitor.isNativePlatform();
+
+    //   if (isNative) {
+    //     try {
+    //       await this.ensureStoragePermission();
+
+    //       await Filesystem.writeFile({
+    //         path: fileName,
+    //         data: base64Data,
+    //         directory: Directory.Documents
+    //         // directory: Capacitor.getPlatform() === 'ios' ? Directory.Documents : Directory.External,
+    //       });
+
+    //       this.$q.notify({ type: 'positive', message: 'Visitor QR saved to device storage!' });
+    //     } catch (err) {
+    //       this.$q.notify({ type: 'warning', message: 'Could not save, opening share options...' });
+    //       try {
+    //         await Share.share({ title: 'Visitor Pass', url: dataUrl });
+    //       } catch {
+    //         await Browser.open({ url: dataUrl });
+    //       }
+    //     }
+    //   } else {
+    //     const link = document.createElement("a");
+    //     link.download = fileName;
+    //     link.href = dataUrl;
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    //     this.$q.notify({ type: 'positive', message: 'Visitor QR downloaded!' });
+    //   }
+    // }
+
+    // downloadQR() {
+    //   const canvas = this.$refs.qrCanvas;
+    //   if (!canvas) return;
+    //   const link = document.createElement("a");
+    //   link.download = `visitor-pass-${this.selectedVisitor._id}.png`;
+    //   link.href = canvas.toDataURL("image/png");
+    //   link.click();
+    // },
   },
 };
 </script>

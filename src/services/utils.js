@@ -6,6 +6,9 @@ import CryptoJS from 'crypto-js';
 import { jwtDecode } from "jwt-decode";
 
 let logoutTimer = null;
+import { useRouter } from 'vue-router';
+
+import { showSessionExpired } from './showShessionExpired';
 
 class Helper {
 
@@ -224,10 +227,13 @@ class Helper {
   // ------------------------------------------------------------------------------------------------------------------------------------------------
   // AUTHENTICATED ROUTE FUNCTIONS
   static async beforeRouteEnterUser(to, from, next) {
+    const router = useRouter();
     try {
       const isLoggedIn = await Helper.checkCookie();
       if (!isLoggedIn) {
-        next({ path: '/' });
+        // next({ path: '/' });
+        next(false);
+        showSessionExpired(router);
       } else {
         next();
       }
@@ -237,21 +243,32 @@ class Helper {
     }
   }
   static async beforeRouteEnterAdmin(to, from, next) {
+    const router = useRouter();
     try {
       const isLoggedIn = await Helper.checkCookie();
       if (!isLoggedIn) {
-        next({ path: '/' });
+        next(false); // cancel navigation
+        showSessionExpired(router);
       } else {
-        const user = await UserService.FindUserByToken()
+        const user = await UserService.FindUserByToken();
         if (user && user.userType === 'admin') {
-          next();
+          next(); // allow navigation
         } else {
-          next({ path: '/' });
+          next(false);
+          Dialog.create({
+            title: 'Access denied',
+            message: 'You must be an admin to view this page.',
+            ok: { label: 'Go to Home', color: 'primary' },
+            persistent: true
+          }).onOk(() => {
+            router.push('/');
+          });
         }
       }
     } catch (error) {
       console.error('Error fetching token or user details:', error);
-      next({ path: '/' });
+      next(false);
+      showSessionExpired(router);
     }
   }
   static async beforeRouteEnterVendor(to, from, next) {

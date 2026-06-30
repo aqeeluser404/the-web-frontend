@@ -57,6 +57,37 @@
                 </q-td>
               </template>
 
+              <template v-slot:body-cell-unit="props">
+                <q-td :props="props">
+                  <div v-if="props.row.unit">
+                    {{ props.row.unit }}
+                  </div>
+                  <div v-else class="row justify-center">N/A</div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-description="props">
+                <q-td :props="props">
+                  <div v-if="props.row.description" class="text-left" style="white-space: normal;">
+                    {{ props.row.description }}
+                  </div>
+                  <div v-else class="row justify-center">
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-summary="props">
+                <q-td :props="props">
+                  <div v-if="props.row.summary" class="text-left" style="white-space: normal;">
+                    {{ props.row.summary }}
+                  </div>
+                  <div v-else class="row justify-center">
+                    N/A
+                  </div>
+                </q-td>
+              </template>
+
               <template v-slot:body-cell-status="props">
                 <q-td :props="props">
                   <q-badge
@@ -85,7 +116,7 @@
                   <div v-if="props.row.createdAt">
                     {{ formatDate(props.row.createdAt) }}
                   </div>
-                  <div v-else>N/A</div>
+                  <div v-else class="row justify-center">N/A</div>
                 </q-td>
               </template>
 
@@ -94,7 +125,7 @@
                   <div v-if="props.row.closedAt">
                     {{ formatDate(props.row.closedAt) }}
                   </div>
-                  <div v-else>N/A</div>
+                  <div v-else class="row justify-center">N/A</div>
                 </q-td>
               </template>
 
@@ -103,7 +134,7 @@
                   <div v-if="props.row.vendorInfo && props.row.vendorInfo.vendorType">
                     {{ props.row.vendorInfo.vendorType }}
                   </div>
-                  <div v-else>N/A</div>
+                  <div v-else class="row justify-center">N/A</div>
                 </q-td>
               </template>
 
@@ -136,7 +167,7 @@
     </div>
 
     <q-inner-loading :showing="loading" color="primary" size="md" />
-    <q-dialog v-model="updateCallLogDialog">
+    <q-dialog v-model="updateCallLogDialog" :maximized="$q.screen.lt.sm ? true : false">
       <AdminUpdateCallLogComponent :callLog="selectedCallLog" @close="handleDialogClose" />
     </q-dialog>
 
@@ -171,6 +202,10 @@ export default {
         { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left'},
         { name: "firstName", label: "First Name", field: "firstName", align: 'left'},
         { name: "lastName", label: "Last Name", field: "lastName", align: 'left'},
+        { name: "unit", label: "Unit", field: "unit", align: 'left' },
+        { name: "description", label: "Description", field: "description", align: 'left' },
+        { name: "summary", label: "Summary", field: "summary", align: 'left' },
+
         { name: "createdAt", label: "Opened Date", field: "createdAt", align: 'left'},
         { name: "closedAt", label: "Closed Date", field: "closedAt", align: 'left'},
         { name: "callType", label: "Call Type", field: "callType", align: 'left'},
@@ -294,7 +329,7 @@ export default {
       this.loading = true
       const response = await CallLogService.findAllCallLogs()
 
-      console.log(response)
+      // console.log(response)
 
       this.callLogs = await Promise.all(response.map(async callLog => {
         const user = await UserService.findUserById(callLog.user)

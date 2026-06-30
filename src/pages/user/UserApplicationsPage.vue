@@ -1,15 +1,27 @@
 <template>
   <q-page class="bg-grey-3">
     <!-- Banner for rejected rentals -->
-    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
+    <!-- <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
       class="bg-black text-white full-width" @click="openAddPayer">
       <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
         <div class="text-center">
-          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
           <span>
             Your application has been submitted successfully. <br>Since no bursary is linked to your profile, it is
             mandatory to provide payer information to proceed with financial processing. Click here to complete this
             step.
+          </span>
+        </div>
+      </div>
+    </q-banner> -->
+
+    <q-banner v-if="addPayerInformation"
+      class="bg-black text-white full-width" @click="$router.push('/user/profile')">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Your application has been submitted successfully. <br>
+            Click this banner to navigate to your profile and select "Fill in Application Form" to complete the credit check approval process.
           </span>
         </div>
       </div>
