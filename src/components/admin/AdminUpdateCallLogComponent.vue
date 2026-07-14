@@ -8,23 +8,37 @@
 
     <q-card-section>
       <q-item>
-        <q-item-section class="text-left text-subtitle1">Opened Date/Time</q-item-section>
+        <q-item-section class="text-left text-subtitle1"
+          >Opened Date/Time</q-item-section
+        >
         <q-item-section class="text-left text-subtitle1">
-          <q-input readonly
-            :model-value="`${formatDate(callLog.createdAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.createdAt)}`" />
+          <q-input
+            readonly
+            :model-value="`${formatDate(callLog.createdAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.createdAt)}`"
+          />
         </q-item-section>
       </q-item>
 
       <q-item>
-        <q-item-section class="text-left text-subtitle1">Closed Date/Time</q-item-section>
+        <q-item-section class="text-left text-subtitle1"
+          >Closed Date/Time</q-item-section
+        >
         <q-item-section class="text-left text-subtitle1">
-          <q-input readonly
-            :model-value="callLog.closedAt ? `${formatDate(callLog.closedAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.closedAt)}` : 'N/A'" />
+          <q-input
+            readonly
+            :model-value="
+              callLog.closedAt
+                ? `${formatDate(callLog.closedAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.closedAt)}`
+                : 'N/A'
+            "
+          />
         </q-item-section>
       </q-item>
 
       <q-item>
-        <q-item-section class="text-left text-subtitle1">Call Type</q-item-section>
+        <q-item-section class="text-left text-subtitle1"
+          >Call Type</q-item-section
+        >
         <q-item-section class="text-left text-subtitle1">
           <q-input readonly v-model="callLog.callType" />
         </q-item-section>
@@ -37,38 +51,148 @@
         </q-item-section>
       </q-item>
 
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">
+          Description
+        </q-item-section>
+      </q-item>
+
+      <q-item-section>
+        <q-input
+          readonly
+          v-model="callLog.description"
+          type="textarea"
+          autogrow
+          class="q-ml-md"
+        />
+      </q-item-section>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1">
+          Summary
+        </q-item-section>
+
+        <q-item-section>
+          <q-input
+            readonly
+            v-model="callLog.summary"
+            type="textarea"
+            autogrow
+          />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section class="text-left text-subtitle1"> Unit </q-item-section>
+
+        <q-item-section>
+          <q-input readonly v-model="callLog.unit" />
+        </q-item-section>
+      </q-item>
+
+      <q-item v-if="callLog.images && callLog.images.length">
+        <q-item-section>
+          <div class="text-subtitle1 q-mb-md">Supporting Images</div>
+
+          <div class="row q-col-gutter-md">
+            <div
+              v-for="(img, i) in callLog.images"
+              :key="img._id || i"
+              class="col-auto q-mb-md"
+            >
+              <q-img
+                :src="img.imageUrl"
+                width="140px"
+                height="140px"
+                fit="cover"
+                class="rounded-borders cursor-pointer shadow-2"
+                @click="openImage(img.imageUrl)"
+              />
+            </div>
+          </div>
+        </q-item-section>
+      </q-item>
+      <q-dialog v-model="imageDialog">
+        <q-card style="max-width: 95vw; max-height: 95vh">
+          <q-card-section class="q-pa-none">
+            <img
+              :src="selectedImage"
+              alt="problem pic"
+              style="
+                display: block;
+                max-width: 90vw;
+                max-height: 90vh;
+                object-fit: contain;
+              "
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
       <div v-if="mode !== 'resolved'">
         <q-item class="q-my-md">
-          <q-item-section class="text-left text-subtitle1">Vendor Assignment</q-item-section>
+          <q-item-section class="text-left text-subtitle1"
+            >Vendor Assignment</q-item-section
+          >
           <q-item-section class="text-left text-subtitle1">
             <div class="row q-gutter-md items-center">
-              <q-radio v-model="assignVendor" val="yes" label="Assigned" dense />
-              <q-radio v-model="assignVendor" val="no" label="Unassigned" dense />
+              <q-radio
+                v-model="assignVendor"
+                val="yes"
+                label="Assigned"
+                dense
+              />
+              <q-radio
+                v-model="assignVendor"
+                val="no"
+                label="Unassigned"
+                dense
+              />
             </div>
           </q-item-section>
         </q-item>
 
         <div v-if="assignVendor === 'yes'">
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Vendor Type</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Vendor Type</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
-              <q-input v-if="isOtherCallType" v-model="vendorInfo.vendorType" label="Enter vendor type"
-                :rules="[val => !!val || 'Vendor type is required']" />
-              <q-select v-else v-model="vendorInfo.vendorType" :options="vendorTypeOptions" label="Select vendor type"
-                emit-value map-options @update:model-value="autoFillVendorContact" />
+              <q-input
+                v-if="isOtherCallType"
+                v-model="vendorInfo.vendorType"
+                label="Enter vendor type"
+                :rules="[(val) => !!val || 'Vendor type is required']"
+              />
+              <q-select
+                v-else
+                v-model="vendorInfo.vendorType"
+                :options="vendorTypeOptions"
+                label="Select vendor type"
+                emit-value
+                map-options
+                @update:model-value="autoFillVendorContact"
+              />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Vendor Contact</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Vendor Contact</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
-              <q-input v-model="vendorInfo.vendorContact" label="Vendor contact email"
-                :rules="[val => !!val || 'Contact email is required']" />
+              <q-input
+                v-model="vendorInfo.vendorContact"
+                label="Vendor contact email"
+                :rules="[(val) => !!val || 'Contact email is required']"
+              />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Assignment Date</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Assignment Date</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
               <q-input v-model="vendorInfo.vendorAssignedDate" type="date" />
             </q-item-section>
@@ -79,83 +203,109 @@
 
     <q-card-section class="column items-center">
       <div class="full-width row justify-between q-mb-md">
-        <CustomButton v-if="mode !== 'resolved'" label="Update Call Log" customStyle="width: 100%" @click="updateUserType" />
-        <CustomButton v-if="mode === 'resolved'" label="Reopen Call Log" customStyle="width: 100%" @click="reopenCallLog" />
+        <CustomButton
+          v-if="mode !== 'resolved'"
+          label="Update Call Log"
+          customStyle="width: 100%"
+          @click="updateUserType"
+        />
+        <CustomButton
+          v-if="mode === 'resolved'"
+          label="Reopen Call Log"
+          customStyle="width: 100%"
+          @click="reopenCallLog"
+        />
       </div>
 
       <div class="full-width q-mb-md" v-if="mode === 'editable'">
-        <CustomButton v-if="mode === 'editable'" label="Resolved" color="white" text-color="black"
-          @click="markResolved" />
+        <CustomButton
+          v-if="mode === 'editable'"
+          label="Resolved"
+          color="white"
+          text-color="black"
+          @click="markResolved"
+        />
       </div>
       <div class="full-width">
-        <CustomButton label="Close" color="white" text-color="black" customStyle="width: 100%" @click="$emit('close')" />
+        <CustomButton
+          label="Close"
+          color="white"
+          text-color="black"
+          customStyle="width: 100%"
+          @click="$emit('close')"
+        />
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script>
-import CustomButton from '../elements/CustomButton.vue';
-import CallLogService from 'src/services/CallLogService';
-import Helper from 'src/services/utils';
+import CustomButton from "../elements/CustomButton.vue";
+import CallLogService from "src/services/CallLogService";
+import Helper from "src/services/utils";
 
 export default {
   props: {
     callLog: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      mode: this.callLog.status === 'Resolved' ? 'resolved' : 'editable',
-      assignVendor: this.callLog.vendorInfo?.vendorType ? 'yes' : 'no',
+      mode: this.callLog.status === "Resolved" ? "resolved" : "editable",
+      assignVendor: this.callLog.vendorInfo?.vendorType ? "yes" : "no",
       vendorInfo: {
         vendorType: this.callLog.vendorInfo?.vendorType || null,
         vendorContact: this.callLog.vendorInfo?.vendorContact || null,
-        vendorAssignedDate: this.formatDateForInput(this.callLog.vendorInfo?.vendorAssignedDate) || ''
+        vendorAssignedDate:
+          this.formatDateForInput(
+            this.callLog.vendorInfo?.vendorAssignedDate,
+          ) || "",
       },
       callLogStatusOptions: [
-        { label: 'Assigned', value: 'Assigned' },
-        { label: 'Resolved', value: 'Resolved' },
-        { label: 'Closed', value: 'Closed' },
+        { label: "Assigned", value: "Assigned" },
+        { label: "Resolved", value: "Resolved" },
+        { label: "Closed", value: "Closed" },
       ],
       vendorTypeOptions: [
-        { label: 'IT Support', value: 'IT Support' },
-        { label: 'Maintenance', value: 'Maintenance' },
-        { label: 'Plumbing', value: 'Plumbing' },
-        { label: 'Electrical', value: 'Electrical' },
-        { label: 'Security', value: 'Security' },
-        { label: 'Cleaning', value: 'Cleaning' },
-        { label: 'Other', value: 'Other' }
+        { label: "IT Support", value: "IT Support" },
+        { label: "Maintenance", value: "Maintenance" },
+        { label: "Plumbing", value: "Plumbing" },
+        { label: "Electrical", value: "Electrical" },
+        { label: "Security", value: "Security" },
+        { label: "Cleaning", value: "Cleaning" },
+        { label: "Other", value: "Other" },
       ],
       vendorContacts: {
-        'IT Support': 'TheWeb@trafalgar.co.za',
-        'Maintenance': 'TheWeb@trafalgar.co.za',
-        'Plumbing': 'TheWeb@trafalgar.co.za',
-        'Electrical': 'TheWeb@trafalgar.co.za',
-        'Security': 'TheWeb@trafalgar.co.za',
-        'Cleaning': 'TheWeb@trafalgar.co.za',
-        'Other': 'vendors@company.com'
-      }
-    }
+        "IT Support": "TheWeb@trafalgar.co.za",
+        Maintenance: "TheWeb@trafalgar.co.za",
+        Plumbing: "TheWeb@trafalgar.co.za",
+        Electrical: "TheWeb@trafalgar.co.za",
+        Security: "TheWeb@trafalgar.co.za",
+        Cleaning: "TheWeb@trafalgar.co.za",
+        Other: "vendors@company.com",
+      },
+      imageDialog: false,
+      selectedImage: "",
+    };
   },
   computed: {
     isOtherCallType() {
-      return this.callLog.callType?.startsWith('Other -');
-    }
+      return this.callLog.callType?.startsWith("Other -");
+    },
   },
   components: {
-    CustomButton
+    CustomButton,
   },
   methods: {
     formatDate: Helper.formatDate,
     formatTime: Helper.formatTime,
 
     formatDateForInput(date) {
-      if (!date) return '';
+      if (!date) return "";
       const d = new Date(date);
-      return d.toISOString().split('T')[0];
+      return d.toISOString().split("T")[0];
     },
 
     autoFillVendorContact(selectedType) {
@@ -166,122 +316,172 @@ export default {
     },
 
     async updateUserType() {
-      if (this.assignVendor === 'yes' && !this.vendorInfo.vendorContact) {
+      if (this.assignVendor === "yes" && !this.vendorInfo.vendorContact) {
         this.$q.notify({
-          type: 'negative',
-          message: 'Please provide vendor contact information'
+          type: "negative",
+          message: "Please provide vendor contact information",
         });
         return;
       }
 
       // Set status based on vendor assignment
       let status = this.callLog.status;
-      if (this.assignVendor === 'yes') {
-        status = 'Assigned';
-      } else if (this.assignVendor === 'no') {
-        status = 'Opened';
+      if (this.assignVendor === "yes") {
+        status = "Assigned";
+      } else if (this.assignVendor === "no") {
+        status = "Opened";
       }
 
       const updatedCallLog = {
         callType: this.callLog.callType,
         status,
+        description: this.callLog.description,
+        summary: this.callLog.summary,
+        unit: this.callLog.unit,
         createdAt: this.callLog.createdAt,
         user: this.callLog.user,
-        vendorInfo: this.assignVendor === 'yes'
-          ? {
-            vendorType: this.vendorInfo.vendorType || null,
-            vendorContact: this.vendorInfo.vendorContact || null,
-            vendorAssignedDate: this.vendorInfo.vendorAssignedDate
-              ? new Date(this.vendorInfo.vendorAssignedDate)
-              : new Date()
-          }
-          : { vendorType: null, vendorContact: null, vendorAssignedDate: null },
+        vendorInfo:
+          this.assignVendor === "yes"
+            ? {
+                vendorType: this.vendorInfo.vendorType || null,
+                vendorContact: this.vendorInfo.vendorContact || null,
+                vendorAssignedDate: this.vendorInfo.vendorAssignedDate
+                  ? new Date(this.vendorInfo.vendorAssignedDate)
+                  : new Date(),
+              }
+            : {
+                vendorType: null,
+                vendorContact: null,
+                vendorAssignedDate: null,
+              },
 
-        ...(status === 'Closed' && !this.callLog.closedAt
+        ...(status === "Closed" && !this.callLog.closedAt
           ? { closedAt: new Date() }
-          : {})
+          : {}),
       };
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to update this call log status, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          const response = await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          if (response) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to update this call log status, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          console.log("Updated Call Log:", updatedCallLog);
+          try {
+            const response = await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            console.log("Response:", response);
+            if (response) {
+              this.$q.notify({
+                type: "positive",
+                color: "primary",
+                message: "Update successful!",
+              });
+              this.$emit("close");
+            }
+          } catch (error) {
+            console.error("Update error:", error);
             this.$q.notify({
-              type: 'positive',
-              color: 'primary',
-              message: 'Update successful!',
+              type: "negative",
+              message: "An error occurred during update.",
             });
-            this.$emit('close');
           }
-        } catch (error) {
-          console.error('Update error:', error);
-          this.$q.notify({ type: 'negative', message: 'An error occurred during update.' });
-        }
-      }).onCancel(() => { });
+        })
+        .onCancel(() => {});
     },
 
     async markResolved() {
       const updatedCallLog = {
-        status: 'Resolved'
+        status: "Resolved",
       };
+      console.log("Sending:", updatedCallLog);
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to resolve this call log, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          this.mode = 'resolved';
+      const response = await CallLogService.updateCallLog(
+        this.callLog._id,
+        updatedCallLog,
+      );
 
-          this.$q.notify({
-            type: 'positive',
-            color: 'primary',
-            message: 'Call log marked as resolved.'
-          });
-          this.$emit('close');
-        } catch (error) {
-          console.error(error);
-          this.$q.notify({ type: 'negative', message: 'Failed to resolve call log.' });
-        }
-      }).onCancel(() => { });
+      console.log("Response:", response);
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to resolve this call log, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            this.mode = "resolved";
+
+            this.$q.notify({
+              type: "positive",
+              color: "primary",
+              message: "Call log marked as resolved.",
+            });
+            this.$emit("close");
+          } catch (error) {
+            console.error(error);
+            this.$q.notify({
+              type: "negative",
+              message: "Failed to resolve call log.",
+            });
+          }
+        })
+        .onCancel(() => {});
     },
 
     async reopenCallLog() {
       const updatedCallLog = {
-        status: 'Opened'
+        status: "Opened",
       };
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to re-open this call log, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          this.mode = 'editable';
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to re-open this call log, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            this.mode = "editable";
 
-          this.$q.notify({
-            type: 'info',
-            color: 'primary',
-            message: 'Call log has been reopened.'
-          });
-        } catch (error) {
-          console.error(error);
-          this.$q.notify({ type: 'negative', message: 'Failed to reopen call log.' });
-        }
-      }).onCancel(() => { });
-    }
-  }
-}
+            this.$q.notify({
+              type: "info",
+              color: "primary",
+              message: "Call log has been reopened.",
+            });
+          } catch (error) {
+            console.error(error);
+            this.$q.notify({
+              type: "negative",
+              message: "Failed to reopen call log.",
+            });
+          }
+        })
+        .onCancel(() => {});
+    },
+
+    openImage(img) {
+      console.log(img);
+      this.selectedImage = img;
+      this.imageDialog = true;
+    },
+  },
+};
 </script>

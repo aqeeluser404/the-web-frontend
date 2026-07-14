@@ -19,8 +19,34 @@
           </q-card-section>
 
           <!-- New description field -->
-          <q-card-section class="row q-gutter-sm justify-center">
-            <q-input
+          <q-card-section class="row q-gutter-sm justify-center" >
+
+            <template v-if="issueOptions[callLog.callType]">
+              <q-select
+                class="col-md-4 col-12"                      
+                outlined
+                rounded
+                v-model="selectedIssue"
+                :options="issueOptions[callLog.callType]"
+                label="Issue Type"
+                option-label="label"
+                option-value="value"
+                emit-value
+                map-options
+              />
+
+              <q-input
+                class="col-md-4 col-12"
+                v-if="selectedIssue === 'Other'"
+                v-model="customIssue"
+                outlined
+                rounded
+                label="Describe the issue"
+              />
+            </template>
+
+            <template v-else>
+              <q-input
               rounded
               class="col-md-4 col-12"
               v-model="callLog.description"
@@ -29,6 +55,9 @@
               outlined
               placeholder="Provide more details about the issue..."
             />
+            </template>
+
+            
             <q-input
               rounded
               class="col-md-4 col-12"
@@ -251,6 +280,10 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import RentalService from 'src/services/RentalService';
 import UserService from 'src/services/UserService';
 export default {
+
+  components: {
+    CustomButton,
+  },
   data() {
     return {
       loading: true,
@@ -307,13 +340,38 @@ export default {
         { name: "status", label: "Status", field: "status", align: 'center' },
         { name: "vendorType", label: "Vendor", field: "vendorInfo", align: 'left' },
 
-      ]
+      ],
+        issueOptions: {
+          "IT Support": [
+            { label: "WiFi", value: "WiFi" },
+            { label: "Internet Down", value: "Internet Down" },
+            { label: "Other", value: "Other" }
+          ],
+
+          "Maintenance": [
+            { label: "Broken Door", value: "Broken Door" },
+            { label: "Broken Window", value: "Broken Window" },
+            { label: "Other", value: "Other" }
+          ]
+        },
+      selectedIssue: "",
+      customIssue: "",
+
     }
   },
-  components: {
-    CustomButton,
-  },
   watch: {
+    selectedIssue(value) {
+       if (value !== "Other") {
+      this.callLog.description = value;
+    } else {
+      this.callLog.description = "";
+    }
+    },
+    customIssue(value){
+      if (this.selectedIssue === "Other") {
+      this.callLog.description = value;
+    }
+    },
     otherDialog(newVal) {
       if (!newVal && this.callLog.callType === 'Other -') {
         this.callLog.callType = '';
@@ -331,7 +389,20 @@ export default {
       },
       deep: true
     },
+
+    // watch for changes in callLog.callType so that it clears when selecting other options
+    'callLog.callType'() {
+    this.selectedIssue = "";
+    this.customIssue = "";
+    this.callLog.description = "";
+
+    if (this.callLog.callType === "Other -") {
+        this.callLog.callType = "";
+        this.otherDialog = true;
+    }
+}
   },
+
   methods: {
     formatDate: Helper.formatDate,
     formatTime: Helper.formatTime,
@@ -528,8 +599,11 @@ export default {
         user: null,
         unit: '',
         description: '',
+        summary: '',
         images: []
       };
+      this.selectedIssue = '';
+      this.customIssue = '';
     }
   },
   mounted() {
