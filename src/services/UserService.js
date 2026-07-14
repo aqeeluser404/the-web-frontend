@@ -100,6 +100,10 @@ class UserService {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
     } catch (error) {
+
+      console.error('Error response:', error.response);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
       // Logger.error(error)
       throw error
     }
@@ -152,6 +156,16 @@ class UserService {
         Logger.error(error)
       }
     }
+  static async findDocsUserById(userId) {
+    const ENDPOINT = `/docs/users/${userId}`
+    try {
+      const response = await axiosInstance.get(ENDPOINT)
+      return response.data
+    } catch (error) {
+      // Logger.error(error)
+      throw error
+    }
+  }
 }
 
 export default UserService

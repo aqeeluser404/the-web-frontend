@@ -630,7 +630,8 @@ export default {
         user.phone.toLowerCase().includes(searchTerm) ||
         user.email.toLowerCase().includes(searchTerm) ||
         user.userType.toLowerCase().includes(searchTerm) ||
-        user.userType.toUpperCase().includes(searchTerm)
+        user.userType.toUpperCase().includes(searchTerm) ||
+        user._id.toLowerCase().includes(searchTerm)
       );
     },
 

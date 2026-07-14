@@ -1,15 +1,28 @@
 <template>
   <q-page class="bg-grey-3">
     <!-- Banner for rejected rentals -->
-    <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
+    <!-- <q-banner v-if="addPayerInformation && userDetails.studentInfo?.hasBursary === false"
       class="bg-black text-white full-width" @click="openAddPayer">
       <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
         <div class="text-center">
-          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
           <span>
             Your application has been submitted successfully. <br>Since no bursary is linked to your profile, it is
             mandatory to provide payer information to proceed with financial processing. Click here to complete this
             step.
+          </span>
+        </div>
+      </div>
+    </q-banner> -->
+
+    <q-banner v-if="addPayerInformation"
+      class="bg-black text-white full-width" @click="$router.push('/user/profile')">
+      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+        <div class="text-center">
+          <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
+          <span>
+            Your room/bed selection for your application has been successfully completed. <br>
+            Click this banner to navigate to your profile and ensure all your documents have been uploaded. <br>
+            Upon successful completion of your document upload, an email will be sent to you with instructions to complete your online credit check application.
           </span>
         </div>
       </div>
@@ -173,10 +186,7 @@
 
             <template v-slot:body-cell-startDate="props">
               <q-td :props="props">
-                <div v-if="defaultValues(props.row)">
-                  Being Processed...
-                </div>
-                <div v-else>
+                <div>
                   {{ formatDate(props.row.rentalStartDate) }}
                 </div>
               </q-td>
@@ -184,10 +194,7 @@
 
             <template v-slot:body-cell-endDate="props">
               <q-td :props="props">
-                <div v-if="defaultValues(props.row)">
-                  Being Processed...
-                </div>
-                <div v-else>
+                <div>
                   {{ formatDate(props.row.rentalEndDate) }}
                 </div>
               </q-td>
@@ -383,29 +390,29 @@ export default {
     //   return start === defaultStart && end === defaultEnd;
     // },
 
-    defaultValues(rental) {
-      if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
+    // defaultValues(rental) {
+    //   if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
 
-      if (rental?.status === "Active") {
-        return false;
-      }
+    //   if (rental?.status === "Active") {
+    //     return false;
+    //   }
 
-      const toDateObj = (dateStr) => new Date(dateStr);
+    //   const toDateObj = (dateStr) => new Date(dateStr);
 
-      const start = toDateObj(rental.rentalStartDate);
-      const end = toDateObj(rental.rentalEndDate);
+    //   const start = toDateObj(rental.rentalStartDate);
+    //   const end = toDateObj(rental.rentalEndDate);
 
-      // Default is always Feb 1 → Dec 15 (any year)
-      const isDefaultStart =
-        start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
-      const isDefaultEnd =
-        end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
+    //   // Default is always Feb 1 → Dec 15 (any year)
+    //   const isDefaultStart =
+    //     start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
+    //   const isDefaultEnd =
+    //     end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
 
-      console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
-                  "Default?", isDefaultStart && isDefaultEnd);
+    //   console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
+    //               "Default?", isDefaultStart && isDefaultEnd);
 
-      return isDefaultStart && isDefaultEnd;
-    },
+    //   return isDefaultStart && isDefaultEnd;
+    // },
 
     copyToClipboard(text) {
       navigator.clipboard.writeText(text)

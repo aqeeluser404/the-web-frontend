@@ -80,6 +80,10 @@ const routes = [
 
       { path: '/verify-email', component: () => import('src/pages/email/VerifyEmailPage.vue')},
       { path: '/resend-verification', component: () => import('src/pages/email/ResendVerificationEmailPage.vue') },
+
+
+
+      { path: "/digital-application", name: "DigitalApplication", component: () => import("pages/email/DigitalApplicationFormPage.vue"), },
     ]
   },
 

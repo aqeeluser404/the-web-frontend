@@ -8,6 +8,7 @@
       $route.path !== '/reset-password' &&
       $route.path !== '/forgot-password' &&
       $route.path !== '/admin/auth/login' &&
+      $route.path !== '/digital-application' &&
       $route.path !== '/install-app'
     ">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
@@ -25,35 +26,35 @@
           <div class="row justify-end items-center q-py-lg ">
 
             <!-- Home Icons -->
-            <UniversalMenu :items="homeItems" :hover="true" class="large-screen-only" v-if="$route.path !== '/' && $route.path !== '/frequently-asked-questions' && $route.path !== '/fees'">
+            <UniversalMenu :items="homeItems" :hover="true" class="large-screen-only"
+              v-if="$route.path !== '/' && $route.path !== '/frequently-asked-questions' && $route.path !== '/fees'">
               <template #trigger>
                 <q-btn flat label="Explore" class="custom-button q-py-sm q-px-md" />
               </template>
             </UniversalMenu>
 
             <div v-else class="row justify-end items-center">
+              <q-btn v-if="!isMobileAppView" @click="toggleMode" class="custom-button q-py-sm large-screen-only" :label="showDesktopView ? 'Show Mobile' : 'Show Desktop'" flat />
               <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat />
 
-              <q-btn @click="scrollToSection('amenities-section')"
-                class="custom-button q-py-sm large-screen-only" label="Amenities" flat />
+              <q-btn @click="scrollToSection('amenities-section')" class="custom-button q-py-sm large-screen-only"
+                label="Amenities" flat />
 
-              <q-btn @click="scrollToSection('units-section')"
-                class="custom-button q-py-sm large-screen-only" label="Units" flat />
+              <q-btn @click="scrollToSection('units-section')" class="custom-button q-py-sm large-screen-only"
+                label="Units" flat />
 
-              <q-btn @click="scrollToSection('location-section')"
-                class="custom-button q-py-sm large-screen-only" label="Location" flat />
+              <q-btn @click="scrollToSection('location-section')" class="custom-button q-py-sm large-screen-only"
+                label="Location" flat />
 
-              <q-btn @click="scrollToSection('contact-section')"
-                class="custom-button q-py-sm large-screen-only" label="Contact" flat />
+              <q-btn @click="scrollToSection('contact-section')" class="custom-button q-py-sm large-screen-only"
+                label="Contact" flat />
 
-              <q-btn to="/frequently-asked-questions"
-                class="custom-button q-py-sm large-screen-only" label="FAQs" flat />
-
-              <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees"
+              <q-btn to="/frequently-asked-questions" class="custom-button q-py-sm large-screen-only" label="FAQs"
                 flat />
 
-              <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App"
-                flat />
+              <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees" flat />
+
+              <!-- <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App" flat /> -->
             </div>
 
             <!-- Book Icons -->
@@ -71,17 +72,46 @@
             </UniversalMenu>
 
             <!-- Admin Icons -->
-            <UniversalMenu :items="adminItems" :hover="true" class="large-screen-only" v-show="isLoggedIn && isAdminUser">
+            <UniversalMenu :items="adminItems" :hover="true" class="large-screen-only"
+              v-show="isLoggedIn && isAdminUser">
               <template #trigger>
                 <q-btn flat label="Administration" class="custom-button q-py-sm q-px-md" />
               </template>
             </UniversalMenu>
 
             <!-- authentication -->
-            <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
-              :customStyle="{ width: 'fit-content' }" />
+            <!-- <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
+              :customStyle="{ width: 'fit-content' }" /> -->
+
+            <CustomButton v-if="!isLoggedIn" label="Login" class="large-screen-only q-ml-md"
+              :customStyle="{ width: 'fit-content' }" @click="showAuthDialog = true" />
+
             <CustomButton v-else label="Logout" @click="logout" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" />
+
+            <q-dialog v-model="showAuthDialog" position="top">
+              <div class="dialog-wrapper">
+                <q-card class="combined-unit-card">
+                  <div class="row">
+                    <div class="col-md-6 col-12 q-pa-md column justify-center">
+                      <q-card-section class="q-pb-none">
+                        <div class="text-h3">Welcome Back</div>
+                      </q-card-section>
+
+                      <q-card-section class="row justify-between">
+                        <CustomButton label="Login" class="" to="/auth/login" @click="showAuthDialog = false" customStyle="width: 45%;" />
+                        <CustomButton label="Register" class="" to="/auth/register" @click="showAuthDialog = false" customStyle="width: 45%;" />
+                      </q-card-section>
+                    </div>
+                    <div class="col-md-6 col-12">
+                      <q-img :src="loginImage" class="side-image" />
+                    </div>
+                  </div>
+                </q-card>
+              </div>
+            </q-dialog>
+
+
 
             <!---------------------------------------------- MOBILE NAV SECTION -------------------------------------------------->
             <q-btn-dropdown class="small-screen-only" dropdown-icon="menu" flat>
@@ -91,44 +121,20 @@
                   <div class="column wide q-pa-md" style="background-color: #f8f8f8;">
 
                     <!-- Home Icons -->
-                    <QListItems
-                      :noPadding="false"
-                      :items="homeItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <QListItems :noPadding="false" :items="homeItemsMobile" alignItems="left" class="text-light"
+                      :includeIcons="false" :underline="true" />
 
                     <!-- Book Icons -->
-                    <QListItems
-                      :noPadding="false"
-                      :items="bookItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <QListItems :noPadding="false" :items="bookItemsMobile" alignItems="left" class="text-light"
+                      :includeIcons="false" :underline="true" />
 
                     <!-- Account Icons -->
-                    <QListItems v-show="isLoggedIn"
-                      :noPadding="false"
-                      :items="accountItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <QListItems v-show="isLoggedIn" :noPadding="false" :items="accountItemsMobile" alignItems="left"
+                      class="text-light" :includeIcons="false" :underline="true" />
 
                     <!-- Admin Icons -->
-                    <QListItems v-show="isLoggedIn && isAdminUser"
-                      :noPadding="false"
-                      :items="adminItemsMobile"
-                      alignItems="left"
-                      class="text-light"
-                      :includeIcons="false"
-                      :underline="true"
-                    />
+                    <QListItems v-show="isLoggedIn && isAdminUser" :noPadding="false" :items="adminItemsMobile"
+                      alignItems="left" class="text-light" :includeIcons="false" :underline="true" />
                   </div>
 
                   <div class="column narrow q-pa-md">
@@ -155,13 +161,8 @@
         <div class="text-black bg-white text-caption">
           <q-toolbar class="constrain-standard">
             <q-breadcrumbs flat active-color="black">
-              <q-breadcrumbs-el
-                v-for="(crumb, idx) in adminBreadcrumbs"
-                :key="idx"
-                :label="crumb.label"
-                :to="crumb.to"
-                :icon="crumb.icon"
-              />
+              <q-breadcrumbs-el v-for="(crumb, idx) in adminBreadcrumbs" :key="idx" :label="crumb.label" :to="crumb.to"
+                :icon="crumb.icon" />
             </q-breadcrumbs>
           </q-toolbar>
         </div>
@@ -207,8 +208,15 @@
       @click="toggleWhatsAppBox" />
     <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white" icon="img:/assets/elements/whatsapp.png"
       size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
+
     <q-page-container>
-      <router-view />
+      <div v-if="isMobileAppView || showDesktopView" class="mobile-dashboard">
+        <div>Test Mobile</div>
+        <!-- <MobileHomePage /> -->
+      </div>
+      <div v-else>
+        <router-view />
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -226,9 +234,18 @@ import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import ExportDataService from 'src/services/ExportDataService'
 
+import { showSessionExpired } from 'src/services/showShessionExpired';
+
+import main from 'src/assets/resources/home/slider/main.png';
+
+import { Capacitor } from '@capacitor/core';
+
 export default {
   data() {
     return {
+      showDesktopView: false,
+
+      loginImage: main,
       showMaintenanceBanner: false,
       userDetails: {
         _id: '',
@@ -236,7 +253,9 @@ export default {
         userType: ''
       },
       isLoggedIn: false,
+      tokenTimeout: null,
       burgerMenuShown: false,
+      showAuthDialog: false,
 
       logoSrc: weblogo3d,
       logoSrcBlack: web3dlogoBlack,
@@ -250,7 +269,7 @@ export default {
         { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
         { label: 'FAQs', to: '/frequently-asked-questions' },
         { label: 'Fees', to: '/fees' },
-        { label: 'Download App', click: this.downloadApk }
+        // { label: 'Download App', click: this.downloadApk }
       ],
       homeItemsMobile: [
         {
@@ -265,7 +284,7 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            { label: 'Download App', click: this.downloadApk }
+            // { label: 'Download App', click: this.downloadApk }
           ]
         },
       ]
@@ -403,7 +422,6 @@ export default {
         }
       ]
     },
-
     adminBreadcrumbs() {
       const path = this.$route.path
       const crumbs = [
@@ -422,7 +440,6 @@ export default {
       // Only return those that match the current route
       return crumbs.filter(c => path.includes(c.match))
     },
-
     headerHeight() {
       const baseHeight = this.showMaintenanceBanner ? 150 : 75;
       const adminExtra = 50;
@@ -430,15 +447,12 @@ export default {
       return (this.isAdminRoute) ? baseHeight + adminExtra : baseHeight;
       // return (this.isAdminRoute || this.isVendorRoute) ? baseHeight + adminExtra : baseHeight;
     },
-
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
     },
-
     isAdminRoute() {
       return this.$route.path.startsWith('/admin');
     },
-
     portalName() {
       if (!this.userDetails) return ""
       if (this.userDetails.userType === "admin") {
@@ -454,7 +468,10 @@ export default {
         }
       }
       return ""
-    }
+    },
+    isMobileAppView() {
+      return Capacitor.isNativePlatform();
+    },
 
     // isVendorUser() {
     //   return this.userDetails?.userType === 'vendor';
@@ -467,12 +484,106 @@ export default {
   mounted() {
     this.checkLoginStatus()
   },
+  beforeUnmount() {
+    clearTimeout(this.tokenTimeout);
+  },
   watch: {
     '$route'() {
-      this.checkLoginStatus()
+      this.checkLoginStatus();
     },
+    isLoggedIn(newVal, oldVal) {
+      if (oldVal === true && newVal === false) {
+        if (this.$route.path !== '/auth/login') {
+          showSessionExpired(this.$router);
+        }
+      }
+    }
   },
   methods: {
+    toggleMode() {
+      this.showDesktopView = !this.showDesktopView;
+    },
+
+    // LOGIN SETUP
+
+    async checkLoginStatus() {
+      clearTimeout(this.tokenTimeout);
+
+      const valid = await Helper.checkCookie();
+      if (!valid) {
+        this.isLoggedIn = false;
+        return;
+      }
+
+      const token = await Helper.getCookie('token');
+      if (!token) {
+        this.isLoggedIn = false;
+        return;
+      }
+
+      try {
+        const user = await UserService.FindUserByToken();
+        const userDetails = await UserService.findUserById(user._id);
+        this.userDetails = userDetails;
+
+        if (token === userDetails.loginInfo.loginToken) {
+          this.isLoggedIn = true;
+
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload.exp) {
+            const expiry = payload.exp * 1000;
+            const delay = expiry - Date.now();
+            if (delay > 0) {
+              this.tokenTimeout = setTimeout(() => {
+                this.isLoggedIn = false;
+              }, delay);
+            } else {
+              this.isLoggedIn = false;
+            }
+          }
+        } else {
+          this.isLoggedIn = false;
+          this.handleLogout();
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
+        this.isLoggedIn = false;
+        this.handleLogout();
+      }
+    },
+
+    handleLogout() {
+      Helper.removeCookie('token');
+      this.$router.push('/');
+    },
+
+    async logout() {
+      this.$q.dialog({
+        title: 'Logout',
+        message: 'You are about to logout, continue?',
+        color: 'primary',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        const response = await UserService.logout(this.userDetails._id);
+        if (response) {
+          this.$q.dialog({
+            title: 'Success',
+            message: 'You have successfully logged out!',
+            color: 'primary',
+            persistent: true
+          }).onOk(() => {
+            this.$router.push('/');
+            this.isLoggedIn = false;
+            window.location.reload();
+          });
+        } else {
+          this.$q.notify({ type: 'negative', message: 'Logout failed. Please try again.' });
+        }
+      });
+    },
+
+
     downloadApk() {
       this.$q.dialog({
         title: 'Preparing Download',
@@ -489,7 +600,6 @@ export default {
         document.body.removeChild(link)
       })
     },
-
     toggleWhatsAppBox() {
       this.boxOpened = !this.boxOpened
     },
@@ -509,8 +619,6 @@ export default {
         this.performScroll(sectionId);
       }
     },
-
-
     performScroll(sectionId) {
       const element = document.getElementById(sectionId);
       if (element) {
@@ -523,66 +631,6 @@ export default {
           behavior: 'smooth',
         });
       }
-    },
-
-    async checkLoginStatus() {
-      const isLoggedIn = await Helper.checkCookie()
-      if (isLoggedIn) {
-        const token = await Helper.getCookie('token')
-
-        if (token) {
-          try {
-            // Check if the token is still valid and fetch user details
-            const user = await UserService.FindUserByToken();
-            const userDetails = await UserService.findUserById(user._id);
-
-            // Compare tokens to detect if the user logged in from another browser
-            if (token === userDetails.loginInfo.loginToken) {
-              this.isLoggedIn = true;
-              this.fetchUserDetails();
-            } else {
-              // If tokens do not match, handle logout
-              this.isLoggedIn = false;
-              this.handleLogout();
-            }
-          } catch (error) {
-            console.error('Error checking login status:', error);
-            this.isLoggedIn = false;
-            this.handleLogout();
-          }
-        } else {
-          this.isLoggedIn = false;
-          this.handleLogout();
-        }
-      }
-    },
-    handleLogout() {
-      Helper.removeCookie('token')
-      this.$router.push('/')
-    },
-    async logout() {
-      this.$q.dialog({
-        title: 'Logout', message: `You are about to logout, continue?`, color: 'primary', cancel: true, persistent: true
-      }).onOk(async () => {
-        const response = await UserService.logout(this.userDetails._id)
-        if (response) {
-          // this.$q.notify({ type: 'positive', color: 'primary', message: 'You have successfully logged out!' })
-
-          this.$q.dialog({
-            title: 'Success',
-            message: 'You have successfully logged out!',
-            color: 'primary',
-            persistent: true,
-          }).onOk(() => {
-            this.$router.push('/');
-            this.isLoggedIn = false
-            window.location.reload()
-          });
-
-        } else {
-          this.$q.notify({ type: 'negative', message: 'Logout failed. Please try again.' })
-        }
-      })
     },
     async fetchUserDetails() {
       const response = await UserService.FindUserByToken()
@@ -635,7 +683,42 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
+.dialog-wrapper
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100%
+  min-width: 1200px
+  height: 100%
+  padding: 24px
+  margin-top: 70px
+  box-sizing: border-box
+
+.border-radius
+  border-radius: 12px
+
+.side-image
+  object-fit: cover
+  width: 100%
+  height: 100%
+  // max-width: 1280px
+  border-radius: 12px
+  @media (max-width: 767px)
+    height: 300px
+    max-width: 500px
+    margin: 0 auto
+
+.combined-unit-card
+  width: 100%;
+  color: white
+  padding: 16px
+  border-radius: 20px
+  overflow: hidden
+  text-align: center
+  background-color: #555
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)
+
 .whats-app-btn-desktop
   position: fixed
   bottom: 80px

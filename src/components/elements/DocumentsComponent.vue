@@ -77,7 +77,7 @@ export default {
       activeDocType: null,
       requiredDocumentsByCategory: {
         'Private Client': [
-          { type: 'private_application_form', label: 'Fully Completed Application Form' },
+          // { type: 'private_application_form', label: 'Fully Completed Application Form' },
           { type: 'private_student_registration', label: 'Student Registration Form' },
           { type: 'private_id_student', label: 'Identity Documents - Student responsible' },
           { type: 'private_id_person', label: 'Identity Documents - Person responsible' },
@@ -86,7 +86,7 @@ export default {
           { type: 'private_3_months_bank_statements', label: '3 months Bank statements' }
         ],
         'Business': [
-          { type: 'business_application_form', label: 'Fully Completed Application Form' },
+          // { type: 'business_application_form', label: 'Fully Completed Application Form' },
           { type: 'business_student_registration', label: 'Student Registration Form' },
           { type: 'business_id_directors', label: 'Identity Documents of all Directors' },
           { type: 'business_proof_of_address', label: 'Proof of Address' },
@@ -94,7 +94,7 @@ export default {
           { type: 'business_6_months_bank_statements', label: '6 Months Bank statements' }
         ],
         'Bursary Application': [
-          { type: 'bursary_application_form', label: 'Fully Completed Application Form' },
+          // { type: 'bursary_application_form', label: 'Fully Completed Application Form' },
           { type: 'bursary_student_registration', label: 'Student Registration Form' },
           { type: 'bursary_confirmation', label: 'Confirmation of bursary' },
           { type: 'bursary_proof_of_address', label: 'Proof of Address' },
