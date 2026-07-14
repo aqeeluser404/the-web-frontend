@@ -156,9 +156,9 @@
 </template>
 
 <script>
-import CustomButton from '../elements/CustomButton.vue';
-import CallLogService from 'src/services/CallLogService';
-import Helper from 'src/services/utils';
+import CustomButton from "../elements/CustomButton.vue";
+import CallLogService from "src/services/CallLogService";
+import Helper from "src/services/utils";
 
 export default {
   props: {
@@ -177,21 +177,24 @@ export default {
       vendorInfo: {
         vendorType: this.callLog.vendorInfo?.vendorType || null,
         vendorContact: this.callLog.vendorInfo?.vendorContact || null,
-        vendorAssignedDate: this.formatDateForInput(this.callLog.vendorInfo?.vendorAssignedDate) || ''
+        vendorAssignedDate:
+          this.formatDateForInput(
+            this.callLog.vendorInfo?.vendorAssignedDate,
+          ) || "",
       },
       callLogStatusOptions: [
-        { label: 'Assigned', value: 'Assigned' },
-        { label: 'Resolved', value: 'Resolved' },
-        { label: 'Closed', value: 'Closed' },
+        { label: "Assigned", value: "Assigned" },
+        { label: "Resolved", value: "Resolved" },
+        { label: "Closed", value: "Closed" },
       ],
       vendorTypeOptions: [
-        { label: 'IT Support', value: 'IT Support' },
-        { label: 'Maintenance', value: 'Maintenance' },
-        { label: 'Plumbing', value: 'Plumbing' },
-        { label: 'Electrical', value: 'Electrical' },
-        { label: 'Security', value: 'Security' },
-        { label: 'Cleaning', value: 'Cleaning' },
-        { label: 'Other', value: 'Other' }
+        { label: "IT Support", value: "IT Support" },
+        { label: "Maintenance", value: "Maintenance" },
+        { label: "Plumbing", value: "Plumbing" },
+        { label: "Electrical", value: "Electrical" },
+        { label: "Security", value: "Security" },
+        { label: "Cleaning", value: "Cleaning" },
+        { label: "Other", value: "Other" },
       ],
       vendorContacts: {
         'IT Support': 'TheWeb@trafalgar.co.za',
@@ -216,7 +219,7 @@ export default {
     },
   },
   components: {
-    CustomButton
+    CustomButton,
   },
   methods: {
     getImageUrl: Helper.getImageUrl,
@@ -224,9 +227,9 @@ export default {
     formatTime: Helper.formatTime,
 
     formatDateForInput(date) {
-      if (!date) return '';
+      if (!date) return "";
       const d = new Date(date);
-      return d.toISOString().split('T')[0];
+      return d.toISOString().split("T")[0];
     },
 
     autoFillVendorContact(selectedType) {
@@ -244,10 +247,10 @@ export default {
     },
 
     async updateUserType() {
-      if (this.assignVendor === 'yes' && !this.vendorInfo.vendorContact) {
+      if (this.assignVendor === "yes" && !this.vendorInfo.vendorContact) {
         this.$q.notify({
-          type: 'negative',
-          message: 'Please provide vendor contact information'
+          type: "negative",
+          message: "Please provide vendor contact information",
         });
         return;
       }
@@ -256,27 +259,35 @@ export default {
 
       // Set status based on vendor assignment
       let status = this.callLog.status;
-      if (this.assignVendor === 'yes') {
-        status = 'Assigned';
-      } else if (this.assignVendor === 'no') {
-        status = 'Opened';
+      if (this.assignVendor === "yes") {
+        status = "Assigned";
+      } else if (this.assignVendor === "no") {
+        status = "Opened";
       }
 
       console.log('update field:', this.update)
       const updatedCallLog = {
         callType: this.callLog.callType,
         status,
+        description: this.callLog.description,
+        summary: this.callLog.summary,
+        unit: this.callLog.unit,
         createdAt: this.callLog.createdAt,
         user: this.callLog.user,
-        vendorInfo: this.assignVendor === 'yes'
-          ? {
-            vendorType: this.vendorInfo.vendorType || null,
-            vendorContact: this.vendorInfo.vendorContact || null,
-            vendorAssignedDate: this.vendorInfo.vendorAssignedDate
-              ? new Date(this.vendorInfo.vendorAssignedDate)
-              : new Date()
-          }
-          : { vendorType: null, vendorContact: null, vendorAssignedDate: null },
+        vendorInfo:
+          this.assignVendor === "yes"
+            ? {
+                vendorType: this.vendorInfo.vendorType || null,
+                vendorContact: this.vendorInfo.vendorContact || null,
+                vendorAssignedDate: this.vendorInfo.vendorAssignedDate
+                  ? new Date(this.vendorInfo.vendorAssignedDate)
+                  : new Date(),
+              }
+            : {
+                vendorType: null,
+                vendorContact: null,
+                vendorAssignedDate: null,
+              },
 
         updates: this.update
           ? [{
@@ -287,67 +298,95 @@ export default {
 
         ...(status === 'Closed' && !this.callLog.closedAt
           ? { closedAt: new Date() }
-          : {})
+          : {}),
       };
       console.log(updatedCallLog)
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to update this call log status, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          const response = await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          if (response) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to update this call log status, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          console.log("Updated Call Log:", updatedCallLog);
+          try {
+            const response = await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            console.log("Response:", response);
+            if (response) {
+              this.$q.notify({
+                type: "positive",
+                color: "primary",
+                message: "Update successful!",
+              });
+              this.$emit("close");
+            }
+          } catch (error) {
+            console.error("Update error:", error);
             this.$q.notify({
-              type: 'positive',
-              color: 'primary',
-              message: 'Update successful!',
+              type: "negative",
+              message: "An error occurred during update.",
             });
             this.update = null;
             this.$emit('close');
           }
-        } catch (error) {
-          console.error('Update error:', error);
-          this.$q.notify({ type: 'negative', message: 'An error occurred during update.' });
-        }
-      }).onCancel(() => { });
+        })
+        .onCancel(() => {});
     },
 
     async markResolved() {
       const updatedCallLog = {
-        status: 'Resolved'
+        status: "Resolved",
       };
+      console.log("Sending:", updatedCallLog);
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to resolve this call log, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          this.mode = 'resolved';
+      const response = await CallLogService.updateCallLog(
+        this.callLog._id,
+        updatedCallLog,
+      );
 
-          this.$q.notify({
-            type: 'positive',
-            color: 'primary',
-            message: 'Call log marked as resolved.'
-          });
-          this.$emit('close');
-        } catch (error) {
-          console.error(error);
-          this.$q.notify({ type: 'negative', message: 'Failed to resolve call log.' });
-        }
-      }).onCancel(() => { });
+      console.log("Response:", response);
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to resolve this call log, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            this.mode = "resolved";
+
+            this.$q.notify({
+              type: "positive",
+              color: "primary",
+              message: "Call log marked as resolved.",
+            });
+            this.$emit("close");
+          } catch (error) {
+            console.error(error);
+            this.$q.notify({
+              type: "negative",
+              message: "Failed to resolve call log.",
+            });
+          }
+        })
+        .onCancel(() => {});
     },
 
     async reopenCallLog() {
       const updatedCallLog = {
-        status: 'Opened'
+        status: "Opened",
       };
 
       this.$q.dialog({
