@@ -21,7 +21,7 @@ export default {
   height: 20px;
   font-size: 11px;
   padding: 0 4px;
-  border: 1px solid rgba(0,0,0,0.15);
+  border: 0px solid rgba(0,0,0,0.15);
   border-radius: 0;
   background: transparent;
   outline: none;

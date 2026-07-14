@@ -180,7 +180,8 @@
               <div class="text-h6 text-primary q-mb-sm">
                 R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
               </div>
-              <div class="text-caption1 text-grey">Starting from R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
+              <div class="text-caption1 text-grey">Starting from R{{ Number(currentPrice).toLocaleString('en-ZA')
+                }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
                 <br>Select
                 your preferred unit configuration and payment plan to begin.
               </div>
@@ -235,12 +236,9 @@
 
               <q-card-section>
                 <div class="q-mb-sm"><b>Would you like to add parking?</b></div>
-                <q-radio
-                  v-if="getSelectedPriceObject()?.name === 'annual'"
-                  v-model="rentalDetails.parking.hasParking"
+                <q-radio v-if="getSelectedPriceObject()?.name === 'annual'" v-model="rentalDetails.parking.hasParking"
                   :val="true"
-                  :label="`Include Parking (R${Number(rentalDetails.parking.fee).toLocaleString('en-ZA')} / once-off)`"
-                />
+                  :label="`Include Parking (R${Number(rentalDetails.parking.fee).toLocaleString('en-ZA')} / once-off)`" />
                 <q-radio v-else v-model="rentalDetails.parking.hasParking" :val="true"
                   :label="`Include Parking (R${Number(rentalDetails.parking.fee).toLocaleString('en-ZA')} / mo)`" />
                 <br>
@@ -294,7 +292,7 @@
                   <q-icon :name="userDetails.verification?.isVerified ? 'check_circle' : 'error'"
                     :color="userDetails.verification?.isVerified ? 'positive' : 'negative'" size="20px" />
                   <span class="q-ml-sm">Email {{ userDetails.verification?.isVerified ? 'verified' : 'not verified'
-                    }}</span>
+                  }}</span>
                 </div>
                 <div class="column cursor-pointer" @click="goToUserProfile">
                   <div class="row">
@@ -304,12 +302,7 @@
                       Documents {{ hasAllRequiredDocuments ? 'complete' : 'incomplete' }}
                     </span>
                   </div>
-                  <div v-if="!hasAllRequiredDocuments" class="text-negative q-ml-lg">
-                    <!-- You may still apply, but please upload your documents as soon as possible for smooth processing. -->
-                   Please upload your documents Before making your application.
-
-                  </div>
-                  <div v-if="!hasAllRequiredDocuments" class="q-mb-md"></div>
+                  <!-- <div v-if="!hasAllRequiredDocuments" class="q-mb-md"></div> -->
                 </div>
 
                 <!-- Age Verification -->
@@ -334,6 +327,10 @@
                     gender mismatches.
                   </span>
                 </q-banner>
+              </q-card-section>
+
+              <q-card-section>
+                <b class="text-red">Applications are closed for {{ rentalYear }}</b>
               </q-card-section>
 
               <q-card-section class="row justify-between q-pt-none">
@@ -435,12 +432,6 @@ export default {
     }
   },
   data() {
-    const today = new Date();
-    const month = today.getMonth();
-    let year = today.getFullYear();
-    if (month >= 10) {
-      year = year + 1;
-    }
     return {
       pinchZoomInstance: null,
 
@@ -451,8 +442,8 @@ export default {
       rentalDetails: {
         user: "",
         unit: "",
-        rentalStartDate: `${year}-02-01`,
-        rentalEndDate: `${year}-12-15`,
+        rentalStartDate: null,
+        rentalEndDate: null,
         accessKeyIsTrue: false,
         accessKey: '',
         parking: {
@@ -482,18 +473,21 @@ export default {
     SimpleZoom
   },
   computed: {
-    // hasAllRequiredDocuments() {
-    //   const requiredTypes = [
-    //     'registration',
-    //     'proof_of_address',
-    //     'id_or_passport',
-    //     'bank_statements',
-    //     'proof_of_bursary',
-    //     'credit_check'
-    //   ];
-    //   const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
-    //   return requiredTypes.every(type => uploadedTypes.includes(type));
-    // },
+    rentalYear() {
+      // If you're applying in January - September, you're applying for the current year (2026)
+
+      // If you're applying in October - December, you're applying for next year (2027)
+
+      // const today = new Date();
+      // const month = today.getMonth();
+      // let year = today.getFullYear();
+      // if (month >= 10) {
+      //   year = year + 1;
+      // }
+      // return year;
+
+      return 2026;
+    },
 
     hasAllRequiredDocuments() {
       const requiredDocsByCategory = {
@@ -560,22 +554,24 @@ export default {
       if (!image || !image.imageUrl) return null
       return this.getImageUrl(image.imageUrl)
     },
+
     canSubmit() {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+
+      // Allowed users who can bypass the 2026 lock
+      const allowedUsers = ['testuser', 'WayneL', 'yusri', 'admin'];
+      const isAllowedUser = allowedUsers.includes(this.userDetails?.username);
+
+      if (currentYear === 2026 && !isAllowedUser) {
+        return false;
+      }
+
       return this.userDetails.verification?.isVerified &&
-        // (
-        //   this.userDetails?.username === 'testuser' ||
-        //   this.userDetails?.username === 'WayneL' ||
-        //   this.userDetails?.username === 'yusri' ||
-        //   this.userDetails?.username === 'admin'
-        // ) &&
         this.userDetails?.age &&
         this.rentalDetails.rentalStartDate &&
         this.rentalDetails.rentalEndDate
-
-      // return this.rentalDetails.rentalStartDate &&
-      //   this.rentalDetails.rentalEndDate
     },
-
 
     // subunit computed code
     // ----------------------------------------------------------------------------------------------------------
@@ -619,7 +615,6 @@ export default {
       if (this.selectedBedType && !this.selectedRoomType) return "Choose your room";
       return "Select Room Type";
     },
-
     priceOptions() {
       if (!this.selectedOption || !this.selectedOption.price) return [];
       const sortedPrices = [...this.selectedOption.price].sort((a, b) => a.price - b.price);
@@ -635,7 +630,6 @@ export default {
         };
       });
     },
-
     currentPrice() {
       if (this.selectedPrice !== null) {
         return this.selectedPrice;
@@ -680,7 +674,10 @@ export default {
     }
   },
   async created() {
-    await this.checkLoginStatus()
+    await this.checkLoginStatus();
+
+    this.rentalDetails.rentalStartDate = `${this.rentalYear}-02-01`;
+    this.rentalDetails.rentalEndDate = `${this.rentalYear}-12-15`;
   },
   methods: {
     getImageUrl: Helper.getImageUrl, formatDate: Helper.formatDate, capitalizeFirstLetter: Helper.capitalizeFirstLetter,
@@ -900,13 +897,12 @@ export default {
       }
 
       try {
-        const response = await RentalService.createRental(formData)
-        await EmailService.RentalApplicationEmail(this.userDetails._id);
-        await EmailService.RentalApplicationToUserEmail(this.userDetails._id);
+        const response = await RentalService.createRental(formData);
+
+        // await EmailService.RentalApplicationEmail(this.userDetails._id);
+        // await EmailService.RentalApplicationToUserEmail(this.userDetails._id);
         // const rentalId = response.rental?._id;
-
         // console.log(rentalId)
-
         // if (rentalId) {
         //   await EmailService.RentalApplicationEmail(this.userDetails._id, rentalId);
         // }

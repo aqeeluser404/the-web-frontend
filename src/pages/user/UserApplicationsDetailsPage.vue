@@ -166,17 +166,11 @@
                         rental.selectedSubUnits?.price?.name }} Payment Plan</div>
                       <div v-else>Lease Duration: Standard Payment Plan</div>
                     </li>
-                    <li v-if="!defaultValues">
+                    <li>
                       Start Date: {{ formatDate(rental.rentalStartDate) }}
                     </li>
-                    <li v-else>
-                      Start Date: <span class="text-negative"><b>Being processed</b></span>
-                    </li>
-                    <li v-if="!defaultValues">
+                    <li>
                       End Date: {{ formatDate(rental.rentalEndDate) }}
-                    </li>
-                    <li v-else>
-                      End Date: <span class="text-negative"><b>Being processed</b></span>
                     </li>
                     <li v-if="rental.earlyEndDate">
                       Early End Date: {{ formatDate(rental.earlyEndDate) }}
@@ -354,7 +348,7 @@ export default {
       // Define required docs per category
       const requiredDocsByCategory = {
         'Private Client': [
-          'private_application_form',
+          // 'private_application_form',
           'private_student_registration',
           'private_id_student',
           'private_id_person',
@@ -363,7 +357,7 @@ export default {
           'private_3_months_bank_statements'
         ],
         'Business': [
-          'business_application_form',
+          // 'business_application_form',
           'business_student_registration',
           'business_id_directors',
           'business_proof_of_address',
@@ -371,7 +365,7 @@ export default {
           'business_6_months_bank_statements'
         ],
         'Bursary Application': [
-          'bursary_application_form',
+          // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
@@ -395,18 +389,18 @@ export default {
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
 
-    defaultValues() {
-      const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
-      const today = new Date();
-      const nextYear = today.getFullYear() + 1;
-      const defaultStart = `${nextYear}-01-01`;
-      const defaultEnd = `${nextYear}-12-31`;
+    // defaultValues() {
+    //   const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
+    //   const today = new Date();
+    //   const nextYear = today.getFullYear() + 1;
+    //   const defaultStart = `${nextYear}-01-01`;
+    //   const defaultEnd = `${nextYear}-12-31`;
 
-      const start = toDateOnly(this.rental?.rentalStartDate);
-      const end = toDateOnly(this.rental?.rentalEndDate);
+    //   const start = toDateOnly(this.rental?.rentalStartDate);
+    //   const end = toDateOnly(this.rental?.rentalEndDate);
 
-      return start === defaultStart && end === defaultEnd;
-    },
+    //   return start === defaultStart && end === defaultEnd;
+    // },
   },
   methods: {
     formatDate: Helper.formatDate,

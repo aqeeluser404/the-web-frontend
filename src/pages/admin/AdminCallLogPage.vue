@@ -21,8 +21,7 @@
           <q-card-section class="row justify-between items-center stats-header">
             <div class="row justify-between items-center full-width">
               <div class="text-h6">Call Log History</div>
-              <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-                flat rounded />
+              <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline" flat rounded />
             </div>
             <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
@@ -34,9 +33,7 @@
           </q-card-section>
 
           <q-card-section>
-            <q-table
-              flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id"
-            >
+            <q-table flat bordered :rows="filteredCallLogs" :columns="callLogColumns" row-key="_id">
               <template v-slot:body-cell-index="props">
                 <q-td :props="props">
                   {{ props.rowIndex + 1 }}
@@ -45,11 +42,7 @@
 
               <template v-slot:body-cell-logNumber="props">
                 <q-td :props="props" class="cursor-pointer">
-                  <q-badge
-                    color="text-primary"
-                    align="middle"
-                    class="q-pa-xs q-px-sm"
-                  >
+                  <q-badge color="text-primary" align="middle" class="q-pa-xs q-px-sm">
                     <div @click.stop="copyToClipboard(props.row.logNumber)">
                       {{ props.row.logNumber }}
                     </div>
@@ -90,22 +83,17 @@
 
               <template v-slot:body-cell-status="props">
                 <q-td :props="props">
-                  <q-badge
-                    :color="
-                      props.row.status === 'Opened'
-                        ? 'orange'
-                        : props.row.status === 'Assigned'
-                          ? 'blue'
-                          : props.row.status === 'Resolved'
-                            ? 'green'
-                            : props.row.status === 'Closed'
-                              ? 'grey'
+                  <q-badge :color="props.row.status === 'Opened'
+                      ? 'orange'
+                      : props.row.status === 'Assigned'
+                        ? 'blue'
+                        : props.row.status === 'Resolved'
+                          ? 'green'
+                          : props.row.status === 'Closed'
+                            ? 'grey'
 
-                              : 'red'
-                    "
-                    align="middle"
-                    class="q-pa-xs q-px-sm"
-                  >
+                            : 'red'
+                    " align="middle" class="q-pa-xs q-px-sm">
                     {{ props.row.status }}
                   </q-badge>
                 </q-td>
@@ -145,14 +133,13 @@
 
 
                     <CustomButton :disable="props.row.status === 'Closed'" flat color="red" text-color="red"
-                      class="inline-btn" icon="eva-edit-2-outline"
-                      @click.stop="openUpdateCallLogDialog(props.row)" />
+                      class="inline-btn" icon="eva-edit-2-outline" @click.stop="openUpdateCallLogDialog(props.row)" />
 
-                    <CustomButton :disable="props.row.status !== 'Assigned'" @click.stop="sendEmailToVendor(props.row)" flat
-                      color="red" text-color="red" class="inline-btn" icon="eva-email-outline" />
+                    <CustomButton :disable="props.row.status !== 'Assigned'" @click.stop="sendEmailToVendor(props.row)"
+                      flat color="red" text-color="red" class="inline-btn" icon="eva-email-outline" />
 
-                    <CustomButton :disable="props.row.status !== 'Resolved'" @click.stop="closeCallLog(props.row._id)" flat
-                      color="red" text-color="red" class="inline-btn" icon="eva-archive-outline" />
+                    <CustomButton :disable="props.row.status !== 'Resolved'" @click.stop="closeCallLog(props.row._id)"
+                      flat color="red" text-color="red" class="inline-btn" icon="eva-archive-outline" />
 
                     <CustomButton flat color="red" text-color="red" class="inline-btn" icon="eva-trash-outline"
                       @click.stop="deleteCallLog(props.row)" />
@@ -199,19 +186,19 @@ export default {
 
       callLogColumns: [
         { name: "index", label: "#", field: "index", align: 'center' },
-        { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left'},
-        { name: "firstName", label: "First Name", field: "firstName", align: 'left'},
-        { name: "lastName", label: "Last Name", field: "lastName", align: 'left'},
+        { name: "logNumber", label: "Log Number", field: "logNumber", align: 'left' },
+        { name: "firstName", label: "First Name", field: "firstName", align: 'left' },
+        { name: "lastName", label: "Last Name", field: "lastName", align: 'left' },
         { name: "unit", label: "Unit", field: "unit", align: 'left' },
         { name: "description", label: "Description", field: "description", align: 'left' },
         { name: "summary", label: "Summary", field: "summary", align: 'left' },
 
-        { name: "createdAt", label: "Opened Date", field: "createdAt", align: 'left'},
-        { name: "closedAt", label: "Closed Date", field: "closedAt", align: 'left'},
-        { name: "callType", label: "Call Type", field: "callType", align: 'left'},
-        { name: "status", label: "Status", field: "status", align: 'center'},
-        { name: "vendorType", label: "Vendor Type", field: "vendorType", align: 'left'},
-        { name: "actions", label: "Actions", field: "actions", align: 'center'},
+        { name: "createdAt", label: "Opened Date", field: "createdAt", align: 'left' },
+        { name: "closedAt", label: "Closed Date", field: "closedAt", align: 'left' },
+        { name: "callType", label: "Call Type", field: "callType", align: 'left' },
+        { name: "status", label: "Status", field: "status", align: 'center' },
+        { name: "vendorType", label: "Vendor Type", field: "vendorType", align: 'left' },
+        { name: "actions", label: "Actions", field: "actions", align: 'center' },
       ],
 
       updateCallLogDialog: false,
@@ -330,16 +317,23 @@ export default {
       const response = await CallLogService.findAllCallLogs()
 
       // console.log(response)
-
       this.callLogs = await Promise.all(response.map(async callLog => {
-        const user = await UserService.findUserById(callLog.user)
-        // const myRentals = await RentalService.findMyRentals(user._id)
-        // const activeRental = this.myRentals.find(r => r.status === 'Active');
-        return {
-          ...callLog,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          vendorType: callLog.vendorInfo?.vendorType
+        try {
+          const user = await UserService.findUserById(callLog.user)
+          return {
+            ...callLog,
+            firstName: user?.firstName || 'Unknown',
+            lastName: user?.lastName || 'User',
+            vendorType: callLog.vendorInfo?.vendorType
+          }
+        } catch (error) {
+          console.warn(`User not found for ID: ${callLog.user}`, error)
+          return {
+            ...callLog,
+            firstName: 'Unknown',
+            lastName: 'User',
+            vendorType: callLog.vendorInfo?.vendorType
+          }
         }
       }))
 

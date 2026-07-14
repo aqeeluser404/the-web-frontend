@@ -8,6 +8,7 @@
       $route.path !== '/reset-password' &&
       $route.path !== '/forgot-password' &&
       $route.path !== '/admin/auth/login' &&
+      $route.path !== '/digital-application' &&
       $route.path !== '/install-app'
     ">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
@@ -33,6 +34,7 @@
             </UniversalMenu>
 
             <div v-else class="row justify-end items-center">
+              <q-btn v-if="!isMobileAppView" @click="toggleMode" class="custom-button q-py-sm large-screen-only" :label="showDesktopView ? 'Show Mobile' : 'Show Desktop'" flat />
               <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat />
 
               <q-btn @click="scrollToSection('amenities-section')" class="custom-button q-py-sm large-screen-only"
@@ -52,7 +54,7 @@
 
               <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees" flat />
 
-              <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App" flat />
+              <!-- <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App" flat /> -->
             </div>
 
             <!-- Book Icons -->
@@ -206,8 +208,15 @@
       @click="toggleWhatsAppBox" />
     <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white" icon="img:/assets/elements/whatsapp.png"
       size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
+
     <q-page-container>
-      <router-view />
+      <div v-if="isMobileAppView || showDesktopView" class="mobile-dashboard">
+        <div>Test Mobile</div>
+        <!-- <MobileHomePage /> -->
+      </div>
+      <div v-else>
+        <router-view />
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -229,9 +238,13 @@ import { showSessionExpired } from 'src/services/showShessionExpired';
 
 import main from 'src/assets/resources/home/slider/main.png';
 
+import { Capacitor } from '@capacitor/core';
+
 export default {
   data() {
     return {
+      showDesktopView: false,
+
       loginImage: main,
       showMaintenanceBanner: false,
       userDetails: {
@@ -256,7 +269,7 @@ export default {
         { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
         { label: 'FAQs', to: '/frequently-asked-questions' },
         { label: 'Fees', to: '/fees' },
-        { label: 'Download App', click: this.downloadApk }
+        // { label: 'Download App', click: this.downloadApk }
       ],
       homeItemsMobile: [
         {
@@ -271,7 +284,7 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            { label: 'Download App', click: this.downloadApk }
+            // { label: 'Download App', click: this.downloadApk }
           ]
         },
       ]
@@ -409,7 +422,6 @@ export default {
         }
       ]
     },
-
     adminBreadcrumbs() {
       const path = this.$route.path
       const crumbs = [
@@ -428,7 +440,6 @@ export default {
       // Only return those that match the current route
       return crumbs.filter(c => path.includes(c.match))
     },
-
     headerHeight() {
       const baseHeight = this.showMaintenanceBanner ? 150 : 75;
       const adminExtra = 50;
@@ -436,15 +447,12 @@ export default {
       return (this.isAdminRoute) ? baseHeight + adminExtra : baseHeight;
       // return (this.isAdminRoute || this.isVendorRoute) ? baseHeight + adminExtra : baseHeight;
     },
-
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
     },
-
     isAdminRoute() {
       return this.$route.path.startsWith('/admin');
     },
-
     portalName() {
       if (!this.userDetails) return ""
       if (this.userDetails.userType === "admin") {
@@ -460,7 +468,10 @@ export default {
         }
       }
       return ""
-    }
+    },
+    isMobileAppView() {
+      return Capacitor.isNativePlatform();
+    },
 
     // isVendorUser() {
     //   return this.userDetails?.userType === 'vendor';
@@ -489,6 +500,9 @@ export default {
     }
   },
   methods: {
+    toggleMode() {
+      this.showDesktopView = !this.showDesktopView;
+    },
 
     // LOGIN SETUP
 

@@ -43,6 +43,16 @@ export default route(function (/* { store, ssrContext } */) {
             break;
           }
 
+          case 'DigitalApplication': {
+            const userId = to.query.userId;
+            if (userId) {
+              next();
+            } else {
+              next({ path: '/404' });
+            }
+            break;
+          }
+
           case '/resend-verification':
             if (from.path === '/verify-email') {
               next();

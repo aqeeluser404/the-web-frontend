@@ -178,73 +178,44 @@
                 <span> Clear All</span>
               </div>
             </ul> -->
+            <div class="section-spacer-xs"></div>
+
+            <!-- Radios outside -->
+            <div class="q-mb-md"
+              :key="categoryLock.lockedCategory ? 'locked-' + categoryLock.lockedCategory : 'unlocked'">
+              <template v-if="!categoryLock.lockedCategory">
+                <q-radio v-for="cat in documentCategories" :key="cat.category" v-model="categoryLock.selectedCategory"
+                  :val="cat.category" :label="cat.category" @input="chooseCategory(cat.category)" class="q-mr-md" />
+              </template>
+              <template v-else>
+                <q-radio v-model="categoryLock.selectedCategory" :val="categoryLock.lockedCategory"
+                  :label="categoryLock.lockedCategory" :disable="true" />
+              </template>
+            </div>
+
+            <!-- Single expansion item for the selected/locked category -->
+            <q-expansion-item v-if="displayedCategory" :label="displayedCategory" icon="folder" flat
+              class="q-mb-md documents-drop-down" :default-opened="true">
               <div class="section-spacer-xs"></div>
 
-              <!-- Radios outside -->
-              <div class="q-mb-md" :key="categoryLock.lockedCategory ? 'locked-' + categoryLock.lockedCategory : 'unlocked'">
-                <template v-if="!categoryLock.lockedCategory">
-                  <q-radio
-                    v-for="cat in documentCategories"
-                    :key="cat.category"
-                    v-model="categoryLock.selectedCategory"
-                    :val="cat.category"
-                    :label="cat.category"
-                    @input="chooseCategory(cat.category)"
-                    class="q-mr-md"
-                  />
-                </template>
-                <template v-else>
-                  <q-radio
-                    v-model="categoryLock.selectedCategory"
-                    :val="categoryLock.lockedCategory"
-                    :label="categoryLock.lockedCategory"
-                    :disable="true"
-                  />
-                </template>
+              <div v-for="docType in displayedCategoryObj.documents" :key="docType.type"
+                class="cursor-pointer q-py-sm q-px-md" style="font-weight: 500;"
+                @click="openAddDocumentDialog(docType.type)">
+                <q-icon class="q-mr-sm" v-if="hasDocument(docType.type)" color="secondary"
+                  name="eva-checkmark-circle-2-outline" />
+                <q-icon class="q-mr-sm" v-else color="negative" name="eva-alert-circle-outline" />
+                <span>{{ docType.label }}</span>
               </div>
-
-              <!-- Single expansion item for the selected/locked category -->
-              <q-expansion-item
-                v-if="displayedCategory"
-                :label="displayedCategory"
-                icon="folder"
-                flat
-                class="q-mb-md documents-drop-down"
-                :default-opened="true"
-              >
-                <div class="section-spacer-xs"></div>
-
-                <div
-                  v-for="docType in displayedCategoryObj.documents"
-                  :key="docType.type"
-                  class="cursor-pointer q-py-sm q-px-md"
-                  style="font-weight: 500;"
-                  @click="openAddDocumentDialog(docType.type)"
-                >
-                  <q-icon
-                    class="q-mr-sm"
-                    v-if="hasDocument(docType.type)"
-                    color="secondary"
-                    name="eva-checkmark-circle-2-outline"
-                  />
-                  <q-icon
-                    class="q-mr-sm"
-                    v-else
-                    color="negative"
-                    name="eva-alert-circle-outline"
-                  />
-                  <span>{{ docType.label }}</span>
-                </div>
-
-                <div class="section-spacer-xs"></div>
-              </q-expansion-item>
 
               <div class="section-spacer-xs"></div>
+            </q-expansion-item>
 
-              <div class="cursor-pointer" @click="removeAllDocuments">
-                <q-icon class="q-mr-sm" name="eva-trash-outline" />
-                <span> Clear All</span>
-              </div>
+            <div class="section-spacer-xs"></div>
+
+            <div class="cursor-pointer" @click="removeAllDocuments">
+              <q-icon class="q-mr-sm" name="eva-trash-outline" />
+              <span> Clear All</span>
+            </div>
 
             <div class="q-mt-xl q-mb-sm">
               <p class="">
@@ -264,7 +235,8 @@
                 </a>
               </p> -->
 
-              <CustomButton v-if="isEditingDisabled" label="Fill in Application Form" customStyle="width: 200px" @click="openApplicationForm" />
+              <CustomButton v-if="canSendCreditCheckEmail" label="SendOutCreditCheckApplication"
+                customStyle="width: 200px" @click="sendOutCreditCheckApplication" />
             </div>
             <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
             <br>Once your rental application has been submitted; <br> No further changes to your <span
@@ -303,9 +275,9 @@
         @document-added="fetchUserDetails" />
     </q-dialog>
 
-    <q-dialog v-model="applicationForm">
-      <DigitalApplicationForm @close="closeApplicationForm" />
-    </q-dialog>
+    <!-- <q-dialog v-model="applicationForm">
+      <DigitalApplicationForm :user="userDetails" @close="closeApplicationForm" />
+    </q-dialog> -->
   </q-page>
 </template>
 
@@ -335,6 +307,8 @@ export default {
           hasBursary: ''
         }
       },
+      myRentals: [],
+
       selectedGender: '',
 
       isEditingDisabled: false,
@@ -431,6 +405,109 @@ export default {
     },
     displayedCategoryObj() {
       return this.documentCategories.find(c => c.category === this.displayedCategory) || { documents: [] };
+    },
+
+    hasPendingRental() {
+      if (this.myRentals && Array.isArray(this.myRentals)) {
+        const pendingRentals = this.myRentals.filter(rental => rental.status === "Pending");
+        return pendingRentals.length === 1 ? pendingRentals[0] : false;
+      }
+      return false;
+    },
+
+    // hasPendingRental() {
+    //   if (this.myRentals && Array.isArray(this.myRentals)) {
+    //     const pendingRentals = this.myRentals.filter(rental => {
+
+    //       if (rental.status !== "Pending") return false;
+    //       if (!rental.rentalStartDate) return false;
+
+    //       const rentalYear = new Date(rental.rentalStartDate).getFullYear();
+    //       console.log(rentalYear)
+    //       const currentYear = new Date().getFullYear();
+
+    //       return rentalYear > currentYear;
+    //     });
+
+    //     return pendingRentals.length === 1 ? pendingRentals[0] : false;
+    //   }
+    //   return false;
+    // },
+
+    hasCreditCheckApplication() {
+      if (!this.myRentals || !Array.isArray(this.myRentals)) {
+        return false;
+      }
+      const pendingRentals = this.myRentals.filter(rental => rental.status === "Pending");
+
+      if (pendingRentals.length === 0) {
+        return false;
+      }
+
+      const pendingRental = pendingRentals[0];
+
+      if (!pendingRental.documents || !Array.isArray(pendingRental.documents)) {
+        return false;
+      }
+
+      return pendingRental.documents.some(doc =>
+        doc.docType?.toLowerCase() === 'signed and filled application form'
+      );
+    },
+
+    hasAllRequiredDocuments() {
+      const requiredDocsByCategory = {
+        'Private Client': [
+          // 'private_application_form',
+          'private_student_registration',
+          'private_id_student',
+          'private_id_person',
+          'private_proof_of_address',
+          'private_3_months_payslips',
+          'private_3_months_bank_statements'
+        ],
+        'Business': [
+          // 'business_application_form',
+          'business_student_registration',
+          'business_id_directors',
+          'business_proof_of_address',
+          'business_cipc_documents',
+          'business_6_months_bank_statements'
+        ],
+        'Bursary Application': [
+          // 'bursary_application_form',
+          'bursary_student_registration',
+          'bursary_confirmation',
+          'bursary_proof_of_address',
+          'bursary_id_documents'
+        ]
+      };
+
+      const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
+      if (uploadedTypes.length === 0) return false;
+
+      let category = null;
+      const firstDoc = uploadedTypes[0];
+      if (firstDoc.startsWith('private_')) category = 'Private Client';
+      else if (firstDoc.startsWith('business_')) category = 'Business';
+      else if (firstDoc.startsWith('bursary_')) category = 'Bursary Application';
+
+      if (!category) return false;
+
+      const requiredTypes = requiredDocsByCategory[category] || [];
+      return requiredTypes.every(type => uploadedTypes.includes(type));
+    },
+
+    canSendCreditCheckEmail() {
+      const hasPendingRental = !!this.hasPendingRental;
+      const hasAllDocs = this.hasAllRequiredDocuments;
+      const hasCreditCheck = this.hasCreditCheckApplication;
+
+      console.log('hasAllRequiredDocuments:', hasAllDocs);
+      console.log('hasPendingRental:', hasPendingRental);
+      console.log('hasCreditCheckApplication:', hasCreditCheck);
+
+      return hasAllDocs && hasPendingRental && !hasCreditCheck;
     }
   },
 
@@ -447,6 +524,16 @@ export default {
   },
 
   methods: {
+
+    // MAKE SURE PEOPLE WHO ALREADY APPLIED FOR THIS YEAR
+    // AND HAVE APPLICATIONS DO NOT SEND THIS TO THEM. BOTH PENDING AND ACTIVE
+
+    async sendOutCreditCheckApplication() {
+
+      console.log("Email sent");
+      await EmailService.RentalApplicationToUserEmail(this.userDetails._id);
+    },
+
     openApplicationForm() {
       this.applicationForm = true
     },
@@ -685,6 +772,7 @@ export default {
       this.checkEditingDisabled();
 
       const response = await RentalService.findMyRentals(this.userDetails._id)
+      this.myRentals = response;
 
       this.currentAccessKey = response.find(rental => (rental.status === 'Pending' || rental.status === 'Active') && rental.accessKey)?.accessKey
       this.loading = false;

@@ -1,8 +1,5 @@
 <template>
   <q-card style="min-width: 340px; max-width: 900px; width: 100%">
-    <q-card-section>
-      <div class="text-h6">Digital Application Form</div>
-    </q-card-section>
 
     <!-- Page 1 -->
     <div class="pdf-container">
@@ -92,10 +89,26 @@
         <PDFSignPad :top="905" :left="50" :width="440" :height="25" ref="sig6StudentOrGuardian" />
       </div>
 
-      <q-card-actions align="right">
-        <q-btn label="Generate Signed PDF" color="primary" @click="generateSignedPdf" />
-        <q-btn label="Clear Signatures" color="primary" @click="clearSignatures" />
+      <q-card-actions class="row justify-between">
+        <div>
+          <q-btn color="secondary" label="Save Changes" icon="eva-save-outline" class="custom-button q-mr-sm"
+            :loading="isSaving" @click="saveDraft" />
+          <q-btn icon="eva-cloud-download-outline" color="secondary" @click="loadDraft" />
+        </div>
+        <div>
+          <CustomButton label="Submit Form" :disabled="!isFormComplete" color="primary" @click="generateSignedPdf"
+            customStyle="width: 150px;" class="q-mr-sm" />
+          <CustomButton label="Clear Signatures" color="primary" @click="clearSignatures" customStyle="width: 150px;"
+            class="q-mr-sm" />
+          <CustomButton label="Home" color="black" textColor="white" to="/" customStyle="width: 90px;" />
+        </div>
+
+
       </q-card-actions>
+
+      <q-card-section v-if="lastSaved" class="row justify-end text-caption text-grey-6 q-px-md">
+        Last saved: {{ lastSaved.toLocaleTimeString() }}
+      </q-card-section>
     </div>
   </q-card>
 </template>
@@ -105,11 +118,23 @@ import { PDFDocument, rgb } from 'pdf-lib'
 import PDFInput from '../elements/PDFInput.vue';
 import PDFCheckbox from '../elements/PDFCheckbox.vue';
 import PDFSignPad from '../elements/PDFSignPad.vue';
+import RentalService from 'src/services/RentalService.js';
+import EmailService from 'src/services/EmailService.js';
+import DraftService from 'src/services/DraftService.js';
+
+import CustomButton from '../elements/CustomButton.vue';
 
 export default {
   name: 'DigitalApplicationForm',
   data() {
     return {
+      docType: 'Signed And Filled Application Form',
+      draftId: null,
+      isSaving: false,
+      lastSaved: null,
+      autoSaveInterval: null,
+
+      file: null,
       studentInfo: {
         studentNumber: '', title: '', firstName: '', surname: '', dateOfBirth: '', nationality: '', idNumber: '', passportNumber: '', maritalStatus: '', email: '', telephoneNumber: '', residentialAddress: '', postalAddress: '',
         theWeb: true, helshoogte: false, botmaskop: false
@@ -133,75 +158,119 @@ export default {
         nameOfParentOrGuardian: '',
         dateAt: '', onThis: '', dayOf: '', year: ''
       },
-      file: null
+
     }
   },
 
-  mounted() {
-    this.studentInfo = {
-      studentNumber: 'S1234567',
-      title: 'Mr',
-      firstName: 'John',
-      surname: 'Doe',
-      dateOfBirth: '15/05/1995',
-      nationality: 'South African',
-      idNumber: '9505151234089',
-      passportNumber: 'A12345678',
-      maritalStatus: 'Single',
-      email: 'john.doe@email.com',
-      telephoneNumber: '0821234567',
-      residentialAddress: '123 Main Street, Cape Town',
-      postalAddress: 'PO Box 456, Cape Town, 8000',
-      theWeb: true,
-      helshoogte: false,
-      botmaskop: true
-    }
-    this.parentInfo = {
-      firstName: 'Mary',
-      surname: 'Doe',
-      phone: '0832345678',
-      fax: '0861234567',
-      email: 'mary.doe@email.com',
-      employersName: 'ABC Company',
-      employersAddress: '456 Business Park, Johannesburg',
-      occupation: 'Accountant',
-      monthlyIncome: 'R45,000',
-      periodEmployed: '5 years'
-    }
-    this.paymentInfo = {
-      firstName: 'John',
-      surname: 'Doe',
-      idNumber: '9505151234089',
-      phone: '0821234567',
-      email: 'john.doe@email.com',
-      telephoneNumber: '0211234567',
-      residentialAddress: '123 Main Street, Cape Town',
-      postalAddress: 'PO Box 456, Cape Town, 8000',
-      bank: 'ABSA',
-      bankName: 'ABSA Bank',
-      branchCode: '632005',
-      accountNumber: '1234567890',
-      typeOfAccount: 'Cheque'
-    }
-    this.signatureInfo1 = {
-      nameAndTitle: 'John Doe (Student)',
-      date: '25/06/2026',
-    }
-    this.signatureInfo2 = {
-      nameAndTitle: 'Mary Doe (Parent)',
-      date: '25/06/2026',
-    }
-    this.prospectiveInfo = {
-      prospectiveStudentName: 'John Doe Jr',
-      nameOfParentOrGuardian: 'Mary Doe',
-      dateAt: '25 June 2026',
-      onThis: '25',
-      dayOf: 'June',
-      year: '2026'
-    }
+  props: {
+    user: {
+      type: Object,
+      required: true,
+      default: () => ({})
+    },
+    pendingRental: {
+      type: Object,
+      default: null
+    },
   },
+
   components: {
-    PDFInput, PDFCheckbox, PDFSignPad
+    PDFInput, PDFCheckbox, PDFSignPad, CustomButton
+  },
+  computed: {
+
+    isFormComplete() {
+      // Student Info - Required fields
+      const requiredStudentFields = [
+        'studentNumber', 'firstName', 'surname', 'dateOfBirth',
+        'nationality', 'idNumber', 'email', 'telephoneNumber'
+      ];
+
+      const studentComplete = requiredStudentFields.every(field =>
+        this.studentInfo[field] && this.studentInfo[field].trim() !== ''
+      );
+
+      // Parent Info - Required fields
+      const requiredParentFields = [
+        'firstName', 'surname', 'phone', 'email'
+      ];
+
+      const parentComplete = requiredParentFields.every(field =>
+        this.parentInfo[field] && this.parentInfo[field].trim() !== ''
+      );
+
+      // Payment Info - Required fields
+      const requiredPaymentFields = [
+        'firstName', 'surname', 'idNumber', 'phone', 'email'
+      ];
+
+      const paymentComplete = requiredPaymentFields.every(field =>
+        this.paymentInfo[field] && this.paymentInfo[field].trim() !== ''
+      );
+
+      // Signature Info - Must have signatures
+      const hasSignatures =
+        this.$refs.sig1?.getSignature() &&
+        this.$refs.sig2?.getSignature() &&
+        this.$refs.sig3Applicant?.getSignature() &&
+        this.$refs.sig6StudentOrGuardian?.getSignature();
+
+      // Prospective Info - Required fields
+      const requiredProspectiveFields = [
+        'prospectiveStudentName', 'nameOfParentOrGuardian', 'dateAt'
+      ];
+
+      const prospectiveComplete = requiredProspectiveFields.every(field =>
+        this.prospectiveInfo[field] && this.prospectiveInfo[field].trim() !== ''
+      );
+
+      return studentComplete && parentComplete && paymentComplete &&
+        prospectiveComplete && hasSignatures;
+    },
+
+    // Get missing fields for debug/display
+    missingFields() {
+      const missing = [];
+
+      const requiredStudentFields = [
+        'studentNumber', 'firstName', 'surname', 'dateOfBirth',
+        'nationality', 'idNumber', 'email', 'telephoneNumber'
+      ];
+
+      requiredStudentFields.forEach(field => {
+        if (!this.studentInfo[field] || this.studentInfo[field].trim() === '') {
+          missing.push(`Student: ${field}`);
+        }
+      });
+
+      const requiredParentFields = ['firstName', 'surname', 'phone', 'email'];
+      requiredParentFields.forEach(field => {
+        if (!this.parentInfo[field] || this.parentInfo[field].trim() === '') {
+          missing.push(`Parent: ${field}`);
+        }
+      });
+
+      const requiredPaymentFields = ['firstName', 'surname', 'idNumber', 'phone', 'email'];
+      requiredPaymentFields.forEach(field => {
+        if (!this.paymentInfo[field] || this.paymentInfo[field].trim() === '') {
+          missing.push(`Payment: ${field}`);
+        }
+      });
+
+      const requiredProspectiveFields = ['prospectiveStudentName', 'nameOfParentOrGuardian', 'dateAt'];
+      requiredProspectiveFields.forEach(field => {
+        if (!this.prospectiveInfo[field] || this.prospectiveInfo[field].trim() === '') {
+          missing.push(`Prospective: ${field}`);
+        }
+      });
+
+      if (!this.$refs.sig1?.getSignature()) missing.push('Signature 1');
+      if (!this.$refs.sig2?.getSignature()) missing.push('Signature 2');
+      if (!this.$refs.sig3Applicant?.getSignature()) missing.push('Applicant Signature');
+      if (!this.$refs.sig6StudentOrGuardian?.getSignature()) missing.push('Student/Guardian Signature');
+
+      return missing;
+    },
   },
   methods: {
     clearSignatures() {
@@ -225,7 +294,6 @@ export default {
         }
       }
     },
-
     async generateSignedPdf() {
       try {
         const existingPdfBytes = await fetch('/files/digitalForms/CreditCheckApproval.pdf').then(res => res.arrayBuffer())
@@ -244,7 +312,7 @@ export default {
         const scaleX1 = pdfWidth1 / imageWidth
         const scaleY1 = pdfHeight1 / imageHeight
 
-        console.log('Scale X:', scaleX, 'Scale Y:', scaleY)
+        // console.log('Scale X:', scaleX, 'Scale Y:', scaleY)
 
         const OFFSET_X = 0   // Positive moves right, negative moves left
         const OFFSET_Y = 8   // Positive moves down, negative moves up
@@ -434,12 +502,12 @@ export default {
         })
         // === SIGNATURES ===
         const signatures = [
-          { ref: this.$refs.sig1, x: 157, y: 169, width: 249, height: 38 },
-          { ref: this.$refs.sig2, x: 517, y: 169, width: 249, height: 38 },
-          { ref: this.$refs.sig3Applicant, x: 180, y: 682, width: 430, height: 30 },
-          { ref: this.$refs.sig4Witness1, x: 103, y: 780, width: 150, height: 25 },
-          { ref: this.$refs.sig5Witness2, x: 303, y: 780, width: 150, height: 25 },
-          { ref: this.$refs.sig6StudentOrGuardian, x: 50, y: 905, width: 440, height: 25 }
+          { ref: this.$refs.sig1, x: 157, y: 159, width: 249, height: 38 },
+          { ref: this.$refs.sig2, x: 517, y: 159, width: 249, height: 38 },
+          { ref: this.$refs.sig3Applicant, x: 180, y: 672, width: 430, height: 30 },
+          { ref: this.$refs.sig4Witness1, x: 103, y: 770, width: 150, height: 25 },
+          { ref: this.$refs.sig5Witness2, x: 303, y: 770, width: 150, height: 25 },
+          { ref: this.$refs.sig6StudentOrGuardian, x: 50, y: 895, width: 440, height: 25 }
         ]
         for (const sig of signatures) {
           if (sig.ref) {
@@ -462,6 +530,7 @@ export default {
         }
         // Save and download
         const pdfBytes = await pdfDoc.save()
+
         const blob = new Blob([pdfBytes], { type: 'application/pdf' })
         const link = document.createElement('a')
         link.href = URL.createObjectURL(blob)
@@ -472,16 +541,362 @@ export default {
         URL.revokeObjectURL(link.href)
 
         this.file = new File([pdfBytes], 'ApplicationForm_signed.pdf', { type: 'application/pdf' })
-
+        await this.addDocument(this.file)
       } catch (error) {
         console.error('Error generating PDF:', error)
         alert('Failed to generate PDF. Please check console for details.')
       }
     },
-    async addDocument() {
+    async addDocument(document) {
+      const newFileName = `${this.user.firstName}_${this.user.lastName}_${this.docType}_document.pdf`;
+      const formData = new FormData()
 
+      formData.append('documents', document, newFileName);
+      formData.append('type', this.docType);
+      formData.append('label', this.docType);
+
+      const response = await RentalService.uploadRentalDocs(this.user._id, formData);
+
+      // If we get here, it worked
+      this.$q.notify({ type: 'positive', message: 'Application submitted successfully!' });
+      this.draftId = null;
+      this.lastSaved = null;
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    },
+
+    hasDocumentInRental() {
+      if (!this.pendingRental) return false;
+
+      return this.pendingRental.documents &&
+            Array.isArray(this.pendingRental.documents) &&
+            this.pendingRental.documents.length > 0;
+    },
+
+    async saveDraft() {
+      if (this.isSaving) return;
+
+      if (!this.pendingRental || this.pendingRental.status !== 'Pending') {
+        // this.$q.notify({
+        //   type: 'warning',
+        //   message: 'No pending rental found. Cannot save draft.'
+        // });
+        return;
+      }
+
+      if (this.file) {
+        // console.log('Skipping draft save - document already generated');
+        // this.$q.notify({
+        //   type: 'warning',
+        //   message: 'Document already generated. Draft cannot be saved.'
+        // });
+        return;
+      }
+      if (this.hasDocumentInRental()) {
+        // console.log('Skipping draft save - document already in rental');
+        // this.$q.notify({
+        //   type: 'warning',
+        //   message: 'Document already submitted. Draft cannot be saved.'
+        // });
+        return;
+      }
+
+      try {
+        this.isSaving = true;
+
+        const signatures = {
+          sig1: this.$refs.sig1?.getSignature() || null,
+          sig2: this.$refs.sig2?.getSignature() || null,
+          sig3Applicant: this.$refs.sig3Applicant?.getSignature() || null,
+          sig4Witness1: this.$refs.sig4Witness1?.getSignature() || null,
+          sig5Witness2: this.$refs.sig5Witness2?.getSignature() || null,
+          sig6StudentOrGuardian: this.$refs.sig6StudentOrGuardian?.getSignature() || null
+        }
+
+        const draftData = {
+          userId: this.user._id,
+          rentalId: this.pendingRental?._id || null,
+          studentInfo: this.studentInfo,
+          parentInfo: this.parentInfo,
+          paymentInfo: this.paymentInfo,
+          signatureInfo1: this.signatureInfo1,
+          signatureInfo2: this.signatureInfo2,
+          prospectiveInfo: this.prospectiveInfo,
+          signatures: signatures,
+          file: this.file ? {
+            name: this.file.name,
+            size: this.file.size,
+            type: this.file.type
+          } : null
+        }
+        const response = await DraftService.saveApplicationDraft(draftData);
+
+        if (response.success) {
+          this.draftId = response._id;
+          this.lastSaved = new Date();
+          this.$q.notify({
+            type: 'positive',
+            message: 'Draft saved successfully!'
+          });
+        }
+
+      } catch (error) {
+        console.error('Error saving draft:', error);
+        this.$q.notify({
+          type: 'negative',
+          message: 'Failed to save draft.'
+        });
+      } finally {
+        this.isSaving = false;
+      }
+    },
+
+    async loadDraft() {
+      try {
+        if (!this.user || !this.user._id) {
+          console.log('No user found, skipping draft load');
+          return;
+        }
+
+        const userId = this.user._id;
+
+        const draft = await DraftService.getApplicationDraft(userId);
+
+        if (draft) {
+          this.studentInfo = { ...this.studentInfo, ...draft.studentInfo };
+          this.parentInfo = { ...this.parentInfo, ...draft.parentInfo };
+          this.paymentInfo = { ...this.paymentInfo, ...draft.paymentInfo };
+          this.signatureInfo1 = { ...this.signatureInfo1, ...draft.signatureInfo1 };
+          this.signatureInfo2 = { ...this.signatureInfo2, ...draft.signatureInfo2 };
+          this.prospectiveInfo = { ...this.prospectiveInfo, ...draft.prospectiveInfo };
+          this.draftId = draft._id;
+          this.lastSaved = draft.updatedAt ? new Date(draft.updatedAt) : new Date();
+
+          if (draft.signatures) {
+            await this.restoreSignatures(draft.signatures);
+          }
+
+          this.$q.notify({
+            type: 'info',
+            color: 'primary',
+            message: 'Draft loaded successfully!'
+          });
+        }
+      }
+      catch (error) {
+        console.error('Error loading draft:', error);
+      }
+    },
+
+    async restoreSignatures(signatures) {
+      const sigMap = {
+        sig1: this.$refs.sig1,
+        sig2: this.$refs.sig2,
+        sig3Applicant: this.$refs.sig3Applicant,
+        sig4Witness1: this.$refs.sig4Witness1,
+        sig5Witness2: this.$refs.sig5Witness2,
+        sig6StudentOrGuardian: this.$refs.sig6StudentOrGuardian
+      };
+
+      for (const [refName, sigData] of Object.entries(signatures)) {
+        if (sigData && sigMap[refName]) {
+          await this.loadSignatureToCanvas(sigMap[refName], sigData);
+        }
+      }
+    },
+
+    loadSignatureToCanvas(signaturePad, dataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = signaturePad.$refs.sigPad;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+        img.onerror = () => {
+          console.warn('Failed to load signature for:', signaturePad);
+          resolve(); // Still resolve so the app doesn't break
+        };
+        img.src = dataUrl;
+      });
+    },
+
+
+
+    startAutoSave() {
+      if (this.autoSaveInterval) {
+        clearInterval(this.autoSaveInterval);
+      }
+      this.autoSaveInterval = setInterval(() => {
+        if (this.user?._id) {
+          this.saveDraft();
+        }
+      }, 60000);
+    },
+    stopAutoSave() {
+      if (this.autoSaveInterval) {
+        clearInterval(this.autoSaveInterval);
+        this.autoSaveInterval = null;
+      }
     }
-  }
+  },
+  mounted() {
+
+  //   this.studentInfo = {
+  //     studentNumber: 'S1234567',
+  //     title: 'Mr',
+  //     firstName: 'John',
+  //     surname: 'Doe',
+  //     dateOfBirth: '15/05/1995',
+  //     nationality: 'South African',
+  //     idNumber: '9505151234089',
+  //     passportNumber: 'A12345678',
+  //     maritalStatus: 'Single',
+  //     email: 'john.doe@email.com',
+  //     telephoneNumber: '0821234567',
+  //     residentialAddress: '123 Main Street, Cape Town',
+  //     postalAddress: 'PO Box 456, Cape Town, 8000',
+  //     theWeb: true,
+  //     helshoogte: false,
+  //     botmaskop: true
+  //   }
+  //   this.parentInfo = {
+  //     firstName: 'Mary',
+  //     surname: 'Doe',
+  //     phone: '0832345678',
+  //     fax: '0861234567',
+  //     email: 'mary.doe@email.com',
+  //     employersName: 'ABC Company',
+  //     employersAddress: '456 Business Park, Johannesburg',
+  //     occupation: 'Accountant',
+  //     monthlyIncome: 'R45,000',
+  //     periodEmployed: '5 years'
+  //   }
+  //   this.paymentInfo = {
+  //     firstName: 'John',
+  //     surname: 'Doe',
+  //     idNumber: '9505151234089',
+  //     phone: '0821234567',
+  //     email: 'john.doe@email.com',
+  //     telephoneNumber: '0211234567',
+  //     residentialAddress: '123 Main Street, Cape Town',
+  //     postalAddress: 'PO Box 456, Cape Town, 8000',
+  //     bank: 'ABSA',
+  //     bankName: 'ABSA Bank',
+  //     branchCode: '632005',
+  //     accountNumber: '1234567890',
+  //     typeOfAccount: 'Cheque'
+  //   }
+  //   this.signatureInfo1 = {
+  //     nameAndTitle: 'John Doe (Student)',
+  //     date: '25/06/2026',
+  //   }
+  //   this.signatureInfo2 = {
+  //     nameAndTitle: 'Mary Doe (Parent)',
+  //     date: '25/06/2026',
+  //   }
+  //   this.prospectiveInfo = {
+  //     prospectiveStudentName: 'John Doe Jr',
+  //     nameOfParentOrGuardian: 'Mary Doe',
+  //     dateAt: '25 June 2026',
+  //     onThis: '25',
+  //     dayOf: 'June',
+  //     year: '2026'
+  //   }
+
+    // console.log(this.pendingRental)
+    if (this.user?._id) {
+      this.loadDraft();
+      this.startAutoSave();
+    }
+  },
+  beforeUnmount() {
+    if (this.user?._id) {
+      this.saveDraft();
+    }
+    this.stopAutoSave();
+  },
+  watch: {
+    user: {
+      immediate: true,
+      handler(newUser) {
+        if (newUser?._id) {
+          this.loadDraft();
+          this.startAutoSave();
+        }
+      }
+    }
+  },
+
+  // mounted() {
+  //   console.log(this.user)
+  //   this.studentInfo = {
+  //     studentNumber: 'S1234567',
+  //     title: 'Mr',
+  //     firstName: 'John',
+  //     surname: 'Doe',
+  //     dateOfBirth: '15/05/1995',
+  //     nationality: 'South African',
+  //     idNumber: '9505151234089',
+  //     passportNumber: 'A12345678',
+  //     maritalStatus: 'Single',
+  //     email: 'john.doe@email.com',
+  //     telephoneNumber: '0821234567',
+  //     residentialAddress: '123 Main Street, Cape Town',
+  //     postalAddress: 'PO Box 456, Cape Town, 8000',
+  //     theWeb: true,
+  //     helshoogte: false,
+  //     botmaskop: true
+  //   }
+  //   this.parentInfo = {
+  //     firstName: 'Mary',
+  //     surname: 'Doe',
+  //     phone: '0832345678',
+  //     fax: '0861234567',
+  //     email: 'mary.doe@email.com',
+  //     employersName: 'ABC Company',
+  //     employersAddress: '456 Business Park, Johannesburg',
+  //     occupation: 'Accountant',
+  //     monthlyIncome: 'R45,000',
+  //     periodEmployed: '5 years'
+  //   }
+  //   this.paymentInfo = {
+  //     firstName: 'John',
+  //     surname: 'Doe',
+  //     idNumber: '9505151234089',
+  //     phone: '0821234567',
+  //     email: 'john.doe@email.com',
+  //     telephoneNumber: '0211234567',
+  //     residentialAddress: '123 Main Street, Cape Town',
+  //     postalAddress: 'PO Box 456, Cape Town, 8000',
+  //     bank: 'ABSA',
+  //     bankName: 'ABSA Bank',
+  //     branchCode: '632005',
+  //     accountNumber: '1234567890',
+  //     typeOfAccount: 'Cheque'
+  //   }
+  //   this.signatureInfo1 = {
+  //     nameAndTitle: 'John Doe (Student)',
+  //     date: '25/06/2026',
+  //   }
+  //   this.signatureInfo2 = {
+  //     nameAndTitle: 'Mary Doe (Parent)',
+  //     date: '25/06/2026',
+  //   }
+  //   this.prospectiveInfo = {
+  //     prospectiveStudentName: 'John Doe Jr',
+  //     nameOfParentOrGuardian: 'Mary Doe',
+  //     dateAt: '25 June 2026',
+  //     onThis: '25',
+  //     dayOf: 'June',
+  //     year: '2026'
+  //   }
+  // },
+
 }
 </script>
 

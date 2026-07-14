@@ -90,7 +90,7 @@
                 rental.selectedSubUnits?.price?.name }} Payment Plan</div>
               <div v-else>Lease Duration: Standard Payment Plan</div>
             </li>
-            <li v-if="!defaultValues">
+            <!-- <li v-if="!defaultValues">
               Start Date: {{ formatDate(rental.rentalStartDate) }}
             </li>
             <li v-else>
@@ -101,6 +101,16 @@
             </li>
             <li v-else>
               End Date: <span class="text-negative"><b>Being processed</b></span>
+            </li>
+            <li v-if="rental.earlyEndDate">
+              Early End Date: {{ formatDate(rental.earlyEndDate) }}
+            </li> -->
+
+            <li>
+              Start Date: {{ formatDate(rental.rentalStartDate) }}
+            </li>
+            <li>
+              End Date: {{ formatDate(rental.rentalEndDate) }}
             </li>
             <li v-if="rental.earlyEndDate">
               Early End Date: {{ formatDate(rental.earlyEndDate) }}
@@ -376,11 +386,45 @@
           </div>
         </q-card-section>
 
-        <q-card-section v-if="isApproved" class="row justify-between">
+        <!-- <q-card-section v-if="isApproved" class="row justify-between">
           <div class="col-md-6 col-12 q-px-sm"><q-input filled type="date" v-model="rental.rentalStartDate"
               label="Rental Start Date" :min="minDate" /></div>
           <div class="col-md-6 col-12 q-px-sm"><q-input filled type="date" v-model="rental.rentalEndDate"
               label="Rental End Date" :min="rentalStartDate || minDate" /></div>
+        </q-card-section> -->
+
+        <!-- <q-card-section v-if="isApproved" class="row justify-between">
+          <div class="col-md-6 col-12 q-px-sm">
+            <q-input
+              filled
+              type="text"
+              :value="formattedStartDate"
+              label="Rental Start Date"
+              readonly
+              disable
+            />
+          </div>
+          <div class="col-md-6 col-12 q-px-sm">
+            <q-input
+              filled
+              type="text"
+              :value="formattedEndDate"
+              label="Rental End Date"
+              readonly
+              disable
+            />
+          </div>
+        </q-card-section> -->
+
+        <q-card-section>
+          <div class="row q-gutter-sm">
+            <q-chip color="primary" text-color="white" icon="event">
+              Start: {{ formatDate(rental.rentalStartDate) }}
+            </q-chip>
+            <q-chip color="primary" text-color="white" icon="event">
+              End: {{ formatDate(rental.rentalEndDate) }}
+            </q-chip>
+          </div>
         </q-card-section>
 
         <q-card-section>
@@ -442,7 +486,7 @@ export default {
       availableSubUnits: [],
       availablePrices: [],
 
-      selectedPricePlan: null
+      selectedPricePlan: null,
 
     }
   },
@@ -455,7 +499,7 @@ export default {
       // Define required docs per category (with prefixes)
       const requiredDocsByCategory = {
         'Private Client': [
-          'private_application_form',
+          // 'private_application_form',
           'private_student_registration',
           'private_id_student',
           'private_id_person',
@@ -464,7 +508,7 @@ export default {
           'private_3_months_bank_statements'
         ],
         'Business': [
-          'business_application_form',
+          // 'business_application_form',
           'business_student_registration',
           'business_id_directors',
           'business_proof_of_address',
@@ -472,7 +516,7 @@ export default {
           'business_6_months_bank_statements'
         ],
         'Bursary Application': [
-          'bursary_application_form',
+          // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
@@ -496,28 +540,10 @@ export default {
       const requiredTypes = requiredDocsByCategory[category] || [];
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
-
-    defaultValues() {
-      const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
-      const today = new Date();
-      const nextYear = today.getFullYear() + 1;
-      const defaultStart = `${nextYear}-01-01`;
-      const defaultEnd = `${nextYear}-12-31`;
-
-      const start = toDateOnly(this.rental?.rentalStartDate);
-      const end = toDateOnly(this.rental?.rentalEndDate);
-
-      return start === defaultStart && end === defaultEnd;
-    },
   },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
-
-    setRentalDates(startDate, endDate) {
-      this.rental.rentalStartDate = startDate;
-      this.rental.rentalEndDate = endDate;
-    },
 
     async loadSubUnits(selectedOption) {
       this.selectedSubUnit = null;
@@ -739,18 +765,18 @@ export default {
       }
 
       if (this.isApproved === true) {
-        const today = new Date();
-        const nextYear = today.getFullYear() + 1;
-        const defaultStart = `${nextYear}-01-01`;
-        const defaultEnd = `${nextYear}-12-31`;
+        // const today = new Date();
+        // const nextYear = today.getFullYear() + 1;
+        // const defaultStart = `${nextYear}-01-01`;
+        // const defaultEnd = `${nextYear}-12-31`;
 
-        if (this.rental.rentalStartDate == defaultStart && this.rental.rentalEndDate === defaultEnd) {
-          this.$q.notify({
-            type: 'warning',
-            message: 'Please update the rental start and end dates before approval.'
-          });
-          return;
-        }
+        // if (this.rental.rentalStartDate == defaultStart && this.rental.rentalEndDate === defaultEnd) {
+        //   this.$q.notify({
+        //     type: 'warning',
+        //     message: 'Please update the rental start and end dates before approval.'
+        //   });
+        //   return;
+        // }
 
         this.$q.dialog({
           title: 'Confirm', message: `You are about to approve this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true

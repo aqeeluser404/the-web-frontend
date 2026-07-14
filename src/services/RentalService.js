@@ -94,6 +94,33 @@ class RentalService {
       throw error;
     }
   }
+  static async uploadRentalDocs(userId, documents) {
+    const ENDPOINT = `/rentals/${userId}/documents`
+    try {
+      const response = await axiosInstance.post(ENDPOINT, documents)
+      return response
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static async clearAllRentalDocs(rentalId) {
+    const ENDPOINT = `/rentals/${rentalId}/documents`
+    try {
+      const response = await axiosInstance.delete(ENDPOINT)
+      return response
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static async findMyDocsRentals(userId) {
+    const ENDPOINT = `/docs/users/${userId}/rentals`
+    try {
+      const response = await axiosInstance.get(ENDPOINT)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
 }
 
 export default RentalService

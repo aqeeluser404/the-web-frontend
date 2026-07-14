@@ -19,6 +19,23 @@ class Helper {
     const options = { day: 'numeric', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
   }
+
+// static formatDate(dateString) {
+//   if (!dateString) return 'N/A';
+
+//   const date = new Date(dateString);
+//   if (isNaN(date.getTime())) return 'Invalid Date';
+
+//   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+//   const day = date.getUTCDate();
+//   const month = months[date.getUTCMonth()];
+//   const year = date.getUTCFullYear();
+
+//   return `${day} ${month} ${year}`;
+// }
+
+
   static formatTime(dateString) {
     const date = new Date(dateString);
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
