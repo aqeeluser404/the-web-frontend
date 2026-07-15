@@ -29,6 +29,29 @@
   width: 100%
   box-sizing: border-box
 
+.constrain-mobile-home-view
+  max-width: 480px
+  margin-left: auto
+  margin-right: auto
+  padding-left: 1rem
+  padding-right: 1rem
+  width: 100%
+  box-sizing: border-box
+  background: white
+
+  /* For larger phones and small tablets */
+  @media (min-width: 481px)
+    max-width: 600px
+    padding-left: 1.5rem
+    padding-right: 1.5rem
+
+  /* For tablets */
+  @media (min-width: 768px)
+    max-width: 768px
+    padding-left: 2rem
+    padding-right: 2rem
+
+
 .constrain-center-items
   max-width: 1024px
   margin-left: auto
@@ -204,6 +227,11 @@
   height: 60px
   @media (max-width: 767px)
     height: 40px
+
+.section-spacer
+  height: 20px
+  @media (max-width: 767px)
+    height: 5px
 
 .section-spacer-xs
   height: 10px

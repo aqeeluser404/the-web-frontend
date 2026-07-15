@@ -211,8 +211,7 @@
 
     <q-page-container>
       <div v-if="isMobileAppView || showDesktopView" class="mobile-dashboard">
-        <div>Test Mobile</div>
-        <!-- <MobileHomePage /> -->
+        <MobileHomeView />
       </div>
       <div v-else>
         <router-view />
@@ -239,6 +238,7 @@ import { showSessionExpired } from 'src/services/showShessionExpired';
 import main from 'src/assets/resources/home/slider/main.png';
 
 import { Capacitor } from '@capacitor/core';
+import MobileHomeView from 'src/components/elements/MobileHomeView.vue';
 
 export default {
   data() {
@@ -290,7 +290,7 @@ export default {
       ]
     }
   },
-  components: { CustomButton, MaintenanceBanner, UniversalMenu, QListItems },
+  components: { CustomButton, MaintenanceBanner, UniversalMenu, QListItems, MobileHomeView },
 
   computed: {
     bookItems() {
