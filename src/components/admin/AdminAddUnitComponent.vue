@@ -294,8 +294,9 @@ export default {
       this.unit.beds.push({
         number: `Bed ${this.unit.beds.length + 1}`,
         price: [
-          { name: 'default', price: 100 },
-          { name: 'special', price: 150 },
+          { name: '11-month', price: 6500 },
+          { name: '10-month', price: 7150 },
+          { name: 'annual', price: 71500 },
         ]
       });
     },
