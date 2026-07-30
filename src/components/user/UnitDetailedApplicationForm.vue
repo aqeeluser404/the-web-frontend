@@ -186,7 +186,7 @@
                 R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
               </div>
               <div class="text-caption1 text-grey">Starting from R{{ Number(currentPrice).toLocaleString('en-ZA')
-              }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
+                }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
                 <br>Select
                 your preferred unit configuration and payment plan to begin.
               </div>
@@ -263,7 +263,8 @@
 
               <q-card-section>
                 <div class="q-mb-sm"><b>Shuttle Service</b></div>
-                <q-radio v-model="userDetails.hasShuttle" :val="true" label="Yes I would like to use the shuttle service" />
+                <q-radio v-model="userDetails.hasShuttle" :val="true"
+                  label="Yes I would like to use the shuttle service" />
                 <br>
                 <q-radio v-model="userDetails.hasShuttle" :val="false" label="No, I don't need it" />
               </q-card-section>
@@ -304,7 +305,7 @@
                   <q-icon :name="userDetails.verification?.isVerified ? 'check_circle' : 'error'"
                     :color="userDetails.verification?.isVerified ? 'positive' : 'negative'" size="20px" />
                   <span class="q-ml-sm">Email {{ userDetails.verification?.isVerified ? 'verified' : 'not verified'
-                    }}</span>
+                  }}</span>
                 </div>
                 <div class="column cursor-pointer" @click="goToUserProfile">
                   <div class="row">
@@ -322,6 +323,19 @@
                   <q-icon :name="userDetails.dateOfBirth ? 'check_circle' : 'error'"
                     :color="userDetails.dateOfBirth ? 'positive' : 'negative'" size="20px" />
                   <span class="q-ml-sm">Age {{ userDetails.dateOfBirth ? 'verified' : 'not verified' }}</span>
+                </div>
+
+                <!-- Credit Check Application -->
+                <div class="row cursor-pointer"
+                  @click="handleRentalDocumentClick('Signed And Filled Application Form')">
+                  <q-icon name="error" color="negative" size="20px" />
+                  <span class="q-ml-sm">Credit Check Application</span>
+                </div>
+
+                <!-- Signed Lease Agreement -->
+                <div class="row cursor-pointer" @click="handleRentalDocumentClick('Signed And Filled Lease Form')">
+                  <q-icon name="error" color="negative" size="20px" />
+                  <span class="q-ml-sm">Signed Lease Agreement</span>
                 </div>
               </q-card-section>
 
@@ -464,7 +478,7 @@ export default {
       rentalDetails: {
         user: "",
         unit: "",
-        unitYear: this.unit.unitYear,
+        unitYear: "",
         rentalStartDate: null,
         rentalEndDate: null,
         accessKeyIsTrue: false,
@@ -898,6 +912,8 @@ export default {
       this.rentalDetails.user = this.userDetails._id
       this.rentalDetails.unit = unit._id
 
+      this.rentalDetails.unitYear = this.unit.unitYear || new Date().getFullYear();
+
       if (!this.userDetails.gender) {
         this.$q.notify({ type: 'negative', message: 'Please specify your gender' })
         return
@@ -932,6 +948,8 @@ export default {
           }
         }
       }
+
+      formData.set('unitYear', Number(this.rentalDetails.unitYear));
 
       try {
         const response = await RentalService.createRental(formData);

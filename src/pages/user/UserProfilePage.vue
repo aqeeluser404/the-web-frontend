@@ -239,8 +239,32 @@
 
             <div class="cursor-pointer" @click="removeAllDocuments">
               <q-icon class="q-mr-sm" name="eva-trash-outline" />
-              <span> Clear All</span>
+              <span> Remove User Documents</span>
             </div>
+
+            <div class="section-spacer-xs"></div>
+
+            <!-- v-if="pendingRental" -->
+            <!-- Rental Documents Section -->
+            <q-expansion-item  label="Application Documents" icon="description" flat
+              class="q-mb-md documents-drop-down" :default-opened="true">
+              <div class="section-spacer-xs"></div>
+
+              <div v-for="docType in rentalDocumentTypes" :key="docType.type" class="cursor-pointer q-py-sm q-px-md"
+                style="font-weight: 500;" @click="handleRentalDocumentClick(docType.type)">
+                <q-icon class="q-mr-sm" :color="hasRentalDocument(docType.type) ? 'secondary' : 'negative'"
+                  :name="hasRentalDocument(docType.type) ? 'eva-checkmark-circle-2-outline' : 'eva-alert-circle-outline'" />
+                <span>{{ docType.label }}</span>
+              </div>
+
+              <div class="section-spacer-xs"></div>
+            </q-expansion-item>
+
+
+
+
+
+
 
             <div class="q-mt-xl q-mb-sm">
               <p class="">
@@ -248,20 +272,6 @@
                 <a target="_blank" href="/frequently-asked-questions" class="text-primary">How to Apply guide</a>.
               </p>
 
-              <!-- <p class="q-mt-sm">
-                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
-                  Download Credit Check Approval
-                </a>
-              </p> -->
-
-              <!-- <p class="q-mt-sm">
-                <a href="/files/CreditCheckApproval.pdf" target="_blank" class=" text-primary" style="text-decoration: underline;">
-                  Fill in Application Form
-                </a>
-              </p> -->
-
-              <!-- <CustomButton v-if="canSendCreditCheckEmail" label="SendOutCreditCheckApplication"
-                customStyle="width: 200px" @click="sendOutCreditCheckApplication" /> -->
             </div>
             <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
             <br>Once your rental application has been submitted; <br> No further changes to your <span
@@ -412,6 +422,10 @@ export default {
           ]
         }
       ],
+      rentalDocumentTypes: [
+        { type: 'Signed And Filled Application Form', label: 'Credit Check Application' },
+        { type: 'Signed And Filled Lease Form', label: 'Signed Lease Agreement' }
+      ],
       addDocDialog: false,
       activeDocType: null
 
@@ -433,6 +447,9 @@ export default {
       return this.documentCategories.find(c => c.category === this.displayedCategory) || { documents: [] };
     },
 
+    pendingRental() {
+      return this.hasPendingRental || null;
+    },
 
     // FORM CONDITIONS-----------------------------------------------------------------------
     hasPendingRental() {
@@ -564,6 +581,46 @@ export default {
   },
 
   methods: {
+    hasRentalDocument(docType) {
+      const rental = this.pendingRental;
+      if (!rental || !rental.documents) return false;
+      return rental.documents.some(doc => doc.docType === docType);
+    },
+
+    getRentalDocument(docType) {
+      const rental = this.pendingRental;
+      if (!rental || !rental.documents) return null;
+      return rental.documents.find(doc => doc.docType === docType);
+    },
+
+    handleRentalDocumentClick(docType) {
+      const doc = this.getRentalDocument(docType);
+      if (doc) {
+        this.viewDocument(doc);
+      } else {
+        this.$q.notify({
+          type: 'warning',
+          message: `The ${docType} has not been uploaded yet.`
+        });
+      }
+    },
+    getDocumentLabel(docType) {
+      const labels = {
+        'Signed And Filled Application Form': 'Credit Check Application',
+        'Signed And Filled Lease Form': 'Signed Lease Agreement'
+      };
+      return labels[docType] || docType;
+    },
+
+    // viewDocument(document) {
+    //   if (!document || !document.documentUrl) {
+    //     this.$q.notify({ type: 'warning', message: 'Document URL not available.' });
+    //     return;
+    //   }
+    //   const url = Helper.getDocumentUrl(document);
+    //   window.open(url, '_blank');
+    // },
+
     async sendOutCreditCheckApplication() {
       await this.cleanupCreditCheckStorage();
 
