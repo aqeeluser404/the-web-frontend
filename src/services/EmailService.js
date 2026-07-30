@@ -105,6 +105,24 @@ class EmailService {
     }
   }
 
+  static async sendLeaseSigningLink(data) {
+    const ENDPOINT = '/send-lease-link'
+    try {
+      const response = await axiosInstance.post(ENDPOINT, {
+        to: data.to,
+        name: data.name,
+        link: data.link,
+        rentalId: data.rentalId,
+        role: data.role || 'Tenant'
+      })
+      return response.data
+    } catch (error) {
+      Logger.error('Error sending lease signing link: ', error.message)
+      throw error
+    }
+  }
+
+
   // PHP VERSION
   static async RentalActionReminder(userId, message) {
     const ENDPOINT = '/rental-action-reminder'

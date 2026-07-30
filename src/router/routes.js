@@ -21,11 +21,11 @@ const routes = [
       // user authority routes--------------------------------------------------------------------------------------------------------------------
 
       { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue') },
-      { path: '/units/apply/floor/:floor', component: () => import('src/pages/user/UnitFloorPage.vue')},
+      { path: '/units/apply/floor/:floor', component: () => import('src/pages/user/UnitFloorPage.vue') },
 
       { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
       { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
-      { path: '/user/applications/view/:id', component: () => import('src/pages/user/UserApplicationsDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser},
+      { path: '/user/applications/view/:id', component: () => import('src/pages/user/UserApplicationsDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
       { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
 
       { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
@@ -64,26 +64,29 @@ const routes = [
       { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // qr scan
-      {path: '/scan', component: () => import('src/pages/admin/DriverQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
-      {path: '/security/scan', component: () => import('src/pages/admin/SecurityQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      { path: '/scan', component: () => import('src/pages/admin/DriverQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      { path: '/security/scan', component: () => import('src/pages/admin/SecurityQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
 
       // authentication routes-------------------------------------------------------------------------------------------------------------------
 
       { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
       // { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue") },
-       { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue"), beforeEnter: Helper.beforeRouteEnterAdmin },
+      { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue"), beforeEnter: Helper.beforeRouteEnterAdmin },
       { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },
       // { path: "/auth/otp-verification" , component: () => import("pages/auth/OtpPage.vue") },
 
       { path: '/forgot-password', component: () => import('src/pages/email/ForgotPasswordPage.vue') },
       { path: '/reset-password', component: () => import('pages/email/ResetPasswordPage.vue') },
 
-      { path: '/verify-email', component: () => import('src/pages/email/VerifyEmailPage.vue')},
+      { path: '/verify-email', component: () => import('src/pages/email/VerifyEmailPage.vue') },
       { path: '/resend-verification', component: () => import('src/pages/email/ResendVerificationEmailPage.vue') },
 
-
-
+      { path: '/lease-signed', component: () => import('src/pages/email/LeaseApplicaionSuccessPage.vue') },
       { path: "/digital-application", name: "DigitalApplication", component: () => import("pages/email/DigitalApplicationFormPage.vue"), },
+
+
+      // delete
+      { path: "/lease-application", name: "LeaseApplication", component: () => import("pages/email/LeaseApplicationFormPage.vue"), },
     ]
   },
 

@@ -120,6 +120,31 @@
             </div>
           </q-card-section>
 
+          <q-card-section>
+            <div class="text-h6">Guardian Information</div>
+            <!-- <div class="text-caption text-grey-6">Optional - Add guardian details for rental application signing</div> -->
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Guardian Name</q-item-section>
+              <q-item-section class="text-left">
+                <q-input :disable="isEditingDisabled" v-model="userDetails.guardianName"
+                  placeholder="Enter guardian's full name" dense />
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section class="text-left text-subtitle1">Guardian Email</q-item-section>
+              <q-item-section class="text-left">
+                <q-input :disable="isEditingDisabled" v-model="userDetails.guardianEmail" type="email"
+                  placeholder="Enter guardian's email address" dense />
+              </q-item-section>
+            </q-item>
+
+          </q-card-section>
+
           <q-card-section class="row justify-between">
             <CustomButton label="Save" customStyle="width: 45%" @click="updateUser" />
             <CustomButton label="Verify Email" customStyle="width: 45%" color="white" text-color="black"
@@ -235,8 +260,8 @@
                 </a>
               </p> -->
 
-              <CustomButton v-if="canSendCreditCheckEmail" label="SendOutCreditCheckApplication"
-                customStyle="width: 200px" @click="sendOutCreditCheckApplication" />
+              <!-- <CustomButton v-if="canSendCreditCheckEmail" label="SendOutCreditCheckApplication"
+                customStyle="width: 200px" @click="sendOutCreditCheckApplication" /> -->
             </div>
             <!-- <CustomButton :disable="isEditingDisabled" label="Remove All" customStyle="width: 45%" color="white" text-color="black" @click="removeAllDocuments"/> -->
             <br>Once your rental application has been submitted; <br> No further changes to your <span
@@ -298,6 +323,7 @@ export default {
     return {
       loading: true,
       applicationForm: false,
+      pendingRentals: [],
 
       userDetails: {
         studentInfo: {
@@ -407,32 +433,55 @@ export default {
       return this.documentCategories.find(c => c.category === this.displayedCategory) || { documents: [] };
     },
 
+
+    // FORM CONDITIONS-----------------------------------------------------------------------
     hasPendingRental() {
       if (this.myRentals && Array.isArray(this.myRentals)) {
         const pendingRentals = this.myRentals.filter(rental => rental.status === "Pending");
-        return pendingRentals.length === 1 ? pendingRentals[0] : false;
+
+        if (pendingRentals.length === 0) {
+          this.pendingRentals = [];
+          return false;
+        }
+
+        // Sort by the latestt date
+        pendingRentals.sort((a, b) => {
+          const dateA = new Date(a.rentalStartDate);
+          const dateB = new Date(b.rentalStartDate);
+          return dateB - dateA;
+        });
+
+        this.pendingRentals = pendingRentals;
+        return pendingRentals[0];
       }
+      this.pendingRentals = [];
       return false;
     },
 
-    // hasPendingRental() {
-    //   if (this.myRentals && Array.isArray(this.myRentals)) {
-    //     const pendingRentals = this.myRentals.filter(rental => {
+    isNextYearRental() {
+      const allowedUsers = ['testuser', 'WayneL', 'yusri', 'admin'];
+      const isAllowedUser = allowedUsers.includes(this.userDetails?.username);
+      if (isAllowedUser) {
+        return true;
+      }
 
-    //       if (rental.status !== "Pending") return false;
-    //       if (!rental.rentalStartDate) return false;
+      // Latest pending rental from hasPendingRental()
+      const pendingRental = this.hasPendingRental;
+      if (!pendingRental || !pendingRental.rentalStartDate) {
+        return false;
+      }
 
-    //       const rentalYear = new Date(rental.rentalStartDate).getFullYear();
-    //       console.log(rentalYear)
-    //       const currentYear = new Date().getFullYear();
+      const startDate = new Date(pendingRental.rentalStartDate);
+      const rentalYear = startDate.getFullYear();
 
-    //       return rentalYear > currentYear;
-    //     });
+      // 026 tenants are on the old system — never eligible, return false
+      if (rentalYear <= 2026) {
+        return false;
+      }
 
-    //     return pendingRentals.length === 1 ? pendingRentals[0] : false;
-    //   }
-    //   return false;
-    // },
+      const currentYear = new Date().getFullYear();
+      return rentalYear > currentYear;
+    },
 
     hasCreditCheckApplication() {
       if (!this.myRentals || !Array.isArray(this.myRentals)) {
@@ -502,36 +551,74 @@ export default {
       const hasPendingRental = !!this.hasPendingRental;
       const hasAllDocs = this.hasAllRequiredDocuments;
       const hasCreditCheck = this.hasCreditCheckApplication;
+      const isNextYear = this.isNextYearRental;
 
-      console.log('hasAllRequiredDocuments:', hasAllDocs);
-      console.log('hasPendingRental:', hasPendingRental);
-      console.log('hasCreditCheckApplication:', hasCreditCheck);
-
-      return hasAllDocs && hasPendingRental && !hasCreditCheck;
+      return hasAllDocs && hasPendingRental && !hasCreditCheck && isNextYear;
     }
   },
 
   async mounted() {
     await this.fetchUserDetails();
     this.initializeCategoryLock();
-  },
-
-  watch: {
-    'userDetails.documents': {
-      handler() { this.initializeCategoryLock(); },
-      deep: true
-    }
+    await this.sendOutCreditCheckApplication();
   },
 
   methods: {
-
-    // MAKE SURE PEOPLE WHO ALREADY APPLIED FOR THIS YEAR
-    // AND HAVE APPLICATIONS DO NOT SEND THIS TO THEM. BOTH PENDING AND ACTIVE
-
     async sendOutCreditCheckApplication() {
+      await this.cleanupCreditCheckStorage();
 
-      console.log("Email sent");
+      if (!this.canSendCreditCheckEmail) {
+        console.log('Conditions not met for credit check email:', {
+          hasAllDocs: this.hasAllRequiredDocuments,
+          hasPendingRental: !!this.hasPendingRental,
+          hasCreditCheck: this.hasCreditCheckApplication,
+          isNextYear: this.isNextYearRental
+        });
+        return;
+      }
+
+      if (!this.userDetails?.guardianName || !this.userDetails?.guardianEmail) {
+        this.$q.notify({
+          type: 'warning',
+          color: 'orange',
+          position: 'top',
+          message: 'Please fill in your guardian information to receive your credit check application!'
+        });
+        return;
+      }
+
+      const pendingRental = this.hasPendingRental;
+      if (!pendingRental || !pendingRental._id) {
+        console.log('No pending rental found');
+        return;
+      }
+
+      const rentalId = pendingRental._id;
+      const storageKey = `sentCreditCheckEmail_${rentalId}`;
+      if (localStorage.getItem(storageKey) === 'true') {
+        console.log(`Credit check email already sent for rental: ${rentalId}`);
+        return;
+      }
+
       await EmailService.RentalApplicationToUserEmail(this.userDetails._id);
+      localStorage.setItem(storageKey, 'true');
+    },
+
+    async cleanupCreditCheckStorage() {
+      const keys = Object.keys(localStorage);
+      const creditCheckKeys = keys.filter(key => key.startsWith('sentCreditCheckEmail_'));
+
+      for (const key of creditCheckKeys) {
+        const rentalId = key.replace('sentCreditCheckEmail_', '');
+
+        const rentalExists = this.myRentals?.some(rental => rental._id === rentalId);
+        const isPending = this.myRentals?.some(rental => rental._id === rentalId && rental.status === 'Pending');
+
+        if (!rentalExists || !isPending) {
+          localStorage.removeItem(key);
+          console.log(`Removed localStorage key for rental: ${rentalId}`);
+        }
+      }
     },
 
     openApplicationForm() {
@@ -742,7 +829,10 @@ export default {
         loginInfo: this.userDetails.loginInfo,
         studentInfo: studentInfo,
         dateOfBirth: this.userDetails.dateOfBirth || null,
-        age: this.userDetails.age || null
+        age: this.userDetails.age || null,
+
+        guardianEmail: this.userDetails.guardianEmail || null,
+        guardianName: this.userDetails.guardianName || null
       };
       if (this.validateFields()) {
         this.$q.dialog({
@@ -790,7 +880,14 @@ export default {
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
-  }
+  },
+
+  watch: {
+    'userDetails.documents': {
+      handler() { this.initializeCategoryLock(); },
+      deep: true
+    }
+  },
 };
 </script>
 

@@ -127,6 +127,11 @@
                 </div>
               </div>
             </template>
+
+            <div class="row items-center justify-around">
+              <div class="col-md-4 col-5 text-grey-7"><b>Unit Year:</b></div>
+              <div class="col-md-6 col-7">{{ unit.unitYear }}</div>
+            </div>
           </div>
         </q-card-section>
 
@@ -181,7 +186,7 @@
                 R{{ Number(currentPrice).toLocaleString('en-ZA') }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month
               </div>
               <div class="text-caption1 text-grey">Starting from R{{ Number(currentPrice).toLocaleString('en-ZA')
-                }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
+              }}&nbsp;per&nbsp;person&nbsp;per&nbsp;month.
                 <br>Select
                 your preferred unit configuration and payment plan to begin.
               </div>
@@ -257,6 +262,13 @@
               </q-card-section>
 
               <q-card-section>
+                <div class="q-mb-sm"><b>Shuttle Service</b></div>
+                <q-radio v-model="userDetails.hasShuttle" :val="true" label="Yes I would like to use the shuttle service" />
+                <br>
+                <q-radio v-model="userDetails.hasShuttle" :val="false" label="No, I don't need it" />
+              </q-card-section>
+
+              <q-card-section>
                 <div class="q-mb-sm"><b>Lease Period</b></div>
                 <div class="row q-col-gutter-md">
                   <div class="col-6">
@@ -292,7 +304,7 @@
                   <q-icon :name="userDetails.verification?.isVerified ? 'check_circle' : 'error'"
                     :color="userDetails.verification?.isVerified ? 'positive' : 'negative'" size="20px" />
                   <span class="q-ml-sm">Email {{ userDetails.verification?.isVerified ? 'verified' : 'not verified'
-                  }}</span>
+                    }}</span>
                 </div>
                 <div class="column cursor-pointer" @click="goToUserProfile">
                   <div class="row">
@@ -329,12 +341,12 @@
                 </q-banner>
               </q-card-section>
 
-              <q-card-section>
-                <b class="text-red">Applications are closed for {{ rentalYear }}</b>
+              <q-card-section v-if="!isCurrentApplicationYear">
+                <b class="text-red">Applications are closed for {{ unit.unitYear }}</b>
               </q-card-section>
 
               <q-card-section class="row justify-between q-pt-none">
-                <CustomButton :disable="!canSubmit" label="Submit Application" color="primary"
+                <CustomButton :disable="!canSubmit" label="Complete Credit Application" color="primary"
                   @click="createRentalApplication(unit)" customStyle="width: 48%" />
               </q-card-section>
             </template>
@@ -417,9 +429,10 @@ import RentalService from 'src/services/RentalService'
 import SignaturePad from '../elements/SignaturePad.vue'
 import SimpleZoom from '../elements/SimpleZoom.vue'
 import EmailService from 'src/services/EmailService'
+import UserService from 'src/services/UserService.js'
 
 export default {
-  name: 'CombinedUnitApplication',
+  name: 'UnitDetailedApplicationForm',
   props: {
     unit: {
       type: Object,
@@ -429,10 +442,19 @@ export default {
       type: String,
       required: false,
       default: null
+    },
+    latestUnitYear: {
+      type: Number,
+      required: true
     }
   },
   data() {
     return {
+      shuttleTypeOptions: [
+        { label: 'Has shuttle service', value: true },
+        { label: 'No shuttle service', value: false },
+      ],
+
       pinchZoomInstance: null,
 
       loading: true,
@@ -442,6 +464,7 @@ export default {
       rentalDetails: {
         user: "",
         unit: "",
+        unitYear: this.unit.unitYear,
         rentalStartDate: null,
         rentalEndDate: null,
         accessKeyIsTrue: false,
@@ -473,20 +496,42 @@ export default {
     SimpleZoom
   },
   computed: {
+
+    // rentalYear() {
+    //   const today = new Date();
+    //   const currentYear = today.getFullYear();
+    //   const nextYear = currentYear + 1;
+    //   // return nextYear;
+    //   return 2026; // locks the application from users
+    // },
+
+    // currentYear() {
+    //   const today = new Date();
+    //   return today.getFullYear();
+    // },
+
     rentalYear() {
-      // If you're applying in January - September, you're applying for the current year (2026)
+      return this.unit.unitYear;
+    },
 
-      // If you're applying in October - December, you're applying for next year (2027)
+    isCurrentApplicationYear() {
+      // "Open" isn't about today's date — it's whichever unitYear is the newest one that exists.
+      // The moment 2027 units get created, this flips and 2026 stops qualifying.
+      return this.unit.unitYear === this.latestUnitYear;
+    },
 
-      // const today = new Date();
-      // const month = today.getMonth();
-      // let year = today.getFullYear();
-      // if (month >= 10) {
-      //   year = year + 1;
-      // }
-      // return year;
+    canSubmit() {
+      const allowedUsers = ['testuser', 'WayneL', 'yusri', 'admin'];
+      const isAllowedUser = allowedUsers.includes(this.userDetails?.username);
 
-      return 2026;
+      if (!this.isCurrentApplicationYear && !isAllowedUser) {
+        return false;
+      }
+
+      return this.userDetails.verification?.isVerified &&
+        this.userDetails?.age &&
+        this.rentalDetails.rentalStartDate &&
+        this.rentalDetails.rentalEndDate;
     },
 
     hasAllRequiredDocuments() {
@@ -553,24 +598,6 @@ export default {
       const image = this.unit.images[this.currentImageIndex]
       if (!image || !image.imageUrl) return null
       return this.getImageUrl(image.imageUrl)
-    },
-
-    canSubmit() {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-
-      // Allowed users who can bypass the 2026 lock
-      const allowedUsers = ['testuser', 'WayneL', 'yusri', 'admin'];
-      const isAllowedUser = allowedUsers.includes(this.userDetails?.username);
-
-      if (currentYear === 2026 && !isAllowedUser) {
-        return false;
-      }
-
-      return this.userDetails.verification?.isVerified &&
-        this.userDetails?.age &&
-        this.rentalDetails.rentalStartDate &&
-        this.rentalDetails.rentalEndDate
     },
 
     // subunit computed code
@@ -682,6 +709,15 @@ export default {
   methods: {
     getImageUrl: Helper.getImageUrl, formatDate: Helper.formatDate, capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    async updateShuttleService() {
+      const updatedUser = {
+        hasShuttle: this.userDetails.hasShuttle,
+      }
+      if (updatedUser) {
+        await UserService.updateUserDetails(this.userDetails._id, updatedUser)
+      }
+    },
+
     initializeSelectedOption() {
       if (this.subUnit && this.unit && Array.isArray(this.unit.subUnits)) {
         const floorNumber = this.$route.params.floor || '1';
@@ -769,6 +805,7 @@ export default {
 
     async fetchUserDetails() {
       this.userDetails = await Helper.fetchUserDetails()
+      this.userDetails.hasShuttle = this.userDetails.hasShuttle ?? false
       this.nextAvailabilityDate = await this.nextAvailability()
     },
 
@@ -898,6 +935,8 @@ export default {
 
       try {
         const response = await RentalService.createRental(formData);
+
+        this.updateShuttleService()
 
         // await EmailService.RentalApplicationEmail(this.userDetails._id);
         // await EmailService.RentalApplicationToUserEmail(this.userDetails._id);

@@ -29,6 +29,25 @@ class UserService {
       Logger.error(error)
     }
   }
+  static async validateSignerToken(userId, role, token) {
+    try {
+      const response = await axiosInstance.post('/auth/validate-signer', { userId, role, token });
+      return response.data;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return { valid: false };
+    }
+  }
+
+  static async verifySignerEmail(data) {
+    try {
+      const response = await axiosInstance.post('/auth/verify-signer-email', data);
+      return response.data;
+    } catch (error) {
+      console.error('Email verification error:', error);
+      return { valid: false, message: 'Verification failed' };
+    }
+  }
   static async adminLogin(usernameOrEmail) {
     const ENDPOINT = "/auth/admin-login";
     try {

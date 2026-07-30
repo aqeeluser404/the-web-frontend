@@ -194,7 +194,7 @@
                       This user is not sharing this unit with family or acquaintances.
                     </li>
                     <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
-                    }}</span></li>
+                        }}</span></li>
                     <li>Unit Number: {{ rental.unitNumber }}</li>
                     <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
                       Room: {{ rental.selectedSubUnits.roomType }}
@@ -247,41 +247,38 @@
 
                 <q-card-section>
                   <div class="q-mb-md">
-                    <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a
-                      bursary)</span> <span v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
+                    <b>Credit Check Application</b>
                   </div>
-                  <ul v-if="rental.userHasBursary">
-                    <li>The applicant has a bursary, so a credit score is not required.</li>
+                  <ul v-if="hasCreditCheckDocument">
+                    <li>The applicant HAS completed their credit check application.</li>
                   </ul>
-                  <div v-else class="q-mb-md">
-                    <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
-                      <li v-if="rental.payerData.score">Credit Information <span
-                          style="text-decoration: underline;">(Score: {{
-                            rental.payerData.score }}/80)</span></li>
-                      <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
-                      <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
-                      <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
-                      <li v-if="rental.payerData.idNumber">ID Number: {{ rental.payerData.idNumber }}</li>
-                      <li v-if="rental.payerData.bankName">Bank Name: {{ rental.payerData.bankName }}</li>
-                      <li v-if="rental.payerData.salary">Salary: R {{ rental.payerData.salary }}</li>
-                    </ul>
-                    <div v-else>
-                      <ul>
-                        <li><span class="text-negative"><b>Not scored yet</b></span></li>
-                      </ul>
-                    </div>
-                  </div>
+                  <ul v-if="!hasCreditCheckDocument">
+                    <li>The applicant has NOT completed their credit check application.</li>
+                  </ul>
+                  <!-- <div v-else class="q-mb-md">
+            <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
+              <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
+                rental.payerData.score }}/80)</span></li>
+              <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
+              <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
+              <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
+              <li v-if="rental.payerData.idNumber">ID Number: {{ rental.payerData.idNumber }}</li>
+              <li v-if="rental.payerData.bankName">Bank Name: {{ rental.payerData.bankName }}</li>
+              <li v-if="rental.payerData.salary">Salary: R {{ rental.payerData.salary }}</li>
+            </ul>
+            <div v-else>
+              <ul>
+                <li class="text-negative">Not scored yet</li>
+              </ul>
+            </div>
+          </div> -->
                 </q-card-section>
 
               </q-timeline-entry>
 
               <!-- Documents upload -->
-              <q-timeline-entry
-                v-if="hasAllRequiredDocuments"
-                title="Documents have been Uploaded"
-                side="left"
-                icon="done_all"
-              />
+              <q-timeline-entry v-if="hasAllRequiredDocuments" title="Documents have been Uploaded" side="left"
+                icon="done_all" />
 
               <q-timeline-entry v-else title="Remaining Documents to Complete Submission" side="left" color="red"
                 icon="close" />
@@ -290,15 +287,9 @@
                 title="Documents have been Approved" side="right" icon="done_all" />
 
               <!-- Document Approvals -->
-              <q-timeline-entry
-                title="Document Approval"
-                side="right"
-                color="grey"
-                icon="eva-file-text-outline"
-              >
-                <div class="q-mb-md"
-                    style="cursor: pointer; text-decoration: underline;"
-                    @click="openUserDocumentsDialog">
+              <q-timeline-entry title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
+                <div class="q-mb-md" style="cursor: pointer; text-decoration: underline;"
+                  @click="openUserDocumentsDialog">
                   Please verify if the following documents are valid.
                 </div>
 
@@ -340,32 +331,24 @@
                 </div>
               </q-timeline-entry> -->
 
-<q-timeline-entry
-  v-if="rental.status === 'Pending' || rental.status === 'Active'"
-  :title="rental.status === 'Pending' ? 'Approve Rental' : 'Rental has been Approved'"
-  :subtitle="rental.status === 'Active' ? formatDate(rental.rentalStartDate) : ''"
-  :icon="rental.status === 'Active' ? 'done_all' : 'eva-briefcase-outline'"
-  :color="rental.status === 'Active' ? 'green' : 'grey'"
-  side="left"
->
-  <div class="q-mb-md">
-    <p class="q-mb-none">
-      <span v-if="rental.status === 'Pending'">
-        Approve the rental information and desired lease period.
-      </span>
-      <span v-else>
-        The rental application can still be modified following approval.
-      </span>
+              <q-timeline-entry v-if="rental.status === 'Pending' || rental.status === 'Active'"
+                :title="rental.status === 'Pending' ? 'Approve Rental' : 'Rental has been Approved'"
+                :subtitle="rental.status === 'Active' ? formatDate(rental.rentalStartDate) : ''"
+                :icon="rental.status === 'Active' ? 'done_all' : 'eva-briefcase-outline'"
+                :color="rental.status === 'Active' ? 'green' : 'grey'" side="left">
+                <div class="q-mb-md">
+                  <p class="q-mb-none">
+                    <span v-if="rental.status === 'Pending'">
+                      Approve the rental information and desired lease period.
+                    </span>
+                    <span v-else>
+                      The rental application can still be modified following approval.
+                    </span>
 
-    <q-icon
-      name="edit"
-      size="xs"
-      class="cursor-pointer q-ml-sm"
-      @click="openRentalApprovalDialog"
-    />
-    </p>
-  </div>
-</q-timeline-entry>
+                    <q-icon name="edit" size="xs" class="cursor-pointer q-ml-sm" @click="openRentalApprovalDialog" />
+                  </p>
+                </div>
+              </q-timeline-entry>
 
               <!-- rejected rental -->
               <q-timeline-entry v-if="rental.status === 'Rejected'" title="Rental has been Rejected" icon="close"

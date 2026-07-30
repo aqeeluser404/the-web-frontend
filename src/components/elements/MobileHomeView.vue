@@ -1,21 +1,28 @@
 <template>
   <q-page class="bg-grey-6">
-    <div
-      class="constrain-mobile-home-view bg-grey-3"
-      style="padding-bottom: 80px"
-    >
+    <!-- Loading State -->
+    <div v-if="loading" class="full-width full-height row justify-center items-center" style="min-height: 100vh;">
+      <div class="text-center">
+        <q-spinner size="50px" color="primary" />
+        <div class="text-caption q-mt-sm text-grey-6">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="constrain-mobile-home-view bg-grey-3" style="padding-bottom: 80px;">
+
+      <div class="section-spacer"></div>
+
       <!-- Header -->
       <q-card flat class="bg-transparent">
-        <q-card-section
-          class="row justify-between items-center full-width no-wrap q-px-none"
-        >
+        <q-card-section class="row justify-between items-center full-width no-wrap q-px-none">
           <div class="column">
             <span class="text-subtitle1 text-grey-9">Good afternoon,</span>
-            <span class="text-h5 text-bold">{{ userDetails?.firstName }}</span>
+            <span class="text-h5 text-bold">{{ userDetails?.firstName || 'Guest' }}</span>
           </div>
           <div class="row">
             <q-btn class="q-mr-md" icon="eva-bell-outline" round size="md" />
-            <q-btn :label="initials" round size="md" color="primary" />
+            <q-btn :label="initials || '?'" round size="md" color="primary" />
           </div>
         </q-card-section>
       </q-card>
@@ -44,20 +51,13 @@
             <!-- quick actions card -->
             <div class="row q-col-gutter-md">
               <div v-for="item in items" :key="item.title" class="col-6">
-                <q-card
-                  flat
-                  class="quick-action-card cursor-pointer soft-shadow-card"
-                  @click="goTo(item.route)"
-                >
+                <q-card flat class="quick-action-card cursor-pointer soft-shadow-card" @click="goTo(item.route)">
                   <q-card-section class="column justify-between full-height">
                     <!-- icon -->
-                    <div
-                      class="icon-circle"
-                      :style="{
-                        backgroundColor: item.bgColor,
-                        color: item.color,
-                      }"
-                    >
+                    <div class="icon-circle" :style="{
+                      backgroundColor: item.bgColor,
+                      color: item.color,
+                    }">
                       <q-icon :name="item.icon" size="22px" />
                     </div>
 
@@ -73,12 +73,7 @@
                         </div>
                       </div>
 
-                      <q-icon
-                        name="chevron_right"
-                        size="18px"
-                        color="grey-6"
-                        class="chevron"
-                      />
+                      <q-icon name="chevron_right" size="18px" color="grey-6" class="chevron" />
                     </div>
                   </q-card-section>
                 </q-card>
@@ -97,7 +92,7 @@
 
                 <div class="q-ml-md">
                   <div class="text-subtitle1 text-weight-bold q-mb-xs">
-                    Query Support
+                    Contact us
                   </div>
 
                   <div class="text-body2 text-grey-7">
@@ -106,51 +101,22 @@
                 </div>
               </div>
 
-              <q-btn
-                class="full-width q-mt-md support-btn"
-                color="teal"
-                unelevated
-                no-caps
-                label="Contact support"
-                @click="goToContact"
-              />
+              <q-btn class="full-width q-mt-md support-btn" color="teal" unelevated no-caps label="Contact support"
+                @click="goToContact" />
             </q-card-section>
           </q-card>
         </q-card-section>
       </q-card>
     </div>
-    <!-- boottom nav -->
+
+    <!-- bottom nav -->
     <q-footer bordered class="mobile-footer bg-white">
-      <q-tabs
-        v-model="tab"
-        align="justify"
-        dense
-        active-color="primary"
-        indicator-color="transparent"
-        class="text-grey-7"
-      >
-        <q-tab name="home" icon="home" label="Home" @click="goTo('/')" />
-
-        <q-tab
-          name="bookings"
-          icon="event"
-          label="Bookings"
-          @click="goTo('/bookings')"
-        />
-
-        <q-tab
-          name="alerts"
-          icon="notifications"
-          label="Alerts"
-          @click="goTo('/alerts')"
-        />
-
-        <q-tab
-          name="profile"
-          icon="person"
-          label="Profile"
-          @click="goTo('/user/profile')"
-        />
+      <q-tabs v-model="tab" align="justify" dense active-color="primary" indicator-color="transparent"
+        class="text-grey-7">
+        <q-tab name="home" icon="home" label="Home" @click="goTo('/')" class="text-capitalize" />
+        <q-tab name="bookings" icon="event" label="Bookings" @click="goTo('/bookings')" class="text-capitalize"  />
+        <q-tab name="alerts" icon="notifications" label="Alerts" @click="goTo('/alerts')" class="text-capitalize"  />
+        <q-tab name="profile" icon="person" label="Profile" @click="goTo('/user/profile')" class="text-capitalize"  />
       </q-tabs>
     </q-footer>
   </q-page>
@@ -160,11 +126,15 @@
 import CustomButton from "./CustomButton.vue";
 // import { useRouter } from "vue-router";
 import Helper from "src/services/utils";
+import UserService from "src/services/UserService.js";
 
 export default {
   name: "MobileHomeView",
   data() {
     return {
+      loading: true,
+      tab: "home",
+      userDetails: {},
       items: [
         {
           title: "Book Now",
@@ -226,17 +196,6 @@ export default {
       userDetails: {},
     };
   },
-  methods: {
-    async fetchUserDetails() {
-      this.userDetails = await Helper.fetchUserDetails();
-    },
-    goTo(route) {
-      this.$router.push(route);
-    },
-    goToContact() {
-      this.$router.push("/#contact");
-    },
-  },
   components: {
     CustomButton,
   },
@@ -252,6 +211,38 @@ export default {
     },
   },
 
+  methods: {
+    async fetchUserDetails() {
+      try {
+        const isLoggedIn = await Helper.checkCookie();
+
+        if (!isLoggedIn) {
+          this.$router.push('/auth/login');
+          return;
+        }
+
+        const user = await UserService.FindUserByToken();
+        if (user && user._id) {
+          this.userDetails = await UserService.findUserById(user._id);
+        } else {
+          this.$router.push('/auth/login');
+        }
+      } catch (error) {
+        this.$router.push('/auth/login');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    goTo(route) {
+      this.$router.push(route);
+    },
+
+    goToContact() {
+      this.$router.push("/#contact");
+    },
+  },
+
   mounted() {
     this.fetchUserDetails();
   },
@@ -264,7 +255,7 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
   min-height: 120px !important
 
-  .quick-action-card
+.quick-action-card
   border-radius: 18px
   background: #fff
   min-height: 165px
@@ -335,7 +326,7 @@ export default {
 
   //  ------------support card------------
 
-  .support-card
+.support-card
   border-radius: 20px
   background: #fff
 
@@ -355,7 +346,7 @@ export default {
   font-weight: 600
 
 //  ------------bottom nav------------
-  .mobile-footer
+.mobile-footer
   background: white
   border-top: 1px solid #ECECEC
   box-shadow: 0 -2px 15px rgba(0,0,0,.05)

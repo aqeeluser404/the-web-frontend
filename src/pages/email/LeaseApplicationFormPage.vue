@@ -11,7 +11,7 @@
       </div>
 
       <!-- Access Denied -->
-      <div v-else-if="!isAuthorized" class="full-width full-height row justify-center items-center"
+      <!-- <div v-else-if="!isAuthorized" class="full-width full-height row justify-center items-center"
         style="min-height: 100vh;">
         <q-card class="q-pa-xl" style="max-width: 500px; width: 100%;">
           <q-card-section class="text-center">
@@ -27,10 +27,10 @@
               class="q-mt-lg" />
           </q-card-section>
         </q-card>
-      </div>
+      </div> -->
 
       <!-- Email Verification Required -->
-      <div v-else-if="needsEmailVerification" class="full-width full-height row justify-center items-center"
+      <!-- <div v-else-if="needsEmailVerification" class="full-width full-height row justify-center items-center"
         style="min-height: 100vh;">
         <q-card class="q-pa-xl" style="max-width: 450px; width: 100%;">
           <q-card-section class="text-center">
@@ -58,10 +58,10 @@
             </div>
           </q-card-section>
         </q-card>
-      </div>
+      </div> -->
 
       <!-- Already Signed by This Role -->
-      <div v-else-if="hasRoleSigned" class="full-width full-height row justify-center items-center"
+      <!-- <div v-else-if="hasRoleSigned" class="full-width full-height row justify-center items-center"
         style="min-height: 100vh;">
         <q-card class="q-pa-xl" style="max-width: 500px; width: 100%;">
           <q-card-section class="text-center">
@@ -74,7 +74,7 @@
               class="q-mt-lg" />
           </q-card-section>
         </q-card>
-      </div>
+      </div> -->
 
       <!-- Already Submitted -->
       <q-card-section v-else-if="hasSubmittedDocument" class="column items-center full-width">
@@ -93,17 +93,21 @@
 
       <!-- Show Form -->
       <q-card-section v-else class="column items-center full-width">
-        <div class="text-caption q-mb-md text-grey-6">
+
+        <!-- <div class="text-caption q-mb-md text-grey-6">
           Signing as: <strong>{{ userRoleDisplay }}</strong>
-        </div>
-        <DigitalApplicationForm :user="userDetails" :pendingRental="pendingRental" :userRole="userRole" />
+        </div> -->
+
+        <!-- <LeaseApplicationForm :user="userDetails" :pendingRental="pendingRental" :userRole="userRole" /> -->
+
+        <LeaseApplicationForm :user="userDetails" :pendingRental="pendingRental" />
       </q-card-section>
     </div>
   </q-page>
 </template>
 
 <script>
-import DigitalApplicationForm from 'src/components/user/DigitalApplicationForm.vue';
+import LeaseApplicationForm from 'src/components/user/LeaseApplicationForm.vue';
 import UserService from 'src/services/UserService';
 import RentalService from 'src/services/RentalService';
 import DraftService from 'src/services/DraftService';
@@ -115,31 +119,10 @@ export default {
       userDetails: {},
       myRentals: [],
       loading: true,
-      isAuthorized: false,
-      userRole: null,
-      userToken: null,
-      needsEmailVerification: false,
-      verificationEmail: '',
-      verifying: false,
-      verifiedDeviceId: null
     }
   },
-  components: { DigitalApplicationForm, CustomButton },
+  components: { LeaseApplicationForm, CustomButton },
   computed: {
-    userRoleDisplay() {
-      const roleMap = {
-        'tenant': 'Tenant',
-        'guardian': 'Parent/Guardian'
-      };
-      return roleMap[this.userRole] || this.userRole;
-    },
-    hasRoleSigned() {
-      if (!this.pendingRental || !this.pendingRental.signingTokens) return false;
-      if (!this.userRole) return false;
-
-      const roleData = this.pendingRental.signingTokens[this.userRole];
-      return roleData && roleData.signed === true;
-    },
     hasSubmittedDocument() {
       if (!this.myRentals || !Array.isArray(this.myRentals)) return false;
 
@@ -148,7 +131,7 @@ export default {
       if (!pendingRental.documents) return false;
 
       return pendingRental.documents.some(doc =>
-        doc.docType === 'Signed And Filled Application Form'
+        doc.docType === 'Signed And Filled Lease Form'
       );
     },
     pendingRental() {
@@ -156,111 +139,8 @@ export default {
       return this.myRentals.find(rental => rental.status === 'Pending') || null;
     },
   },
+
   methods: {
-    async validateAccess() {
-      try {
-        const userId = this.$route.query.userId;
-        const role = this.$route.query.role;
-        const token = this.$route.query.token;
-
-        console.log('Validating access:', { userId, role, token });
-
-        if (!userId || !role || !token) {
-          console.log('Missing userId, role, or token');
-          this.isAuthorized = false;
-          return false;
-        }
-
-        if (role !== 'tenant' && role !== 'guardian') {
-          console.log('Invalid role:', role);
-          this.isAuthorized = false;
-          return false;
-        }
-
-        // Validate token on backend
-        const validation = await UserService.validateSignerToken(userId, role, token);
-        console.log('Validation response:', validation);
-
-        if (validation.valid) {
-          this.isAuthorized = true;
-          this.userRole = role;
-          this.userToken = token;
-
-          // Check if email verification is needed
-          if (validation.needsVerification) {
-            this.needsEmailVerification = true;
-          } else {
-            this.needsEmailVerification = false;
-          }
-
-          console.log('Access granted for role:', role);
-          return true;
-        } else {
-          console.log('Invalid token or role');
-          this.isAuthorized = false;
-          return false;
-        }
-      } catch (error) {
-        console.error('Token validation error:', error);
-        this.isAuthorized = false;
-        return false;
-      }
-    },
-
-    async verifyEmail() {
-      if (!this.verificationEmail) {
-        this.$q.notify({ type: 'warning', message: 'Please enter your email address.' });
-        return;
-      }
-
-      this.verifying = true;
-
-      try {
-        const userId = this.$route.query.userId;
-        const role = this.$route.query.role;
-        const token = this.$route.query.token;
-
-        const response = await UserService.verifySignerEmail({
-          userId,
-          role,
-          token,
-          email: this.verificationEmail
-        });
-
-        if (response.valid) {
-          this.needsEmailVerification = false;
-          this.isAuthorized = true;
-          this.verifiedDeviceId = response.deviceId;
-
-          // Save device ID to localStorage
-          localStorage.setItem('verifiedDeviceId', response.deviceId);
-
-          this.$q.notify({
-            type: 'positive',
-            message: 'Email verified successfully!'
-          });
-
-          // Load user data
-          await this.getUserInfo();
-          await this.getAllDrafts();
-
-        } else {
-          this.$q.notify({
-            type: 'negative',
-            message: response.message || 'Email does not match. Please check your email.'
-          });
-        }
-      } catch (error) {
-        console.error('❌ Email verification error:', error);
-        this.$q.notify({
-          type: 'negative',
-          message: 'Verification failed. Please try again.'
-        });
-      } finally {
-        this.verifying = false;
-      }
-    },
-
     async getUserInfo() {
       try {
         const userId = this.$route.query.userId;
@@ -278,6 +158,9 @@ export default {
       }
     },
 
+    // There should only be 1 draft inside here.
+    // The previous digitalApplication draft would have been deleted
+
     async getAllDrafts() {
       try {
         this.allDrafts = await DraftService.getAllApplicationDrafts();
@@ -285,37 +168,28 @@ export default {
         console.error('Error loading drafts:', error);
       }
     },
-
-    async resendEmail() {
-      try {
-        await EmailService.resendSignerLink({
-          userId: this.$route.query.userId,
-          role: this.userRole
-        });
-        this.$q.notify({
-          type: 'positive',
-          message: 'Link resent to your email!'
-        });
-      } catch (error) {
-        console.error('Error resending email:', error);
-        this.$q.notify({
-          type: 'negative',
-          message: 'Failed to resend email. Please try again.'
-        });
-      }
-    }
   },
   async created() {
     this.loading = true;
 
-    const isValid = await this.validateAccess();
-
-    if (isValid && !this.needsEmailVerification) {
-      await this.getUserInfo();
-      await this.getAllDrafts();
-    }
+    await this.getUserInfo();
+    await this.getAllDrafts();
 
     this.loading = false;
-  }
+  },
+
+  // async created() {
+  //   this.loading = true;
+
+  //   const isValid = await this.validateAccess();
+
+  //   if (isValid && !this.needsEmailVerification) {
+  //     await this.getUserInfo();
+  //     await this.getAllDrafts();
+  //   }
+
+  //   this.loading = false;
+  // }
+
 }
 </script>

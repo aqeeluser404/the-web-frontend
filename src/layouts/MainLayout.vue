@@ -9,14 +9,18 @@
       $route.path !== '/forgot-password' &&
       $route.path !== '/admin/auth/login' &&
       $route.path !== '/digital-application' &&
+      $route.path !== '/lease-signed' &&
       $route.path !== '/install-app'
     ">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
 
         <!-- title and avatar -->
         <q-toolbar-title class="col-md-3 row items-center">
-          <router-link to="/" class="row items-center">
+          <router-link v-if="!isMobileView" to="/" class="row items-center">
             <img :src="logoSrc" alt="Home" style="width: 40%; cursor: pointer;">
+          </router-link>
+          <router-link v-else to="/" class="row items-center">
+            <img :src="logoSrcBlack" alt="Home" style="width: 15%; cursor: pointer;">
           </router-link>
         </q-toolbar-title>
 
@@ -29,32 +33,24 @@
             <UniversalMenu :items="homeItems" :hover="true" class="large-screen-only"
               v-if="$route.path !== '/' && $route.path !== '/frequently-asked-questions' && $route.path !== '/fees'">
               <template #trigger>
-                <q-btn flat label="Explore" class="custom-button q-py-sm q-px-md" />
+                <q-btn flat label="Home" to="/" class="custom-button q-py-sm q-px-md" />
               </template>
             </UniversalMenu>
 
             <div v-else class="row justify-end items-center">
-              <q-btn v-if="!isMobileAppView" @click="toggleMode" class="custom-button q-py-sm large-screen-only" :label="showDesktopView ? 'Show Mobile' : 'Show Desktop'" flat />
-              <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat />
 
+              <q-btn to="/" class="custom-button q-py-sm large-screen-only" label="Home" flat />
               <q-btn @click="scrollToSection('amenities-section')" class="custom-button q-py-sm large-screen-only"
                 label="Amenities" flat />
-
               <q-btn @click="scrollToSection('units-section')" class="custom-button q-py-sm large-screen-only"
                 label="Units" flat />
-
               <q-btn @click="scrollToSection('location-section')" class="custom-button q-py-sm large-screen-only"
                 label="Location" flat />
-
               <q-btn @click="scrollToSection('contact-section')" class="custom-button q-py-sm large-screen-only"
                 label="Contact" flat />
-
               <q-btn to="/frequently-asked-questions" class="custom-button q-py-sm large-screen-only" label="FAQs"
                 flat />
-
               <q-btn to="/fees" class="custom-button q-py-sm large-screen-only" label="Fees" flat />
-
-              <!-- <q-btn @click="downloadApk" class="custom-button q-py-sm large-screen-only" label="Download App" flat /> -->
             </div>
 
             <!-- Book Icons -->
@@ -79,13 +75,13 @@
               </template>
             </UniversalMenu>
 
-            <!-- authentication -->
+
             <!-- <CustomButton v-if="!isLoggedIn" label="Login" to="/auth/login" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" /> -->
 
+            <!-- AUTHENTICATION AND WELCOME DIALOG -->
             <CustomButton v-if="!isLoggedIn" label="Login" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" @click="showAuthDialog = true" />
-
             <CustomButton v-else label="Logout" @click="logout" class="large-screen-only q-ml-md"
               :customStyle="{ width: 'fit-content' }" />
 
@@ -99,8 +95,10 @@
                       </q-card-section>
 
                       <q-card-section class="row justify-between">
-                        <CustomButton label="Login" class="" to="/auth/login" @click="showAuthDialog = false" customStyle="width: 45%;" />
-                        <CustomButton label="Register" class="" to="/auth/register" @click="showAuthDialog = false" customStyle="width: 45%;" />
+                        <CustomButton label="Login" class="" to="/auth/login" @click="showAuthDialog = false"
+                          customStyle="width: 45%;" />
+                        <CustomButton label="Register" class="" to="/auth/register" @click="showAuthDialog = false"
+                          customStyle="width: 45%;" />
                       </q-card-section>
                     </div>
                     <div class="col-md-6 col-12">
@@ -154,9 +152,10 @@
         </div>
       </q-toolbar>
 
+      <!-- MAINTENANCE BANNER -->
       <MaintenanceBanner v-if="showMaintenanceBanner" class="full-width" />
 
-      <!-- breadcrumbs -->
+      <!-- ADMIN BREADBRUMBS -->
       <div v-if="isAdminRoute" class="full-width">
         <div class="text-black bg-white text-caption">
           <q-toolbar class="constrain-standard">
@@ -169,21 +168,23 @@
       </div>
     </q-header>
 
-
+    <!-- WHATSAPP CHAT -->
     <q-card class="whats-app-box" style="" v-if="boxOpened">
-      <q-card-section class="row justify-between items-start q-pa-md"
+      <q-card-section class="row justify-between items-center q-pa-md"
         style="background-color: #0B5E54; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-        <div class="col-md-2">
-          <div class="justify-center row items-center logo-circle">
+
+        <div class="row items-center">
+          <div class="justify-center row items-center logo-circle q-mr-md">
             <img :src="logoSrcBlack" alt="Home" class="logo-image"></img>
           </div>
+
+          <div class="text-white">
+            <div class="text-h7"><b>The-WEB</b></div>
+            <div class="text-caption">Business Account</div>
+          </div>
         </div>
-        <div class="col-md-7 text-white">
-          <div class="text-h7"><b>The-WEB</b></div>
-          <div class="text-caption">Business Account</div>
-        </div>
-        <q-btn class="" v-if="!isUserDetails" flat round icon="close" @click="toggleWhatsAppBox" size="md" color="white"
-          aria-label="Close" />
+
+        <q-btn class="" flat round icon="close" @click="toggleWhatsAppBox" size="md" color="white" aria-label="Close" />
       </q-card-section>
 
       <q-card-section class="q-pa-md" style="background-color: #E4DDD4;">
@@ -203,14 +204,17 @@
       </div>
     </q-card>
 
+    <!-- WHATSAPP BUTTONS -->
     <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? '' : ''" color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop"
       @click="toggleWhatsAppBox" />
     <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white" icon="img:/assets/elements/whatsapp.png"
       size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
 
+
+    <!-- PAGE ROUTING -->
     <q-page-container>
-      <div v-if="isMobileAppView || showDesktopView" class="mobile-dashboard">
+      <div v-if="isMobileView || showDesktopView" >
         <MobileHomeView />
       </div>
       <div v-else>
@@ -223,20 +227,15 @@
 <script>
 import UniversalMenu from 'src/components/elements/UniversalMenu.vue';
 import QListItems from 'src/components/elements/QListItems.vue';
-
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import web3dlogoBlack from '../assets/resources/logos/web3dlogoBlack.png'
-
 import UserService from 'src/services/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import ExportDataService from 'src/services/ExportDataService'
-
 import { showSessionExpired } from 'src/services/showShessionExpired';
-
 import main from 'src/assets/resources/home/slider/main.png';
-
 import { Capacitor } from '@capacitor/core';
 import MobileHomeView from 'src/components/elements/MobileHomeView.vue';
 
@@ -244,6 +243,7 @@ export default {
   data() {
     return {
       showDesktopView: false,
+      isMobileView: Capacitor.isNativePlatform(),
 
       loginImage: main,
       showMaintenanceBanner: false,
@@ -269,13 +269,11 @@ export default {
         { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
         { label: 'FAQs', to: '/frequently-asked-questions' },
         { label: 'Fees', to: '/fees' },
-        // { label: 'Download App', click: this.downloadApk }
       ],
       homeItemsMobile: [
         {
-          label: 'Explore',
+          label: 'Home',
           isMenuGroup: true,
-          // icon: 'explore',
           children: [
             { label: 'Home', to: '/' },
             { label: 'Amenities', handler: () => this.scrollToSection('amenities-section') },
@@ -284,7 +282,6 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            // { label: 'Download App', click: this.downloadApk }
           ]
         },
       ]
@@ -294,7 +291,9 @@ export default {
 
   computed: {
     bookItems() {
-      const items = [{ label: 'Book a Unit', to: '/units/apply/floor/1' }]
+      const items = [
+        { label: 'Unit Booking', to: '/units/apply/floor/1' },
+      ]
       if (this.isLoggedIn) {
         items.push(
           { label: 'Shuttle Booking', to: '/user/shuttle-booking' },
@@ -305,7 +304,7 @@ export default {
     },
     bookItemsMobile() {
       const children = [
-        { label: 'Book a Unit', to: '/units/apply/floor/1' }
+        { label: 'Unit Booking', to: '/units/apply/floor/1' },
       ]
       if (this.isLoggedIn) {
         children.push(
@@ -317,7 +316,6 @@ export default {
         {
           label: 'Book Now',
           isMenuGroup: true,
-          // icon: 'event', // optional icon if we want one
           children
         }
       ]
@@ -355,11 +353,11 @@ export default {
       const children = []
 
       if (this.isLoggedIn && this.userDetails?.userType === 'admin') {
+
         // Always show Admin Portal
         children.push({
           label: this.portalName,
           to: '/admin',
-          // icon: 'eva-pie-chart-outline'
         })
 
         // Driver-specific
@@ -367,7 +365,6 @@ export default {
           children.push({
             label: 'Driver Scanner',
             to: '/scan',
-            // icon: 'qr_code_scanner'
           })
         }
 
@@ -376,10 +373,17 @@ export default {
           children.push({
             label: 'Security Scanner',
             to: '/security/scan',
-            // icon: 'qr_code_scanner'
           })
         }
+
+        children.push({
+          label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
+          handler: this.toggleMode,
+        })
       }
+
+      // <q-btn @click="toggleMode" class="custom-button q-py-sm large-screen-only"
+      //   :label="showDesktopView ? 'Show Desktop' : 'Show Mobile'" flat />
 
       return children;
     },
@@ -400,7 +404,6 @@ export default {
           children.push({
             label: 'Driver Scanner',
             to: '/scan',
-            // icon: 'qr_code_scanner'
           })
         }
 
@@ -409,9 +412,13 @@ export default {
           children.push({
             label: 'Security Scanner',
             to: '/security/scan',
-            // icon: 'qr_code_scanner'
           })
         }
+
+        children.push({
+          label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
+          click: this.toggleMode,
+        })
       }
 
       return [
@@ -440,13 +447,13 @@ export default {
       // Only return those that match the current route
       return crumbs.filter(c => path.includes(c.match))
     },
-    headerHeight() {
-      const baseHeight = this.showMaintenanceBanner ? 150 : 75;
-      const adminExtra = 50;
+headerHeight() {
+  const baseHeight = this.showMaintenanceBanner ? 150 : 75;
+  const adminExtra = this.isAdminRoute ? 50 : 0;
+  const mobileExtra = this.showDesktopView ? 15 : 0;
 
-      return (this.isAdminRoute) ? baseHeight + adminExtra : baseHeight;
-      // return (this.isAdminRoute || this.isVendorRoute) ? baseHeight + adminExtra : baseHeight;
-    },
+  return baseHeight + adminExtra + mobileExtra;
+},
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
     },
@@ -469,9 +476,6 @@ export default {
       }
       return ""
     },
-    isMobileAppView() {
-      return Capacitor.isNativePlatform();
-    },
 
     // isVendorUser() {
     //   return this.userDetails?.userType === 'vendor';
@@ -482,14 +486,21 @@ export default {
     // },
   },
   mounted() {
-    this.checkLoginStatus()
+    this.checkLoginStatus();
   },
   beforeUnmount() {
     clearTimeout(this.tokenTimeout);
   },
   watch: {
-    '$route'() {
+    '$route'(to, from) {
       this.checkLoginStatus();
+
+      if (to.path !== '/') {
+        this.isMobileView = false;
+        this.showDesktopView = false;
+      } else {
+        this.isMobileView = Capacitor.isNativePlatform();
+      }
     },
     isLoggedIn(newVal, oldVal) {
       if (oldVal === true && newVal === false) {
@@ -502,6 +513,7 @@ export default {
   methods: {
     toggleMode() {
       this.showDesktopView = !this.showDesktopView;
+      this.isMobileView = !this.isMobileView;
     },
 
     // LOGIN SETUP
@@ -754,7 +766,7 @@ export default {
 .whats-app-box
   position: fixed
   bottom: 155px
-  right: 10px
+  right: 78px
   z-index: 1000
   width: 300px
   max-width: calc(100vw - 40px)
@@ -765,8 +777,9 @@ export default {
     left: 20px
     width: auto
     max-width: none
-    bottom: 155px
+    bottom: 220px
     border-radius: 20px
+
 
 .whats-app-msg
   position: relative

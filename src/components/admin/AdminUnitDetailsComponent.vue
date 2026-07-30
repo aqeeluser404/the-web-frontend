@@ -51,6 +51,22 @@
             </q-item>
           </div>
 
+          <q-item>
+            <q-item-section class="text-left text-subtitle1">Unit Year</q-item-section>
+            <q-item-section class="text-left text-subtitle1">
+              <q-input
+                v-model.number="unit.unitYear"
+                label="Unit Year"
+                type="number"
+                dense
+                outlined
+                :rules="[
+                  val => !!val || 'Please enter a year'
+                ]"
+              />
+            </q-item-section>
+          </q-item>
+
           <!-- Basic Unit Fields -->
           <q-item v-for="field in basicFields" :key="field.key">
             <q-item-section class="text-left text-subtitle1">{{ field.label }}</q-item-section>
@@ -296,6 +312,12 @@ export default {
         return;
       }
 
+      const unitYear = Number(this.unit.unitYear);
+      if (isNaN(unitYear)) {
+        this.$q.notify({ type: 'negative', message: 'Please enter a valid year' });
+        return;
+      }
+
       this.$q.dialog({
         title: 'Confirm',
         message: `You are about to update this unit in the database, continue?`,
@@ -305,6 +327,7 @@ export default {
       }).onOk(async () => {
         const formData = new FormData();
         formData.append('unitNumber', this.unit.unitNumber);
+        formData.append('unitYear', unitYear);
         formData.append('floorLevel', this.unit.floorLevel);
         formData.append('unitType', this.unit.unitType);
         formData.append('unitDescription', this.unit.unitDescription);

@@ -16,6 +16,13 @@
         <div class="column justify-between full-height">
           <q-card-section>
             <q-item>
+              <q-item-section class="text-left text-subtitle1">Unit Year</q-item-section>
+              <q-item-section>
+                <q-select v-model="unit.unitYear" :options="yearOptions" label="Select Year" emit-value map-options
+                  required :rules="[val => !!val || 'Please select a year']" />
+              </q-item-section>
+            </q-item>
+            <q-item>
               <q-item-section class="text-left text-subtitle1">Unit Number *</q-item-section>
               <q-item-section>
                 <q-input v-model="unit.unitNumber" readonly />
@@ -110,8 +117,7 @@
               </q-item>
 
               <!-- Multiple Prices with name and price -->
-              <div v-for="(priceEntry, pIndex) in room.price" :key="'room-price-' + index + '-' + pIndex"
-                class="">
+              <div v-for="(priceEntry, pIndex) in room.price" :key="'room-price-' + index + '-' + pIndex" class="">
                 <q-item>
                   <q-item-section class="text-left text-subtitle1">
                     Price ({{ pIndex + 1 }})
@@ -131,14 +137,16 @@
 
               <div class="q-mx-none q-mt-md row justify-between">
                 <div class="col-md-3 col-12 q-mb-sm">
-                  <CustomButton label="Price" icon="add" @click="room.price.push({ name: 'default', price: 0 })" :disable="room.price.length >= 3" />
+                  <CustomButton label="Price" icon="add" @click="room.price.push({ name: 'default', price: 0 })"
+                    :disable="room.price.length >= 3" />
                 </div>
                 <div class="col-md-3 col-12 q-mb-sm">
                   <CustomButton label="Room" icon="add" color="primary" @click="addRoom"
-                      :disable="unit.rooms.length >= 3" v-if="unit.rooms.length > 0" />
+                    :disable="unit.rooms.length >= 3" v-if="unit.rooms.length > 0" />
                 </div>
                 <div class="col-md-5 col-12 q-mb-sm">
-                  <CustomButton icon="delete" label="Remove Room" color="negative" @click="removeRoom(index)" class="" />
+                  <CustomButton icon="delete" label="Remove Room" color="negative" @click="removeRoom(index)"
+                    class="" />
                 </div>
               </div>
             </div>
@@ -158,8 +166,7 @@
               </q-item>
 
               <!-- Multiple Prices with name and price -->
-              <div v-for="(priceEntry, pIndex) in bed.price" :key="'bed-price-' + index + '-' + pIndex"
-                class="">
+              <div v-for="(priceEntry, pIndex) in bed.price" :key="'bed-price-' + index + '-' + pIndex" class="">
                 <q-item>
                   <q-item-section class="text-left text-subtitle1">
                     Price ({{ pIndex + 1 }})
@@ -171,7 +178,8 @@
                     <q-input v-model="bed.price[pIndex].name" label="Price Name" />
                   </q-item-section>
                   <q-item-section>
-                    <CustomButton icon="delete" color="negative" v-if="bed.price.length > 1" @click="bed.price.splice(pIndex, 1)" />
+                    <CustomButton icon="delete" color="negative" v-if="bed.price.length > 1"
+                      @click="bed.price.splice(pIndex, 1)" />
                   </q-item-section>
                 </q-item>
               </div>
@@ -206,6 +214,7 @@ export default {
   data() {
     return {
       unit: {
+        unitYear: '',
         unitNumber: 'Loading...',
         floorLevel: '',
         unitType: '',
@@ -235,13 +244,31 @@ export default {
   components: { CustomButton },
   async mounted() {
     if (this.unit.floorLevel) {
-      await this.fetchLatestUnitNumber(this.unit.floorLevel);
+      await this.fetchLatestUnitNumber(this.unit.floorLevel, this.unit.unitYear);
+    }
+  },
+  computed: {
+    yearOptions() {
+      const options = [];
+      for (let year = 2026; year <= 2036; year++) {
+        let label = year.toString();
+        const currentYear = new Date().getFullYear();
+        if (year === currentYear) label += ' (Current)';
+        if (year === currentYear + 1) label += ' (Next Year)';
+        options.push({ label, value: year });
+      }
+      return options;
     }
   },
   watch: {
     'unit.floorLevel': function (newFloorLevel) {
       if (newFloorLevel) {
-        this.fetchLatestUnitNumber(newFloorLevel);
+        this.fetchLatestUnitNumber(newFloorLevel, this.unit.unitYear);
+      }
+    },
+    'unit.unitYear': function (newYear) {
+      if (this.unit.floorLevel) {
+        this.fetchLatestUnitNumber(this.unit.floorLevel, newYear);
       }
     }
   },
@@ -297,10 +324,15 @@ export default {
       return 0;
     },
 
-    async fetchLatestUnitNumber(floorLevel) {
+    async fetchLatestUnitNumber(floorLevel, unitYear) {
       try {
+        const targetYear = Number(unitYear) || 2026; // 🆕 same default as your other filters
+
         const units = await UnitService.getAllUnits();
-        const filteredUnits = units.filter(u => u.floorLevel === floorLevel);
+        const filteredUnits = units.filter(u => {
+          const uYear = Number(u.unitYear) || 2026; // 🆕 normalize existing units too
+          return u.floorLevel === floorLevel && uYear === targetYear; // 🆕 both conditions now
+        });
 
         let floorPrefix;
         const floorName = (floorLevel || '').toLowerCase().trim();
@@ -390,6 +422,7 @@ export default {
           // const totalPrice = subUnits.reduce((sum, s) => sum + (s.price || 0), 0);
 
           // Append unit data
+          formData.append('unitYear', this.unit.unitYear);
           formData.append('unitNumber', this.unit.unitNumber);
           formData.append('floorLevel', this.unit.floorLevel);
           // formData.append('unitType', this.unit.unitType); // keep actual type

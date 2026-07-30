@@ -4,7 +4,8 @@
       <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
         <q-card-section class="row justify-between items-center">
           <div class="text-h6">Review and Validate Information</div>
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="small-screen-only" />
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="small-screen-only" />
         </q-card-section>
 
         <q-separator />
@@ -34,13 +35,15 @@
 
         <q-card-section>
           <div class="q-mb-md">
-            <b>Credit Score Information </b><span v-if="rental.userHasBursary">(The applicant has a bursary)</span>
-            <span v-if="!rental.userHasBursary">(The applicant does not have a bursary)</span>
+            <b>Credit Check Application</b>
           </div>
-          <ul v-if="rental.userHasBursary">
-            <li>The applicant has a bursary, so a credit score is not required.</li>
+          <ul v-if="hasCreditCheckDocument">
+            <li>The applicant HAS completed their credit check application.</li>
           </ul>
-          <div v-else class="q-mb-md">
+          <ul v-if="!hasCreditCheckDocument">
+            <li>The applicant has NOT completed their credit check application.</li>
+          </ul>
+          <!-- <div v-else class="q-mb-md">
             <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
               <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
                 rental.payerData.score }}/80)</span></li>
@@ -56,7 +59,7 @@
                 <li class="text-negative">Not scored yet</li>
               </ul>
             </div>
-          </div>
+          </div> -->
         </q-card-section>
 
         <q-card-section>
@@ -121,7 +124,8 @@
 
       <div class="col-md-6 col-12 q-pa-md">
         <q-card-section class="row justify-end items-center q-py-none q-py-sm">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close" class="large-screen-only" />
+          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
+            class="large-screen-only" />
         </q-card-section>
 
         <q-card-section>
@@ -157,33 +161,34 @@
               This user is not sharing this unit with family or acquaintances.
             </li>
             <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
-            }}</span></li>
+                }}</span></li>
           </ul>
         </q-card-section>
 
         <q-card-section>
           <div class="q-mb-md"><b>Reassign Tenant's Unit</b></div>
           <q-item>
-            This option is provided for cases where multiple pending applications of different genders exist for the same unit.
-            Once one applicant is approved, the unit becomes gender‑restricted, preventing the other applicant from being approved.
+            This option is provided for cases where multiple pending applications of different genders exist for the
+            same unit.
+            Once one applicant is approved, the unit becomes gender‑restricted, preventing the other applicant from
+            being approved.
           </q-item>
 
           <q-item>
-            Use this option to reassign a tenant when the selected unit has reached full capacity or when their gender does not align with the unit’s restriction.
-            Ensure that the reassigned unit reflects the correct pricing and monthly payment terms to maintain consistency and accuracy in tenant records.
+            Use this option to reassign a tenant when the selected unit has reached full capacity or when their gender
+            does not align with the unit’s restriction.
+            Ensure that the reassigned unit reflects the correct pricing and monthly payment terms to maintain
+            consistency and accuracy in tenant records.
           </q-item>
 
           <q-item>
-            <q-item-section v-if="unitDetails?.genderAssignment" >
+            <q-item-section v-if="unitDetails?.genderAssignment">
               <div class="row items-center">
                 <div>
                   Unit's Assignment: {{ unitDetails.genderAssignment }}
                 </div>
-                <q-icon
-                  :name="unitDetails.genderAssignment === rental.userGender ? 'check' : 'close'"
-                  :color="unitDetails.genderAssignment === rental.userGender ? 'green' : 'red'"
-                  class="q-ml-sm"
-                />
+                <q-icon :name="unitDetails.genderAssignment === rental.userGender ? 'check' : 'close'"
+                  :color="unitDetails.genderAssignment === rental.userGender ? 'green' : 'red'" class="q-ml-sm" />
               </div>
             </q-item-section>
             <q-item-section v-else>
@@ -191,11 +196,7 @@
                 <div>
                   Unit Gender Unassigned
                 </div>
-                <q-icon
-                  name="check"
-                  color="green"
-                  class="q-ml-sm"
-                />
+                <q-icon name="check" color="green" class="q-ml-sm" />
               </div>
             </q-item-section>
 
@@ -204,80 +205,55 @@
                 <div>
                   Unit's Occupancy: {{ unitDetails.currentOccupants }} / {{ unitDetails.unitOccupants }}
                 </div>
-                <q-icon
-                  :name="unitDetails.currentOccupants <= unitDetails.unitOccupants ? 'check' : 'close'"
+                <q-icon :name="unitDetails.currentOccupants <= unitDetails.unitOccupants ? 'check' : 'close'"
                   :color="unitDetails.currentOccupants <= unitDetails.unitOccupants ? 'green' : 'red'"
-                  class="q-ml-sm"
-                />
+                  class="q-ml-sm" />
               </div>
             </q-item-section>
           </q-item>
 
           <q-item>
             <q-item-section class="text-left text-subtitle1">
-              <q-select
-                v-model="selectedUnit"
-                :options="genderBasedUnits.map(unit => ({
-                  label: `${unit.unitNumber} - ${unit.genderAssignment || 'Unassigned'}`,
-                  value: unit._id
-                }))"
-                label="Select Unit"
-                @update:model-value="loadSubUnits"
-              />
+              <q-select v-model="selectedUnit" :options="genderBasedUnits.map(unit => ({
+                label: `${unit.unitNumber} - ${unit.genderAssignment || 'Unassigned'}`,
+                value: unit._id
+              }))" label="Select Unit" @update:model-value="loadSubUnits" />
             </q-item-section>
 
             <q-item-section class="text-left text-subtitle1">
-              <q-select
-                v-if="availableSubUnits.length > 0"
-                v-model="selectedSubUnit"
-                :options="availableSubUnits"
-                option-label="label"
-                emit-value="false"
-                map-options
-                option-value="value"
-                label="Select Bed/Room"
-                @update:model-value="onSubUnitSelected"
-              />
+              <q-select v-if="availableSubUnits.length > 0" v-model="selectedSubUnit" :options="availableSubUnits"
+                option-label="label" emit-value="false" map-options option-value="value" label="Select Bed/Room"
+                @update:model-value="onSubUnitSelected" />
             </q-item-section>
 
             <q-item-section class="text-left text-subtitle1">
-              <q-select
-                v-if="selectedSubUnit"
-                v-model="selectedPricePlan"
-                :options="availablePrices"
-                option-label="name"
-                emit-value="false"
-                map-options
-                label="Select Payment Plan"
-              />
+              <q-select v-if="selectedSubUnit" v-model="selectedPricePlan" :options="availablePrices"
+                option-label="name" emit-value="false" map-options label="Select Payment Plan" />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <div
-              :class="[
-                ((unitDetails.genderAssignment === rental.userGender || !unitDetails.genderAssignment)
+            <div :class="[
+              ((unitDetails.genderAssignment === rental.userGender || !unitDetails.genderAssignment)
                 && (unitDetails.currentOccupants < unitDetails.unitOccupants))
-                  ? 'text-green text-bold text-caption'
-                  : 'text-red text-bold text-caption'
-              ]"
-            >
+                ? 'text-green text-bold text-caption'
+                : 'text-red text-bold text-caption'
+            ]">
               <div class="row items-center">
                 <div>
                   {{
                     (unitDetails.genderAssignment === rental.userGender || !unitDetails.genderAssignment)
-                    && (unitDetails.currentOccupants < unitDetails.unitOccupants)
-                      ? "Unit is valid for approval. No reassignment needed."
-                      : "Unit has issues. Please reassign tenant."
-                  }}
+                      && (unitDetails.currentOccupants < unitDetails.unitOccupants)
+                      ? "Unit is valid for approval. No reassignment needed." : "Unit has issues. Please reassign tenant."
+                  }} </div>
                 </div>
               </div>
-            </div>
           </q-item>
 
           <q-item>
             <q-item-section>
-              <CustomButton label="Re-Assign Unit" :disable="!selectedSubUnit" @click="reassignUnit" customStyle="width: 100%" />
+              <CustomButton label="Re-Assign Unit" :disable="!selectedSubUnit" @click="reassignUnit"
+                customStyle="width: 100%" />
             </q-item-section>
             <q-item-section></q-item-section>
           </q-item>
@@ -438,6 +414,38 @@
             required style="border: 2px solid white;" />
         </q-card-section>
 
+<q-card-section v-if="isApproved === true" class="row justify-between items-center q-gutter-sm">
+  <div class="col-md-9 col-12">
+    <q-input
+      filled
+      label-color="black"
+      v-model="rental.trafalgarId"
+      label="Trafalgar ID"
+      type="text"
+      required
+      style="border: 2px solid white;"
+      placeholder="Enter Trafalgar ID"
+      dense
+    />
+  </div>
+  <div class="col-md-3 col-12 row q-gutter-sm">
+    <CustomButton
+      icon="eva-save-outline"
+      color="primary"
+      @click="addTrafalgarID"
+      :disable="!rental.trafalgarId || rental.trafalgarId.trim() === ''"
+      class="col"
+    />
+    <CustomButton
+      icon="eva-trash-outline"
+      text-color="red"
+      flat
+      @click="rental.trafalgarId = ''"
+      class="col"
+    />
+  </div>
+</q-card-section>
+
         <q-card-section v-if="isApproved === false">
           <q-input filled label-color="black" v-model="message" label="Message to Applicant" type="textarea" stack-label
             required style="border: 2px solid white;">
@@ -462,6 +470,7 @@ import RentalService from 'src/services/RentalService';
 import UserService from 'src/services/UserService';
 import EmailService from 'src/services/EmailService';
 import UnitService from 'src/services/UnitService';
+import JotformService from 'src/services/JotformService';
 
 export default {
   name: 'AdminRentalApprovalComponent',
@@ -479,6 +488,7 @@ export default {
       userDetails: {},
       message: '',
       minDate: new Date().toISOString().split('T')[0],
+      showTrafalgarInput: false,
 
       genderBasedUnits: [],
       selectedUnit: null,
@@ -545,7 +555,18 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
+    hasCreditCheckDocument() {
+      if (!this.rental?.documents || !Array.isArray(this.rental.documents)) {
+        return false;
+      }
+      return this.rental.documents.some(doc =>
+        doc.docType === 'Signed And Filled Application Form'
+      );
+    },
+
     async loadSubUnits(selectedOption) {
+
+
       this.selectedSubUnit = null;
       this.availableSubUnits = [];
       this.availablePrices = [];
@@ -699,6 +720,8 @@ export default {
       const response = await UnitService.getByIdUnit(this.rental.unit)
       this.unitDetails = response
 
+      console.log(this.rental)
+
       await this.findAllGenderBasedUnits(
         this.rental.userGender,
         this.rental?.selectedSubUnits?.price?.name,
@@ -740,6 +763,64 @@ export default {
       })
     },
 
+    async addTrafalgarID() {
+      try {
+        if (!this.rental.trafalgarId || this.rental.trafalgarId.trim() === '') {
+          this.$q.notify({
+            type: 'warning',
+            color: 'orange',
+            position: 'top',
+            message: 'Please enter the Trafalgar ID before saving.'
+          });
+          return;
+        }
+        this.$q.dialog({
+          title: 'Confirm',
+          message: `You are about to save the Trafalgar ID: ${this.rental.trafalgarId} to this rental. Continue?`,
+          color: 'primary',
+          cancel: true,
+          persistent: true
+        }).onOk(async () => {
+          try {
+            const updateData = {
+              trafalgarId: this.rental.trafalgarId.trim()
+            };
+            const response = await RentalService.updateRental(this.rental._id, updateData);
+
+            if (response) {
+              await this.fetchUserDetails();
+              this.$q.notify({
+                type: 'positive',
+                color: 'primary',
+                position: 'top',
+                message: `Trafalgar ID ${this.rental.trafalgarId} saved successfully!`
+              });
+              this.showTrafalgarInput = false;
+            } else {
+              this.$q.notify({
+                type: 'negative',
+                color: 'red',
+                position: 'top',
+                message: 'Failed to save Trafalgar ID. Please try again.'
+              });
+            }
+          } catch (error) {
+            console.error('Error saving Trafalgar ID:', error);
+            this.$q.notify({
+              type: 'negative',
+              color: 'red',
+              position: 'top',
+              message: 'An error occurred while saving. Please try again.'
+            });
+          }
+        }).onCancel(() => {
+          return;
+        });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+
     async approveRental() {
       if (this.unitDetails.currentOccupants >= this.unitDetails.unitOccupants) {
         this.$q.notify({
@@ -747,6 +828,16 @@ export default {
           color: 'red',
           position: 'top',
           message: `Unit ${this.unitDetails.unitNumber} is already at max capacity (${this.unitDetails.unitOccupants}). Please Reassign this tenant to another unit.`
+        });
+        return;
+      }
+
+      if (!this.rental.trafalgarId || this.rental.trafalgarId.trim() === '') {
+        this.$q.notify({
+          type: 'warning',
+          color: 'orange',
+          position: 'top',
+          message: 'Trafalgar ID is required. Please add the Trafalgar ID before proceeding.'
         });
         return;
       }
@@ -762,6 +853,20 @@ export default {
           });
           return;
         }
+      }
+
+      const hasCreditCheck = this.rental?.documents?.some(doc =>
+        doc.docType === 'Signed And Filled Application Form'
+      );
+
+      if (!hasCreditCheck) {
+        this.$q.notify({
+          type: 'warning',
+          color: 'orange',
+          position: 'top',
+          message: 'The applicant has NOT completed their credit check application. Please ensure they complete it before approving.'
+        });
+        return;
       }
 
       if (this.isApproved === true) {
@@ -801,9 +906,15 @@ export default {
           }
 
           const response = await RentalService.updateRental(this.rental._id, approvedRental)
+          // const response = await UserService.findUserById(this.rental.userId)
           if (response) {
             this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Approved!' })
-            await EmailService.ApprovedRental(this.rental.userId, this.rental.unit, this.rental._id)
+
+            const tenant = await UserService.findUserById(this.rental.userId);
+            await JotformService.sendSigningLinks(tenant, this.rental._id);
+
+
+            // await EmailService.ApprovedRental(this.rental.userId, this.rental.unit, this.rental._id)
             await UserService.findUserById(this.rental.userId)
             this.$emit('close')
           } else {

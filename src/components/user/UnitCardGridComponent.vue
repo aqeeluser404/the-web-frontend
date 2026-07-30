@@ -38,16 +38,15 @@
                 class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-6 col-12"
                 :class="{ 'dimmed-unit': shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0 }"
                 :style="{ pointerEvents: (shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0) ? 'none' : 'auto' }"
-                style="max-width: 496px;"
-                @click="openUnitImageDialog(unit)">
+                style="max-width: 496px;" @click="openUnitImageDialog(unit)">
                 <!-- Image -->
                 <div class="row justify-center">
                   <div class="image-container reserved-container full-height">
                     <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="reserved-image"
                       fit="cover" />
-                      <div v-if="unit.reservedBy || getAvailableSubUnits(unit) === 0" class="reserved-full-overlay">
-                        RESERVED
-                      </div>
+                    <div v-if="unit.reservedBy || getAvailableSubUnits(unit) === 0" class="reserved-full-overlay">
+                      RESERVED
+                    </div>
                   </div>
                 </div>
 
@@ -89,7 +88,7 @@
                     <div class="unit-meta-info row justify-between">
 
                       <!-- Status -->
-                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                      <div class="col-md-2 column items-center hover-scale-icon">
                         <q-tooltip anchor="top middle" self="bottom middle">
                           Status: {{ getAvailableSubUnits(unit) > 0 ? 'Available' : 'Occupied' }}
                         </q-tooltip>
@@ -103,14 +102,14 @@
                       </div>
 
                       <!-- Unit Type -->
-                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                      <div class="col-md-2 column items-center hover-scale-icon">
                         <q-tooltip anchor="top middle" self="bottom middle">Unit Type: {{ unit.unitType }}</q-tooltip>
                         <q-icon name="home" size="sm" />
                         <div class="text-caption">{{ unit.unitType }}</div>
                       </div>
 
                       <!-- Occupancy -->
-                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                      <div class="col-md-2 column items-center hover-scale-icon">
                         <q-tooltip anchor="top middle" self="bottom middle">
                           {{ getAvailableSubUnits(unit) }} of {{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
                             unit.unitOccupants || 0}}
@@ -130,7 +129,7 @@
                       </div>
 
                       <!-- Gender / Access -->
-                      <div class="col-md-2 col-12 column items-center hover-scale-icon">
+                      <div class="col-md-2 column items-center hover-scale-icon">
                         <q-tooltip anchor="top middle" self="bottom middle">
                           <span v-if="unit.accessKey?.isShared">Access Key Required</span>
                           <span v-else-if="unit.genderAssignment">{{ unit.genderAssignment }} Only</span>
@@ -157,8 +156,8 @@
                 </q-card-section>
 
                 <q-card-section>
-                    <CustomButton label="Reserve Now" @click.stop="handleUnitClick(unit)" />
-                  </q-card-section>
+                  <CustomButton label="Reserve Now" @click.stop="handleUnitClick(unit)" />
+                </q-card-section>
               </q-card>
             </q-list>
           </q-card>
@@ -190,6 +189,8 @@
               </q-input>
               <q-select filled dense v-model="selectedStatus" :options="['All', 'Available', 'Occupied']"
                 class="col-xs-12 col-sm-6 col-md-2" emit-value map-options />
+              <q-select filled dense v-model="selectedYear" :options="yearOptions" class="col-xs-12 col-sm-6 col-md-2"
+                emit-value map-options />
               <q-select filled dense v-model="selectedFloor" :options="[
                 { label: '1st Floor', value: 1 },
                 { label: '2nd Floor', value: 2 },
@@ -205,8 +206,7 @@
                   class="hover-scale q-ma-sm bg-transparent soft-shadow-card col-md-5 col-12"
                   :class="{ 'dimmed-unit': shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0 }"
                   :style="{ pointerEvents: (shouldDimUnit(unit) || getAvailableSubUnits(unit) === 0) ? 'none' : 'auto' }"
-                  style="max-width: 496px;"
-                  @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
+                  style="max-width: 496px;" @click="!shouldDimUnit(unit) ? handleUnitClick(unit) : null">
 
                   <!-- Image -->
                   <div class="row justify-center">
@@ -248,7 +248,7 @@
                           Occupied
                         </span>
                         <span class="text-caption" v-if="getAvailableSubUnits(unit)">
-                        <b>R{{ Number(unit.unitPrice).toLocaleString('en-ZA') }}&nbsp;/person&nbsp;/month</b>
+                          <b>R{{ Number(unit.unitPrice).toLocaleString('en-ZA') }}&nbsp;/person&nbsp;/month</b>
                         </span>
                       </div>
                     </div>
@@ -353,7 +353,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="detailFormDialog" @hide="handleDialogClose" :maximized="$q.screen.lt.sm ? true : false">
-      <UnitDetailedApplicationForm :unit="selectedUnit" :sub-unit="selectedSubUnit" @close="handleDialogClose" />
+      <UnitDetailedApplicationForm :unit="selectedUnit" :sub-unit="selectedSubUnit" :latest-unit-year="latestUnitYear" @close="handleDialogClose" />
     </q-dialog>
   </div>
 </template>
@@ -392,6 +392,7 @@ export default {
       search: '',
       selectedStatus: 'All',
       selectedFloor: null,
+      selectedYear: 2026,
       priceRange: {
         min: null,
         max: null
@@ -417,6 +418,14 @@ export default {
     }
   },
   computed: {
+    yearOptions() {
+      const years = [...new Set(this.units.map(u => u.unitYear))].sort((a, b) => a - b)
+      return [...years]
+    },
+    latestUnitYear() {
+      if (!this.units.length) return 2026;
+      return Math.max(...this.units.map(u => Number(u.unitYear) || 2026));
+    },
     myReservedUnitId() {
       if (!this.isLoggedIn) return null;
       const unit = this.filteredUnits[0]?.find(u => u.reservedBy === this.userDetails._id);
@@ -487,6 +496,9 @@ export default {
         floorUnits = floorUnits.filter(unit =>
           unit.unitStatus?.toLowerCase() === this.selectedStatus.toLowerCase()
         )
+      }
+      if (this.selectedYear !== '2026') {
+        floorUnits = floorUnits.filter(unit => unit.unitYear === this.selectedYear)
       }
       if (this.priceRange.min != null) {
         floorUnits = floorUnits.filter(unit =>
@@ -733,7 +745,10 @@ export default {
       try {
         this.$emit('update:loading', true)
         const response = await UnitService.getAllUnits()
-        this.units = response
+        this.units = response.map(unit => ({
+          ...unit,
+          unitYear: Number(unit.unitYear) || 2026
+        }))
         this.allReservedUnits = response.filter(u => u.reservedBy)
         this.organizeUnitsByFloor()
 
@@ -837,7 +852,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 /* #region MAP WRAPPER */
 .map-image-wrapper {
   width: 100%;

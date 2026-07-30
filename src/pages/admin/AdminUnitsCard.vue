@@ -6,6 +6,19 @@
 
         <!-- view all units -->
         <q-card class="full-height soft-shadow-card" :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'">
+
+          <q-tabs
+            v-model="selectedYear"
+            dense
+            active-color="primary"
+            indicator-color="primary"
+            align="justify"
+            @update:model-value="applyYearFilter"
+          >
+            <q-tab v-for="year in availableYears" :key="year" :name="year" :label="String(year)" />
+          </q-tabs>
+          <!-- <q-separator /> -->
+
           <q-expansion-item v-for="(units, floorIndex) in allUnits" :key="floorIndex"
             :label="`${floorLabels[floorIndex]} (${units.length} items)`" expand-separator
             v-model="expanded[floorIndex]" @show="handleExpansion(floorIndex)">
@@ -54,25 +67,14 @@
                         : 0
                     }} Beds
                   </div>
-
-                  <!-- reserved by (unit-level) -->
-                  <!-- <div v-if="unit.reservedBy && getUsername(unit.reservedBy)" class="text-caption text-weight-light"
-                  style="color: black;">
-                  Reserved by: {{ getUsername(unit.reservedBy) }}
-                </div> -->
-
                   <!-- reserved by (subUnit-level) -->
                   <div v-if="Array.isArray(unit.subUnits) && unit.subUnits.some(sub => sub?.reservedBy)"
                     class="text-caption text-weight-light" style="color: black;">
                     {{ getReservedSummary(unit.subUnits) }}
                   </div>
-
                   <div v-else class="text-caption text-weight-light" style="color: black;">
                     Unreserved
                   </div>
-
-
-
                 </q-card-section>
                 <q-card-section class="row justify-center">
                   <div class="image-container">
@@ -95,8 +97,7 @@
         <q-card class="full-height soft-shadow-card">
           <q-card-section class="row justify-between stats-header items-center">
             <div class="text-h6">Add a new unit</div>
-            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-              flat rounded />
+            <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline" flat rounded />
             <q-separator class="q-my-sm" style="width: 100%;" />
           </q-card-section>
           <!-- <q-separator /> -->
@@ -157,7 +158,10 @@ export default {
       selectedUnit: null,
       updateDetailsDialog: false,
 
-      expanded: [true, false, false]
+      expanded: [true, false, false],
+
+      selectedYear: 2026,
+      availableYears: []
     };
   },
   components: {
@@ -216,31 +220,31 @@ export default {
       this.loading = true;
       const response = await UnitService.getAllUnits();
 
-      // console.log(response)
-
-      // Initialize subUnits for each unit
-      // this.units = response.map(unit => ({
-      //   ...unit,
-      //   subUnits: unit.subUnits || []  // ensure subUnits always exists
-      // }));
-
       this.units = response.map(unit => ({
         ...unit,
+        unitYear: Number(unit.unitYear) || 2026,
         subUnits: (unit.subUnits || []).map(sub => ({
           ...sub,
           name: sub.name || sub.roomType || sub.bedType || ''
         }))
       }));
 
-      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc');
+      this.availableYears = [...new Set(this.units.map(u => u.unitYear))].sort((a, b) => a - b);
+
+      this.applyYearFilter();
+
+      this.loading = false;
+    },
+
+    applyYearFilter() {
+      const yearFiltered = this.units.filter(unit => unit.unitYear === this.selectedYear);
+      const sortedUnits = Helper.sortByProperty(yearFiltered, 'unitNumber', 'asc');
 
       const groundFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'First Floor');
       const firstFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Second Floor');
       const secondFloorUnits = sortedUnits.filter(unit => unit.floorLevel === 'Third Floor');
 
       this.allUnits = [groundFloorUnits, firstFloorUnits, secondFloorUnits];
-
-      this.loading = false;
     },
 
     getUsername(userId) {

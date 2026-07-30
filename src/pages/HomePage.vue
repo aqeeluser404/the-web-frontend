@@ -617,8 +617,8 @@
     </div>
 
     <!-- overlay button -->
-    <CustomButton customStyle="" class="overlay-btn" size="lg" label="Apply Now" @click="openUnitRentals" />
-    <CustomButton customStyle="" class="overlay-btn-2" size="lg" label="Download App" @click="downloadApk()" />
+    <CustomButton customStyle="" class="overlay-btn" label="Apply Now" @click="openUnitRentals" />
+    <CustomButton customStyle="" class="overlay-btn-2" label="Download App" @click="downloadApk()" />
   </q-page>
 </template>
 
@@ -1732,14 +1732,14 @@ export default {
 
 .overlay-btn-2
   position: fixed
-  bottom: 80px
+  bottom: 70px
   left: 20px
   z-index: 1000
   width: 180px
   @media (max-width: 768px)
-    bottom: 70px
+    bottom: 60px
     margin: 0 auto
-    width: 44%
+    width: 40%
 
 .dark-wrapper
   background-color: #121212

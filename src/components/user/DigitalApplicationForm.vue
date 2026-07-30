@@ -557,7 +557,6 @@ export default {
 
       const response = await RentalService.uploadRentalDocs(this.user._id, formData);
 
-      // If we get here, it worked
       this.$q.notify({ type: 'positive', message: 'Application submitted successfully!' });
       this.draftId = null;
       this.lastSaved = null;
@@ -831,72 +830,6 @@ export default {
       }
     }
   },
-
-  // mounted() {
-  //   console.log(this.user)
-  //   this.studentInfo = {
-  //     studentNumber: 'S1234567',
-  //     title: 'Mr',
-  //     firstName: 'John',
-  //     surname: 'Doe',
-  //     dateOfBirth: '15/05/1995',
-  //     nationality: 'South African',
-  //     idNumber: '9505151234089',
-  //     passportNumber: 'A12345678',
-  //     maritalStatus: 'Single',
-  //     email: 'john.doe@email.com',
-  //     telephoneNumber: '0821234567',
-  //     residentialAddress: '123 Main Street, Cape Town',
-  //     postalAddress: 'PO Box 456, Cape Town, 8000',
-  //     theWeb: true,
-  //     helshoogte: false,
-  //     botmaskop: true
-  //   }
-  //   this.parentInfo = {
-  //     firstName: 'Mary',
-  //     surname: 'Doe',
-  //     phone: '0832345678',
-  //     fax: '0861234567',
-  //     email: 'mary.doe@email.com',
-  //     employersName: 'ABC Company',
-  //     employersAddress: '456 Business Park, Johannesburg',
-  //     occupation: 'Accountant',
-  //     monthlyIncome: 'R45,000',
-  //     periodEmployed: '5 years'
-  //   }
-  //   this.paymentInfo = {
-  //     firstName: 'John',
-  //     surname: 'Doe',
-  //     idNumber: '9505151234089',
-  //     phone: '0821234567',
-  //     email: 'john.doe@email.com',
-  //     telephoneNumber: '0211234567',
-  //     residentialAddress: '123 Main Street, Cape Town',
-  //     postalAddress: 'PO Box 456, Cape Town, 8000',
-  //     bank: 'ABSA',
-  //     bankName: 'ABSA Bank',
-  //     branchCode: '632005',
-  //     accountNumber: '1234567890',
-  //     typeOfAccount: 'Cheque'
-  //   }
-  //   this.signatureInfo1 = {
-  //     nameAndTitle: 'John Doe (Student)',
-  //     date: '25/06/2026',
-  //   }
-  //   this.signatureInfo2 = {
-  //     nameAndTitle: 'Mary Doe (Parent)',
-  //     date: '25/06/2026',
-  //   }
-  //   this.prospectiveInfo = {
-  //     prospectiveStudentName: 'John Doe Jr',
-  //     nameOfParentOrGuardian: 'Mary Doe',
-  //     dateAt: '25 June 2026',
-  //     onThis: '25',
-  //     dayOf: 'June',
-  //     year: '2026'
-  //   }
-  // },
-
 }
 </script>
 

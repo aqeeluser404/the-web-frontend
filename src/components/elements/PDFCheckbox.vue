@@ -8,8 +8,8 @@
     <input
       v-if="type === 'checkbox'"
       type="checkbox"
-      :checked="modelValue"
-      @change="$emit('update:modelValue', $event.target.checked)"
+      :checked="isChecked"
+      @change="handleChange"
       class="pdf-checkbox"
       :style="{ width: width + 'px', height: height + 'px' }"
     />
@@ -25,7 +25,7 @@
         lineHeight: height + 'px'
       }"
     >
-      {{ modelValue ? '✓' : '' }}
+      {{ isChecked ? '✓' : '' }}
     </span>
   </div>
 </template>
@@ -34,8 +34,12 @@
 export default {
   props: {
     modelValue: {
-      type: Boolean,
+      type: [Boolean, String, Number, null],
       default: false
+    },
+    val: {
+      type: [Boolean, String, Number, null],
+      default: true
     },
     top: {
       type: Number,
@@ -60,9 +64,25 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  computed: {
+    isChecked() {
+      // If val is provided, check if modelValue equals val
+      // Otherwise, just check if modelValue is truthy
+      return this.val !== undefined ? this.modelValue === this.val : !!this.modelValue;
+    }
+  },
   methods: {
     toggle() {
-      this.$emit('update:modelValue', !this.modelValue)
+      // If val is provided, toggle between val and null
+      // Otherwise, toggle between true and false
+      if (this.val !== undefined) {
+        this.$emit('update:modelValue', this.modelValue === this.val ? null : this.val);
+      } else {
+        this.$emit('update:modelValue', !this.modelValue);
+      }
+    },
+    handleChange(event) {
+      this.$emit('update:modelValue', event.target.checked ? this.val : null);
     }
   }
 }
@@ -76,6 +96,7 @@ export default {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.3);
 }
 
 .pdf-checkbox {
