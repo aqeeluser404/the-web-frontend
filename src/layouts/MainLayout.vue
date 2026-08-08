@@ -235,7 +235,9 @@ import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import ExportDataService from 'src/services/ExportDataService'
 import { showSessionExpired } from 'src/services/showShessionExpired';
-import main from 'src/assets/resources/home/slider/main.png';
+
+import main from 'src/assets/resources/home/hero/h0.png';
+
 import { Capacitor } from '@capacitor/core';
 import MobileHomeView from 'src/components/elements/MobileHomeView.vue';
 
@@ -604,8 +606,8 @@ headerHeight() {
         persistent: true
       }).onOk(() => {
         const link = document.createElement('a')
-        link.href = '/files/the-web-v4-app.apk'
-        link.setAttribute('download', 'the-web-v4-app.apk')
+        link.href = '/files/the-web-v5-app.apk'
+        link.setAttribute('download', 'the-web-v5-app.apk')
         link.style.display = 'none'
         document.body.appendChild(link)
         link.click()

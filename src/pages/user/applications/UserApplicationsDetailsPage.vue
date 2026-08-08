@@ -1,11 +1,10 @@
 <template>
-  <q-page>
-
+  <q-page class="bg-grey-2">
     <div class="constrain-standard row justify-center q-py-md">
-      <q-card v-show="!loading" flat class="col-md-12 col-12">
+      <q-card flat v-if="!loading" class="col-md-12 col-12" style="background: transparent; box-shadow: none;"
+>
         <q-card-section>
           <div>
-
             <q-timeline :layout="layout" color="secondary">
 
               <q-timeline-entry heading>
@@ -30,12 +29,6 @@
                     <li>Username: {{ rental.userUsername }}</li>
                     <li>Phone: {{ rental.userPhone }}</li>
                     <li>Email: {{ rental.userEmail }}</li>
-
-                    <li v-if="rental.userHasBursary">Bursary Student: Yes</li>
-                    <li v-else>Bursary Student: No</li>
-
-                    <li v-if="rental.userRegistered">Registered Student: Registered</li>
-                    <li v-else>Registered Student: Awaiting Registration</li>
                   </ul>
                 </q-card-section>
               </q-timeline-entry>
@@ -50,6 +43,7 @@
               <!-- Rental creation -->
               <q-timeline-entry title="Rental Creation" :subtitle="formatDate(rental.applicationDate)" icon="done_all"
                 side="right">
+
                 <q-card-section>
                   <div class="q-mb-md"><b>Payment Information</b></div>
 
@@ -263,8 +257,8 @@
                     <li v-else>
                       This user is not sharing this unit with family or acquaintances.
                     </li>
-                    <li v-if="rental.accessKey">Shared Access Key: <span class="id-underlined">{{ rental.accessKey
-                        }}</span></li>
+                    <li v-if="rental.accessKey">Shared Access Key: <span class="id">{{ rental.accessKey
+                    }}</span></li>
                     <li>Unit Number: {{ rental.unitNumber }}</li>
                     <li v-if="rental?.selectedSubUnits && rental.selectedSubUnits.roomType">
                       Room: {{ rental.selectedSubUnits.roomType }}
@@ -296,23 +290,11 @@
                   </ul>
                 </q-card-section>
 
-                <!-- <q-card-section>
-                  <div class="q-mb-md">
-                    <b>Credit Check Application</b>
-                  </div>
-                  <ul v-if="hasCreditCheckDocument">
-                    <li>The applicant HAS completed their credit check application.</li>
-                  </ul>
-                  <ul v-if="!hasCreditCheckDocument">
-                    <li>The applicant has NOT completed their credit check application.</li>
-                  </ul>
-                </q-card-section> -->
-
               </q-timeline-entry>
 
               <!-- Documents upload -->
-              <q-timeline-entry v-if="hasAllRequiredDocuments" title="Documents have been Uploaded" side="left"
-                icon="done_all" />
+              <q-timeline-entry v-if="hasAllRequiredDocuments"
+                title="Documents have been Uploaded" side="left" icon="done_all" />
 
               <q-timeline-entry v-else title="Remaining Documents to Complete Submission" side="left" color="red"
                 icon="close" />
@@ -321,67 +303,13 @@
                 title="Documents have been Approved" side="right" icon="done_all" />
 
               <!-- Document Approvals -->
-              <q-timeline-entry title="Document Approval" side="right" color="grey" icon="eva-file-text-outline">
-                <div class="q-mb-md"
-                  @click="openUserDocumentsDialog">
-                  <span style="cursor: pointer; " class="text-subtitle1 text-bold"><span class="text-h6">👉 </span>Please click to verify if the following documents are valid </span>
-                </div>
-
-                <ul>
-                  <!-- Private Client -->
-                  <li class="text-bold q-mt-sm text-primary">Private Client</li>
-                  <li>Fully Completed Application Form</li>
-                  <li>Student Registration Form</li>
-                  <li>Identity Documents - Student responsible</li>
-                  <li>Identity Documents - Person responsible</li>
-                  <li>Proof of Address</li>
-                  <li>3 months latest Payslips</li>
-                  <li>3 months Bank statements</li>
-
-                  <!-- Business -->
-                  <li class="text-bold q-mt-sm text-primary">Business</li>
-                  <li>Fully Completed Application Form</li>
-                  <li>Student Registration Form</li>
-                  <li>Identity Documents of all Directors</li>
-                  <li>Proof of Address</li>
-                  <li>CIPC Documents</li>
-                  <li>6 Months Bank statements</li>
-
-                  <!-- Bursary Application -->
-                  <li class="text-bold q-mt-sm text-primary">Bursary Application</li>
-                  <li>Fully Completed Application Form</li>
-                  <li>Student Registration Form</li>
-                  <li>Confirmation of bursary</li>
-                  <li>Proof of Address</li>
-                  <li>Identity Documents</li>
-                </ul>
-              </q-timeline-entry>
+              <q-timeline-entry v-else title="Document Approval" side="right" color="grey"
+                icon="eva-file-text-outline" />
 
               <!-- Rental Approvals -->
-              <!-- <q-timeline-entry v-if="rental.status === 'Pending' || 'Active'" title="Approve Rental" color="grey" icon="eva-briefcase-outline" side="left">
+              <q-timeline-entry v-if="rental.status === 'Pending'" title="Approve Rental" color="grey"
+                icon="eva-briefcase-outline" side="left">
                 <div class="q-mb-md"></div>
-                <div @click="openRentalApprovalDialog" style="cursor: pointer; text-decoration: underline;">
-                  Approve the rental information and desired lease period.
-                </div>
-              </q-timeline-entry> -->
-
-              <q-timeline-entry v-if="rental.status === 'Pending' || rental.status === 'Active'"
-                :title="rental.status === 'Pending' ? 'Approve Rental' : 'Rental has been Approved'"
-                :subtitle="rental.status === 'Active' ? formatDate(rental.rentalStartDate) : ''"
-                :icon="rental.status === 'Active' ? 'done_all' : 'eva-briefcase-outline'"
-                :color="rental.status === 'Active' ? 'green' : 'grey'" side="left">
-                <div class="q-mb-md">
-                  <p class="q-mb-none">
-                    <span v-if="rental.status === 'Pending'">
-                      Approve the rental information and desired lease period.
-                    </span>
-                    <span v-else>
-                      The rental application can still be modified following approval.
-                    </span>
-
-                    <q-icon name="edit" size="xs" class="cursor-pointer q-ml-sm" @click="openRentalApprovalDialog" />
-                  </p>
-                </div>
               </q-timeline-entry>
 
               <!-- rejected rental -->
@@ -389,8 +317,8 @@
                 color="red" side="left" />
 
               <!-- approved rental -->
-              <!-- <q-timeline-entry v-if="rental.status === 'Active'" title="Rental has been Approved"
-                :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" /> -->
+              <q-timeline-entry v-if="rental.status === 'Active'" title="Rental has been Approved"
+                :subtitle="formatDate(rental.rentalStartDate)" icon="done_all" side="left" />
 
               <!-- scheduled ended rental -->
               <q-timeline-entry v-if="rental.status === 'Ended' && rental.earlyEndDate === null"
@@ -406,17 +334,8 @@
           </div>
         </q-card-section>
       </q-card>
-
       <q-inner-loading :showing="loading" color="primary" size="md" />
     </div>
-
-    <q-dialog v-model="documentDialog" v-if="typeof rental?.userId === 'string' && rental.userId">
-      <AdminDocumentApprovalComponent :userId="rental.userId" @close="handleDialogClose" />
-    </q-dialog>
-
-    <q-dialog v-model="rentalDialog">
-      <AdminRentalApprovalComponent :rental="rental" @close="handleRentalDialogClose" />
-    </q-dialog>
   </q-page>
 </template>
 
@@ -427,26 +346,21 @@ import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
 import UserService from 'src/services/UserService';
 import Helper from 'src/services/utils';
-import CustomButton from 'src/components/elements/CustomButton.vue';
-import AdminDocumentApprovalComponent from 'src/components/admin/AdminDocumentApprovalComponent.vue';
-import AdminRentalApprovalComponent from 'src/components/admin/AdminRentalApprovalComponent.vue';
 
 export default {
-  name: "AdminRentalDetails",
+  name: "RentalDetails",
 
   data() {
     return {
       loading: true,
       rental: {},
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec ultricies posuere, nunc nunc',
-      documentDialog: false,
-      rentalDialog: false
+      userDetails: {},
+      currentUser: {}
     }
   },
-  components: {
-    CustomButton,
-    AdminDocumentApprovalComponent,
-    AdminRentalApprovalComponent
+  created() {
+    this.fetchRentalDetails()
+    this.getUser()
   },
   computed: {
     layout() {
@@ -499,75 +413,75 @@ export default {
       const requiredTypes = requiredDocsByCategory[category] || [];
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
-  },
-  created() {
-    this.fetchRentalDetails()
+
+    // defaultValues() {
+    //   const toDateOnly = (dateStr) => dateStr?.split('T')[0] || '';
+    //   const today = new Date();
+    //   const nextYear = today.getFullYear() + 1;
+    //   const defaultStart = `${nextYear}-01-01`;
+    //   const defaultEnd = `${nextYear}-12-31`;
+
+    //   const start = toDateOnly(this.rental?.rentalStartDate);
+    //   const end = toDateOnly(this.rental?.rentalEndDate);
+
+    //   return start === defaultStart && end === defaultEnd;
+    // },
   },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
-    copyToClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
-        }).catch(err => {
-          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
-        })
-    },
-
-    openRentalApprovalDialog() {
-      this.rentalDialog = true;
-    },
-    handleRentalDialogClose() {
-      this.rentalDialog = false;
-      this.fetchRentalDetails()
-    },
-    openUserDocumentsDialog() {
-      this.documentDialog = true;
-    },
-    handleDialogClose() {
-      this.documentDialog = false;
-      this.fetchRentalDetails()
-    },
     async fetchRentalDetails() {
       this.loading = true;
       const encryptedId = this.$route.params.id;
       const decryptedBytes = AES.decrypt(decodeURIComponent(encryptedId), 'secret-key');
       const decryptedId = decryptedBytes.toString(Utf8);
 
-      const response = await RentalService.findRentalById(decryptedId);
+      try {
 
-      const unit = await UnitService.getByIdUnit(response.unit);
-      const user = await UserService.findUserById(response.user);
+        this.userDetails = await Helper.fetchUserDetails()
+        const myRentals = await RentalService.findMyRentals(this.userDetails._id)
+        const response = myRentals.find(rental => rental._id === decryptedId)
+        if (!response) {
+          throw new Error('Rental not found');
+        }
+        const unit = await UnitService.getByIdUnit(response.unit);
+        this.rental = {
+          ...response,
 
-      this.rental = {
-        ...response,
+          unitNumber: unit.unitNumber,
+          unitPrice: unit.unitPrice,
+          unitType: unit.unitType,
+          unitId: unit._id,
 
-        unitNumber: unit.unitNumber,
-        unitPrice: unit.unitPrice,
-        unitType: unit.unitType,
-        unitId: unit._id,
+          userId: this.userDetails._id,
+          userUsername: this.userDetails.username,
+          userFirstName: this.userDetails.firstName,
+          userLastName: this.userDetails.lastName,
+          userEmail: this.userDetails.email,
+          userPhone: this.userDetails.phone,
+          userGender: this.userDetails.gender,
+          userAge: this.userDetails.age,
+          userDateCreated: this.userDetails.dateCreated,
+          userVerified: this.userDetails.verification.isVerified,
+          userDocuments: this.userDetails.documents,
+          userType: this.userDetails.userType,
 
-        userId: user._id,
-        userUsername: user.username,
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        userEmail: user.email,
-        userPhone: user.phone,
-        userGender: user.gender,
-        userAge: user.age,
-        userDateCreated: user.dateCreated,
-        userVerified: user.verification.isVerified,
-        userDocuments: user.documents,
-
-        userHasBursary: user.studentInfo.hasBursary,
-        userRegistered: user.studentInfo.isRegisteredStudent,
-      };
-      this.loading = false;
-
-      // console.log(this.rental.userDocuments)
+          userHasBursary: this.userDetails.studentInfo.hasBursary,
+        };
+        // console.log(this.rental)
+      } catch (error) {
+        console.error('Error fetching rental details:', error);
+        this.$q.notify({ type: 'negative', message: 'Failed to load rental details' });
+      } finally {
+        this.loading = false;
+      }
     },
+
+    async getUser() {
+      this.currentUser = await Helper.fetchUserDetails()
+    }
+
   }
 }
 </script>

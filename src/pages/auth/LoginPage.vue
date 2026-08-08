@@ -2,7 +2,7 @@
   <q-page>
     <div class="background-wrapper">
       <q-img
-        src="~src/assets/resources/authentication/background1.jpg"
+        src="~src/assets/resources/home/hero/h3.jpg"
         alt="Hero Image"
         class="blurred-background"
       />

@@ -399,23 +399,37 @@ export default {
 
     async findAllShuttles() {
       this.loading = true
-      const response = await ShuttleService.findAllShuttles();
-      // console.log(response);
 
-      this.shuttles = await Promise.all(
-        response.map(async (shuttle) => {
-          const user = await UserService.findUserById(shuttle.user);
-          const rentals = await RentalService.findMyRentals(shuttle.user);
+      const [response, allUsers, allRentals, allUnits] = await Promise.all([
+        ShuttleService.findAllShuttles(),
+        UserService.findAllUsers(),
+        RentalService.findAllRentals(),
+        UnitService.getAllUnits()
+      ]);
 
-          const activeRental = rentals.find(
-            (rental) => rental.status === "Active",
-          );
-          const occupiedUnit = activeRental
-            ? await UnitService.findUnitById(activeRental.unit)
-            : null;
+      const usersById = new Map(allUsers.map(u => [u._id, u]));
+      const unitsById = new Map(allUnits.map(u => [u._id, u]));
+
+      // group rentals by user so we can find each shuttle's active rental without another lookup
+      const rentalsByUser = new Map();
+      for (const rental of allRentals) {
+        if (!rentalsByUser.has(rental.user)) rentalsByUser.set(rental.user, []);
+        rentalsByUser.get(rental.user).push(rental);
+      }
+
+      this.shuttles = response.map(shuttle => {
+        try {
+          const user = usersById.get(shuttle.user);
+          if (!user) {
+            console.warn(`Shuttle ${shuttle._id}: no matching user for ${shuttle.user}`);
+            return { ...shuttle, userType: null, userStudentNumber: null, userFirstName: null, userLastName: null, unitNumber: null };
+          }
+
+          const userRentals = rentalsByUser.get(shuttle.user) || [];
+          const activeRental = userRentals.find(rental => rental.status === "Active");
+          const occupiedUnit = activeRental ? unitsById.get(activeRental.unit) : null;
 
           let userRightsType;
-
           if (
             user.userType === 'Admin' &&
             (!user.rightsType || user.rightsType === '' || user.rightsType === null)
@@ -425,20 +439,21 @@ export default {
             userRightsType = user.rightsType;
           }
 
-
           return {
             ...shuttle,
             userType: userRightsType,
-            userStudentNumber: user.studentInfo.studentNumber,
+            userStudentNumber: user.studentInfo?.studentNumber ?? null, // 🆕 safe even if studentInfo is missing
             userFirstName: user.firstName,
             userLastName: user.lastName,
             unitNumber: occupiedUnit ? occupiedUnit.unitNumber : null,
           };
-        }),
+        } catch (err) {
+          console.error(`Failed to process shuttle ${shuttle._id}:`, err);
+          return { ...shuttle, userType: null, userStudentNumber: null, userFirstName: null, userLastName: null, unitNumber: null };
+        }
+      });
 
-      );
-
-      this.buildTodaysApplications(); //get todays applications
+      this.buildTodaysApplications();
 
       const filteredShuttles = this.shuttles.filter(
         (shuttle) =>
@@ -449,18 +464,10 @@ export default {
       );
 
       this.currentShuttles = filteredShuttles;
-      this.pickedUpShuttles = filteredShuttles.filter(
-        (shuttle) => shuttle.status === "Picked Up",
-      );
-      this.pendingShuttles = filteredShuttles.filter(
-        (shuttle) => shuttle.status === "Pending",
-      );
-      this.droppedOffShuttles = filteredShuttles.filter(
-        (shuttle) => shuttle.status === "Dropped Off",
-      );
-      this.MissedPickUpShuttles = filteredShuttles.filter(
-        (shuttle) => shuttle.status === "Missed Pick Up",
-      );
+      this.pickedUpShuttles = filteredShuttles.filter((shuttle) => shuttle.status === "Picked Up");
+      this.pendingShuttles = filteredShuttles.filter((shuttle) => shuttle.status === "Pending");
+      this.droppedOffShuttles = filteredShuttles.filter((shuttle) => shuttle.status === "Dropped Off");
+      this.MissedPickUpShuttles = filteredShuttles.filter((shuttle) => shuttle.status === "Missed Pick Up");
       this.filteredByShuttleStatus();
 
       this.loading = false

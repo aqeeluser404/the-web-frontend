@@ -26,7 +26,7 @@
     </div>
 
     <div v-if="isHomeRoute" class="q-py-lg">
-      <BedStatsComponent />
+      <BedStatsComponent :unitYear="selectedYear" />
     </div>
 
     <div v-if="isHomeRoute" class="q-pb-md">
@@ -166,7 +166,7 @@
     </div>
 
     <div v-if="isSpecificFloorRoute" class="q-py-md">
-      <BedStatsComponent />
+      <BedStatsComponent :unitYear="selectedYear" />
     </div>
 
     <div v-if="isSpecificFloorRoute" class="q-py-md">
@@ -227,8 +227,7 @@
                         <div class="text-caption text-grey-9">
                           <div v-if="getAvailableSubUnits(unit)">
                             {{ unit.floorLevel }} <br>
-                            {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
-                              unit.unitOccupants || 0}}
+                            {{ getAvailableSubUnits(unit) }}/{{unit.unitOccupants || 0}}
                             Available
                           </div>
                           <div v-else>
@@ -392,7 +391,7 @@ export default {
       search: '',
       selectedStatus: 'All',
       selectedFloor: null,
-      selectedYear: 2026,
+      selectedYear: 2027,
       priceRange: {
         min: null,
         max: null
@@ -741,44 +740,60 @@ export default {
     // FETCHING UNITS AND RENTALS
     // ------------------------------------------------------------------------------------------
 
-    async fetchUnits() {
-      try {
-        this.$emit('update:loading', true)
-        const response = await UnitService.getAllUnits()
-        this.units = response.map(unit => ({
-          ...unit,
-          unitYear: Number(unit.unitYear) || 2026
-        }))
-        this.allReservedUnits = response.filter(u => u.reservedBy)
-        this.organizeUnitsByFloor()
+async fetchUnits() {
+  try {
+    this.$emit('update:loading', true)
+    const response = await UnitService.getAllUnits()
 
-        if (this.isLoggedIn) {
-          await this.fetchMyRentals()
-        }
-      } catch (err) {
-        console.error('Error fetching units:', err)
-      } finally {
-        this.$emit('update:loading', false)
+    // Single pass: build normalized units + reserved list together
+    this.allReservedUnits = []
+    this.units = response.map(unit => {
+      if (unit.reservedBy) this.allReservedUnits.push(unit)
+      return {
+        ...unit,
+        unitYear: Number(unit.unitYear) || 2026
       }
-    },
+    })
 
-    async fetchMyRentals() {
-      const user = await Helper.fetchUserDetails()
-      await this.checkLoginStatus()
-      this.myRentals = await RentalService.findMyRentals(user._id)
-    },
+    this.organizeUnitsByFloor()
+
+    if (this.isLoggedIn) {
+      await this.fetchMyRentals()
+    }
+  } catch (err) {
+    console.error('Error fetching units:', err)
+  } finally {
+    this.$emit('update:loading', false)
+  }
+},
+
+async fetchMyRentals() {
+  // These two don't depend on each other's result, run in parallel
+  const [user] = await Promise.all([
+    Helper.fetchUserDetails(),
+    this.checkLoginStatus()
+  ])
+  this.myRentals = await RentalService.findMyRentals(user._id)
+},
 
     // FILTER BY FLOOR
     // ------------------------------------------------------------------------------------------
 
-    organizeUnitsByFloor() {
-      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
-      this.allUnits = [
-        sortedUnits.filter(u => u.floorLevel === 'First Floor'),
-        sortedUnits.filter(u => u.floorLevel === 'Second Floor'),
-        sortedUnits.filter(u => u.floorLevel === 'Third Floor')
-      ]
-    },
+organizeUnitsByFloor() {
+  const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+
+  // Single pass instead of 3 separate .filter() scans over the full array
+  const floorMap = {
+    'First Floor': [],
+    'Second Floor': [],
+    'Third Floor': []
+  }
+  for (const unit of sortedUnits) {
+    floorMap[unit.floorLevel]?.push(unit)
+  }
+  this.allUnits = [floorMap['First Floor'], floorMap['Second Floor'], floorMap['Third Floor']]
+},
+
 
     resetFilters() {
       this.search = ''
@@ -812,17 +827,15 @@ export default {
     },
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    parseFloorFromRoute() {
-      if (this.isSpecificFloorRoute) {
-
-        this.currentFloor = parseInt(this.$route.params.floor)
-        this.selectedFloor = this.currentFloor
-        this.expanded = this.expanded.map((_, i) => i === this.currentFloor - 1)
-
-        const card = this.floorCards.find(card => card._id === this.currentFloor)
-        this.currentSlide = card?._id ?? 1
-      }
-    },
+parseFloorFromRoute() {
+  if (this.isSpecificFloorRoute) {
+    this.currentFloor = parseInt(this.$route.params.floor)
+    this.selectedFloor = this.currentFloor
+    this.expanded = this.expanded.map((_, i) => i === this.currentFloor - 1)
+    const card = this.floorCards.find(card => card._id === this.currentFloor)
+    this.currentSlide = card?._id ?? 1
+  }
+},
     async goToFloor(floorKeyOrId) {
       const keyToNumber = {
         firstFloor: 1,
@@ -846,7 +859,7 @@ export default {
   async mounted() {
     await this.checkLoginStatus();
     this.parseFloorFromRoute()
-    this.fetchUnits()
+    await this.fetchUnits()
   }
 }
 </script>

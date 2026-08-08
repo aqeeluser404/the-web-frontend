@@ -69,6 +69,7 @@ export default {
         'private_proof_of_address': 'Proof of Address',
         'private_3_months_payslips': '3 months latest Payslips',
         'private_3_months_bank_statements': '3 months Bank statements',
+        'private_credit_check_proof_of_payment': 'Credit Check Proof of Payment',
 
         // Business
         // 'business_application_form': 'Fully Completed Application Form',
@@ -77,13 +78,15 @@ export default {
         'business_proof_of_address': 'Proof of Address',
         'business_cipc_documents': 'CIPC Documents',
         'business_6_months_bank_statements': '6 Months Bank statements',
+        'business_credit_check_proof_of_payment': 'Credit Check Proof of Payment',
 
         // Bursary Application
         // 'bursary_application_form': 'Fully Completed Application Form',
         'bursary_student_registration': 'Student Registration Form',
         'bursary_confirmation': 'Confirmation of bursary',
         'bursary_proof_of_address': 'Proof of Address',
-        'bursary_id_documents': 'Identity Documents'
+        'bursary_id_documents': 'Identity Documents',
+        'bursary_credit_check_proof_of_payment': 'Credit Check Proof of Payment'
       };
       return types[this.docType] || 'Document';
     },
@@ -113,7 +116,8 @@ export default {
           'private_id_person',
           'private_proof_of_address',
           'private_3_months_payslips',
-          'private_3_months_bank_statements'
+          'private_3_months_bank_statements',
+          'private_credit_check_proof_of_payment'
         ],
         'Business': [
           // 'business_application_form',
@@ -121,14 +125,16 @@ export default {
           'business_id_directors',
           'business_proof_of_address',
           'business_cipc_documents',
-          'business_6_months_bank_statements'
+          'business_6_months_bank_statements',
+          'business_credit_check_proof_of_payment'
         ],
         'Bursary Application': [
           // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
-          'bursary_id_documents'
+          'bursary_id_documents',
+          'bursary_credit_check_proof_of_payment'
         ]
       };
 
@@ -196,6 +202,7 @@ export default {
             'private_proof_of_address': 'Proof of Address',
             'private_3_months_payslips': '3 months latest Payslips',
             'private_3_months_bank_statements': '3 months Bank statements',
+            'private_credit_check_proof_of_payment': 'Credit Check Proof of Payment',
 
             // Business
             // 'business_application_form': 'Fully Completed Application Form',
@@ -204,13 +211,15 @@ export default {
             'business_proof_of_address': 'Proof of Address',
             'business_cipc_documents': 'CIPC Documents',
             'business_6_months_bank_statements': '6 Months Bank statements',
+            'business_credit_check_proof_of_payment': 'Credit Check Proof of Payment',
 
             // Bursary Application
             // 'bursary_application_form': 'Fully Completed Application Form',
             'bursary_student_registration': 'Student Registration Form',
             'bursary_confirmation': 'Confirmation of bursary',
             'bursary_proof_of_address': 'Proof of Address',
-            'bursary_id_documents': 'Identity Documents'
+            'bursary_id_documents': 'Identity Documents',
+            'bursary_credit_check_proof_of_payment': 'Credit Check Proof of Payment',
       };
 
       if (!this.file) {

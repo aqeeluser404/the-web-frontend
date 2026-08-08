@@ -1,5 +1,4 @@
 import axiosInstance from "./axiosInstance"
-import Logger from "./Logger"
 
 class DraftService {
   static async saveApplicationDraft(draftData) {

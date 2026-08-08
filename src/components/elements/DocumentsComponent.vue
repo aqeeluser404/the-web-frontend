@@ -29,21 +29,27 @@
             </div>
           </div>
 
-          <q-separator class="q-my-md" v-if="hasCreditCheckDocument || hasLeaseDocument" />
+          <q-separator class="q-my-md" v-if="hasCreditCheckDocument || hasLeaseDocument || pendingRental" />
 
-          <div v-if="hasCreditCheckDocument">
-            <div class="text-subtitle1 q-mb-md text-h6 text-grey-9">Application Documents</div>
-            <div class="cursor-pointer q-mb-sm" style="font-weight: 500;" @click="viewCreditCheckDocument">
-              <q-icon class="q-mr-sm" color="secondary" name="eva-checkmark-circle-2-outline" />
-              <span>Signed And Filled Application Form</span>
-            </div>
+          <!-- Application Documents Section -->
+          <div class="text-subtitle1 q-mb-md text-h6 text-grey-9">Application Documents</div>
+
+          <!-- Credit Check Application -->
+          <div class="cursor-pointer q-mb-sm" style="font-weight: 500;" @click="handleRentalDocumentClick('Signed And Filled Application Form')">
+            <q-icon class="q-mr-sm"
+                    :color="hasCreditCheckDocument ? 'secondary' : 'negative'"
+                    :name="hasCreditCheckDocument ? 'eva-checkmark-circle-2-outline' : 'eva-alert-circle-outline'" />
+            <span>Credit Check Application</span>
+            <span v-if="!hasCreditCheckDocument" class="text-caption text-grey-6 q-ml-sm">(not uploaded yet)</span>
           </div>
 
-          <div v-if="hasLeaseDocument">
-            <div class="cursor-pointer q-mb-sm" style="font-weight: 500;" @click="viewLeaseDocument">
-              <q-icon class="q-mr-sm" color="secondary" name="eva-checkmark-circle-2-outline" />
-              <span>Signed And Filled Lease Form</span>
-            </div>
+          <!-- Signed Lease Agreement -->
+          <div class="cursor-pointer q-mb-sm" style="font-weight: 500;" @click="handleRentalDocumentClick('Signed And Filled Lease Form')">
+            <q-icon class="q-mr-sm"
+                    :color="hasLeaseDocument ? 'secondary' : 'negative'"
+                    :name="hasLeaseDocument ? 'eva-checkmark-circle-2-outline' : 'eva-alert-circle-outline'" />
+            <span>Signed Lease Agreement</span>
+            <span v-if="!hasLeaseDocument" class="text-caption text-grey-6 q-ml-sm">(not uploaded yet)</span>
           </div>
 
           <br>
@@ -101,24 +107,25 @@ export default {
           { type: 'private_id_person', label: 'Identity Documents - Person responsible' },
           { type: 'private_proof_of_address', label: 'Proof of Address' },
           { type: 'private_3_months_payslips', label: '3 months latest Payslips' },
-          { type: 'private_3_months_bank_statements', label: '3 months Bank statements' }
+          { type: 'private_3_months_bank_statements', label: '3 months Bank statements' },
+          { type: 'private_credit_check_proof_of_payment', label: 'Credit Check Proof of Payment' },
         ],
         'Business': [
           { type: 'business_student_registration', label: 'Student Registration Form' },
           { type: 'business_id_directors', label: 'Identity Documents of all Directors' },
           { type: 'business_proof_of_address', label: 'Proof of Address' },
           { type: 'business_cipc_documents', label: 'CIPC Documents' },
-          { type: 'business_6_months_bank_statements', label: '6 Months Bank statements' }
+          { type: 'business_6_months_bank_statements', label: '6 Months Bank statements' },
+          { type: 'business_credit_check_proof_of_payment', label: 'Credit Check Proof of Payment' },
         ],
         'Bursary Application': [
           { type: 'bursary_student_registration', label: 'Student Registration Form' },
           { type: 'bursary_confirmation', label: 'Confirmation of bursary' },
           { type: 'bursary_proof_of_address', label: 'Proof of Address' },
-          { type: 'bursary_id_documents', label: 'Identity Documents' }
+          { type: 'bursary_id_documents', label: 'Identity Documents' },
+          { type: 'bursary_credit_check_proof_of_payment', label: 'Credit Check Proof of Payment' },
         ]
-      },
-      creditCheckDoc: null,
-      leaseDoc: null
+      }
     }
   },
   props: {
@@ -144,9 +151,11 @@ export default {
       if (firstDoc.startsWith('bursary_')) return 'Bursary Application';
       return null;
     },
+    pendingRental() {
+      return this.myRentals?.find(rental => rental.status === 'Pending' || rental.status === 'Active') || null;
+    },
     rentalDocuments() {
-      const pendingRental = this.myRentals?.find(rental => rental.status === 'Pending' || rental.status === 'Active');
-      return pendingRental?.documents || [];
+      return this.pendingRental?.documents || [];
     },
     hasCreditCheckDocument() {
       return this.rentalDocuments.some(doc => doc.docType === 'Signed And Filled Application Form');
@@ -171,14 +180,16 @@ export default {
       window.open(url, '_blank');
     },
 
-    viewCreditCheckDocument() {
-      const doc = this.rentalDocuments.find(d => d.docType === 'Signed And Filled Application Form');
-      if (doc) this.viewDocument(doc);
-    },
-
-    viewLeaseDocument() {
-      const doc = this.rentalDocuments.find(d => d.docType === 'Signed And Filled Lease Form');
-      if (doc) this.viewDocument(doc);
+    handleRentalDocumentClick(docType) {
+      const doc = this.rentalDocuments.find(d => d.docType === docType);
+      if (doc) {
+        this.viewDocument(doc);
+      } else {
+        this.$q.notify({
+          type: 'warning',
+          message: `The ${docType} has not been uploaded yet.`
+        });
+      }
     },
 
     async deleteDocument(fileId) {

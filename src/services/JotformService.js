@@ -12,20 +12,13 @@ class JotformService {
           email: tenant.email
         },
         rentalId: rentalId,
-        agentEmail: 'admin@the-web.co.za',
-        ownerEmail: 'aqeelhanslo@gmail.com'
+        agentEmail: 'byronl@trafalgar.co.za',
+        ownerEmail: 'earle.williams@the-web.co.za'
       };
-
-      console.log('Sending to backend:', JSON.stringify(payload, null, 2));
-
       const jotformResponse = await axiosInstance.post('/jotform/create-session', payload);
-
-      console.log('Backend response:', jotformResponse.data);
-
       if (!jotformResponse.data.success) {
         throw new Error('Failed to create Jotform session');
       }
-
       // Tenant
       const tenantLink = jotformResponse.data.tenantLink;
       await EmailService.sendLeaseSigningLink({
@@ -35,9 +28,8 @@ class JotformService {
         rentalId: rentalId,
         role: 'Tenant'
       });
-
       // agent
-      const agentEmail = 'admin@the-web.co.za';
+      const agentEmail = 'byronl@trafalgar.co.za';
       if (agentEmail) {
         const agentLink = jotformResponse.data.agentLink || tenantLink;
 
@@ -49,8 +41,7 @@ class JotformService {
           role: 'Agent'
         });
       }
-
-      const ownerEmail = 'aqeelhanslo@gmail.com';
+      const ownerEmail = 'earle.williams@the-web.co.za';
       if (ownerEmail) {
         const ownerLink = jotformResponse.data.ownerLink || tenantLink;
         await EmailService.sendLeaseSigningLink({
@@ -61,9 +52,6 @@ class JotformService {
           role: 'Owner'
         });
       }
-
-
-
       return { success: true };
     } catch (error) {
       console.error('Error sending Jotform links:', error);

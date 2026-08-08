@@ -35,35 +35,6 @@
 
         <q-card-section>
           <div class="q-mb-md">
-            <b>Credit Check Application</b>
-          </div>
-          <ul v-if="hasCreditCheckDocument">
-            <li>The applicant HAS completed their credit check application.</li>
-          </ul>
-          <ul v-if="!hasCreditCheckDocument">
-            <li>The applicant has NOT completed their credit check application.</li>
-          </ul>
-          <!-- <div v-else class="q-mb-md">
-            <ul v-if="rental.payerData && Object.values(rental.payerData).some(value => value)">
-              <li v-if="rental.payerData.score">Credit Information <span style="text-decoration: underline;">(Score: {{
-                rental.payerData.score }}/80)</span></li>
-              <li v-if="rental.payerData.firstName">First Name: {{ rental.payerData.firstName }}</li>
-              <li v-if="rental.payerData.lastName">Last Name: {{ rental.payerData.lastName }}</li>
-              <li v-if="rental.payerData.email">Email: {{ rental.payerData.email }}</li>
-              <li v-if="rental.payerData.idNumber">ID Number: {{ rental.payerData.idNumber }}</li>
-              <li v-if="rental.payerData.bankName">Bank Name: {{ rental.payerData.bankName }}</li>
-              <li v-if="rental.payerData.salary">Salary: R {{ rental.payerData.salary }}</li>
-            </ul>
-            <div v-else>
-              <ul>
-                <li class="text-negative">Not scored yet</li>
-              </ul>
-            </div>
-          </div> -->
-        </q-card-section>
-
-        <q-card-section>
-          <div class="q-mb-md">
             <b>Parking Information</b><br>
           </div>
           <ul v-if="rental.parking?.hasParking">
@@ -82,6 +53,25 @@
         </q-card-section>
 
         <q-card-section>
+          <div class="q-mb-md">
+            <b>Shuttle Information</b><br>
+          </div>
+          <ul v-if="rental.shuttle?.hasShuttle">
+            <li v-if="rental.selectedSubUnits?.price?.name === 'annual'">
+              Accounting for Shuttle Fees in Once Off Payment (Fee: R{{ Number(rental.shuttle.fee).toFixed(2)
+              }})
+            </li>
+            <li v-else>
+              Accounting for Shuttle Fees in Monthly Pricing (Fee: R{{ Number(rental.shuttle.fee).toFixed(2)
+              }} / mo)
+            </li>
+          </ul>
+          <ul v-else>
+            <li>Shuttle Not Included</li>
+          </ul>
+        </q-card-section>
+
+        <q-card-section>
           <div class="q-mb-md"><b>Rental Information</b></div>
           <ul>
             <li>Application ID: <span class="id-underlined">{{ rental._id }}</span></li>
@@ -93,22 +83,6 @@
                 rental.selectedSubUnits?.price?.name }} Payment Plan</div>
               <div v-else>Lease Duration: Standard Payment Plan</div>
             </li>
-            <!-- <li v-if="!defaultValues">
-              Start Date: {{ formatDate(rental.rentalStartDate) }}
-            </li>
-            <li v-else>
-              Start Date: <span class="text-negative"><b>Being processed</b></span>
-            </li>
-            <li v-if="!defaultValues">
-              End Date: {{ formatDate(rental.rentalEndDate) }}
-            </li>
-            <li v-else>
-              End Date: <span class="text-negative"><b>Being processed</b></span>
-            </li>
-            <li v-if="rental.earlyEndDate">
-              Early End Date: {{ formatDate(rental.earlyEndDate) }}
-            </li> -->
-
             <li>
               Start Date: {{ formatDate(rental.rentalStartDate) }}
             </li>
@@ -212,25 +186,31 @@
             </q-item-section>
           </q-item>
 
-          <q-item>
-            <q-item-section class="text-left text-subtitle1">
-              <q-select v-model="selectedUnit" :options="genderBasedUnits.map(unit => ({
-                label: `${unit.unitNumber} - ${unit.genderAssignment || 'Unassigned'}`,
-                value: unit._id
-              }))" label="Select Unit" @update:model-value="loadSubUnits" />
-            </q-item-section>
+<q-item>
+  <div class="row q-col-gutter-md full-width">
+    <div class="col-12 col-md-3">
+      <q-select v-model="selectedReassignYear" :options="reassignYearOptions" label="Filter by Year" />
+    </div>
 
-            <q-item-section class="text-left text-subtitle1">
-              <q-select v-if="availableSubUnits.length > 0" v-model="selectedSubUnit" :options="availableSubUnits"
-                option-label="label" emit-value="false" map-options option-value="value" label="Select Bed/Room"
-                @update:model-value="onSubUnitSelected" />
-            </q-item-section>
+    <div class="col-12 col-md-3">
+      <q-select v-model="selectedUnit" :options="filteredGenderBasedUnits.map(unit => ({
+        label: `${unit.unitNumber} - ${unit.genderAssignment || 'Unassigned'}`,
+        value: unit._id
+      }))" label="Select Unit" @update:model-value="loadSubUnits" />
+    </div>
 
-            <q-item-section class="text-left text-subtitle1">
-              <q-select v-if="selectedSubUnit" v-model="selectedPricePlan" :options="availablePrices"
-                option-label="name" emit-value="false" map-options label="Select Payment Plan" />
-            </q-item-section>
-          </q-item>
+    <div class="col-12 col-md-3">
+      <q-select v-if="availableSubUnits.length > 0" v-model="selectedSubUnit" :options="availableSubUnits"
+        option-label="label" emit-value="false" map-options option-value="value" label="Select Bed/Room"
+        @update:model-value="onSubUnitSelected" />
+    </div>
+
+    <div class="col-12 col-md-3">
+      <q-select v-if="selectedSubUnit" v-model="selectedPricePlan" :options="availablePrices"
+        option-label="name" emit-value="false" map-options label="Select Payment Plan" />
+    </div>
+  </div>
+</q-item>
 
           <q-item>
             <div :class="[
@@ -414,37 +394,17 @@
             required style="border: 2px solid white;" />
         </q-card-section>
 
-<q-card-section v-if="isApproved === true" class="row justify-between items-center q-gutter-sm">
-  <div class="col-md-9 col-12">
-    <q-input
-      filled
-      label-color="black"
-      v-model="rental.trafalgarId"
-      label="Trafalgar ID"
-      type="text"
-      required
-      style="border: 2px solid white;"
-      placeholder="Enter Trafalgar ID"
-      dense
-    />
-  </div>
-  <div class="col-md-3 col-12 row q-gutter-sm">
-    <CustomButton
-      icon="eva-save-outline"
-      color="primary"
-      @click="addTrafalgarID"
-      :disable="!rental.trafalgarId || rental.trafalgarId.trim() === ''"
-      class="col"
-    />
-    <CustomButton
-      icon="eva-trash-outline"
-      text-color="red"
-      flat
-      @click="rental.trafalgarId = ''"
-      class="col"
-    />
-  </div>
-</q-card-section>
+        <q-card-section v-if="isApproved === true" class="row justify-between items-center q-gutter-sm">
+          <div class="col-md-9 col-12">
+            <q-input filled label-color="black" v-model="rental.trafalgarId" label="Trafalgar ID" type="text" required
+              style="border: 2px solid white;" placeholder="Enter Trafalgar ID" dense />
+          </div>
+          <div class="col-md-3 col-12 row q-gutter-sm">
+            <CustomButton icon="eva-save-outline" color="primary" @click="addTrafalgarID"
+              :disable="!rental.trafalgarId || rental.trafalgarId.trim() === ''" class="col" />
+            <CustomButton icon="eva-trash-outline" text-color="red" flat @click="rental.trafalgarId = ''" class="col" />
+          </div>
+        </q-card-section>
 
         <q-card-section v-if="isApproved === false">
           <q-input filled label-color="black" v-model="message" label="Message to Applicant" type="textarea" stack-label
@@ -498,12 +458,22 @@ export default {
 
       selectedPricePlan: null,
 
+      selectedReassignYear: null,
     }
   },
   async created() {
     await this.getUnitAvailability();
     await this.fetchUserDetails();
   },
+watch: {
+  selectedReassignYear() {
+    this.selectedUnit = null;
+    this.selectedSubUnit = null;
+    this.selectedPricePlan = null;
+    this.availableSubUnits = [];
+    this.availablePrices = [];
+  }
+},
   computed: {
     hasAllRequiredDocuments() {
       // Define required docs per category (with prefixes)
@@ -515,7 +485,8 @@ export default {
           'private_id_person',
           'private_proof_of_address',
           'private_3_months_payslips',
-          'private_3_months_bank_statements'
+          'private_3_months_bank_statements',
+          'private_credit_check_proof_of_payment'
         ],
         'Business': [
           // 'business_application_form',
@@ -523,22 +494,22 @@ export default {
           'business_id_directors',
           'business_proof_of_address',
           'business_cipc_documents',
-          'business_6_months_bank_statements'
+          'business_6_months_bank_statements',
+          'business_credit_check_proof_of_payment'
         ],
         'Bursary Application': [
           // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
-          'bursary_id_documents'
+          'bursary_id_documents',
+          'bursary_credit_check_proof_of_payment'
         ]
       };
 
-      // Get uploaded docTypes
       const uploadedTypes = this.userDetails.documents?.map(doc => doc.docType) || [];
       if (uploadedTypes.length === 0) return false;
 
-      // Detect category from prefix of first uploaded doc
       let category = null;
       const firstDoc = uploadedTypes[0];
       if (firstDoc.startsWith('private_')) category = 'Private Client';
@@ -550,19 +521,20 @@ export default {
       const requiredTypes = requiredDocsByCategory[category] || [];
       return requiredTypes.every(type => uploadedTypes.includes(type));
     },
+
+    reassignYearOptions() {
+      const years = [...new Set(this.genderBasedUnits.map(u => Number(u.unitYear) || 2026))];
+      return years.sort((a, b) => a - b);
+    },
+
+    filteredGenderBasedUnits() {
+      if (!this.selectedReassignYear) return this.genderBasedUnits;
+      return this.genderBasedUnits.filter(u => (Number(u.unitYear) || 2026) === this.selectedReassignYear);
+    }
   },
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
-
-    hasCreditCheckDocument() {
-      if (!this.rental?.documents || !Array.isArray(this.rental.documents)) {
-        return false;
-      }
-      return this.rental.documents.some(doc =>
-        doc.docType === 'Signed And Filled Application Form'
-      );
-    },
 
     async loadSubUnits(selectedOption) {
 
@@ -587,56 +559,6 @@ export default {
       this.availablePrices = sub?.prices || [];
       this.selectedPricePlan = null;
     },
-
-    // async reassignUnit() {
-    //   try {
-    //     const unit = this.genderBasedUnits.find(u => u._id === this.selectedUnit.value)
-    //     if (!unit) {
-    //       console.error("Unit not found")
-    //       return
-    //     }
-    //     const subUnit = (unit.subUnits || []).find(su => su.bedType === this.selectedSubUnit.value || su.roomType === this.selectedSubUnit.value);
-    //     if (!subUnit) {
-    //       console.error("Subunit not found");
-    //       return;
-    //     }
-    //     const rentalPrice = this.rental?.selectedSubUnits?.price;
-    //     const matchedPrice = (subUnit.price || []).find(
-    //       p => p.name === rentalPrice?.name && p.price === rentalPrice?.price
-    //     );
-    //     if (!matchedPrice) {
-    //       console.error("No matching price plan found for this subunit");
-    //       return;
-    //     }
-
-    //     this.$q.dialog({
-    //       title: 'Confirm', message: `You are about to reassign this tenant to another unit, continue?`, color: 'primary', cancel: true, persistent: true
-    //     }).onOk(async () => {
-    //       const payload = {
-    //         rentalId: this.rental._id,
-    //         newUnitId: unit._id,
-    //         newSubUnit: {
-    //           type: subUnit.type,
-    //           roomType: subUnit.roomType,
-    //           bedType: subUnit.bedType,
-    //           price: matchedPrice
-    //         }
-    //       }
-
-    //       const response = await RentalService.reassignUnit(payload);
-    //       if (response) {
-    //         this.$q.notify({ type: 'positive', color: 'primary', message: 'Reassign successful!' })
-    //         this.$emit('close')
-    //       } else {
-    //         this.$q.notify({ type: 'negative', message: 'Reassing unit failed. Please try again.' })
-    //       }
-    //     }).onCancel(() => {
-    //       return
-    //     })
-    //   } catch (err) {
-    //     console.error("Error during reassignment:", err);
-    //   }
-    // },
 
     async reassignUnit() {
       try {
@@ -721,6 +643,7 @@ export default {
       this.unitDetails = response
 
       console.log(this.rental)
+      this.selectedReassignYear = Number(this.rental.unitYear) || 2026;
 
       await this.findAllGenderBasedUnits(
         this.rental.userGender,

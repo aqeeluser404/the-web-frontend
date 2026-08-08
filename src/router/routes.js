@@ -1,101 +1,256 @@
 import Helper from 'src/services/utils'
 
+// ============================================================
+// ROUTE DEFINITIONS
+// ============================================================
+
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/HomePage.vue') },
+      // ==========================================================
+      // PUBLIC ROUTES
+      // ==========================================================
+
+      // Home
+      { path: '', component: () => import('pages/public/HomePage.vue') },
       { path: 'home', redirect: '/' },
-      { path: "/frequently-asked-questions", component: () => import("src/pages/FaqsPage.vue"), },
-      { path: "/install-app", component: () => import("src/pages/InstallApp.vue"), },
 
-      { path: "/incident-report", component: () => import("src/pages/tabs/IncidentReportPage.vue"), },
-      { path: "/resources", component: () => import("src/pages/tabs/ResourcesPage.vue"), },
-      { path: "/developer", component: () => import("src/pages/tabs/DeveloperPage.vue"), },
-      { path: "/fees", component: () => import("src/pages/tabs/FeesPage.vue"), },
-      { path: "/history", component: () => import("src/pages/tabs/HistoryPage.vue"), },
+      // Information
+      {
+        path: '/frequently-asked-questions',
+        component: () => import('src/pages/public/FaqsPage.vue')
+      },
+      {
+        path: '/fees',
+        component: () => import('src/pages/public/FeesPage.vue')
+      },
+      {
+        path: '/install-app',
+        component: () => import('src/pages/public/InstallApp.vue')
+      },
 
-      { path: "/applications", component: () => import("src/pages/tabs/ApplicationsPage.vue"), },
+      // ==========================================================
+      // AUTHENTICATION ROUTES
+      // ==========================================================
 
-      // user authority routes--------------------------------------------------------------------------------------------------------------------
+      // Login & Registration
+      {
+        path: '/auth/login',
+        component: () => import('pages/auth/LoginPage.vue')
+      },
+      {
+        path: '/auth/register',
+        component: () => import('pages/auth/RegisterPage.vue')
+      },
 
-      { path: '/units/apply', component: () => import('src/pages/user/UnitDashboardPage.vue') },
-      { path: '/units/apply/floor/:floor', component: () => import('src/pages/user/UnitFloorPage.vue') },
+      // Admin Authentication
+      {
+        path: '/admin/auth/login',
+        component: () => import('pages/auth/AdminLoginPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      { path: '/user/profile', component: () => import('src/pages/user/UserProfilePage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
-      { path: '/user/applications', component: () => import('src/pages/user/UserApplicationsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
-      { path: '/user/applications/view/:id', component: () => import('src/pages/user/UserApplicationsDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
-      { path: '/user/call-log', component: () => import('src/pages/user/UserLogCallPage.vue'), beforeEnter: Helper.beforeRouteEnterUser },
+      // Password Management
+      {
+        path: '/forgot-password',
+        component: () => import('src/pages/email/auth/ForgotPasswordPage.vue')
+      },
+      {
+        path: '/reset-password',
+        component: () => import('pages/email/auth/ResetPasswordPage.vue')
+      },
 
-      { path: '/user/shuttle-booking', component: () => import('src/pages/user/UserShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
-      { path: '/user/visitor-booking', component: () => import('src/pages/user/UserVisitorBooking.vue'), beforeEnter: Helper.beforeRouteEnterUser },
+      // Email Verification
+      {
+        path: '/verify-email',
+        component: () => import('src/pages/email/auth/VerifyEmailPage.vue')
+      },
+      {
+        path: '/resend-verification',
+        component: () => import('src/pages/email/auth/ResendVerificationEmailPage.vue')
+      },
 
-      { path: '/vendor', component: () => import('src/pages/vendor/VendorDashPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
-      { path: '/vendor/call-log', component: () => import('src/pages/vendor/VendorCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterVendor },
+      // Lease & Application
+      {
+        path: '/lease-signed',
+        component: () => import('src/pages/email/form/LeaseApplicaionSuccessPage.vue')
+      },
+      {
+        path: '/digital-application',
+        name: 'DigitalApplication',
+        component: () => import('pages/email/form/DigitalApplicationFormPage.vue')
+      },
 
-      // admin authority routes-------------------------------------------------------------------------------------------------------------------
+      // ==========================================================
+      // USER ROUTES (Role: User)
+      // ==========================================================
 
-      // dashboard
-      { path: '/admin', component: () => import('src/pages/admin/AdminDashPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // Units
+      {
+        path: '/units/apply',
+        component: () => import('src/pages/user/dashboards/UnitDashboardPage.vue')
+      },
+      {
+        path: '/units/apply/floor/:floor',
+        component: () => import('src/pages/user/dashboards/UnitFloorPage.vue')
+      },
 
-      // user management
-      { path: '/admin/users', component: () => import('src/pages/admin/AdminUsersCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/users/view/:id', component: () => import('src/pages/admin/AdminUserDetailsPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // Profile & Applications
+      {
+        path: '/user/profile',
+        component: () => import('src/pages/user/profile/UserProfilePage.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
+      {
+        path: '/user/applications',
+        component: () => import('src/pages/user/applications/UserApplicationsPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
+      {
+        path: '/user/applications/view/:id',
+        component: () => import('src/pages/user/applications/UserApplicationsDetailsPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
 
-      // rental management
-      { path: '/admin/rentals', component: () => import('src/pages/admin/AdminRentalsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/rentals/clean', component: () => import('src/pages/admin/AdminRentalCleanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
-      { path: '/admin/rentals/view/:id', component: () => import('src/pages/admin/AdminRentalApprovalsPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // Bookings
+      {
+        path: '/user/call-log',
+        component: () => import('src/pages/user/bookings/calllog/UserLogCallPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
+      {
+        path: '/user/shuttle-booking',
+        component: () => import('src/pages/user/bookings/shuttle/UserShuttleBooking.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
+      {
+        path: '/user/visitor-booking',
+        component: () => import('src/pages/user/bookings/visitor/UserVisitorBooking.vue'),
+        beforeEnter: Helper.beforeRouteEnterUser
+      },
 
-      // unit management
-      { path: '/admin/units', component: () => import('src/pages/admin/AdminUnitsCard.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // ==========================================================
+      // VENDOR ROUTES (Role: Vendor)
+      // ==========================================================
 
-      // call log management
-      { path: '/admin/call-log', component: () => import('src/pages/admin/AdminCallLogPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      {
+        path: '/vendor',
+        component: () => import('src/pages/vendor/VendorDashPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterVendor
+      },
+      {
+        path: '/vendor/call-log',
+        component: () => import('src/pages/vendor/VendorCallLogPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterVendor
+      },
 
-      // shuttle booking management
-      { path: '/admin/shuttle-booking', component: () => import('src/pages/admin/AdminShuttleBooking.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // ==========================================================
+      // ADMIN ROUTES (Role: Admin)
+      // ==========================================================
 
-      // shuttle booking management
-      { path: '/admin/visitor-booking', component: () => import('src/pages/admin/AdminVisitorBooking.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // Dashboard
+      {
+        path: '/admin',
+        component: () => import('src/pages/admin/AdminDashPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      // incident management
-      { path: '/admin/incidents', component: () => import('src/pages/admin/AdminIncidentPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // User Management
+      {
+        path: '/admin/users',
+        component: () => import('src/pages/admin/AdminUsersCard.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
+      {
+        path: '/admin/users/view/:id',
+        component: () => import('src/pages/admin/AdminUserDetailsPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      // qr scan
-      { path: '/scan', component: () => import('src/pages/admin/DriverQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
-      { path: '/security/scan', component: () => import('src/pages/admin/SecurityQRScanPage.vue'), beforeEnter: Helper.beforeRouteEnterAdmin },
+      // Rental Management
+      {
+        path: '/admin/rentals',
+        component: () => import('src/pages/admin/AdminRentalsCard.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
+      {
+        path: '/admin/rentals/clean',
+        component: () => import('src/pages/admin/AdminRentalCleanPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
+      {
+        path: '/admin/rentals/view/:id',
+        component: () => import('src/pages/admin/AdminRentalApprovalsPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      // authentication routes-------------------------------------------------------------------------------------------------------------------
+      // Unit Management
+      {
+        path: '/admin/units',
+        component: () => import('src/pages/admin/AdminUnitsCard.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      { path: "/auth/login", component: () => import("pages/auth/LoginPage.vue"), },
-      // { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue") },
-      { path: "/admin/auth/login", component: () => import("pages/auth/AdminLoginPage.vue"), beforeEnter: Helper.beforeRouteEnterAdmin },
-      { path: "/auth/register", component: () => import("pages/auth/RegisterPage.vue"), },
-      // { path: "/auth/otp-verification" , component: () => import("pages/auth/OtpPage.vue") },
+      // Call Log Management
+      {
+        path: '/admin/call-log',
+        component: () => import('src/pages/admin/AdminCallLogPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      { path: '/forgot-password', component: () => import('src/pages/email/ForgotPasswordPage.vue') },
-      { path: '/reset-password', component: () => import('pages/email/ResetPasswordPage.vue') },
+      // Shuttle Booking Management
+      {
+        path: '/admin/shuttle-booking',
+        component: () => import('src/pages/admin/AdminShuttleBooking.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      { path: '/verify-email', component: () => import('src/pages/email/VerifyEmailPage.vue') },
-      { path: '/resend-verification', component: () => import('src/pages/email/ResendVerificationEmailPage.vue') },
+      // Visitor Booking Management
+      {
+        path: '/admin/visitor-booking',
+        component: () => import('src/pages/admin/AdminVisitorBooking.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-      { path: '/lease-signed', component: () => import('src/pages/email/LeaseApplicaionSuccessPage.vue') },
-      { path: "/digital-application", name: "DigitalApplication", component: () => import("pages/email/DigitalApplicationFormPage.vue"), },
+      // Incident Management
+      {
+        path: '/admin/incidents',
+        component: () => import('src/pages/admin/AdminIncidentPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
 
-
-      // delete
-      { path: "/lease-application", name: "LeaseApplication", component: () => import("pages/email/LeaseApplicationFormPage.vue"), },
+      // QR Scanning
+      {
+        path: '/scan',
+        component: () => import('src/pages/admin/DriverQRScanPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
+      {
+        path: '/security/scan',
+        component: () => import('src/pages/admin/SecurityQRScanPage.vue'),
+        beforeEnter: Helper.beforeRouteEnterAdmin
+      },
     ]
   },
+
+  // ============================================================
+  // CATCH-ALL 404 ROUTE
+  // ============================================================
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
+    component: () => import('pages/public/ErrorNotFound.vue')
   }
 ]
 
 export default routes
+
+// ============================================================
+// COMMENTED OUT ROUTES (Keep for reference)
+// ============================================================
+
+// { path: "/auth/otp-verification", component: () => import("pages/auth/implement/OtpPage.vue") },

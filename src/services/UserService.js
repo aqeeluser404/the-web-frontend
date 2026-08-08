@@ -94,6 +94,20 @@ class UserService {
       Logger.error(error)
     }
   }
+  static async findUsersByIds(userIds) {
+    if (!userIds || userIds.length === 0) {
+      return {};
+    }
+
+    const ENDPOINT = `/admin/users/batch`;
+    try {
+      const response = await axiosInstance.post(ENDPOINT, { userIds });
+      return response.data;
+    } catch (error) {
+      Logger.error('Error fetching users by IDs:', error);
+      throw error;
+    }
+  }
   static async findUsersFrequentlyLoggedIn() {
     const ENDPOINT = "/admin/user/frequent"
     try {
@@ -146,35 +160,35 @@ class UserService {
     }
   }
 
-    // user document routes
+  // user document routes
 
-    static async uploadUserDocs(userId, documents) {
-      const ENDPOINT = `/users/${userId}/documents`
-      try {
-        const response = await axiosInstance.post(ENDPOINT, documents)
-        return response
-      } catch (error) {
-        Logger.error(error)
-      }
+  static async uploadUserDocs(userId, documents) {
+    const ENDPOINT = `/users/${userId}/documents`
+    try {
+      const response = await axiosInstance.post(ENDPOINT, documents)
+      return response
+    } catch (error) {
+      Logger.error(error)
     }
-    static async clearAllUserDocs(userId) {
-      const ENDPOINT = `/users/${userId}/documents`
-      try {
-        const response = await axiosInstance.delete(ENDPOINT)
-        return response
-      } catch (error) {
-        Logger.error(error)
-      }
+  }
+  static async clearAllUserDocs(userId) {
+    const ENDPOINT = `/users/${userId}/documents`
+    try {
+      const response = await axiosInstance.delete(ENDPOINT)
+      return response
+    } catch (error) {
+      Logger.error(error)
     }
-    static async removeUserDoc(userId, fileId) {
-      const ENDPOINT = `/users/${userId}/documents/${fileId}`
-      try {
-        const response = await axiosInstance.delete(ENDPOINT)
-        return response
-      } catch (error) {
-        Logger.error(error)
-      }
+  }
+  static async removeUserDoc(userId, fileId) {
+    const ENDPOINT = `/users/${userId}/documents/${fileId}`
+    try {
+      const response = await axiosInstance.delete(ENDPOINT)
+      return response
+    } catch (error) {
+      Logger.error(error)
     }
+  }
   static async findDocsUserById(userId) {
     const ENDPOINT = `/docs/users/${userId}`
     try {

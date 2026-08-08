@@ -32,8 +32,7 @@
                 flat rounded /> -->
               <div>
                 <q-btn to="/admin/rentals/clean" class="custom-button" icon="eva-options-2-outline" flat rounded />
-                <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline"
-                  flat rounded />
+                <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline" flat rounded />
               </div>
             </div>
             <q-separator class="q-my-sm" style="width: 100%;" />
@@ -132,9 +131,8 @@
           </q-card-section> -->
 
           <q-card-section>
-            <q-table
-              flat bordered :rows="filteredRentals" :columns="rentalColumns" row-key="_id" @row-click="viewUserTimeline"
-            >
+            <q-table flat bordered :rows="filteredRentals" :columns="rentalColumns" row-key="_id"
+              @row-click="viewUserTimeline">
               <template v-slot:body-cell-index="props">
                 <q-td :props="props">
                   {{ props.rowIndex + 1 }}
@@ -160,11 +158,7 @@
               <template v-slot:body-cell-id="props">
                 <q-td :props="props">
                   <div class="id">
-                    <q-badge
-                      color="text-primary"
-                      align="middle"
-                      class="q-pa-xs q-px-sm"
-                    >
+                    <q-badge color="text-primary" align="middle" class="q-pa-xs q-px-sm">
                       {{ props.row._id }}
                     </q-badge>
                   </div>
@@ -174,7 +168,8 @@
               <template v-slot:body-cell-floorLevel="props">
                 <q-td :props="props">
                   <div class="text-center">
-                    {{ extractFirstNumber(props.row.selectedSubUnits?.bedType || props.row.selectedSubUnits?.roomType) }}
+                    {{ extractFirstNumber(props.row.selectedSubUnits?.bedType || props.row.selectedSubUnits?.roomType)
+                    }}
                   </div>
                 </q-td>
               </template>
@@ -212,7 +207,7 @@
                 </q-td>
               </template>
 
-               <template v-slot:body-cell-beforeScheduled="props">
+              <template v-slot:body-cell-beforeScheduled="props">
                 <q-td :props="props">
                   <div v-if="props.row.earlyEndDate !== null" style="text-decoration: underline;">
                     {{ formatDate(props.row.earlyEndDate) }}
@@ -225,22 +220,17 @@
 
               <template v-slot:body-cell-status="props">
                 <q-td :props="props">
-                  <q-badge
-                    :color="
-                      props.row.status === 'Active'
-                        ? 'green'
-                        : props.row.status === 'Pending'
-                          ? 'orange'
-                          : props.row.status === 'Rejected'
-                            ? 'red'
-                            : props.row.status === 'Ended'
-                              ? 'grey'
+                  <q-badge :color="props.row.status === 'Active'
+                      ? 'green'
+                      : props.row.status === 'Pending'
+                        ? 'orange'
+                        : props.row.status === 'Rejected'
+                          ? 'red'
+                          : props.row.status === 'Ended'
+                            ? 'grey'
 
-                              : 'red'
-                    "
-                    align="middle"
-                    class="q-pa-xs q-px-sm"
-                  >
+                            : 'red'
+                    " align="middle" class="q-pa-xs q-px-sm">
                     {{ props.row.status }}
                   </q-badge>
                 </q-td>
@@ -249,44 +239,17 @@
               <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                   <div class="row justify-center items-center q-gutter-sm no-wrap">
-                    <CustomButton
-                      flat
-                      color="red"
-                      text-color="red"
-                      class="inline-btn"
-                      icon="eva-trash-outline"
-                      @click.stop="deleteRental(props.row)"
-                    />
+                    <CustomButton flat color="red" text-color="red" class="inline-btn" icon="eva-trash-outline"
+                      @click.stop="deleteRental(props.row)" />
 
-                    <CustomButton
-                      :disable="props.row.status !== 'Active'"
-                      flat
-                      color="red"
-                      text-color="red"
-                      class="inline-btn"
-                      icon="eva-edit-2-outline"
-                      @click.stop="openExtendRentalDialog(props.row)"
-                    />
+                    <CustomButton :disable="props.row.status !== 'Active'" flat color="red" text-color="red"
+                      class="inline-btn" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(props.row)" />
 
-                    <CustomButton
-                      :disable="props.row.status !== 'Active'"
-                      flat
-                      color="red"
-                      text-color="red"
-                      class="inline-btn"
-                      icon="eva-archive-outline"
-                      @click.stop="endRental(props.row)"
-                    />
+                    <CustomButton :disable="props.row.status !== 'Active'" flat color="red" text-color="red"
+                      class="inline-btn" icon="eva-archive-outline" @click.stop="endRental(props.row)" />
 
-                  <CustomButton
-                    flat
-                    color="primary"
-                    text-color="primary"
-                    class="inline-btn"
-                    icon="open_in_new"
-                    label="Open"
-                    @click.stop="openInNewTab(props.row)"
-                  />
+                    <CustomButton flat color="primary" text-color="primary" class="inline-btn" icon="open_in_new"
+                      label="Open" @click.stop="openInNewTab(props.row)" />
 
                   </div>
                 </q-td>
@@ -383,15 +346,6 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
-    // copyToClipboard(text) {
-    //   navigator.clipboard.writeText(text)
-    //     .then(() => {
-    //       this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
-    //     }).catch(err => {
-    //       this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
-    //     })
-    // },
-
     extractFirstNumber(str) {
       if (!str) return '';
       // Look for the first number anywhere in the string
@@ -417,101 +371,6 @@ export default {
         console.error("Failed to open rental in new tab:", error);
       }
     },
-
-    // async downloadData() {
-    //   this.$q.dialog({
-    //     title: 'Download Data',
-    //     message: 'You are about to export all data for rentals. Would you like to proceed?',
-    //     color: 'primary',
-    //     cancel: true,
-    //     persistent: true
-    //   }).onOk(async () => {
-    //     try {
-    //       const today = new Date().toISOString().split('T')[0];
-
-    //       const response = await ExportDataService.exportRentalData();
-
-    //       if (!response || !response.data) {
-    //         throw new Error('Invalid response from server');
-    //       }
-
-    //       const blob = new Blob([response.data], { type: response.headers['content-type'] });
-    //       const url = URL.createObjectURL(blob);
-    //       const link = document.createElement('a');
-    //       link.href = url;
-    //       link.download = `rentals_export_${today}.xlsx`;
-    //       document.body.appendChild(link);
-    //       link.click();
-    //       document.body.removeChild(link);
-    //       setTimeout(() => URL.revokeObjectURL(url), 100);
-
-    //     } catch (error) {
-    //       this.$q.notify({
-    //         type: 'negative',
-    //         message: 'Export failed: ' + (error.message || 'Please try again')
-    //       });
-    //     }
-    //   });
-    // },
-
-    // async downloadData() {
-    //   this.$q.dialog({
-    //     title: 'Download Data',
-    //     message: 'You are about to export all rental history data. Would you like to proceed?',
-    //     color: 'primary',
-    //     cancel: true,
-    //     persistent: true
-    //   }).onOk(() => {
-    //     try {
-    //       const today = new Date().toISOString().split('T')[0];
-
-    //       const rows = this.filteredRentals.map((rental, index) => ({
-    //         'Field No.': index + 1,
-    //         'Application Date': this.formatDate(rental.applicationDate) || '',
-    //         'Applicant': rental.username || 'Unassigned',
-    //         'Applicant Contact': `'${rental.userPhone || 'Unassigned'}`.replace(/,/g, ''),
-    //         'Applicant Email': rental.userEmail || 'Unassigned',
-    //         'Application ID': rental._id || '',
-    //         'Floor Level': this.extractFirstNumber(
-    //           rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType
-    //         ) || '',
-    //         'Unit Type': rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType || 'N/A',
-    //         'Start Date': !this.defaultValues(rental)
-    //           ? this.formatDate(rental.rentalStartDate)
-    //           : 'Being processed...',
-    //         'End Date': !this.defaultValues(rental)
-    //           ? this.formatDate(rental.rentalEndDate)
-    //           : 'Being processed...',
-    //         'Before Scheduled': rental.earlyEndDate !== null
-    //           ? this.formatDate(rental.earlyEndDate)
-    //           : 'N/A',
-    //         // 'Condition': this.needsAttention(rental) ? 'Alert' : 'All Good',
-    //         'Status': this.capitalizeFirstLetter(rental.status || '')
-    //       }));
-
-    //       const safeRow = row => Object.values(row).map(val => `"${val}"`).join(',');
-
-    //       const headers = Object.keys(rows[0]).map(h => `"${h}"`).join(',') + '\n';
-    //       const csv = headers + rows.map(safeRow).join('\n');
-
-    //       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    //       const url = URL.createObjectURL(blob);
-    //       const link = document.createElement('a');
-    //       link.href = url;
-    //       link.download = `rental_history_export_${today}.csv`;
-    //       document.body.appendChild(link);
-    //       link.click();
-    //       document.body.removeChild(link);
-    //       setTimeout(() => URL.revokeObjectURL(url), 100);
-
-    //     } catch (error) {
-    //       this.$q.notify({
-    //         type: 'negative',
-    //         message: 'Export failed: ' + (error.message || 'Please try again')
-    //       });
-    //     }
-    //   });
-    // },
 
     async downloadData() {
       this.$q.dialog({
@@ -585,7 +444,8 @@ export default {
           'private_id_person',
           'private_proof_of_address',
           'private_3_months_payslips',
-          'private_3_months_bank_statements'
+          'private_3_months_bank_statements',
+          'private_credit_check_proof_of_payment',
         ],
         'Business': [
           // 'business_application_form',
@@ -593,14 +453,16 @@ export default {
           'business_id_directors',
           'business_proof_of_address',
           'business_cipc_documents',
-          'business_6_months_bank_statements'
+          'business_6_months_bank_statements',
+          'business_credit_check_proof_of_payment',
         ],
         'Bursary Application': [
           // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
-          'bursary_id_documents'
+          'bursary_id_documents',
+          'bursary_credit_check_proof_of_payment',
         ]
       };
 
@@ -638,7 +500,7 @@ export default {
         end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
 
       console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
-                  "Default?", isDefaultStart && isDefaultEnd);
+        "Default?", isDefaultStart && isDefaultEnd);
 
       return isDefaultStart && isDefaultEnd;
     },
@@ -652,98 +514,60 @@ export default {
         })
     },
 
-// async findAllRentals() {
-//   try {
-//     this.loading = true;
-
-//     // Step 1: Fetch all rentals
-//     const response = await RentalService.findAllRentals();
-
-//     // Step 2: Prepare caches
-//     const unitCache = {};
-//     const userCache = {};
-
-//     // Step 3: Enrich rentals with unit + user data
-//     this.rentals = await Promise.all(response.map(async rental => {
-//       // Fetch unit (with caching)
-//       if (!unitCache[rental.unit]) {
-//         unitCache[rental.unit] = await UnitService.getByIdUnit(rental.unit);
-//       }
-//       const unit = unitCache[rental.unit];
-
-//       // Fetch user (with caching)
-//       if (!userCache[rental.user]) {
-//         userCache[rental.user] = await UserService.findUserById(rental.user);
-//       }
-//       const user = userCache[rental.user];
-
-//       return {
-//         ...rental,
-//         unitType: unit?.unitType,
-//         username: user?.username,
-//         userFirstName: user?.firstName,
-//         userLastName: user?.lastName,
-//         userId: user?._id,
-//         userEmail: user?.email,
-//         userPhone: user?.phone,
-//         userVerification: user?.verification,
-//         userDocuments: user?.documents || []
-//       };
-//     }));
-
-//     // Step 4: Filter rentals by status
-//     const filteredRentals = this.rentals.filter(rental =>
-//       ['Pending', 'Active', 'Rejected', 'Ended'].includes(rental.status)
-//     );
-
-//     this.currentRentals = filteredRentals;
-//     this.approvedRentals = filteredRentals.filter(r => r.status === 'Active');
-//     this.pendingRentals = filteredRentals.filter(r => r.status === 'Pending');
-//     this.rejectedRentals = filteredRentals.filter(r => r.status === 'Rejected');
-//     this.endedRentals = filteredRentals.filter(r => r.status === 'Ended');
-
-//     // Step 5: Update UI
-//     this.filteredByRentalStatus();
-//     this.updateChart();
-//   } catch (error) {
-//     console.error('Error loading rentals:', error);
-//   } finally {
-//     this.loading = false;
-//   }
-// },
-
     async findAllRentals() {
-      this.loading = true
-      const response = await RentalService.findAllRentals();
+      this.loading = true;
+      try {
+        const response = await RentalService.findAllRentals();
 
-      this.rentals = await Promise.all(response.map(async rental => {
-        const unit = await UnitService.getByIdUnit(rental.unit);
-        const user = await UserService.findUserById(rental.user);
-        return {
-          ...rental,
-          unitType: unit.unitType,
-          username: user.username,
-          userFirstName: user.firstName,
-          userLastName: user.lastName,
-          userId: user._id,
-          userEmail: user.email,
-          userPhone: user.phone,
-          userVerification: user.verification,
-          userDocuments: user.documents || []
-        };
-      }));
+        const userIds = [...new Set(response.map(rental => rental.user))];
 
-      const filteredRentals = this.rentals.filter(rental => rental.status === 'Pending' || rental.status === 'Active' || rental.status === 'Rejected' || rental.status === 'Ended');
+        const usersMap = await UserService.findUsersByIds(userIds);
 
-      this.currentRentals = filteredRentals;
-      this.approvedRentals = filteredRentals.filter(rental => rental.status === 'Active');
-      this.pendingRentals = filteredRentals.filter(rental => rental.status === 'Pending');
-      this.rejectedRentals = filteredRentals.filter(rental => rental.status === 'Rejected');
-      this.endedRentals = filteredRentals.filter(rental => rental.status === 'Ended');
+        this.rentals = response.map(rental => {
+          const user = usersMap[rental.user] || {};
+          return {
+            ...rental,
+            username: user.username || 'Unknown',
+            userFirstName: user.userFirstName || 'Unknown',
+            userLastName: user.userLastName || '',
+            userId: user.userId || rental.user,
+            userEmail: user.userEmail || '',
+            userPhone: user.userPhone || '',
+            userVerification: user.userVerification || null,
+            userDocuments: user.userDocuments || []
+          };
+        });
 
-      this.filteredByRentalStatus();
-      this.updateChart();
-      this.loading = false
+        const filteredRentals = this.rentals.filter(rental =>
+          rental.status === 'Pending' ||
+          rental.status === 'Active' ||
+          rental.status === 'Rejected' ||
+          rental.status === 'Ended'
+        );
+
+        const sortedRentals = filteredRentals.sort((a, b) => {
+          const dateA = new Date(a.applicationDate);
+          const dateB = new Date(b.applicationDate);
+          return dateB - dateA; // Descending: newest first
+        });
+
+        this.currentRentals = sortedRentals;
+        this.approvedRentals = sortedRentals.filter(rental => rental.status === 'Active');
+        this.pendingRentals = sortedRentals.filter(rental => rental.status === 'Pending');
+        this.rejectedRentals = sortedRentals.filter(rental => rental.status === 'Rejected');
+        this.endedRentals = sortedRentals.filter(rental => rental.status === 'Ended');
+
+        this.filteredByRentalStatus();
+        this.updateChart();
+      } catch (error) {
+        console.error('Error loading rentals:', error);
+        this.$q?.notify({
+          type: 'negative',
+          message: 'Failed to load rentals. Please try again.'
+        });
+      } finally {
+        this.loading = false;
+      }
     },
 
     updateChart() {
@@ -844,7 +668,6 @@ export default {
         rental.userPhone?.toLowerCase().includes(searchTerm)
       );
     },
-
 
     filterRentalsByChart(selectedStatus) {
       this.selectedRentalStatus = selectedStatus; // Sync dropdown filter
@@ -953,8 +776,9 @@ export default {
 
 <style>
 .inline-btn {
-  display: inline-flex; /* ensures they sit side by side */
-  width: auto;          /* prevents full-width stretching */
+  display: inline-flex;
+  /* ensures they sit side by side */
+  width: auto;
+  /* prevents full-width stretching */
 }
-
 </style>

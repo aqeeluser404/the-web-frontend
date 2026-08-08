@@ -121,8 +121,7 @@
               <div class="row items-center justify-around">
                 <div class="col-md-4 col-5 text-grey-7"><b>Availability:</b></div>
                 <div class="col-md-6 col-7">
-                  {{ getAvailableSubUnits(unit) }}/{{unit.subUnits?.filter(su => !su.reservedBy)?.length ||
-                    unit.unitOccupants || 0}}
+                  {{ getAvailableSubUnits(unit) }}/{{unit.unitOccupants || 0}}
                   Available
                 </div>
               </div>
@@ -261,10 +260,28 @@
                 </div>
               </q-card-section>
 
-              <q-card-section>
+              <!-- <q-card-section>
                 <div class="q-mb-sm"><b>Shuttle Service</b></div>
                 <q-radio v-model="userDetails.hasShuttle" :val="true"
-                  label="Yes I would like to use the shuttle service" />
+                  :label="`Yes I would like to use the shuttle service`" />
+                <br>
+                <q-radio v-model="userDetails.hasShuttle" :val="false" label="No, I don't need it" />
+              </q-card-section> -->
+
+              <q-card-section>
+                <div class="q-mb-sm"><b>Shuttle Service</b></div>
+                <q-radio
+                  v-if="getSelectedPriceObject()?.name === 'annual'"
+                  v-model="userDetails.hasShuttle"
+                  :val="true"
+                  :label="`Include Shuttle (R${Number(rentalDetails.shuttlePrice || 0).toLocaleString('en-ZA')} / once-off)`"
+                />
+                <q-radio
+                  v-else
+                  v-model="userDetails.hasShuttle"
+                  :val="true"
+                  :label="`Include Shuttle (R${Number(rentalDetails.shuttlePrice || 0).toLocaleString('en-ZA')} / mo)`"
+                />
                 <br>
                 <q-radio v-model="userDetails.hasShuttle" :val="false" label="No, I don't need it" />
               </q-card-section>
@@ -486,7 +503,8 @@ export default {
         parking: {
           hasParking: false,
           fee: 495.0
-        }
+        },
+        shuttlePrice: 500.0
       },
       myRentals: [],
       signatureData: null,
@@ -557,7 +575,8 @@ export default {
           'private_id_person',
           'private_proof_of_address',
           'private_3_months_payslips',
-          'private_3_months_bank_statements'
+          'private_3_months_bank_statements',
+          'private_credit_check_proof_of_payment'
         ],
         'Business': [
           // 'business_application_form',
@@ -565,14 +584,16 @@ export default {
           'business_id_directors',
           'business_proof_of_address',
           'business_cipc_documents',
-          'business_6_months_bank_statements'
+          'business_6_months_bank_statements',
+          'business_credit_check_proof_of_payment'
         ],
         'Bursary Application': [
           // 'bursary_application_form',
           'bursary_student_registration',
           'bursary_confirmation',
           'bursary_proof_of_address',
-          'bursary_id_documents'
+          'bursary_id_documents',
+          'bursary_credit_check_proof_of_payment'
         ]
       };
 
@@ -688,12 +709,17 @@ export default {
       if (this.selectedOption && this.selectedOption.price) {
         const priceObj = this.selectedOption.price.find(p => p.price === newPrice);
         if (priceObj) {
-          if (priceObj.name === '10-month')
-            this.rentalDetails.parking.fee = 495.0
-          else if (priceObj.name === '11-month')
-            this.rentalDetails.parking.fee = 450.0
-          else if (priceObj.name === 'annual')
-            this.rentalDetails.parking.fee = 4950.0
+          if (priceObj.name === '10-month') {
+            this.rentalDetails.parking.fee = 500.0;
+            this.rentalDetails.shuttlePrice = 800.0;
+          } else if (priceObj.name === '11-month') {
+            this.rentalDetails.parking.fee = 455.0;
+            this.rentalDetails.shuttlePrice = 800.0;
+          } else if (priceObj.name === 'annual') {
+            this.rentalDetails.parking.fee = 5000.0;
+            this.rentalDetails.shuttlePrice = 8000.0;
+          }
+          this.rentalDetails.selectedPrice = newPrice;
         }
       }
     },
