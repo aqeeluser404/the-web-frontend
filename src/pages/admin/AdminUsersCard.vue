@@ -199,7 +199,7 @@ Chart.register(PieController, ArcElement, Tooltip, Legend, BarController, BarEle
 
 import * as XLSX from 'xlsx';
 
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
 import AdminAddUserComponent from 'src/components/admin/AdminAddUserComponent.vue';

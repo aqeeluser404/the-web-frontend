@@ -343,7 +343,7 @@ import VisitorService from "src/services/VisitorService";
 import Helper from "src/services/utils";
 import RentalService from "src/services/RentalService";
 import CustomButton from "src/components/elements/CustomButton.vue";
-import UserService from "src/services/UserService";
+import UserService from "src/services/api/UserService";
 import UnitService from "src/services/UnitService";
 
 export default {

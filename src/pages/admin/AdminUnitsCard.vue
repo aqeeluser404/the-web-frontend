@@ -138,7 +138,7 @@ import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
 import AdminAddUnitComponent from 'src/components/admin/AdminAddUnitComponent.vue';
 import AdminUnitDetailsComponent from 'src/components/admin/AdminUnitDetailsComponent.vue';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import ExportDataService from 'src/services/ExportDataService';
 
 export default {

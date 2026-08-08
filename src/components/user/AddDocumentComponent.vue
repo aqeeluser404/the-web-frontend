@@ -37,7 +37,7 @@
 
 <script>
 import CustomButton from '../elements/CustomButton.vue';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import EmailService from 'src/services/EmailService';
 
 export default {

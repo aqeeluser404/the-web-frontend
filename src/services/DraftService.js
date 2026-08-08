@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance"
+import axiosInstance from 'src/services/api/axiosInstance'
 
 class DraftService {
   static async saveApplicationDraft(draftData) {

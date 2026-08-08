@@ -130,7 +130,7 @@
 
 <script>
 import RentalService from 'src/services/RentalService';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UnitService from 'src/services/UnitService';
 export default {

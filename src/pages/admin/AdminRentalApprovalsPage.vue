@@ -425,7 +425,7 @@ import AES from 'crypto-js/aes';
 import Utf8 from 'crypto-js/enc-utf8';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AdminDocumentApprovalComponent from 'src/components/admin/AdminDocumentApprovalComponent.vue';

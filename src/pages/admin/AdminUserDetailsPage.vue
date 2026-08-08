@@ -415,7 +415,7 @@ import documentLogo from '../../assets/resources/elements/document.png'
 import AES from 'crypto-js/aes';
 import Utf8 from 'crypto-js/enc-utf8';
 import Helper from 'src/services/utils';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import RentalService from 'src/services/RentalService';
 import AdminViewUserRentalComponent from 'src/components/admin/AdminViewUserRentalComponent.vue'

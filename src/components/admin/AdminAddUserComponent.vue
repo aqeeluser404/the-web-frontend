@@ -120,7 +120,7 @@
 <script>
 import CustomButton from '../elements/CustomButton.vue';
 import Helper from 'src/services/utils';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 
 export default {
   data() {

@@ -23,7 +23,7 @@
 
             <template v-if="issueOptions[callLog.callType]">
               <q-select
-                class="col-md-4 col-12"                      
+                class="col-md-4 col-12"
                 outlined
                 rounded
                 v-model="selectedIssue"
@@ -58,7 +58,7 @@
             />
             </template>
 
-            
+
             <q-input
               rounded
               class="col-md-4 col-12"
@@ -288,7 +288,7 @@ import CallLogService from 'src/services/CallLogService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import RentalService from 'src/services/RentalService';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 export default {
 
   components: {

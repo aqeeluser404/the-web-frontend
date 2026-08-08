@@ -108,7 +108,7 @@
 
 <script>
 import LeaseApplicationForm from 'src/components/user/LeaseApplicationForm.vue';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import RentalService from 'src/services/RentalService';
 import DraftService from 'src/services/DraftService';
 import CustomButton from 'src/components/elements/CustomButton.vue';

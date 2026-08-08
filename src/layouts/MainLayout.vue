@@ -230,7 +230,7 @@ import QListItems from 'src/components/elements/QListItems.vue';
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import web3dlogoBlack from '../assets/resources/logos/web3dlogoBlack.png'
-import UserService from 'src/services/UserService'
+import UserService from 'src/services/api/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import ExportDataService from 'src/services/ExportDataService'

@@ -1,5 +1,5 @@
-import axiosInstance from "./axiosInstance"
-import Logger from "./Logger"
+import axiosInstance from 'src/services/api/axiosInstance'
+import Logger from 'src/services/Logger'
 
 class UserService {
   static async register(user) {

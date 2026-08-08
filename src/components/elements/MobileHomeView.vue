@@ -126,7 +126,7 @@
 import CustomButton from "./CustomButton.vue";
 // import { useRouter } from "vue-router";
 import Helper from "src/services/utils";
-import UserService from "src/services/UserService.js";
+import UserService from "src/services/api/UserService.js";
 
 export default {
   name: "MobileHomeView",

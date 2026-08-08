@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
 import AddDocumentComponent from '../user/AddDocumentComponent.vue';
 import RentalService from 'src/services/RentalService';

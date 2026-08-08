@@ -334,7 +334,7 @@
 
 <script>
 import documentLogo from 'src/assets/resources/elements/document.png'
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
 import EmailService from 'src/services/EmailService';
 import CustomButton from 'src/components/elements/CustomButton.vue';

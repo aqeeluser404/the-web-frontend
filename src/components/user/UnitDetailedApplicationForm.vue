@@ -460,7 +460,7 @@ import RentalService from 'src/services/RentalService'
 import SignaturePad from '../elements/SignaturePad.vue'
 import SimpleZoom from '../elements/SimpleZoom.vue'
 import EmailService from 'src/services/EmailService'
-import UserService from 'src/services/UserService.js'
+import UserService from 'src/services/api/UserService.js'
 
 export default {
   name: 'UnitDetailedApplicationForm',

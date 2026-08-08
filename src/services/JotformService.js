@@ -1,4 +1,4 @@
-import axiosInstance from "src/services/axiosInstance";
+import axiosInstance from 'src/services/api/axiosInstance'
 import EmailService from "./EmailService";
 
 class JotformService {

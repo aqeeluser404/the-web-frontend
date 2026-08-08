@@ -233,7 +233,7 @@
 <script>
 import { Html5Qrcode } from 'html5-qrcode'
 import ShuttleService from 'src/services/ShuttleService'
-import UserService from 'src/services/UserService'
+import UserService from 'src/services/api/UserService'
 import RentalService from 'src/services/RentalService'
 import UnitService from 'src/services/UnitService'
 import Helper from 'src/services/utils'

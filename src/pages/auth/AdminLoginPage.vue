@@ -129,7 +129,7 @@
 
 <script>
   import theWeb3d from '../../assets/resources/logos/web3dlogo.png'
-  import UserService from 'src/services/UserService'
+  import UserService from 'src/services/api/UserService'
   import CustomButton from 'src/components/elements/CustomButton.vue'
 
   export default {

@@ -284,7 +284,7 @@ import CryptoJS from 'crypto-js';
 import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
 import RentalService from 'src/services/RentalService';
 import UnitService from 'src/services/UnitService';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';

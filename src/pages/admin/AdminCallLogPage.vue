@@ -171,7 +171,7 @@ Chart.register(PieController, ArcElement, Tooltip, Legend);
 import CallLogService from 'src/services/CallLogService';
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import UserService from 'src/services/UserService';
+import UserService from 'src/services/api/UserService';
 import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLogComponent.vue';
 import EmailService from 'src/services/EmailService';
 import ExportDataService from 'src/services/ExportDataService';
