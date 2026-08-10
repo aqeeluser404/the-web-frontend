@@ -95,7 +95,7 @@
 <script>
 import RentalService from 'src/services/api/RentalService';
 import CustomButton from '../elements/CustomButton.vue';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 
 export default {
   props: {

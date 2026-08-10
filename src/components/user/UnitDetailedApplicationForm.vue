@@ -454,7 +454,7 @@
 </template>
 
 <script>
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import RentalService from 'src/services/api/RentalService';
 import SignaturePad from '../elements/SignaturePad.vue'

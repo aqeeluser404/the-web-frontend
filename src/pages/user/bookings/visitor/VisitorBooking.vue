@@ -295,7 +295,7 @@
 <script>
 import { date } from "quasar";
 import VisitorService from "src/services/api/VisitorService";
-import Helper from "src/services/utils";
+import Helper from 'src/services/helper/utils';
 import RentalService from 'src/services/api/RentalService';
 import CustomButton from "src/components/elements/CustomButton.vue";
 import QRCode from "qrcode";

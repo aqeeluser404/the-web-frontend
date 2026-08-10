@@ -158,7 +158,7 @@
 <script>
 import CustomButton from "../elements/CustomButton.vue";
 import CallLogService from "src/services/api/CallLogService";
-import Helper from "src/services/utils";
+import Helper from 'src/services/helper/utils';
 
 export default {
   props: {

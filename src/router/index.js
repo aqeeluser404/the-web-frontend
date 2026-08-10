@@ -2,7 +2,7 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import axiosInstance from 'src/services/api/axiosInstance'
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -117,7 +117,7 @@ export default route(function (/* { store, ssrContext } */) {
 //           return next("/");
 
 //         default:
-//           // ✅ Only check login for protected routes
+//           // Only check login for protected routes
 //           const user = await Helper.checkLoginStatus(Router);
 
 //           if (user) {
@@ -146,8 +146,6 @@ export default route(function (/* { store, ssrContext } */) {
 //     return next(to.path !== "/404" ? "/404" : undefined);
 //   }
 // });
-
-
 
   return Router;
 });

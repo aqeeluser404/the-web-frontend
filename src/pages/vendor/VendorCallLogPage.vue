@@ -106,7 +106,7 @@ import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
 Chart.register(PieController, ArcElement, Tooltip, Legend);
 
 import CallLogService from "src/services/api/CallLogService";
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserService from 'src/services/api/UserService';
 import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLogComponent.vue';

@@ -364,7 +364,7 @@ import UnitDetailedApplicationForm from './UnitDetailedApplicationForm.vue'
 // import UnitApplicationFormComponent from './UnitApplicationFormComponent.vue'
 import UnitService from 'src/services/api/UnitService';
 import RentalService from 'src/services/api/RentalService';
-import Helper from '../../services/utils'
+import Helper from 'src/services/helper/utils';
 import floor1 from 'src/assets/resources/floorLayout/floorPlan1.png'
 import floor2 from 'src/assets/resources/floorLayout/floorPlan2.png'
 import floor3 from 'src/assets/resources/floorLayout/floorPlan3.png'

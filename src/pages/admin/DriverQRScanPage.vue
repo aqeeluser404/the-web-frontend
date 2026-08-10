@@ -236,7 +236,7 @@ import ShuttleService from "src/services/api/ShuttleService";
 import UserService from 'src/services/api/UserService'
 import RentalService from 'src/services/api/RentalService';
 import UnitService from 'src/services/api/UnitService';
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 
 export default {
   name: 'DriverQRScannerPage',

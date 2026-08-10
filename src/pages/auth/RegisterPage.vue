@@ -100,7 +100,7 @@
 
 <script>
 import UserService from 'src/services/api/UserService'
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import VisibilityPasswordInput from 'src/components/elements/VisibilityPasswordInput.vue';
 

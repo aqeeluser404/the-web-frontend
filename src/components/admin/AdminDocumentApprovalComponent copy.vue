@@ -39,7 +39,7 @@
 <script>
 import documentLogo from '../../assets/resources/elements/document.png'
 import CustomButton from 'src/components/elements/CustomButton.vue'
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 
 export default {
   name: 'AdminDocumentApprovalComponent',

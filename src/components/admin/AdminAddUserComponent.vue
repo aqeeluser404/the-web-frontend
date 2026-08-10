@@ -119,7 +119,7 @@
 
 <script>
 import CustomButton from '../elements/CustomButton.vue';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import UserService from 'src/services/api/UserService';
 
 export default {

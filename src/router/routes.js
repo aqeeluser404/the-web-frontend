@@ -1,4 +1,4 @@
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 
 // ============================================================
 // ROUTE DEFINITIONS

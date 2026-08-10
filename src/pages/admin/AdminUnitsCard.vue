@@ -135,7 +135,7 @@
 <script>
 import UnitService from 'src/services/api/UnitService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import AdminAddUnitComponent from 'src/components/admin/AdminAddUnitComponent.vue';
 import AdminUnitDetailsComponent from 'src/components/admin/AdminUnitDetailsComponent.vue';
 import UserService from 'src/services/api/UserService';

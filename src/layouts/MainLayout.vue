@@ -231,10 +231,10 @@ import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import weblogo3d from '../assets/resources/logos/weblogo3d.png'
 import web3dlogoBlack from '../assets/resources/logos/web3dlogoBlack.png'
 import UserService from 'src/services/api/UserService'
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import ExportDataService from 'src/services/api/ExportDataService'
-import { showSessionExpired } from 'src/services/showShessionExpired';
+import { showSessionExpired } from 'src/services/components/showSessionExpired';
 
 import main from 'src/assets/resources/home/hero/h0.png';
 

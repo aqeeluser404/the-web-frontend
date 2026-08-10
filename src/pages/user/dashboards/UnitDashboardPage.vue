@@ -18,7 +18,7 @@
 <script>
 import UnitsCardComponent from '../../components/user/UnitCardComponent.vue'
 import RentalService from 'src/services/api/RentalService';
-import Helper from '../../services/utils'
+import Helper from 'src/services/helper/utils';
 
 export default {
   name: "UnitDashboardPage",

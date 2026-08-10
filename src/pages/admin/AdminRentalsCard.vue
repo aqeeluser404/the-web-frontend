@@ -285,7 +285,7 @@ import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
 import RentalService from 'src/services/api/RentalService';
 import UnitService from 'src/services/api/UnitService';
 import UserService from 'src/services/api/UserService';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';
 import ExportDataService from 'src/services/api/ExportDataService'

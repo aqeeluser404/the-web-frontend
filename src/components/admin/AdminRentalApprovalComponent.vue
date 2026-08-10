@@ -425,7 +425,7 @@
 
 <script>
 import CustomButton from 'src/components/elements/CustomButton.vue'
-import Helper from 'src/services/utils'
+import Helper from 'src/services/helper/utils';
 import RentalService from 'src/services/api/RentalService';
 import UserService from 'src/services/api/UserService';
 import EmailService from 'src/services/api/EmailService';

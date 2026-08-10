@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 let logoutTimer = null;
 import { useRouter } from 'vue-router';
 
-import { showSessionExpired } from './showShessionExpired';
+import { showSessionExpired } from 'src/services/components/showSessionExpired';
 
 class Helper {
 

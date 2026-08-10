@@ -453,7 +453,7 @@ import ImageDialog from 'src/components/elements/ImageDialog.vue';
 import MaintenanceBanner from 'src/components/elements/MaintenanceBanner.vue';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import EmailService from 'src/services/api/EmailService';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import UnitCardComponent from 'src/components/user/UnitCardComponent.vue';
 import UnitCardComponentBlack from 'src/components/user/UnitCardComponentBlack.vue';
 

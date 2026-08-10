@@ -206,7 +206,7 @@
 <script>
 import * as XLSX from 'xlsx';
 import ShuttleService from "src/services/api/ShuttleService";
-import Helper from "src/services/utils";
+import Helper from 'src/services/helper/utils';
 import RentalService from 'src/services/api/RentalService';
 import CustomButton from "src/components/elements/CustomButton.vue";
 import UserService from "src/services/api/UserService";

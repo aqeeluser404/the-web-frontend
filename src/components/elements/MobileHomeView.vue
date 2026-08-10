@@ -125,7 +125,7 @@
 <script>
 import CustomButton from "./CustomButton.vue";
 // import { useRouter } from "vue-router";
-import Helper from "src/services/utils";
+import Helper from 'src/services/helper/utils';
 import UserService from "src/services/api/UserService.js";
 
 export default {

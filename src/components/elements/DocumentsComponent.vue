@@ -79,7 +79,7 @@
 
 <script>
 import UserService from 'src/services/api/UserService';
-import Helper from 'src/services/utils';
+import Helper from 'src/services/helper/utils';
 import AddDocumentComponent from '../user/AddDocumentComponent.vue';
 import RentalService from 'src/services/api/RentalService';
 
