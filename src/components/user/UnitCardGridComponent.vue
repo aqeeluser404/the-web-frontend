@@ -362,8 +362,8 @@ import BedStatsComponent from './BedStatsComponent.vue'
 import UnitDetailedApplicationForm from './UnitDetailedApplicationForm.vue'
 // import UnitDetailsComponent from './UnitDetailsComponent.vue'
 // import UnitApplicationFormComponent from './UnitApplicationFormComponent.vue'
-import UnitService from '../../services/UnitService'
-import RentalService from '../../services/RentalService'
+import UnitService from 'src/services/api/UnitService';
+import RentalService from 'src/services/api/RentalService';
 import Helper from '../../services/utils'
 import floor1 from 'src/assets/resources/floorLayout/floorPlan1.png'
 import floor2 from 'src/assets/resources/floorLayout/floorPlan2.png'

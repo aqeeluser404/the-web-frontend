@@ -233,7 +233,7 @@ import web3dlogoBlack from '../assets/resources/logos/web3dlogoBlack.png'
 import UserService from 'src/services/api/UserService'
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
-import ExportDataService from 'src/services/ExportDataService'
+import ExportDataService from 'src/services/api/ExportDataService'
 import { showSessionExpired } from 'src/services/showShessionExpired';
 
 import main from 'src/assets/resources/home/hero/h0.png';

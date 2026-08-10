@@ -17,7 +17,7 @@
 
 <script>
 import UnitsCardComponent from '../../components/user/UnitCardComponent.vue'
-import RentalService from '../../services/RentalService'
+import RentalService from 'src/services/api/RentalService';
 import Helper from '../../services/utils'
 
 export default {

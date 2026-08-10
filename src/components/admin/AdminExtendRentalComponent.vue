@@ -26,8 +26,8 @@
 
 <script>
 import CustomButton from '../elements/CustomButton.vue';
-import RentalService from 'src/services/RentalService';
-import EmailService from 'src/services/EmailService';
+import RentalService from 'src/services/api/RentalService';
+import EmailService from 'src/services/api/EmailService';
 export default {
   name: 'AdminExtendRentalComponent',
 

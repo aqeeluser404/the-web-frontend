@@ -426,11 +426,11 @@
 <script>
 import CustomButton from 'src/components/elements/CustomButton.vue'
 import Helper from 'src/services/utils'
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 import UserService from 'src/services/api/UserService';
-import EmailService from 'src/services/EmailService';
-import UnitService from 'src/services/UnitService';
-import JotformService from 'src/services/JotformService';
+import EmailService from 'src/services/api/EmailService';
+import UnitService from 'src/services/api/UnitService';
+import JotformService from 'src/services/api/JotformService';
 
 export default {
   name: 'AdminRentalApprovalComponent',

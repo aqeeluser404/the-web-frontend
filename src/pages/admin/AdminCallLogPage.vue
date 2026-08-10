@@ -168,15 +168,15 @@
 import { Chart, PieController, ArcElement, Tooltip, Legend } from 'chart.js';
 Chart.register(PieController, ArcElement, Tooltip, Legend);
 
-import CallLogService from 'src/services/CallLogService';
+import CallLogService from "src/services/api/CallLogService";
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserService from 'src/services/api/UserService';
 import AdminUpdateCallLogComponent from 'src/components/admin/AdminUpdateCallLogComponent.vue';
-import EmailService from 'src/services/EmailService';
-import ExportDataService from 'src/services/ExportDataService';
+import EmailService from 'src/services/api/EmailService';
+import ExportDataService from 'src/services/api/ExportDataService'
 import AdminUpdateCallLogNotes from 'src/components/admin/AdminUpdateCallLogNotes.vue';
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 
 export default {
   data() {

@@ -207,7 +207,7 @@
 
 <script>
 import CustomButton from '../elements/CustomButton.vue';
-import UnitService from 'src/services/UnitService';
+import UnitService from 'src/services/api/UnitService';
 
 export default {
   name: 'AdminAddUnitComponent',

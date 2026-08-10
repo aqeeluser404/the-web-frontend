@@ -1,6 +1,6 @@
 // PHP CODE
 import axiosInstance from 'src/services/api/axiosInstance'
-import Logger from "./Logger"
+import Logger from 'src/services/helper/Logger'
 
 class ExportDataService {
   static async exportData() {

@@ -456,10 +456,10 @@
 <script>
 import Helper from 'src/services/utils'
 import CustomButton from 'src/components/elements/CustomButton.vue'
-import RentalService from 'src/services/RentalService'
+import RentalService from 'src/services/api/RentalService';
 import SignaturePad from '../elements/SignaturePad.vue'
 import SimpleZoom from '../elements/SimpleZoom.vue'
-import EmailService from 'src/services/EmailService'
+import EmailService from 'src/services/api/EmailService';
 import UserService from 'src/services/api/UserService.js'
 
 export default {

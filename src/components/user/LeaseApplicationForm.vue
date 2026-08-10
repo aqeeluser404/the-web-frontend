@@ -342,8 +342,8 @@ import { PDFDocument, rgb } from 'pdf-lib'
 import PDFInput from '../elements/PDFInput.vue';
 import PDFCheckbox from '../elements/PDFCheckbox.vue';
 import PDFSignPad from '../elements/PDFSignPad.vue';
-import RentalService from 'src/services/RentalService.js';
-import EmailService from 'src/services/EmailService.js';
+import RentalService from 'src/services/api/RentalService';
+import EmailService from 'src/services/api/EmailService';
 import CustomButton from '../elements/CustomButton.vue';
 
 export default {

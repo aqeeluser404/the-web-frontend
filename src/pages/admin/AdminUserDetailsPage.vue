@@ -417,9 +417,9 @@ import Utf8 from 'crypto-js/enc-utf8';
 import Helper from 'src/services/utils';
 import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 import AdminViewUserRentalComponent from 'src/components/admin/AdminViewUserRentalComponent.vue'
-import CallLogService from 'src/services/CallLogService';
+import CallLogService from "src/services/api/CallLogService";
 import DocumentsComponent from 'src/components/elements/DocumentsComponent.vue';
 
 export default {

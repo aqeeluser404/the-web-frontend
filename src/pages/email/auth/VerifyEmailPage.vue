@@ -40,7 +40,7 @@
 
 
 <script>
-import EmailService from 'src/services/EmailService'
+import EmailService from 'src/services/api/EmailService';
 import CustomButton from 'src/components/elements/CustomButton.vue'
 
 export default {

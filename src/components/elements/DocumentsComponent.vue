@@ -81,7 +81,7 @@
 import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
 import AddDocumentComponent from '../user/AddDocumentComponent.vue';
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 
 export default {
   data() {

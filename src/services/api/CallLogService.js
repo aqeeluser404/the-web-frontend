@@ -1,27 +1,18 @@
 import axiosInstance from 'src/services/api/axiosInstance'
-import Logger from './Logger';
+import Logger from 'src/services/helper/Logger'
 
-class ShutttleService {
-  static async createShuttle(shuttleDetails) {
-    const ENDPOINT = "/shuttle"
+class CallLogService {
+  static async createCallLog(callLogDetails) {
+    const ENDPOINT = "/call-log"
     try {
-      const response = await axiosInstance.post(ENDPOINT, shuttleDetails)
+      const response = await axiosInstance.post(ENDPOINT, callLogDetails)
       return response.data
     } catch (error) {
       Logger.error(error)
     }
   }
-  static async findShuttleById(shuttleId) {
-    const ENDPOINT = `/shuttle/${shuttleId}`
-    try {
-      const response = await axiosInstance.get(ENDPOINT)
-      return response.data
-    } catch (error) {
-      Logger.error(error)
-    }
-  }
-  static async findMyShuttles(userId) {
-    const ENDPOINT = `/users/${userId}/shuttles`
+  static async findCallLogById(callLogId) {
+    const ENDPOINT = `/call-log/${callLogId}`
     try {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
@@ -29,8 +20,8 @@ class ShutttleService {
       Logger.error(error)
     }
   }
-  static async findAllShuttles() {
-    const ENDPOINT = "/shuttles"
+  static async findMyCallLogs(userId) {
+    const ENDPOINT = `/users/${userId}/call-logs`
     try {
       const response = await axiosInstance.get(ENDPOINT)
       return response.data
@@ -38,17 +29,26 @@ class ShutttleService {
       Logger.error(error)
     }
   }
-  static async updateShuttle(shuttleId, shuttleDetails) {
-    const ENDPOINT = `/shuttle/${shuttleId}`
+  static async findAllCallLogs() {
+    const ENDPOINT = "/call-logs"
     try {
-      const response = await axiosInstance.put(ENDPOINT, shuttleDetails)
+      const response = await axiosInstance.get(ENDPOINT)
       return response.data
     } catch (error) {
       Logger.error(error)
     }
   }
-  static async deleteShuttle(shuttleId) {
-    const ENDPOINT = `/shuttle/${shuttleId}`
+  static async updateCallLog(callLogId, callLogDetails) {
+    const ENDPOINT = `/call-log/${callLogId}`
+    try {
+      const response = await axiosInstance.put(ENDPOINT, callLogDetails)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+    }
+  }
+  static async deleteCallLog(callLogId) {
+    const ENDPOINT = `/call-log/${callLogId}`
     try {
       const response = await axiosInstance.delete(ENDPOINT)
       return response.data
@@ -59,4 +59,4 @@ class ShutttleService {
   }
 }
 
-export default ShutttleService
+export default CallLogService

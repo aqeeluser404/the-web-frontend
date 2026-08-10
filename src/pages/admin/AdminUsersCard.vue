@@ -203,7 +203,7 @@ import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import Helper from 'src/services/utils';
 import AdminAddUserComponent from 'src/components/admin/AdminAddUserComponent.vue';
-import ExportDataService from 'src/services/ExportDataService';
+import ExportDataService from 'src/services/api/ExportDataService'
 
 export default {
   name: "AdminUsersCard",

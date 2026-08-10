@@ -232,10 +232,10 @@
 
 <script>
 import { Html5Qrcode } from 'html5-qrcode'
-import ShuttleService from 'src/services/ShuttleService'
+import ShuttleService from "src/services/api/ShuttleService";
 import UserService from 'src/services/api/UserService'
-import RentalService from 'src/services/RentalService'
-import UnitService from 'src/services/UnitService'
+import RentalService from 'src/services/api/RentalService';
+import UnitService from 'src/services/api/UnitService';
 import Helper from 'src/services/utils'
 
 export default {

@@ -157,7 +157,7 @@
 
 <script>
 import CustomButton from "../elements/CustomButton.vue";
-import CallLogService from "src/services/CallLogService";
+import CallLogService from "src/services/api/CallLogService";
 import Helper from "src/services/utils";
 
 export default {

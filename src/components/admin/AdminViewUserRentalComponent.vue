@@ -65,7 +65,7 @@
 <script>
 import CustomButton from '../elements/CustomButton.vue';
 import Helper from 'src/services/utils'
-import UnitService from 'src/services/UnitService';
+import UnitService from 'src/services/api/UnitService';
 import { copyToClipboard } from 'quasar';
 
 export default {

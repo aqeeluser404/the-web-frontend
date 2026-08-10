@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import UnitService from 'src/services/UnitService'
+import UnitService from 'src/services/api/UnitService';
 
 export default {
   name: 'BedStatsComponent',

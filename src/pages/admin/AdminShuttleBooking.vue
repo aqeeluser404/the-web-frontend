@@ -205,12 +205,12 @@
 
 <script>
 import * as XLSX from 'xlsx';
-import ShuttleService from "src/services/ShuttleService";
+import ShuttleService from "src/services/api/ShuttleService";
 import Helper from "src/services/utils";
-import RentalService from "src/services/RentalService";
+import RentalService from 'src/services/api/RentalService';
 import CustomButton from "src/components/elements/CustomButton.vue";
 import UserService from "src/services/api/UserService";
-import UnitService from "src/services/UnitService";
+import UnitService from 'src/services/api/UnitService';
 
 export default {
   name: "AdminShuttleCard",

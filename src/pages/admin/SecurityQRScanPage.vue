@@ -139,7 +139,7 @@
 
 <script>
 import { Html5Qrcode } from "html5-qrcode";
-import VisitorService from "src/services/VisitorService";
+import VisitorService from "src/services/api/VisitorService";
 import Helper from "src/services/utils";
 
 export default {

@@ -20,7 +20,7 @@ Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Le
   LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
 );
 
-import UnitService from 'src/services/UnitService';
+import UnitService from 'src/services/api/UnitService';
 
 export default {
   data() {

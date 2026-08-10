@@ -1,5 +1,5 @@
 import axiosInstance from 'src/services/api/axiosInstance'
-import EmailService from "./EmailService";
+import EmailService from 'src/services/api/EmailService';
 
 class JotformService {
   static async sendSigningLinks(tenant, rentalId) {

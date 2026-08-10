@@ -309,8 +309,8 @@
 
 <script>
 import Helper from 'src/services/utils';
-import RentalService from 'src/services/RentalService';
-import UnitService from 'src/services/UnitService';
+import RentalService from 'src/services/api/RentalService';
+import UnitService from 'src/services/api/UnitService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import UserRequestComponent from 'src/components/user/UserRequestComponent.vue';
 import AddPayerComponent from 'src/components/user/AddPayerComponent.vue';

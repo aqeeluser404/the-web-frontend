@@ -41,7 +41,7 @@
 
 <script>
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import EmailService from 'src/services/EmailService'
+import EmailService from 'src/services/api/EmailService';
 import Helper from 'src/services/utils'
 
 export default {

@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 import UserService from 'src/services/api/UserService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 

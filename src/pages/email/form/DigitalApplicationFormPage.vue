@@ -105,8 +105,8 @@
 <script>
 import DigitalApplicationForm from 'src/components/user/DigitalApplicationForm.vue';
 import UserService from 'src/services/api/UserService';
-import RentalService from 'src/services/RentalService';
-import DraftService from 'src/services/DraftService';
+import RentalService from 'src/services/api/RentalService';
+import DraftService from 'src/services/api/DraftService.js';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 
 export default {

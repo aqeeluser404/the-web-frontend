@@ -284,10 +284,10 @@
 </template>
 
 <script>
-import CallLogService from 'src/services/CallLogService';
+import CallLogService from "src/services/api/CallLogService";
 import Helper from 'src/services/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 import UserService from 'src/services/api/UserService';
 export default {
 

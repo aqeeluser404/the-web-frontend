@@ -336,10 +336,10 @@
 import documentLogo from 'src/assets/resources/elements/document.png'
 import UserService from 'src/services/api/UserService';
 import Helper from 'src/services/utils';
-import EmailService from 'src/services/EmailService';
+import EmailService from 'src/services/api/EmailService';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AddDocumentComponent from 'src/components/user/AddDocumentComponent.vue';
-import RentalService from 'src/services/RentalService';
+import RentalService from 'src/services/api/RentalService';
 import { copyToClipboard } from 'quasar';
 import { useCategoryLockStore } from 'src/stores/categoryLock';
 import DigitalApplicationForm from 'src/components/user/DigitalApplicationForm.vue';

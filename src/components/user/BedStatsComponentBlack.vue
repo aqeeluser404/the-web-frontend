@@ -34,7 +34,7 @@
 
 <script>
 import Helper from 'src/services/utils'
-import UnitService from 'src/services/UnitService'
+import UnitService from 'src/services/api/UnitService';
 
 export default {
   name: 'BedStatsComponent',
