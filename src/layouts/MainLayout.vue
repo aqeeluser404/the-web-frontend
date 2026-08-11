@@ -102,7 +102,7 @@
                       </q-card-section>
                     </div>
                     <div class="col-md-6 col-12">
-                      <q-img :src="loginImage" class="side-image" />
+                      <q-img :src="loginImage" class="side-image" loading="eager" />
                     </div>
                   </div>
                 </q-card>
@@ -205,11 +205,12 @@
     </q-card>
 
     <!-- WHATSAPP BUTTONS -->
-    <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? '' : ''" color="secondary" text-color="white"
+    <FloatingActions v-if="!isAdminRoute" :actions="FloatingActions" />
+    <!-- <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? '' : ''" color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop"
       @click="toggleWhatsAppBox" />
     <q-btn v-if="!isAdminRoute" rounded color="secondary" text-color="white" icon="img:/assets/elements/whatsapp.png"
-      size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" />
+      size="lg" class="custom-button whats-app-btn-mobile" @click="toggleWhatsAppBox" /> -->
 
 
     <!-- PAGE ROUTING -->
@@ -240,6 +241,8 @@ import main from 'src/assets/resources/home/hero/h0.png';
 
 import { Capacitor } from '@capacitor/core';
 import MobileHomeView from 'src/components/elements/MobileHomeView.vue';
+
+import FloatingActions from 'src/components/elements/FloatingActions.vue';
 
 export default {
   data() {
@@ -286,10 +289,12 @@ export default {
             { label: 'Fees', to: '/fees' },
           ]
         },
-      ]
+      ],
+
+      FloatingActions: []
     }
   },
-  components: { CustomButton, MaintenanceBanner, UniversalMenu, QListItems, MobileHomeView },
+  components: { CustomButton, MaintenanceBanner, UniversalMenu, QListItems, MobileHomeView, FloatingActions },
 
   computed: {
     bookItems() {
@@ -489,6 +494,33 @@ headerHeight() {
   },
   mounted() {
     this.checkLoginStatus();
+
+    this.FloatingActions = [
+      {
+        label: "WhatsApp",
+        image: "/assets/elements/whatsapp.png",
+        color: "#25D366",
+        action: this.toggleWhatsAppBox
+      },
+      {
+        label: "Download App",
+        icon: "download",
+        color: "#1976D2",
+        action: this.downloadApk
+      },
+      {
+        label: "Apply Now",
+        icon: "home",
+        color: "#009B77",
+        action: () => this.$router.push("/units/apply/floor/1")
+      },
+      {
+        label: "AI Assistant",
+        icon: "smart_toy",
+        color: "#7B61FF",
+        action: this.openChatbot
+      }
+    ]
   },
   beforeUnmount() {
     clearTimeout(this.tokenTimeout);
@@ -516,6 +548,11 @@ headerHeight() {
     toggleMode() {
       this.showDesktopView = !this.showDesktopView;
       this.isMobileView = !this.isMobileView;
+    },
+    openChatbot() {
+      if (window.chatbase) {
+        window.chatbase('open')
+      }
     },
 
     // LOGIN SETUP

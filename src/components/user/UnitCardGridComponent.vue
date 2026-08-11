@@ -9,7 +9,7 @@
           :class="isHomePage ? 'bg-none' : 'bg-grey-3'">
           <q-carousel-slide v-for="(card, index) in carouselFloorCards" :key="card._id" :name="card._id"
             class="column no-wrap flex-center" style="position: relative; border-radius: 0;">
-            <q-img :src="card.imageUrl" loading="lazy" spinner-color="primary" :alt="'Floor ' + card._id"
+            <q-img :src="card.imageUrl" loading="eager" spinner-color="primary" :alt="'Floor ' + card._id"
               class="carousel-image cursor-pointer"
               :style="isHomePage ? 'background: none; border-radius: 0;' : 'border-radius: 0;'"
               :class="{ 'image-shadow': !isHomePage }" fit="contain" @click="openFloorPage(index)" />
@@ -18,7 +18,7 @@
 
         <!-- Smart Map -->
         <div class="map-image-wrapper" v-if="isSpecificFloorRoute">
-          <q-img v-if="filteredFloorCards.length > 0" :src="filteredFloorCards[0].imageUrl" class="hero-image"
+          <q-img v-if="filteredFloorCards.length > 0" :src="filteredFloorCards[0].imageUrl" class="hero-image" loading="eager"
             @click="openImageDialog(0)">
           </q-img>
         </div>

@@ -4,7 +4,7 @@
       <q-img
         src="~src/assets/resources/home/hero/h3.jpg"
         alt="Hero Image"
-        class="blurred-background"
+        class="blurred-background" loading="eager"
       />
     </div>
 

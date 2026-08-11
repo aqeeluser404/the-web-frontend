@@ -65,7 +65,7 @@
                 v-if="callLog.images && callLog.images.length > 0"
                 :src="getImageUrl(callLog.images[currentImageIndex].imageUrl)"
                 class="product-image cursor-zoom-in"
-                @click="showImageDialog = true" fit="contain"
+                @click="showImageDialog = true" fit="contain" loading="eager"
               />
               <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
               <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />

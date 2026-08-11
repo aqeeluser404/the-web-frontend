@@ -1,6 +1,6 @@
 <template>
   <div class="map-image-wrapper" style="position: relative; width: 100%; height: 100%;">
-    <q-img v-if="imageUrl" :src="imageUrl" class="hero-image" fit="contain" />
+    <q-img v-if="imageUrl" loading="eager" :src="imageUrl" class="hero-image" fit="contain" />
 
     <div
       v-for="marker in markers"

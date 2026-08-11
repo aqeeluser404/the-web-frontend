@@ -78,7 +78,7 @@
                 </q-card-section>
                 <q-card-section class="row justify-center">
                   <div class="image-container">
-                    <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="image" />
+                    <q-img v-if="unit.images?.length" :src="getImageUrl(unit.images[0].imageUrl)" class="image" loading="eager" />
                   </div>
                 </q-card-section>
                 <q-card-section class="row justify-between">

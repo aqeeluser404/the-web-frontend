@@ -12,7 +12,7 @@
           v-if="unit.images && unit.images.length > 0"
           :src="getImageUrl(unit.images[currentImageIndex].imageUrl)"
           class="q-mb-md product-image"
-          :ratio="1"
+          :ratio="1" loading="eager"
         />
         <button class="nav-button left" @click="prevImage">‹</button>
         <button class="nav-button right" @click="nextImage">›</button>

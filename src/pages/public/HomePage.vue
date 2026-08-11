@@ -9,7 +9,7 @@
         <q-carousel-slide v-for="(card, index) in heroCards" :key="card._id || index" :name="card._id || index"
           class="hero-carousel__slide">
           <q-img :src="card.imageUrl" :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + (card._id || index))"
-            class="hero-carousel__image" :fit="getFit(index)" loading="lazy" />
+            class="hero-carousel__image" :fit="getFit(index)" loading="eager" no-transition />
         </q-carousel-slide>
       </q-carousel>
     </section>
@@ -95,7 +95,7 @@
             </div>
           </q-card>
           <div class="why-choose-image col-12 col-md q-pl-md mobile-no-pl flex justify-center slide-in-right">
-            <q-img :src="heroCards[0]?.imageUrl" @click="openImageDialog(heroCards[0]?.imageUrl)" class="side-image" />
+            <q-img :src="heroCards[0]?.imageUrl" @click="openImageDialog(heroCards[0]?.imageUrl)" class="side-image" loading="eager" no-transition />
           </div>
         </div>
         <div class="section-spacer-md"></div>
@@ -179,7 +179,7 @@
                               class="hero-carousel__slide">
                               <q-img :src="card.imageUrl"
                                 :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                                class="hero-carousel__image" fit="cover" loading="lazy" />
+                                class="hero-carousel__image" fit="cover" loading="eager" no-transition />
                             </q-carousel-slide>
                           </q-carousel>
                         </section>
@@ -232,7 +232,7 @@
                               class="hero-carousel__slide">
                               <q-img :src="card.imageUrl"
                                 :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                                class="hero-carousel__image" fit="cover" loading="lazy" />
+                                class="hero-carousel__image" fit="cover" loading="eager" no-transition />
                             </q-carousel-slide>
                           </q-carousel>
                         </section>
@@ -272,7 +272,7 @@
                               class="hero-carousel__slide">
                               <q-img :src="card.imageUrl"
                                 :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                                class="hero-carousel__image" fit="cover" loading="lazy" />
+                                class="hero-carousel__image" fit="cover" loading="eager" no-transition />
                             </q-carousel-slide>
                           </q-carousel>
                         </section>
@@ -320,7 +320,7 @@
                               class="hero-carousel__slide">
                               <q-img :src="card.imageUrl"
                                 :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                                class="hero-carousel__image" fit="cover" loading="lazy" />
+                                class="hero-carousel__image" fit="cover" loading="eager" no-transition />
                             </q-carousel-slide>
                           </q-carousel>
                         </section>
@@ -443,8 +443,8 @@
 
 
     <!-- overlay button -->
-    <CustomButton customStyle="" class="overlay-btn" label="Apply Now" @click="openUnitRentals" />
-    <CustomButton customStyle="" class="overlay-btn-2" label="Download App" @click="downloadApk()" />
+    <!-- <CustomButton customStyle="" class="overlay-btn" label="Apply Now" @click="openUnitRentals" />
+    <CustomButton customStyle="" class="overlay-btn-2" label="Download App" @click="downloadApk()" /> -->
   </q-page>
 </template>
 
@@ -653,7 +653,7 @@ export default {
     },
 
 
-    getFit (index) {
+    getFit(index) {
       return index < this.coverCount ? 'cover' : 'contain'
     },
 
