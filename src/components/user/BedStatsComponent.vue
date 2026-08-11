@@ -24,12 +24,21 @@
 <script>
 import UnitService from 'src/services/api/UnitService';
 
+// ─── Module-level constants — created once, not on every call ───
+const KEY_TO_NUMBER = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 }
+const NUMBER_TO_KEY = { 1: 'firstFloor', 2: 'secondFloor', 3: 'thirdFloor' }
+const FLOOR_LEVEL_TO_KEY = {
+  'First Floor': 'firstFloor',
+  'Second Floor': 'secondFloor',
+  'Third Floor': 'thirdFloor'
+}
+
 export default {
   name: 'BedStatsComponent',
   props: {
     unitYear: {
       type: [Number, String],
-      default: null // null = all years
+      default: null
     }
   },
   data() {
@@ -58,47 +67,29 @@ export default {
       const match = this.$route.path.match(/\/units\/apply\/floor\/(\d+)$/)
       return match ? parseInt(match[1]) : null
     },
-    // isHomePage() {
-    //   return this.$route.path === '/'
-    // },
+    isHomeRoute() {
+      return this.$route.path === '/'
+    }
   },
   methods: {
-    getBackgroundColor(floorKey) {
-      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 };
-      const floorNumber = keyToNumber[floorKey];
+    // ─── One shared check instead of 3 duplicated ones ───
+    isFloorActive(floorKey) {
+      if (this.isHomeRoute && floorKey === 'firstFloor') return true
+      return this.currentFloorParam === KEY_TO_NUMBER[floorKey]
+    },
 
-      if (this.$route.path === '/' && floorKey === 'firstFloor') {
-        return '#009B77';
-      }
-      return this.currentFloorParam === floorNumber ? '#009B77' : 'white';
+    getBackgroundColor(floorKey) {
+      return this.isFloorActive(floorKey) ? '#009B77' : 'white'
     },
     getTextColor(floorKey) {
-      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 };
-      const floorNumber = keyToNumber[floorKey];
-
-      if (this.$route.path === '/' && floorKey === 'firstFloor') {
-        return 'white';
-      }
-      return this.currentFloorParam === floorNumber ? 'white' : 'black';
+      return this.isFloorActive(floorKey) ? 'white' : 'black'
     },
-
     getProgressColor(floorKey) {
-      const keyToNumber = { firstFloor: 1, secondFloor: 2, thirdFloor: 3 }
-      const floorNumber = keyToNumber[floorKey]
+      if (this.isFloorActive(floorKey)) return 'white'
 
-      if (this.$route.path === '/' && floorKey === 'firstFloor') {
-        return 'white';
-      }
-
-      if (this.currentFloorParam === floorNumber) {
-        return 'white'
-      }
-      const available = this.stats[floorKey].available
-      const total = this.stats[floorKey].total
+      const { available, total } = this.stats[floorKey]
+      if (total === 0) return 'black' // avoid NaN from 0/0
       const percentage = available / total
-
-      // if (percentage > 0.5) return 'positive'
-      // if (percentage > 0.25) return 'warning'
 
       if (percentage > 0.5) return 'black'
       if (percentage > 0.25) return 'black'
@@ -113,91 +104,52 @@ export default {
         overall: { available: 0, total: 0 }
       }
 
-      const filteredUnits = this.unitYear
-        ? this.units.filter(unit => String(unit.unitYear) === String(this.unitYear))
-        : this.units
+      const targetYear = this.unitYear ? String(this.unitYear) : null
 
-      filteredUnits.forEach(unit => {
-        const floor = unit.floorLevel
+      // Single pass: filter + accumulate together instead of
+      // filtering into a new array first, then looping over that.
+      for (const unit of this.units) {
+        if (targetYear && String(unit.unitYear) !== targetYear) continue
 
-        if (unit.subUnits && Array.isArray(unit.subUnits) && unit.subUnits.length) {
-          // Reservation is checked per sub-unit, not at the unit level
-          // unit.subUnits.forEach(sub => {
-          //   const isCountable = !sub.reservedBy
-          //   const isAvailable = sub.isAvailable && !sub.reservedBy
+        const floorKey = FLOOR_LEVEL_TO_KEY[unit.floorLevel] || 'firstFloor'
+        const bucket = stats[floorKey]
 
-          //   if (isCountable) {
-          //     stats[floorKey(floor)].total += 1
-          //   }
-          //   if (isAvailable) {
-          //     stats[floorKey(floor)].available += 1
-          //   }
-          // })
-          unit.subUnits.forEach(sub => {
-            // Every sub-unit counts toward total capacity, reserved or not
-            stats[floorKey(floor)].total += 1
-
-            const isAvailable = sub.isAvailable && !sub.reservedBy
-            if (isAvailable) {
-              stats[floorKey(floor)].available += 1
+        if (unit.subUnits && unit.subUnits.length) {
+          for (const sub of unit.subUnits) {
+            bucket.total += 1
+            if (sub.isAvailable && !sub.reservedBy) {
+              bucket.available += 1
             }
-          })
+          }
         } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
-          // No subUnits — this unit's own reservedBy governs it
-          if (unit.reservedBy) return
+          if (unit.reservedBy) continue
 
           const occupants = Math.floor(unit.unitOccupants || 0)
           const current = Math.floor(unit.currentOccupants || 0)
-          const availableBeds = Math.max(0, occupants - current)
-
-          stats[floorKey(floor)].available += availableBeds
-          stats[floorKey(floor)].total += occupants
-        }
-      })
-
-      stats.overall.available =
-        stats.firstFloor.available +
-        stats.secondFloor.available +
-        stats.thirdFloor.available
-
-      stats.overall.total =
-        stats.firstFloor.total +
-        stats.secondFloor.total +
-        stats.thirdFloor.total
-
-      this.stats = stats
-
-      function floorKey(level) {
-        switch (level) {
-          case 'First Floor': return 'firstFloor'
-          case 'Second Floor': return 'secondFloor'
-          case 'Third Floor': return 'thirdFloor'
-          default: return 'firstFloor'
+          bucket.available += Math.max(0, occupants - current)
+          bucket.total += occupants
         }
       }
+
+      stats.overall.available =
+        stats.firstFloor.available + stats.secondFloor.available + stats.thirdFloor.available
+      stats.overall.total =
+        stats.firstFloor.total + stats.secondFloor.total + stats.thirdFloor.total
+
+      this.stats = stats
     },
+
     async fetchUnits() {
       try {
-        const response = await UnitService.getAllUnits()
-        this.units = response
+        this.units = await UnitService.getAllUnits()
         this.calculateBedStats()
       } catch (error) {
         console.error('Error fetching units:', error)
       }
     },
-    async goToFloor(key) {
-      // const isLoggedIn = await Helper.checkCookie()
-      // if (!isLoggedIn) {
-      //   this.$router.push(`/auth/login`)
-      //   this.$q.notify({ type: 'negative', message: `Please login to continue.` })
-      //   return
-      // }
-      const keyToNumber = {
-        firstFloor: 1,
-        secondFloor: 2,
-        thirdFloor: 3
-      }
-      const floorNumber = keyToNumber[key]
+
+    goToFloor(key) {
+      const floorNumber = KEY_TO_NUMBER[key]
       if (floorNumber) {
         this.$router.push(`/units/apply/floor/${floorNumber}`)
       }

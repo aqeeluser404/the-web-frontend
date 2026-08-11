@@ -398,7 +398,7 @@
 
 <script>
 import { date } from "quasar";
-import ShutttleService from "src/services/ShuttleService";
+import ShutttleService from "src/services/api/ShuttleService";
 import Helper from 'src/services/helper/utils';
 import RentalService from 'src/services/api/RentalService';
 import CustomButton from "src/components/elements/CustomButton.vue";

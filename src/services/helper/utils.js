@@ -1,6 +1,6 @@
 import { format } from 'quasar'
 import axios from 'axios'
-  import UserService from 'src/services/api/UserService'
+import UserService from 'src/services/api/UserService'
 import UnitService from 'src/services/api/UnitService';
 import CryptoJS from 'crypto-js';
 import { jwtDecode } from "jwt-decode";
@@ -20,20 +20,20 @@ class Helper {
     return date.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
   }
 
-// static formatDate(dateString) {
-//   if (!dateString) return 'N/A';
+  // static formatDate(dateString) {
+  //   if (!dateString) return 'N/A';
 
-//   const date = new Date(dateString);
-//   if (isNaN(date.getTime())) return 'Invalid Date';
+  //   const date = new Date(dateString);
+  //   if (isNaN(date.getTime())) return 'Invalid Date';
 
-//   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  //   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-//   const day = date.getUTCDate();
-//   const month = months[date.getUTCMonth()];
-//   const year = date.getUTCFullYear();
+  //   const day = date.getUTCDate();
+  //   const month = months[date.getUTCMonth()];
+  //   const year = date.getUTCFullYear();
 
-//   return `${day} ${month} ${year}`;
-// }
+  //   return `${day} ${month} ${year}`;
+  // }
 
 
   static formatTime(dateString) {
@@ -104,6 +104,28 @@ class Helper {
       return `${webBase}images/default.jpg`;
     }
   }
+
+  // static getImageUrl(imagePath, width = null) {
+  //   try {
+  //     const webBase = 'https://the-web.co.za/get-file.php?file=';
+  //     const defaultImage = 'images/default.jpg';
+  //     let url;
+
+  //     if (imagePath && typeof imagePath === 'object' && imagePath.imageUrl) {
+  //       url = Helper.normalizeImagePath(imagePath.imageUrl, webBase, defaultImage);
+  //     } else if (typeof imagePath === 'string') {
+  //       url = Helper.normalizeImagePath(imagePath, webBase, defaultImage);
+  //     } else {
+  //       console.error('Invalid image path:', imagePath);
+  //       url = `${webBase}${encodeURIComponent(defaultImage)}`;
+  //     }
+
+  //     return width ? `${url}&w=${width}` : url;
+  //   } catch (error) {
+  //     console.error('Error generating image URL:', error);
+  //     return `${webBase}images/default.jpg`;
+  //   }
+  // }
 
   static normalizeImagePath(path, webBase, defaultPath) {
     if (path.startsWith('http')) {

@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import UnitsCardComponent from '../../components/user/UnitCardComponent.vue'
+import UnitsCardComponent from 'src/components/user/UnitCardComponent.vue'
 import RentalService from 'src/services/api/RentalService';
 import Helper from 'src/services/helper/utils';
 
