@@ -811,70 +811,69 @@ firstFloorCards() {
     // FETCHING UNITS AND RENTALS
     // ------------------------------------------------------------------------------------------
 
-async fetchUnits() {
-  // Show loading dialog
-  this.$emit('update:loading', true)
-  this.loadingDialog = true // If you have a local loading state
+    async fetchUnits() {
+      // Show loading dialog
+      this.$emit('update:loading', true)
+      this.loadingDialog = true // If you have a local loading state
 
-  try {
-    const response = await UnitService.getAllUnits()
+      try {
+        const response = await UnitService.getAllUnits()
 
-    // Single pass: build normalized units + reserved list together
-    this.allReservedUnits = []
-    this.units = response.map(unit => {
-      if (unit.reservedBy) this.allReservedUnits.push(unit)
-      return {
-        ...unit,
-        unitYear: Number(unit.unitYear) || 2026
+        // Single pass: build normalized units + reserved list together
+        this.allReservedUnits = []
+        this.units = response.map(unit => {
+          if (unit.reservedBy) this.allReservedUnits.push(unit)
+          return {
+            ...unit,
+            unitYear: Number(unit.unitYear) || 2026
+          }
+        })
+
+        this.organizeUnitsByFloor()
+
+        if (this.isLoggedIn) {
+          await this.fetchMyRentals()
+        }
+      } catch (err) {
+        console.error('Error fetching units:', err)
+        // Optionally show an error message
+        this.$q.notify({
+          type: 'negative',
+          message: 'Failed to load units. Please try again.',
+          position: 'top'
+        })
+      } finally {
+        // Hide loading dialog
+        this.$emit('update:loading', false)
+        this.loadingDialog = false
       }
-    })
-
-    this.organizeUnitsByFloor()
-
-    if (this.isLoggedIn) {
-      await this.fetchMyRentals()
-    }
-  } catch (err) {
-    console.error('Error fetching units:', err)
-    // Optionally show an error message
-    this.$q.notify({
-      type: 'negative',
-      message: 'Failed to load units. Please try again.',
-      position: 'top'
-    })
-  } finally {
-    // Hide loading dialog
-    this.$emit('update:loading', false)
-    this.loadingDialog = false
-  }
-},
-async fetchMyRentals() {
-  // These two don't depend on each other's result, run in parallel
-  const [user] = await Promise.all([
-    Helper.fetchUserDetails(),
-    this.checkLoginStatus()
-  ])
-  this.myRentals = await RentalService.findMyRentals(user._id)
-},
+    },
+    async fetchMyRentals() {
+      // These two don't depend on each other's result, run in parallel
+      const [user] = await Promise.all([
+        Helper.fetchUserDetails(),
+        this.checkLoginStatus()
+      ])
+      this.myRentals = await RentalService.findMyRentals(user._id)
+    },
 
     // FILTER BY FLOOR
     // ------------------------------------------------------------------------------------------
 
-organizeUnitsByFloor() {
-  const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
+    organizeUnitsByFloor() {
+      const sortedUnits = Helper.sortByProperty(this.units, 'unitNumber', 'asc')
 
-  // Single pass instead of 3 separate .filter() scans over the full array
-  const floorMap = {
-    'First Floor': [],
-    'Second Floor': [],
-    'Third Floor': []
-  }
-  for (const unit of sortedUnits) {
-    floorMap[unit.floorLevel]?.push(unit)
-  }
-  this.allUnits = [floorMap['First Floor'], floorMap['Second Floor'], floorMap['Third Floor']]
-},
-
+      // Single pass instead of 3 separate .filter() scans over the full array
+      const floorMap = {
+        'First Floor': [],
+        'Second Floor': [],
+        'Third Floor': []
+      }
+      for (const unit of sortedUnits) {
+        floorMap[unit.floorLevel]?.push(unit)
+      }
+      this.allUnits = [floorMap['First Floor'], floorMap['Second Floor'], floorMap['Third Floor']]
+    },
 
     resetFilters() {
       this.search = ''
@@ -908,15 +907,15 @@ organizeUnitsByFloor() {
     },
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-parseFloorFromRoute() {
-  if (this.isSpecificFloorRoute) {
-    this.currentFloor = parseInt(this.$route.params.floor)
-    this.selectedFloor = this.currentFloor
-    this.expanded = this.expanded.map((_, i) => i === this.currentFloor - 1)
-    const card = this.floorCards.find(card => card._id === this.currentFloor)
-    this.currentSlide = card?._id ?? 1
-  }
-},
+    parseFloorFromRoute() {
+      if (this.isSpecificFloorRoute) {
+        this.currentFloor = parseInt(this.$route.params.floor)
+        this.selectedFloor = this.currentFloor
+        this.expanded = this.expanded.map((_, i) => i === this.currentFloor - 1)
+        const card = this.floorCards.find(card => card._id === this.currentFloor)
+        this.currentSlide = card?._id ?? 1
+      }
+    },
     async goToFloor(floorKeyOrId) {
       const keyToNumber = {
         firstFloor: 1,

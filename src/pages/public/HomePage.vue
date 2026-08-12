@@ -21,7 +21,7 @@
       <div class="cta-banner padding-y-xl constrain-standard">
         <div class="row justify-center items-center">
           <div @click="openUnitRentals" class="cursor-pointer text-h4 text-md-h3 text-weight-bold text-center">
-            <span class="text-underline-on-hover text-weight-bold">APPLY NOW FOR 2026 RESIDENCY</span>
+            <span class="text-underline-on-hover text-weight-bold">APPLY NOW FOR 2027 RESIDENCY</span>
           </div>
         </div>
       </div>
@@ -740,6 +740,7 @@ export default {
   },
 
   mounted() {
+
     window.addEventListener('scroll', this.handleScroll)
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {

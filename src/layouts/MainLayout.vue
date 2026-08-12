@@ -54,21 +54,21 @@
             </div>
 
             <!-- Book Icons -->
-            <UniversalMenu :items="bookItems" :hover="true" class="large-screen-only">
+            <UniversalMenu :items="bookItems" :hover="false" class="large-screen-only">
               <template #trigger>
                 <q-btn flat label="Book Now" class="custom-button q-py-sm q-px-md" />
               </template>
             </UniversalMenu>
 
             <!-- Accounts Icons -->
-            <UniversalMenu :items="accountItems" :hover="true" class="large-screen-only" v-show="isLoggedIn">
+            <UniversalMenu :items="accountItems" :hover="false" class="large-screen-only" v-show="isLoggedIn">
               <template #trigger>
                 <q-btn flat label="Account" class="custom-button q-py-sm q-px-md" />
               </template>
             </UniversalMenu>
 
             <!-- Admin Icons -->
-            <UniversalMenu :items="adminItems" :hover="true" class="large-screen-only"
+            <UniversalMenu :items="adminItems" :hover="false" class="large-screen-only"
               v-show="isLoggedIn && isAdminUser">
               <template #trigger>
                 <q-btn flat label="Administration" class="custom-button q-py-sm q-px-md" />
