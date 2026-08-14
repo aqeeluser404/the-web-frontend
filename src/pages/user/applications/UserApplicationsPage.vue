@@ -14,15 +14,25 @@
       </div>
     </q-banner> -->
 
-    <q-banner v-if="addPayerInformation"
-      class="bg-black text-white full-width" @click="$router.push('/user/profile')">
-      <div class="row justify-center items-center q-pa-md" style="cursor: pointer;">
+    <q-banner
+      v-if="addPayerInformation"
+      class="bg-black text-white full-width"
+      @click="$router.push('/user/profile')"
+    >
+      <div
+        class="row justify-center items-center q-pa-md"
+        style="cursor: pointer"
+      >
         <div class="text-center">
           <!-- <q-icon name="warning" class="q-mr-sm" size="24px" /> -->
           <span>
-            Your room/bed selection for your application has been successfully completed. <br>
-            Click this banner to navigate to your profile and ensure all your documents have been uploaded. <br>
-            Upon successful completion of your document upload, an email will be sent to you with instructions to complete your online credit check application.
+            Your room/bed selection for your application has been successfully
+            completed. <br />
+            Click this banner to navigate to your profile and ensure all your
+            documents have been uploaded. <br />
+            Upon successful completion of your document upload, an email will be
+            sent to you with instructions to complete your online credit check
+            application.
           </span>
         </div>
       </div>
@@ -30,42 +40,48 @@
 
     <div v-if="!loading" class="constrain-standard row justify-center q-py-md">
       <q-card class="col-md-12 col-12 soft-shadow-card">
-
         <q-card-section class="row stats-header justify-center">
           <div class="text-h6">Rental Information</div>
-          <q-separator class="q-my-sm" style="width: 100%;" />
+          <q-separator class="q-my-sm" style="width: 100%" />
         </q-card-section>
 
         <!-- <q-separator /> -->
 
         <q-card-section class="row text-left">
           <div>
-            For <span style="text-decoration: underline;">returning</span> applicants, you may only apply for one rental
-            at a time. If you have an existing application thats ongoing, you will not be able to apply for another
-            rental until the previous rental has ended.
-            Please note that once your application has been approved, cancellation may not be possible as your booking
-            will have been confirmed and the application process will have progressed significantly. You may cancel your
-            application during the following phases:
+            For
+            <span style="text-decoration: underline">returning</span>
+            applicants, you may only apply for one rental at a time. If you have
+            an existing application thats ongoing, you will not be able to apply
+            for another rental until the previous rental has ended. Please note
+            that once your application has been approved, cancellation may not
+            be possible as your booking will have been confirmed and the
+            application process will have progressed significantly. You may
+            cancel your application during the following phases:
           </div>
           <ul>
             <li>The Processing/Pending phase</li>
             <li>The Rejection phase</li>
           </ul>
           <div>
-            If your application is rejected, you will be notified via email and site notifications. To avoid rejection,
-            please ensure that you have provided all the necessary documents and information. Rejection may occur if
-            <span style="text-decoration: underline;">incorrect or outdated documents</span> are provided, or if false
-            information is submitted. In such cases, you will be required to cancel the rejected application and reapply
+            If your application is rejected, you will be notified via email and
+            site notifications. To avoid rejection, please ensure that you have
+            provided all the necessary documents and information. Rejection may
+            occur if
+            <span style="text-decoration: underline"
+              >incorrect or outdated documents</span
+            >
+            are provided, or if false information is submitted. In such cases,
+            you will be required to cancel the rejected application and reapply
             by re-uploading the documents during the rejection phase.
-            <br><br>
+            <br /><br />
             <span>
-              Please note: documents can still be uploaded even if your application is pending or ongoing. Be sure to
-              monitor your email and site notifications for any requests or updates regarding missing or required
-              documents.
+              Please note: documents can still be uploaded even if your
+              application is pending or ongoing. Be sure to monitor your email
+              and site notifications for any requests or updates regarding
+              missing or required documents.
             </span>
-
           </div>
-
         </q-card-section>
 
         <q-separator />
@@ -154,7 +170,12 @@
 
         <q-card-section>
           <q-table
-            flat bordered :rows="rentals" :columns="rentalColumns" @row-click="viewRentalDetails" row-key="_id"
+            flat
+            bordered
+            :rows="rentals"
+            :columns="rentalColumns"
+            @row-click="viewRentalDetails"
+            row-key="_id"
           >
             <template v-slot:body-cell-index="props">
               <q-td :props="props">
@@ -205,16 +226,16 @@
                 <div v-if="props.row.parking?.hasParking">
                   R {{ Number(props.row.parking?.fee).toFixed(2) }}
                 </div>
-                <div v-else>
-                  No
-                </div>
+                <div v-else>No</div>
               </q-td>
             </template>
 
             <template v-slot:body-cell-unitPrice="props">
               <q-td :props="props">
                 <div>
-                  {{ Number(props.row.selectedSubUnits.price.price).toFixed(2) }}
+                  {{
+                    Number(props.row.selectedSubUnits.price.price).toFixed(2)
+                  }}
                 </div>
               </q-td>
             </template>
@@ -222,7 +243,9 @@
             <template v-slot:body-cell-paymentPlan="props">
               <q-td :props="props">
                 <div>
-                  {{ capitalizeFirstLetter(props.row.selectedSubUnits.price.name) }}
+                  {{
+                    capitalizeFirstLetter(props.row.selectedSubUnits.price.name)
+                  }}
                 </div>
               </q-td>
             </template>
@@ -259,7 +282,9 @@
 
             <template v-slot:body-cell-actions="props">
               <q-td :props="props">
-                <div class="row justify-center items-center q-gutter-sm no-wrap">
+                <div
+                  class="row justify-center items-center q-gutter-sm no-wrap"
+                >
                   <CustomButton
                     :disable="props.row.status !== 'Pending'"
                     flat
@@ -280,7 +305,13 @@
                   />
 
                   <CustomButton
-                    :disable="!( (props.row.status === 'Pending' || props.row.status === 'Active') && props.row.payerData.isValidated === false )"
+                    :disable="
+                      !(
+                        (props.row.status === 'Pending' ||
+                          props.row.status === 'Active') &&
+                        props.row.payerData.isValidated === false
+                      )
+                    "
                     flat
                     color="red"
                     text-color="red"
@@ -299,7 +330,10 @@
     <q-inner-loading :showing="loading" color="primary" size="md" />
 
     <q-dialog v-model="requestDialog">
-      <UserRequestComponent :rental="selectedRental" @close="handleDialogClose" />
+      <UserRequestComponent
+        :rental="selectedRental"
+        @close="handleDialogClose"
+      />
     </q-dialog>
     <q-dialog v-model="addPayerDialog">
       <AddPayerComponent :rental="addPayerRental" @close="handleDialogClose" />
@@ -308,12 +342,12 @@
 </template>
 
 <script>
-import Helper from 'src/services/helper/utils';
-import RentalService from 'src/services/api/RentalService';
-import UnitService from 'src/services/api/UnitService';
-import CustomButton from 'src/components/elements/CustomButton.vue';
-import UserRequestComponent from 'src/components/user/UserRequestComponent.vue';
-import AddPayerComponent from 'src/components/user/AddPayerComponent.vue';
+import Helper from "src/services/helper/utils";
+import RentalService from "src/services/api/RentalService";
+import UnitService from "src/services/api/UnitService";
+import CustomButton from "src/components/elements/CustomButton.vue";
+import UserRequestComponent from "src/components/user/UserRequestComponent.vue";
+import AddPayerComponent from "src/components/user/AddPayerComponent.vue";
 
 export default {
   data() {
@@ -323,10 +357,10 @@ export default {
       userDetails: {
         studentInfo: {
           isRegisteredStudent: false, // Default value for boolean
-          studentNumber: null,        // Null for non-existent or undefined
-          registeredInstitution: '',  // Empty string works for text fields
-          hasBursary: false
-        }
+          studentNumber: null, // Null for non-existent or undefined
+          registeredInstitution: "", // Empty string works for text fields
+          hasBursary: false,
+        },
       },
       requestDialog: false,
       addPayerDialog: false,
@@ -334,44 +368,81 @@ export default {
       selectedRental: null,
 
       rentalColumns: [
-        { name: "index", label: "#", field: "index", align: 'center' },
-        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
-        { name: "id", label: "Application ID", field: "_id", align: 'left' },
-        { name: "startDate", label: "Start Date", field: "rentalStartDate", align: 'left' },
-        { name: "endDate", label: "End Date", field: "rentalEndDate", align: 'left' },
-        { name: "parking", label: "Parking", field: "parking", align: 'left' },
+        { name: "index", label: "#", field: "index", align: "center" },
+        {
+          name: "applicationDate",
+          label: "Application Date",
+          field: "applicationDate",
+          align: "left",
+        },
+        { name: "id", label: "Application ID", field: "_id", align: "left" },
+        {
+          name: "startDate",
+          label: "Start Date",
+          field: "rentalStartDate",
+          align: "left",
+        },
+        {
+          name: "endDate",
+          label: "End Date",
+          field: "rentalEndDate",
+          align: "left",
+        },
+        { name: "parking", label: "Parking", field: "parking", align: "left" },
 
-        { name: "unitPrice", label: "Bed/Room Price", field: "selectedSubUnits", align: 'left' },
-        { name: "paymentPlan", label: "Payment Plan", field: "selectedSubUnits", align: 'left' },
-        { name: "unitNumber", label: "Unit Number", field: "unitNumber", align: 'center' },
+        {
+          name: "unitPrice",
+          label: "Bed/Room Price",
+          field: "selectedSubUnits",
+          align: "left",
+        },
+        {
+          name: "paymentPlan",
+          label: "Payment Plan",
+          field: "selectedSubUnits",
+          align: "left",
+        },
+        {
+          name: "unitNumber",
+          label: "Unit Number",
+          field: "unitNumber",
+          align: "center",
+        },
 
-        { name: "status", label: "Status", field: "status", align: 'center' },
-        { name: "actions", label: "Actions", field: "actions", align: 'center' },
-      ]
-    }
+        { name: "status", label: "Status", field: "status", align: "center" },
+        {
+          name: "actions",
+          label: "Actions",
+          field: "actions",
+          align: "center",
+        },
+      ],
+    };
   },
   components: {
     CustomButton,
     UserRequestComponent,
-    AddPayerComponent
+    AddPayerComponent,
   },
   computed: {
-
     addPayerInformation() {
       // Find a rental where status is either 'Pending' or 'Approved' and payerData is not validated
-      const rentalNeedingPayer = this.rentals.find(rental =>
-        (rental.status === 'Pending' || rental.status === 'Active') &&
-        rental.payerData.isValidated === false
+      const rentalNeedingPayer = this.rentals.find(
+        (rental) =>
+          (rental.status === "Pending" || rental.status === "Active") &&
+          rental.payerData.isValidated === false,
       );
       this.addPayerRental = rentalNeedingPayer;
       return !!rentalNeedingPayer;
     },
     viewPayerInformation() {
       // Find the rental that requires payer information
-      const rentalNeedingPayer = this.rentals.find(rental => rental.status === 'Pending');
+      const rentalNeedingPayer = this.rentals.find(
+        (rental) => rental.status === "Pending",
+      );
       this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
       return !!rentalNeedingPayer; // Return true if such a rental exists
-    }
+    },
   },
   methods: {
     formatDate: Helper.formatDate,
@@ -415,91 +486,115 @@ export default {
     // },
 
     copyToClipboard(text) {
-      navigator.clipboard.writeText(text)
+      navigator.clipboard
+        .writeText(text)
         .then(() => {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Access key copied to clipboard!' });
-        }).catch(err => {
-          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
+          this.$q.notify({
+            type: "positive",
+            color: "primary",
+            message: "Access key copied to clipboard!",
+          });
         })
+        .catch((err) => {
+          this.$q.notify({
+            type: "negative",
+            message: `Failed to copy text: ${err}`,
+          });
+        });
     },
     async findMyRentals() {
       this.loading = true;
       const response = await RentalService.findMyRentals(this.userDetails._id);
 
-      this.rentals = await Promise.all(response.map(async rental => {
-        try {
-          const unit = await UnitService.getByIdUnit(rental.unit);
-          return {
-            ...rental,
-            unitType: unit?.unitType || 'Unknown',
-            unitNumber: unit?.unitNumber || 'N/A',
-          };
-        } catch (error) {
-          return {
-            ...rental,
-            unitType: 'Unknown',
-            unitNumber: 'N/A',
-          };
-        }
-      }));
+      this.rentals = await Promise.all(
+        response.map(async (rental) => {
+          try {
+            const unit = await UnitService.getByIdUnit(rental.unit);
+            return {
+              ...rental,
+              unitType: unit?.unitType || "Unknown",
+              unitNumber: unit?.unitNumber || "N/A",
+            };
+          } catch (error) {
+            return {
+              ...rental,
+              unitType: "Unknown",
+              unitNumber: "N/A",
+            };
+          }
+        }),
+      );
       this.loading = false;
     },
     async fetchUserDetails() {
-      this.userDetails = await Helper.fetchUserDetails()
-      this.findMyRentals()
+      this.userDetails = await Helper.fetchUserDetails();
+      this.findMyRentals();
     },
     async deleteRental(rental) {
-      if (rental.status === 'Pending' || rental.status === 'Rejected') {
-        this.$q.dialog({
-          title: 'Confirm',
-          message: 'You are about to delete this rental application, continue?',
-          color: 'primary',
-          cancel: true,
-          persistent: true
-        }).onOk(async () => {
-          const response = await RentalService.deleteRental(rental._id)
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' })
-            this.fetchUserDetails()
-          } else {
-            this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' })
-          }
-        }).onCancel(() => {
-          // No need to fetch user details again on cancel
-        })
+      if (rental.status === "Pending" || rental.status === "Rejected") {
+        this.$q
+          .dialog({
+            title: "Confirm",
+            message:
+              "You are about to delete this rental application, continue?",
+            color: "primary",
+            cancel: true,
+            persistent: true,
+          })
+          .onOk(async () => {
+            const response = await RentalService.deleteRental(rental._id);
+            if (response) {
+              this.$q.notify({
+                type: "positive",
+                color: "primary",
+                message: "Delete successful!",
+              });
+              this.fetchUserDetails();
+            } else {
+              this.$q.notify({
+                type: "negative",
+                message: "Delete failed. Please try again.",
+              });
+            }
+          })
+          .onCancel(() => {
+            // No need to fetch user details again on cancel
+          });
       } else {
-        this.$q.notify({ type: 'negative', message: 'Deletion is restricted as this rental is tied to your rental History.' })
+        this.$q.notify({
+          type: "negative",
+          message:
+            "Deletion is restricted as this rental is tied to your rental History.",
+        });
       }
     },
     openRequestUser(rental) {
-      this.selectedRental = rental,
-        this.requestDialog = true
+      ((this.selectedRental = rental), (this.requestDialog = true));
     },
     openAddPayer() {
-      this.addPayerDialog = true
+      this.addPayerDialog = true;
     },
     handleDialogClose() {
-      this.selectedRental = false
-      this.requestDialog = false
-      this.addPayerDialog = false
-      this.fetchUserDetails()
+      this.selectedRental = false;
+      this.requestDialog = false;
+      this.addPayerDialog = false;
+      this.fetchUserDetails();
     },
 
     viewRentalDetails(evt, row) {
-      const id = row._id
+      const id = row._id;
       Helper.viewRentalDetails(id, this.$router);
     },
   },
   mounted() {
-    this.fetchUserDetails()
-  }
-}
+    this.fetchUserDetails();
+  },
+};
 </script>
 
 <style>
 .inline-btn {
   display: inline-flex; /* ensures they sit side by side */
-  width: auto;          /* prevents full-width stretching */
+  width: auto; /* prevents full-width stretching */
 }
-
 </style>
