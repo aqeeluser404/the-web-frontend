@@ -45,6 +45,7 @@ class CallLogService {
       return response.data
     } catch (error) {
       Logger.error(error)
+      throw error
     }
   }
   static async deleteCallLog(callLogId) {
@@ -57,6 +58,16 @@ class CallLogService {
       throw error;
     }
   }
+static async deleteCallLogUpdate(callLogId, updateInfo, addedAt) {
+  const ENDPOINT = `/call-log/${callLogId}/delete-update`
+  try {
+    const response = await axiosInstance.put(ENDPOINT, { updateInfo, addedAt })
+    return response.data
+  } catch (error) {
+    Logger.error(error)
+    throw error
+  }
+}
 }
 
 export default CallLogService

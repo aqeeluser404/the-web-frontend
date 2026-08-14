@@ -1,59 +1,94 @@
 <template>
   <q-card class="combined-unit-card">
-
     <div class="row">
       <!-- left section -->
-      <div class="col-md-6 col-12 q-pa-md left-card" style="background-color: #f8f8f8;">
+      <div
+        class="col-md-6 col-12 q-pa-md left-card"
+        style="background-color: #f8f8f8"
+      >
         <q-card-section class="row justify-between items-center">
           <div class="text-h6">Address Call Log</div>
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
-            class="small-screen-only" />
+          <q-btn
+            flat
+            round
+            icon="close"
+            @click="$emit('close')"
+            size="md"
+            color="grey-10"
+            aria-label="Close"
+            class="small-screen-only"
+          />
         </q-card-section>
 
         <q-separator />
 
         <q-card-section>
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Opened Date/Time</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Opened Date/Time</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
-              <q-input readonly
-                :model-value="`${formatDate(callLog.createdAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.createdAt)}`" />
+              <q-input
+                readonly
+                :model-value="`${formatDate(callLog.createdAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.createdAt)}`"
+              />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Closed Date/Time</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Closed Date/Time</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
-              <q-input readonly
-                :model-value="callLog.closedAt ? `${formatDate(callLog.closedAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.closedAt)}` : 'N/A'" />
+              <q-input
+                readonly
+                :model-value="
+                  callLog.closedAt
+                    ? `${formatDate(callLog.closedAt)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${formatTime(callLog.closedAt)}`
+                    : 'N/A'
+                "
+              />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Call Type</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Call Type</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
               <q-input readonly v-model="callLog.callType" />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Status</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Status</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
               <q-input readonly v-model="callLog.status" />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Description</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Description</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
               <q-input readonly v-model="callLog.description" />
             </q-item-section>
           </q-item>
 
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Summary</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Summary</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
-              <q-input readonly type="textarea" autogrow v-model="callLog.summary" />
+              <q-input
+                readonly
+                type="textarea"
+                autogrow
+                v-model="callLog.summary"
+              />
             </q-item-section>
           </q-item>
 
@@ -65,68 +100,143 @@
                 v-if="callLog.images && callLog.images.length > 0"
                 :src="getImageUrl(callLog.images[currentImageIndex].imageUrl)"
                 class="product-image cursor-zoom-in"
-                @click="showImageDialog = true" fit="contain" loading="eager"
+                @click="showImageDialog = true"
+                fit="contain"
+                loading="eager"
               />
-              <q-btn round flat dense class="nav-button left" icon="chevron_left" @click="prevImage" />
-              <q-btn round flat dense class="nav-button right" icon="chevron_right" @click="nextImage" />
+              <q-btn
+                round
+                flat
+                dense
+                class="nav-button left"
+                icon="chevron_left"
+                @click="prevImage"
+              />
+              <q-btn
+                round
+                flat
+                dense
+                class="nav-button right"
+                icon="chevron_right"
+                @click="nextImage"
+              />
             </div>
           </q-item>
-
         </q-card-section>
       </div>
 
       <!-- right section -->
       <div class="col-md-6 col-12 q-pa-md">
-
         <q-card-section class="row justify-end items-center q-py-none q-py-xs">
-          <q-btn flat round icon="close" @click="$emit('close')" size="md" color="grey-10" aria-label="Close"
-            class="large-screen-only" />
+          <q-btn
+            flat
+            round
+            icon="close"
+            @click="$emit('close')"
+            size="md"
+            color="grey-10"
+            aria-label="Close"
+            class="large-screen-only"
+          />
         </q-card-section>
 
         <q-card-section>
           <q-item>
-            <q-item-section class="text-left text-subtitle1">Add an update to inform the tenant</q-item-section>
+            <q-item-section class="text-left text-subtitle1"
+              >Add an update to inform the tenant</q-item-section
+            >
             <q-item-section class="text-left text-subtitle1">
               <q-input autogrow type="textarea" v-model="update" />
             </q-item-section>
           </q-item>
         </q-card-section>
 
+        <q-card-section v-if="callLog.updates && callLog.updates.length">
+          <div class="text-subtitle2 q-mb-sm">Update History</div>
+          <q-list bordered separator>
+<q-item v-for="(u, index) in callLog.updates" :key="index">
+  <q-item-section>
+    <q-item-label>{{ u.updateInfo }}</q-item-label>
+    <q-item-label caption>{{ formatDate(u.addedAt) }} {{ formatTime(u.addedAt) }}</q-item-label>
+  </q-item-section>
+  <q-item-section side>
+    <q-btn flat round dense icon="delete" color="negative" @click="deleteUpdate(u.updateInfo, u.addedAt)" />
+  </q-item-section>
+</q-item>
+          </q-list>
+        </q-card-section>
+
         <q-card-section>
           <div v-if="mode !== 'resolved'">
             <q-item class="q-my-md">
-              <q-item-section class="text-left text-subtitle1">Assign a vendor</q-item-section>
+              <q-item-section class="text-left text-subtitle1"
+                >Assign a vendor</q-item-section
+              >
               <q-item-section class="text-left text-subtitle1">
                 <div class="row q-gutter-md items-center">
-                  <q-radio v-model="assignVendor" val="yes" label="Assigned" dense />
-                  <q-radio v-model="assignVendor" val="no" label="Unassigned" dense />
+                  <q-radio
+                    v-model="assignVendor"
+                    val="yes"
+                    label="Assigned"
+                    dense
+                  />
+                  <q-radio
+                    v-model="assignVendor"
+                    val="no"
+                    label="Unassigned"
+                    dense
+                  />
                 </div>
               </q-item-section>
             </q-item>
 
             <div v-if="assignVendor === 'yes'">
               <q-item>
-                <q-item-section class="text-left text-subtitle1">Vendor Type</q-item-section>
+                <q-item-section class="text-left text-subtitle1"
+                  >Vendor Type</q-item-section
+                >
                 <q-item-section class="text-left text-subtitle1">
-                  <q-input v-if="isOtherCallType" v-model="vendorInfo.vendorType" label="Enter vendor type"
-                    :rules="[val => !!val || 'Vendor type is required']" />
-                  <q-select v-else v-model="vendorInfo.vendorType" :options="vendorTypeOptions"
-                    label="Select vendor type" emit-value map-options @update:model-value="autoFillVendorContact" />
+                  <q-input
+                    v-if="isOtherCallType"
+                    v-model="vendorInfo.vendorType"
+                    label="Enter vendor type"
+                    :rules="[(val) => !!val || 'Vendor type is required']"
+                  />
+                  <q-select
+                    v-else
+                    v-model="vendorInfo.vendorType"
+                    :options="vendorTypeOptions"
+                    label="Select vendor type"
+                    emit-value
+                    map-options
+                    @update:model-value="autoFillVendorContact"
+                  />
                 </q-item-section>
               </q-item>
 
               <q-item>
-                <q-item-section class="text-left text-subtitle1">Vendor Contact</q-item-section>
+                <q-item-section class="text-left text-subtitle1"
+                  >Vendor Contact</q-item-section
+                >
                 <q-item-section class="text-left text-subtitle1">
-                  <q-input v-model="vendorInfo.vendorContact" label="Vendor contact email"
-                    :rules="[val => !!val || 'Contact email is required']" />
+                  <q-input
+                    v-model="vendorInfo.vendorContact"
+                    label="Vendor contact email"
+                    :rules="[(val) => !!val || 'Contact email is required']"
+                  />
                 </q-item-section>
               </q-item>
 
               <q-item>
-                <q-item-section class="text-left text-subtitle1">Assignment Date</q-item-section>
+                <q-item-section class="text-left text-subtitle1"
+                  >Assignment Date</q-item-section
+                >
                 <q-item-section class="text-left text-subtitle1">
-                  <q-input v-model="vendorInfo.vendorAssignedDate" label="Assign a date" type="date" />
+                  <q-input
+                    v-model="vendorInfo.vendorAssignedDate"
+                    label="Assign a date"
+                    type="date"
+                  />
                 </q-item-section>
               </q-item>
             </div>
@@ -135,15 +245,28 @@
 
         <q-card-section class="row items-center q-gutter-x-sm">
           <div class="row justify-between">
-            <CustomButton v-if="mode !== 'resolved'" label="Update Call Log" customStyle="width: 100%"
-              @click="updateUserType" />
-            <CustomButton v-if="mode === 'resolved'" label="Reopen Call Log" customStyle="width: 100%"
-              @click="reopenCallLog" />
+            <CustomButton
+              v-if="mode !== 'resolved'"
+              label="Update Call Log"
+              customStyle="width: 100%"
+              @click="updateUserType"
+            />
+            <CustomButton
+              v-if="mode === 'resolved'"
+              label="Reopen Call Log"
+              customStyle="width: 100%"
+              @click="reopenCallLog"
+            />
           </div>
 
           <div class="" v-if="mode === 'editable'">
-            <CustomButton v-if="mode === 'editable'" label="Resolved" color="white" text-color="black"
-              @click="markResolved" />
+            <CustomButton
+              v-if="mode === 'editable'"
+              label="Resolved"
+              color="white"
+              text-color="black"
+              @click="markResolved"
+            />
           </div>
           <!-- <div>
             <CustomButton label="Close" color="white" text-color="black" customStyle="width: 100%"
@@ -158,13 +281,13 @@
 <script>
 import CustomButton from "../elements/CustomButton.vue";
 import CallLogService from "src/services/api/CallLogService";
-import Helper from 'src/services/helper/utils';
+import Helper from "src/services/helper/utils";
 
 export default {
   props: {
     callLog: {
       type: Object,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -172,8 +295,8 @@ export default {
       user: {},
       update: null,
       currentImageIndex: 0,
-      mode: this.callLog.status === 'Resolved' ? 'resolved' : 'editable',
-      assignVendor: this.callLog.vendorInfo?.vendorType ? 'yes' : 'no',
+      mode: this.callLog.status === "Resolved" ? "resolved" : "editable",
+      assignVendor: this.callLog.vendorInfo?.vendorType ? "yes" : "no",
       vendorInfo: {
         vendorType: this.callLog.vendorInfo?.vendorType || null,
         vendorContact: this.callLog.vendorInfo?.vendorContact || null,
@@ -197,25 +320,25 @@ export default {
         { label: "Other", value: "Other" },
       ],
       vendorContacts: {
-        'IT Support': 'TheWeb@trafalgar.co.za',
-        'Maintenance': 'TheWeb@trafalgar.co.za',
-        'Plumbing': 'TheWeb@trafalgar.co.za',
-        'Electrical': 'TheWeb@trafalgar.co.za',
-        'Security': 'TheWeb@trafalgar.co.za',
-        'Cleaning': 'TheWeb@trafalgar.co.za',
-        'Other': 'TheWeb@trafalgar.co.za'
-      }
-    }
+        "IT Support": "TheWeb@trafalgar.co.za",
+        Maintenance: "TheWeb@trafalgar.co.za",
+        Plumbing: "TheWeb@trafalgar.co.za",
+        Electrical: "TheWeb@trafalgar.co.za",
+        Security: "TheWeb@trafalgar.co.za",
+        Cleaning: "TheWeb@trafalgar.co.za",
+        Other: "TheWeb@trafalgar.co.za",
+      },
+    };
   },
   computed: {
     isOtherCallType() {
-      return this.callLog.callType?.startsWith('Other -');
+      return this.callLog.callType?.startsWith("Other -");
     },
     currentDialogImageUrl() {
-      if (!this.callLog.images || !this.callLog.images.length) return null
-      const image = this.callLog.images[this.currentImageIndex]
-      if (!image || !image.imageUrl) return null
-      return this.getImageUrl(image.imageUrl)
+      if (!this.callLog.images || !this.callLog.images.length) return null;
+      const image = this.callLog.images[this.currentImageIndex];
+      if (!image || !image.imageUrl) return null;
+      return this.getImageUrl(image.imageUrl);
     },
   },
   components: {
@@ -240,10 +363,13 @@ export default {
     },
 
     nextImage() {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.callLog.images.length
+      this.currentImageIndex =
+        (this.currentImageIndex + 1) % this.callLog.images.length;
     },
     prevImage() {
-      this.currentImageIndex = (this.currentImageIndex - 1 + this.callLog.images.length) % this.callLog.images.length
+      this.currentImageIndex =
+        (this.currentImageIndex - 1 + this.callLog.images.length) %
+        this.callLog.images.length;
     },
 
     async updateUserType() {
@@ -255,7 +381,7 @@ export default {
         return;
       }
 
-      let user = await Helper.fetchUserDetails()
+      let user = await Helper.fetchUserDetails();
 
       // Set status based on vendor assignment
       let status = this.callLog.status;
@@ -265,7 +391,7 @@ export default {
         status = "Opened";
       }
 
-      console.log('update field:', this.update)
+      console.log("update field:", this.update);
       const updatedCallLog = {
         callType: this.callLog.callType,
         status,
@@ -290,22 +416,24 @@ export default {
               },
 
         updates: this.update
-          ? [{
-              updateInfo: this.update,
-              user: user._id
-            }]
+          ? [
+              {
+                updateInfo: this.update,
+                user: user._id,
+              },
+            ]
           : [],
 
-        ...(status === 'Closed' && !this.callLog.closedAt
+        ...(status === "Closed" && !this.callLog.closedAt
           ? { closedAt: new Date() }
           : {}),
       };
-      console.log(updatedCallLog)
+      console.log(updatedCallLog);
 
       this.$q
         .dialog({
           title: "Confirm",
-          message: `You are about to update this call log status, continue?`,
+          message: `You are about to update this call log, continue?`,
           color: "primary",
           cancel: true,
           persistent: true,
@@ -333,11 +461,26 @@ export default {
               message: "An error occurred during update.",
             });
             this.update = null;
-            this.$emit('close');
+            this.$emit("close");
           }
         })
         .onCancel(() => {});
     },
+
+async deleteUpdate(updateInfo, addedAt) {
+  try {
+    const response = await CallLogService.deleteCallLogUpdate(
+      this.callLog._id,
+      updateInfo,
+      addedAt,
+    )
+    this.callLog.updates = response.updates
+    this.$q.notify({ type: "positive", message: "Update removed" })
+  } catch (error) {
+    console.error("Delete update error:", error)
+    this.$q.notify({ type: "negative", message: "Failed to remove update" })
+  }
+},
 
     async markResolved() {
       const updatedCallLog = {
@@ -389,30 +532,39 @@ export default {
         status: "Opened",
       };
 
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to re-open this call log, continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        try {
-          await CallLogService.updateCallLog(this.callLog._id, updatedCallLog);
-          this.mode = 'editable';
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `You are about to re-open this call log, continue?`,
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            await CallLogService.updateCallLog(
+              this.callLog._id,
+              updatedCallLog,
+            );
+            this.mode = "editable";
 
-          this.$q.notify({
-            type: 'info',
-            color: 'primary',
-            message: 'Call log has been reopened.'
-          });
-        } catch (error) {
-          console.error(error);
-          this.$q.notify({ type: 'negative', message: 'Failed to reopen call log.' });
-        }
-      }).onCancel(() => { });
+            this.$q.notify({
+              type: "info",
+              color: "primary",
+              message: "Call log has been reopened.",
+            });
+          } catch (error) {
+            console.error(error);
+            this.$q.notify({
+              type: "negative",
+              message: "Failed to reopen call log.",
+            });
+          }
+        })
+        .onCancel(() => {});
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="sass">
@@ -479,5 +631,4 @@ export default {
     left: 24px
   &.right
     right: 24px
-
 </style>

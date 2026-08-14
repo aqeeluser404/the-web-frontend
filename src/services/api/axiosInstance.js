@@ -23,10 +23,13 @@ axiosInstance.interceptors.request.use(
       config.headers['Content-Type'] = 'multipart/form-data'
     }
 
-    // Handle multipart uploads for call logs (admin update)
-    if (config.method === 'put' && config.url.includes('/call-log')) {
-      config.headers['Content-Type'] = 'multipart/form-data'
-    }
+    // Handle multipart uploads for call logs (admin update) —
+    // only force multipart if the payload is actually FormData (has images).
+    // Plain-object PUTs (status/vendor updates with no images) now go
+    // through as normal JSON instead of being mislabeled as multipart.
+    // if (config.method === 'put' && config.url.includes('/call-log') && config.data instanceof FormData) {
+    //   config.headers['Content-Type'] = 'multipart/form-data'
+    // }
 
     return config
   },
