@@ -2,8 +2,13 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import axiosInstance from 'src/services/api/axiosInstance'
+import Helper from 'src/services/helper/utils'
+import UserService from 'src/services/api/UserService'
 import { Capacitor } from '@capacitor/core'
-import Helper from 'src/services/helper/utils';
+
+// TEST MOBILE APP VIEW
+Capacitor.isNativePlatform = () => true
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -80,16 +85,19 @@ export default route(function (/* { store, ssrContext } */) {
       return next()
     }
 
-    hasCheckedInitialAuth = true // only ever run this block once per app session
-
-    const valid = await Helper.checkCookie()
-    const token = valid ? await Helper.getCookie('token') : null
-
-    if (!token) {
-      return next('/auth/login')
-    }
+    hasCheckedInitialAuth = true
 
     try {
+      const valid = await Helper.checkCookie()
+      console.log('[auth-guard] checkCookie:', valid)
+
+      const token = valid ? await Helper.getCookie('token') : null
+      console.log('[auth-guard] token present:', !!token)
+
+      if (!token) {
+        return next('/auth/login')
+      }
+
       const user = await UserService.FindUserByToken()
       const userDetails = await UserService.findUserById(user._id)
 
@@ -100,10 +108,13 @@ export default route(function (/* { store, ssrContext } */) {
 
       return next()
     } catch (error) {
-      Helper.removeCookie('token')
+      console.error('[auth-guard] error, falling back to login:', error)
       return next('/auth/login')
     }
-  });
+  })
+
+  return Router;
+});
 
 // Router.beforeEach(async (to, from, next) => {
 //   try {
@@ -177,7 +188,3 @@ export default route(function (/* { store, ssrContext } */) {
 //     return next(to.path !== "/404" ? "/404" : undefined);
 //   }
 // });
-
-  return Router;
-});
-

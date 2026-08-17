@@ -1,11 +1,15 @@
 <template>
-  <div class="floating-action-rail">
+  <div
+    class="floating-action-rail"
+    :class="{ 'is-expanded': isExpanded }"
+    @click="handleRailClick"
+  >
     <div
       v-for="action in actions"
       :key="action.label"
       class="floating-action-item"
       :style="{ backgroundColor: action.color }"
-      @click="action.action"
+      @click="handleActionClick(action, $event)"
     >
       <q-icon
         v-if="!action.image"
@@ -38,6 +42,43 @@ export default {
       required: true,
     },
   },
+
+  data() {
+    return {
+      isExpanded: false,
+    };
+  },
+
+  mounted() {
+    document.addEventListener("click", this.handleOutsideClick);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleOutsideClick);
+  },
+
+  methods: {
+    handleRailClick() {
+      // Toggle on tap — works for both revealing and closing
+      this.isExpanded = !this.isExpanded;
+    },
+    handleActionClick(action, event) {
+      if (window.innerWidth <= 768 && !this.isExpanded) {
+        event.stopPropagation();
+        this.isExpanded = true;
+        return;
+      }
+      action.action();
+      if (window.innerWidth <= 768) {
+        this.isExpanded = false; // close after an action fires too
+      }
+    },
+    handleOutsideClick(event) {
+      if (this.isExpanded && !this.$el.contains(event.target)) {
+        this.isExpanded = false;
+      }
+    },
+  },
 };
 </script>
 
@@ -53,7 +94,6 @@ export default {
   display: flex
   flex-direction: column
   align-items: flex-start
-//   gap: 12px
 
 .floating-action-item
   width: 40px
@@ -100,6 +140,11 @@ export default {
   .floating-action-rail
     top: 72%
     left: 0
+    transform: translate(-70%, -50%)
+    transition: transform .3s ease
+
+  .floating-action-rail.is-expanded
+    transform: translate(0, -50%)
 
   .floating-action-item
     width: 42px
@@ -108,8 +153,10 @@ export default {
 
   .floating-action-item:hover
     width: 42px
+    border-top-left-radius: 0px
     border-top-right-radius: 0px
-    // border-bottom-right-radius: 0px
+    border-bottom-left-radius: 0px
+    border-bottom-right-radius: 0px
 
   .action-icon
     min-width: 42px

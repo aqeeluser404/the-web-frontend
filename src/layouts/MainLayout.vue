@@ -1,17 +1,6 @@
 <template>
   <q-layout view="hHh lpR fff">
-    <q-header class="bg-white flex" :style="{ height: headerHeight }" style="border-bottom: 1px solid #e0e0e0;" v-if="
-      $route.path !== '/auth/login' &&
-      $route.path !== '/auth/register' &&
-      $route.path !== '/verify-email' &&
-      $route.path !== '/resend-verification' &&
-      $route.path !== '/reset-password' &&
-      $route.path !== '/forgot-password' &&
-      $route.path !== '/admin/auth/login' &&
-      $route.path !== '/digital-application' &&
-      $route.path !== '/lease-signed' &&
-      $route.path !== '/install-app'
-    ">
+    <q-header class="bg-white flex" :style="{ height: headerHeight }" style="border-bottom: 1px solid #e0e0e0;" v-if="showHeader">
       <q-toolbar class="text-black row items-center justify-between bg-white constrain-standard">
 
         <!-- title and avatar -->
@@ -205,7 +194,8 @@
     </q-card>
 
     <!-- WHATSAPP BUTTONS -->
-    <FloatingActions v-if="!isAdminRoute" :actions="FloatingActions" />
+    <FloatingActions v-if="!isAdminRoute && showHeader" :actions="FloatingActions" />
+
     <!-- <q-btn v-if="!isAdminRoute" rounded :label="!boxOpened ? '' : ''" color="secondary" text-color="white"
       icon="img:/assets/elements/whatsapp.png" size="lg" class="custom-button whats-app-btn-desktop"
       @click="toggleWhatsAppBox" />
@@ -248,7 +238,7 @@ export default {
   data() {
     return {
       showDesktopView: false,
-      isMobileView: Capacitor.isNativePlatform(),
+      isMobileView: false,
 
       loginImage: main,
       showMaintenanceBanner: false,
@@ -287,10 +277,10 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            // {
-            //   label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
-            //   click: this.toggleMode,
-            // }
+            {
+              label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
+              click: this.toggleMode,
+            }
           ]
         },
       ],
@@ -458,13 +448,28 @@ export default {
       // Only return those that match the current route
       return crumbs.filter(c => path.includes(c.match))
     },
-headerHeight() {
-  const baseHeight = this.showMaintenanceBanner ? 150 : 75;
-  const adminExtra = this.isAdminRoute ? 50 : 0;
-  const mobileExtra = this.showDesktopView ? 15 : 0;
+    showHeader() {
+      const hiddenRoutes = [
+        '/auth/login',
+        '/auth/register',
+        '/verify-email',
+        '/resend-verification',
+        '/reset-password',
+        '/forgot-password',
+        '/admin/auth/login',
+        '/digital-application',
+        '/lease-signed',
+        '/install-app'
+      ];
+      return !hiddenRoutes.includes(this.$route.path);
+    },
+    headerHeight() {
+      const baseHeight = this.showMaintenanceBanner ? 150 : 75;
+      const adminExtra = this.isAdminRoute ? 50 : 0;
+      const mobileExtra = this.showDesktopView ? 15 : 0;
 
-  return baseHeight + adminExtra + mobileExtra;
-},
+      return baseHeight + adminExtra + mobileExtra;
+    },
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
     },
@@ -496,8 +501,12 @@ headerHeight() {
     //   return this.$route.path.startsWith('/vendor');
     // },
   },
+  created() {
+    this.isMobileView = Capacitor.isNativePlatform() && this.$route.path === '/'
+  },
   mounted() {
     this.checkLoginStatus();
+    const isNative = Capacitor.isNativePlatform();
 
     this.FloatingActions = [
       {
@@ -506,12 +515,12 @@ headerHeight() {
         color: "#25D366",
         action: this.toggleWhatsAppBox
       },
-      {
+      ...(isNative ? [] : [{
         label: "Download App",
         icon: "download",
         color: "#1976D2",
         action: this.downloadApk
-      },
+      }]),
       {
         label: "Apply Now",
         icon: "home",
@@ -637,7 +646,6 @@ headerHeight() {
         }
       });
     },
-
 
     downloadApk() {
       this.$q.dialog({

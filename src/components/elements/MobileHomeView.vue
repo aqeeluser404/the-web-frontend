@@ -22,7 +22,7 @@
           </div>
           <div class="row">
             <q-btn class="q-mr-md" icon="eva-bell-outline" round size="md" />
-            <q-btn :label="initials || '?'" round size="md" color="primary" />
+            <q-btn :label="initials || '?'" round size="md" color="primary" to="/user/profile" />
           </div>
         </q-card-section>
       </q-card>
