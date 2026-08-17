@@ -5,7 +5,7 @@
 
         <!-- title and avatar -->
         <q-toolbar-title class="col-md-3 row items-center">
-          <router-link v-if="!isMobileView" to="/" class="row items-center">
+          <router-link v-if="!isNativeApp" to="/" class="row items-center">
             <img :src="logoSrc" alt="Home" style="width: 40%; cursor: pointer;">
           </router-link>
           <router-link v-else to="/" class="row items-center">
@@ -237,9 +237,6 @@ import FloatingActions from 'src/components/elements/FloatingActions.vue';
 export default {
   data() {
     return {
-      showDesktopView: false,
-      isMobileView: false,
-
       loginImage: main,
       showMaintenanceBanner: false,
       userDetails: {
@@ -277,10 +274,6 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
-            {
-              label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
-              click: this.toggleMode,
-            }
           ]
         },
       ],
@@ -376,15 +369,7 @@ export default {
             to: '/security/scan',
           })
         }
-
-        children.push({
-          label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
-          handler: this.toggleMode,
-        })
       }
-
-      // <q-btn @click="toggleMode" class="custom-button q-py-sm large-screen-only"
-      //   :label="showDesktopView ? 'Show Desktop' : 'Show Mobile'" flat />
 
       return children;
     },
@@ -415,11 +400,6 @@ export default {
             to: '/security/scan',
           })
         }
-
-        children.push({
-          label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
-          click: this.toggleMode,
-        })
       }
 
       return [
@@ -466,9 +446,9 @@ export default {
     headerHeight() {
       const baseHeight = this.showMaintenanceBanner ? 150 : 75;
       const adminExtra = this.isAdminRoute ? 50 : 0;
-      const mobileExtra = this.showDesktopView ? 15 : 0;
+      const nativeExtra = this.isNativeApp ? 15 : 0;
 
-      return baseHeight + adminExtra + mobileExtra;
+      return baseHeight + adminExtra + nativeExtra;
     },
     isAdminUser() {
       return this.userDetails?.userType === 'admin';
@@ -492,6 +472,12 @@ export default {
       }
       return ""
     },
+    isNativeApp() {
+      return Capacitor.isNativePlatform();
+    },
+    isMobileView() {
+      return this.isNativeApp && this.$route.path === '/';
+    },
 
     // isVendorUser() {
     //   return this.userDetails?.userType === 'vendor';
@@ -500,9 +486,6 @@ export default {
     // isVendorRoute() {
     //   return this.$route.path.startsWith('/vendor');
     // },
-  },
-  created() {
-    this.isMobileView = Capacitor.isNativePlatform() && this.$route.path === '/'
   },
   mounted() {
     this.checkLoginStatus();
@@ -541,13 +524,6 @@ export default {
   watch: {
     '$route'(to, from) {
       this.checkLoginStatus();
-
-      if (to.path !== '/') {
-        this.isMobileView = false;
-        this.showDesktopView = false;
-      } else {
-        this.isMobileView = Capacitor.isNativePlatform();
-      }
     },
     isLoggedIn(newVal, oldVal) {
       if (oldVal === true && newVal === false) {
@@ -558,10 +534,6 @@ export default {
     }
   },
   methods: {
-    toggleMode() {
-      this.showDesktopView = !this.showDesktopView;
-      this.isMobileView = !this.isMobileView;
-    },
     openChatbot() {
       if (window.chatbase) {
         window.chatbase('open')
