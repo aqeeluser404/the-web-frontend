@@ -13,10 +13,10 @@
 
         <!-- Left -->
         <div class="column justify-center q-pa-lg col-md-6 col-12">
-          <router-link to="/" style="text-decoration: none; color: black;">
+          <router-link v-if="!isMobileView" to="/" style="text-decoration: none; color: black;">
             <q-icon name="eva-arrow-back-outline" size="24px" color="black" />
           </router-link>
-          <br />
+          <br v-if="!isMobileView" />
           <q-form
             @submit="onSubmit"
             @reset="onReset"
@@ -149,7 +149,8 @@
         },
         confirmPassword: '',
         logoSrc: theWeb3d,
-        inputType: 'password'
+        inputType: 'password',
+        isMobileView: Capacitor.isNativePlatform(),
       }
     },
     components: {

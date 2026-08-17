@@ -2,6 +2,7 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import axiosInstance from 'src/services/api/axiosInstance'
+import { Capacitor } from '@capacitor/core'
 import Helper from 'src/services/helper/utils';
 /*
  * If not building with SSR mode, you can
@@ -27,6 +28,7 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  // Existing health-check guard — unchanged
   Router.beforeEach(async (to, from, next) => {
     try {
       const response = await axiosInstance.get('/health');
@@ -42,7 +44,6 @@ export default route(function (/* { store, ssrContext } */) {
             }
             break;
           }
-
           case 'DigitalApplication': {
             const userId = to.query.userId;
             if (userId) {
@@ -52,7 +53,6 @@ export default route(function (/* { store, ssrContext } */) {
             }
             break;
           }
-
           case '/resend-verification':
             if (from.path === '/verify-email') {
               next();
@@ -60,17 +60,48 @@ export default route(function (/* { store, ssrContext } */) {
               next({ path: '/404' });
             }
             break;
-
           case '/404':
             next('/');
             break;
-
           default:
             next();
         }
       }
     } catch (error) {
       next(to.path !== '/404' ? '/404' : undefined);
+    }
+  });
+
+  // NEW — native mobile app cold-start only: force login before first render
+  let hasCheckedInitialAuth = false
+
+  Router.beforeEach(async (to, from, next) => {
+    if (!Capacitor.isNativePlatform() || hasCheckedInitialAuth) {
+      return next()
+    }
+
+    hasCheckedInitialAuth = true // only ever run this block once per app session
+
+    const valid = await Helper.checkCookie()
+    const token = valid ? await Helper.getCookie('token') : null
+
+    if (!token) {
+      return next('/auth/login')
+    }
+
+    try {
+      const user = await UserService.FindUserByToken()
+      const userDetails = await UserService.findUserById(user._id)
+
+      if (token !== userDetails.loginInfo.loginToken) {
+        Helper.removeCookie('token')
+        return next('/auth/login')
+      }
+
+      return next()
+    } catch (error) {
+      Helper.removeCookie('token')
+      return next('/auth/login')
     }
   });
 

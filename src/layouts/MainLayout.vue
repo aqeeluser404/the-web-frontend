@@ -287,6 +287,10 @@ export default {
             { label: 'Contact', handler: () => this.scrollToSection('contact-section') },
             { label: 'FAQs', to: '/frequently-asked-questions' },
             { label: 'Fees', to: '/fees' },
+            // {
+            //   label: this.showDesktopView ? 'Show Desktop (test)' : 'Show Mobile (test)',
+            //   click: this.toggleMode,
+            // }
           ]
         },
       ],
