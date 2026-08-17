@@ -205,7 +205,7 @@
 
     <!-- PAGE ROUTING -->
     <q-page-container>
-      <div v-if="isMobileView || showDesktopView" >
+      <div v-if="isMobileView" >
         <MobileHomeView />
       </div>
       <div v-else>

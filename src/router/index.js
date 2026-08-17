@@ -77,7 +77,7 @@ export default route(function (/* { store, ssrContext } */) {
     }
   });
 
-  // NEW — native mobile app cold-start only: force login before first render
+ // NEW — native mobile app cold-start only: force login before first render
   let hasCheckedInitialAuth = false
 
   Router.beforeEach(async (to, from, next) => {
@@ -95,7 +95,7 @@ export default route(function (/* { store, ssrContext } */) {
       console.log('[auth-guard] token present:', !!token)
 
       if (!token) {
-        return next('/auth/login')
+        return next({ path: '/auth/login', replace: true })
       }
 
       const user = await UserService.FindUserByToken()
@@ -103,13 +103,13 @@ export default route(function (/* { store, ssrContext } */) {
 
       if (token !== userDetails.loginInfo.loginToken) {
         Helper.removeCookie('token')
-        return next('/auth/login')
+        return next({ path: '/auth/login', replace: true })
       }
 
       return next()
     } catch (error) {
       console.error('[auth-guard] error, falling back to login:', error)
-      return next('/auth/login')
+      return next({ path: '/auth/login', replace: true })
     }
   })
 
