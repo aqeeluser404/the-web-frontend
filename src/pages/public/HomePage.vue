@@ -643,8 +643,8 @@ export default {
         persistent: true
       }).onOk(() => {
         const link = document.createElement('a')
-        link.href = '/files/the-web-v5-app.apk'
-        link.setAttribute('download', 'the-web-v5-app.apk')
+        link.href = process.env.VUE_APP_APK_URL
+        link.setAttribute('download', process.env.VUE_APP_APK_FILENAME)
         link.style.display = 'none'
         document.body.appendChild(link)
         link.click()

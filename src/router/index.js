@@ -7,7 +7,7 @@ import UserService from 'src/services/api/UserService'
 import { Capacitor } from '@capacitor/core'
 
 // TEST MOBILE APP VIEW
-Capacitor.isNativePlatform = () => true
+// Capacitor.isNativePlatform = () => true
 
 /*
  * If not building with SSR mode, you can

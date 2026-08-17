@@ -48,8 +48,8 @@ export default {
   methods: {
     downloadApk() {
       const link = document.createElement('a')
-      link.href = '/files/the-web-v5-app.apk'
-      link.download = 'the-web-v5-app.apk'
+      link.href = process.env.VUE_APP_APK_URL
+      link.setAttribute('download', process.env.VUE_APP_APK_FILENAME)
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
