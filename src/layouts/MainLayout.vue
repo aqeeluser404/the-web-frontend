@@ -99,7 +99,6 @@
             </q-dialog>
 
 
-
             <!---------------------------------------------- MOBILE NAV SECTION -------------------------------------------------->
             <q-btn-dropdown class="small-screen-only" dropdown-icon="menu" flat>
               <q-list style="width: 380px; padding: 8px;">
