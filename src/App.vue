@@ -26,7 +26,7 @@ onMounted(async () => {
   const handleBack = () => {
     const backPath = window.history.state?.back;
 
-    // 🆕 don't go back into login — treat it the same as "nothing behind us"
+    // don't go back into login — treat it the same as "nothing behind us"
     if (backPath && backPath !== "/auth/login") {
       router.back();
     } else if (route.path !== "/") {
