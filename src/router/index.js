@@ -77,11 +77,23 @@ export default route(function (/* { store, ssrContext } */) {
     }
   });
 
- // NEW — native mobile app cold-start only: force login before first render
+  // Auth guard - only run on first load or when token might have changed
   let hasCheckedInitialAuth = false
 
   Router.beforeEach(async (to, from, next) => {
-    if (!Capacitor.isNativePlatform() || hasCheckedInitialAuth) {
+    // Only run on native platform
+    if (!Capacitor.isNativePlatform()) {
+      return next()
+    }
+
+    // Skip auth check for login page
+    if (to.path === '/auth/login') {
+      hasCheckedInitialAuth = false // Reset so we can check again after login
+      return next()
+    }
+
+    // Only check once per session
+    if (hasCheckedInitialAuth) {
       return next()
     }
 
@@ -89,10 +101,7 @@ export default route(function (/* { store, ssrContext } */) {
 
     try {
       const valid = await Helper.checkCookie()
-      console.log('[auth-guard] checkCookie:', valid)
-
       const token = valid ? await Helper.getCookie('token') : null
-      console.log('[auth-guard] token present:', !!token)
 
       if (!token) {
         return next({ path: '/auth/login', replace: true })
