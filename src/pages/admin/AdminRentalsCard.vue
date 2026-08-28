@@ -1,6 +1,10 @@
 <template>
   <q-page class="bg-grey-3">
 
+    <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
+      <BedStatsComponent />
+    </div>
+
 
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
       <BedGraphComponent />
@@ -289,6 +293,7 @@ import Helper from 'src/services/helper/utils';
 import CustomButton from 'src/components/elements/CustomButton.vue';
 import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';
 import ExportDataService from 'src/services/api/ExportDataService'
+import BedStatsComponent from 'src/components/admin/BedStatsComponent.vue';
 
 export default {
   name: "AdminRentalsCard",
@@ -332,7 +337,8 @@ export default {
   components: {
     CustomButton,
     AdminExtendRentalComponent,
-    BedGraphComponent
+    BedGraphComponent,
+    BedStatsComponent
   },
   computed: {
     hasBeforeEnd() {
@@ -518,6 +524,8 @@ export default {
       this.loading = true;
       try {
         const response = await RentalService.findAllRentals();
+
+        console.log('ALL RENTALS FROM API:', response);
 
         const userIds = [...new Set(response.map(rental => rental.user))];
 
