@@ -51,45 +51,56 @@ export default {
       this.formattedEndDate = endDate.toISOString().split('T')[0];
     },
     async extendRental() {
-
       if (!this.rentalExtension) {
         this.$q.notify({ type: 'negative', message: 'Please select an extension date.' });
         return
       }
-      let message = ''
-      message = `${this.rentalExtension}`;
 
-      const updatedRental = {
-        applicationDate: this.rental.applicationDate,
-        status: this.rental.status,
-        rentalStartDate: this.rental.rentalStartDate,
+      const currentEndYear = new Date(this.rental.rentalEndDate).getFullYear();
+      const newEndYear = new Date(this.rentalExtension).getFullYear();
+      const crossesIntoNewYear = newEndYear > currentEndYear;
 
-        rentalEndDate: this.rentalExtension,
-
-        rentalPrice: this.rental.rentalPrice,
-        unit: this.rental.unit,
-        unitType: this.rental.unitType,
-        user: this.rental.user
-      }
+      const message = `${this.rentalExtension}`;
 
       this.$q.dialog({
-        title: 'Confirm', message: `You are about to extend this rental and notify applicant, continue?`, color: 'primary', cancel: true, persistent: true
+        title: 'Confirm',
+        message: crossesIntoNewYear
+          ? `This extension crosses into ${newEndYear}. The rental will be moved to the ${newEndYear} unit. Continue?`
+          : `You are about to extend this rental and notify applicant, continue?`,
+        color: 'primary',
+        cancel: true,
+        persistent: true
       }).onOk(async () => {
-        const response = await RentalService.updateRental(this.rental._id, updatedRental)
-        if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Extended!' })
+        try {
+          let response;
 
-          // Send email to user
-          await EmailService.SendExtendedDate(this.rental.user, { message })
+          if (crossesIntoNewYear) {
+            response = await RentalService.extendRentalToNewYear(this.rental._id, this.rentalExtension)
+          } else {
+            const updatedRental = {
+              applicationDate: this.rental.applicationDate,
+              status: this.rental.status,
+              rentalStartDate: this.rental.rentalStartDate,
+              rentalEndDate: this.rentalExtension,
+              rentalPrice: this.rental.rentalPrice,
+              unit: this.rental.unit,
+              unitType: this.rental.unitType,
+              user: this.rental.user
+            }
+            response = await RentalService.updateRental(this.rental._id, updatedRental)
+          }
 
-          this.$emit('close')
-        } else {
-          this.$q.notify({ type: 'negative', message: 'Extension for rental failed. Please try again.' })
+          if (response) {
+            this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Extended!' })
+            await EmailService.SendExtendedDate(this.rental.user, { message })
+            this.$emit('close')
+          } else {
+            this.$q.notify({ type: 'negative', message: 'Extension for rental failed. Please try again.' })
+          }
+        } catch (error) {
+          this.$q.notify({ type: 'negative', message: error.message || 'Extension for rental failed. Please try again.' })
         }
-      }).onCancel(() => {
-        return
-      })
-
+      }).onCancel(() => {})
     }
   },
   created() {

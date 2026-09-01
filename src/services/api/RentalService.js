@@ -75,6 +75,16 @@ class RentalService {
       Logger.error(error)
     }
   }
+  static async extendRentalToNewYear(rentalId, rentalEndDate) {
+    const ENDPOINT = `/rentals/${rentalId}/extend-to-new-year`
+    try {
+      const response = await axiosInstance.put(ENDPOINT, { rentalEndDate })
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+      throw error
+    }
+  }
   static async verifyAndSavePayer(rentalId, payerData) {
     const ENDPOINT = `/rentals/${rentalId}/payer`
     try {
