@@ -50,90 +50,6 @@
               @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
           </q-card-section>
 
-          <!-- <q-card-section v-if="rentals.length > 0">
-            <q-markup-table flat bordered>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-left">Application Date</th>
-                  <th class="text-left">Applicant</th>
-                  <th class="text-left">Applicant Contact</th>
-                  <th class="text-left">Applicant Email</th>
-                  <th class="text-left">Application ID</th>
-                  <th class="text-left">Floor Level</th>
-                  <th class="text-left">Unit Type</th>
-                  <th class="text-left">Start Date</th>
-                  <th class="text-left">End Date</th>
-                  <th class="text-left">Before Scheduled</th>
-
-                  <th class="text-left">Status</th>
-                  <th class="text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(rental, index) in filteredRentals" :key="rental._id" @click="viewUserTimeline(rental._id)">
-                  <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                  <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                  <td class="text-left cursor-pointer hover-effect" >
-                    <span @click.stop="viewUserDetails(rental.userId)">{{ rental.username }}</span></td>
-                  <td class="text-left cursor-pointer">
-                    <span>{{ rental.userPhone }}</span>
-                  </td>
-                  <td class="text-left cursor-pointer">
-                    <span>{{ rental.userEmail }}</span>
-                  </td>
-                  <td class="text-left cursor-pointer id">{{ rental._id }}</td>
-                  <td class="text-center cursor-pointer">{{ extractFirstNumber(rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType) }}</td>
-                  <td class="text-left cursor-pointer">{{ rental.selectedSubUnits.bedType || rental.selectedSubUnits.roomType }}</td>
-                  <td class="text-left cursor-pointer">
-                    <div v-if="!defaultValues(rental)">
-                      {{ formatDate(rental.rentalStartDate) }}
-                    </div>
-                    <div v-else>
-                      Being processed...
-                    </div>
-                  </td>
-                  <td class="text-left cursor-pointer">
-                    <div v-if="!defaultValues(rental)">
-                      {{ formatDate(rental.rentalEndDate) }}
-                    </div>
-                    <div v-else>
-                      Being processed...
-                    </div>
-                  </td>
-                  <td class="text-left cursor-pointer">
-                    <div v-if="rental.earlyEndDate !== null" style="text-decoration: underline;">
-                      {{ formatDate(rental.earlyEndDate) }}
-                    </div>
-                    <div v-else>
-                      N/A
-                    </div>
-                  </td>
-                  <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
-                    { 'active-status': rental.status === 'Active' },
-                    { 'rejected-status': rental.status === 'Rejected' },
-                    { 'ended-status': rental.status === 'Ended' }">
-                    {{ capitalizeFirstLetter(rental.status) }}
-                  </td>
-                  <td class="text-left cursor-pointer">
-                    <CustomButton flat color="red" text-color="red" customStyle="width: 15%" icon="eva-trash-outline"
-                      @click.stop="deleteRental(rental)" />
-                    <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
-                      customStyle="width: 15%" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(rental)" />
-                    <CustomButton v-if="rental.status === 'Active'" flat color="red" text-color="red"
-                      customStyle="width: 15%" icon="eva-archive-outline" @click.stop="endRental(rental)" />
-                  </td>
-                </tr>
-              </tbody>
-            </q-markup-table>
-          </q-card-section>
-
-          <q-card-section v-else class="row justify-center">
-            <q-item>
-              <q-item-section class="text-subtitle1">No rental has been placed yet.</q-item-section>
-            </q-item>
-          </q-card-section> -->
-
           <q-card-section>
             <q-table flat bordered :rows="filteredRentals" :columns="rentalColumns" row-key="_id"
               @row-click="viewUserTimeline">
@@ -150,14 +66,6 @@
                   </div>
                 </q-td>
               </template>
-
-              <!-- <template v-slot:body-cell-applicant="props">
-                <q-td :props="props">
-                  <div @click.stop="viewUserDetails(props.row.userId)">
-                    {{ capitalizeFirstLetter(props.row.username) }}
-                  </div>
-                </q-td>
-              </template> -->
 
               <template v-slot:body-cell-id="props">
                 <q-td :props="props">
@@ -185,14 +93,6 @@
                   </div>
                 </q-td>
               </template>
-
-              <!-- <template v-slot:body-cell-applicantEmail="props">
-                <q-td :props="props" @click.stop="copyToClipboard(props.row.userEmail)">
-                  <div>
-                    {{ props.row.userEmail }}
-                  </div>
-                </q-td>
-              </template> -->
 
               <template v-slot:body-cell-startDate="props">
                 <q-td :props="props">
