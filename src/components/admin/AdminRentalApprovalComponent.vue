@@ -362,6 +362,47 @@
 
         <q-card-section>
           <div class="q-mb-md"><b>Payment Information</b></div>
+
+          <!-- Terms in list format to match above -->
+          <ul
+            class="q-mt-md"
+            v-if="rental.selectedSubUnits?.price.name === 'annual'"
+          >
+            <li v-if="rental.parking?.hasParking">
+              Upfront payment includes 11 months at discounted rate (3% off both
+              rent, shuttle and parking)
+            </li>
+            <li v-else>
+              Upfront payment includes 11 months rent at discounted rate (3%
+              off)
+            </li>
+            <li>Payment must be made by 30 November to qualify for discount</li>
+            <li>Monthly payments are due on the 1st of each month</li>
+          </ul>
+
+          <ul class="q-mt-md" v-else>
+            <li
+              v-if="
+                rental.selectedSubUnits &&
+                rental.selectedSubUnits?.roomType?.startsWith('Botmaskop')
+              "
+            >
+              A deposit of R 9 250.00 must be paid upon approval
+            </li>
+            <li
+              v-else-if="
+                rental.selectedSubUnits &&
+                rental.selectedSubUnits?.bedType?.startsWith('Helshoogte')
+              "
+            >
+              A deposit of R6 500.00 must be paid upon approval
+            </li>
+            <li v-else>A deposit is required upon approval</li>
+            <li>Discount of 3% is only applicable for annual payments</li>
+            <li>Monthly payments are due on the 1st of each month</li>
+          </ul>
+          <br />
+
           <!-- Payment Cards -->
           <div class="row q-col-gutter-md q-mb-md">
             <!-- Upfront Payment Card -->
@@ -377,35 +418,68 @@
                   <div class="text-h6 text-green">
                     R
                     {{
-                      rental.parking?.hasParking
-                        ? (
-                            Number(rental.selectedSubUnits?.price?.price) *
-                              0.96 +
-                            Number(rental.parking?.fee) * 0.96
-                          ).toFixed(2)
-                        : (
-                            Number(rental.selectedSubUnits?.price?.price) * 0.96
-                          ).toFixed(2)
+                      (() => {
+                        let total =
+                          Number(rental.selectedSubUnits?.price?.price) * 0.97;
+                        if (rental.parking?.hasParking) {
+                          total += Number(rental.parking?.fee) * 0.97;
+                        }
+                        if (rental.shuttle?.hasShuttle) {
+                          total += Number(rental.shuttle?.fee) * 0.97;
+                        }
+                        return total.toFixed(2);
+                      })()
                     }}
                   </div>
                   <div class="text-caption text-grey">
-                    <span v-if="rental.parking?.hasParking">
+                    <span
+                      v-if="
+                        rental.parking?.hasParking && rental.shuttle?.hasShuttle
+                      "
+                    >
                       Save 4%: R
                       {{
                         (
-                          Number(rental.selectedSubUnits?.price?.price) * 0.96
+                          Number(rental.selectedSubUnits?.price?.price) * 0.97
                         ).toFixed(2)
                       }}
                       / once off rent<br />
                       + R
-                      {{ (Number(rental.parking?.fee) * 0.96).toFixed(2) }} /
+                      {{ (Number(rental.parking?.fee) * 0.97).toFixed(2) }} /
+                      once off parking<br />
+                      + R
+                      {{ (Number(rental.shuttle?.fee) * 0.97).toFixed(2) }} /
+                      once off shuttle
+                    </span>
+                    <span v-else-if="rental.parking?.hasParking">
+                      Save 4%: R
+                      {{
+                        (
+                          Number(rental.selectedSubUnits?.price?.price) * 0.97
+                        ).toFixed(2)
+                      }}
+                      / once off rent<br />
+                      + R
+                      {{ (Number(rental.parking?.fee) * 0.97).toFixed(2) }} /
                       once off parking
+                    </span>
+                    <span v-else-if="rental.shuttle?.hasShuttle">
+                      Save 4%: R
+                      {{
+                        (
+                          Number(rental.selectedSubUnits?.price?.price) * 0.97
+                        ).toFixed(2)
+                      }}
+                      / once off rent<br />
+                      + R
+                      {{ (Number(rental.shuttle?.fee) * 0.97).toFixed(2) }} /
+                      once off shuttle
                     </span>
                     <span v-else>
                       Save 4%: R
                       {{
                         (
-                          Number(rental.selectedSubUnits?.price?.price) * 0.96
+                          Number(rental.selectedSubUnits?.price?.price) * 0.97
                         ).toFixed(2)
                       }}
                       / once off rent
@@ -421,18 +495,37 @@
                   <div class="text-h6 text-grey">
                     R
                     {{
-                      rental.parking?.hasParking
-                        ? (
-                            Number(rental.selectedSubUnits?.price?.price) +
-                            Number(rental.parking?.fee)
-                          ).toFixed(2)
-                        : Number(rental.selectedSubUnits?.price?.price).toFixed(
-                            2
-                          )
+                      (() => {
+                        let total = Number(
+                          rental.selectedSubUnits?.price?.price
+                        );
+                        if (rental.parking?.hasParking) {
+                          total += Number(rental.parking?.fee);
+                        }
+                        if (rental.shuttle?.hasShuttle) {
+                          total += Number(rental.shuttle?.fee);
+                        }
+                        return total.toFixed(2);
+                      })()
                     }}
                   </div>
                   <div class="text-caption text-grey">
-                    <span v-if="rental.parking?.hasParking">
+                    <span
+                      v-if="
+                        rental.parking?.hasParking && rental.shuttle?.hasShuttle
+                      "
+                    >
+                      R
+                      {{
+                        Number(rental.selectedSubUnits?.price?.price).toFixed(2)
+                      }}
+                      / once off rent<br />
+                      + R {{ Number(rental.parking?.fee).toFixed(2) }} / once
+                      off parking<br />
+                      + R {{ Number(rental.shuttle?.fee).toFixed(2) }} / once
+                      off shuttle
+                    </span>
+                    <span v-else-if="rental.parking?.hasParking">
                       R
                       {{
                         Number(rental.selectedSubUnits?.price?.price).toFixed(2)
@@ -441,12 +534,21 @@
                       + R {{ Number(rental.parking?.fee).toFixed(2) }} / once
                       off parking
                     </span>
+                    <span v-else-if="rental.shuttle?.hasShuttle">
+                      R
+                      {{
+                        Number(rental.selectedSubUnits?.price?.price).toFixed(2)
+                      }}
+                      / once off rent<br />
+                      + R {{ Number(rental.shuttle?.fee).toFixed(2) }} / once
+                      off shuttle
+                    </span>
                     <span v-else>
                       R
                       {{
                         Number(rental.selectedSubUnits?.price?.price).toFixed(2)
                       }}
-                      rent
+                      / once off rent
                     </span>
                   </div>
                 </q-card-section>
@@ -462,7 +564,22 @@
                     R {{ Number(rental.rentalPrice).toFixed(2) }}
                   </div>
                   <div class="text-caption text-grey">
-                    <span v-if="rental.parking?.hasParking">
+                    <span
+                      v-if="
+                        rental.parking?.hasParking && rental.shuttle?.hasShuttle
+                      "
+                    >
+                      R
+                      {{
+                        Number(rental.selectedSubUnits?.price?.price).toFixed(2)
+                      }}
+                      / mo rent<br />
+                      + R {{ Number(rental.parking.fee).toFixed(2) }} / mo
+                      parking<br />
+                      + R {{ Number(rental.shuttle.fee).toFixed(2) }} / mo
+                      shuttle
+                    </span>
+                    <span v-else-if="rental.parking?.hasParking">
                       R
                       {{
                         Number(rental.selectedSubUnits?.price?.price).toFixed(2)
@@ -471,7 +588,16 @@
                       + R {{ Number(rental.parking.fee).toFixed(2) }} / mo
                       parking
                     </span>
-                    <span v-else>No parking included</span>
+                    <span v-else-if="rental.shuttle?.hasShuttle">
+                      R
+                      {{
+                        Number(rental.selectedSubUnits?.price?.price).toFixed(2)
+                      }}
+                      / mo rent<br />
+                      + R {{ Number(rental.shuttle.fee).toFixed(2) }} / mo
+                      shuttle
+                    </span>
+                    <span v-else>No parking or shuttle included</span>
                   </div>
                 </q-card-section>
               </q-card>
@@ -1140,7 +1266,11 @@ export default {
               const tenant = await UserService.findUserById(this.rental.userId);
               await JotformService.sendSigningLinks(tenant, this.rental._id);
 
-              await EmailService.ApprovedRental(this.rental.userId, this.rental.unit, this.rental._id)
+              await EmailService.ApprovedRental(
+                this.rental.userId,
+                this.rental.unit,
+                this.rental._id
+              );
               await UserService.findUserById(this.rental.userId);
               this.$emit("close");
             } else {
