@@ -417,6 +417,7 @@ export default {
         { match: '/admin/users/view/', label: 'User Details', icon: 'eva-person' },
         { match: '/admin/units', label: 'Unit Administration', icon: 'eva-home-outline' },
         { match: '/admin/rentals', label: 'Rental Administration', to: '/admin/rentals', icon: 'eva-briefcase-outline' },
+        { match: '/admin/rentals/clean', label: 'Rental Approvals', to: '/admin/rentals/clean', icon: 'eva-checkmark-circle-2-outline' },
         { match: '/admin/rentals/view/', label: 'Rental Details', icon: 'eva-briefcase' },
         { match: '/admin/call-log', label: 'Call Log Administration', icon: 'eva-settings-outline' },
         { match: '/admin/shuttle-booking', label: 'Shuttle Booking Administration', icon: 'eva-calendar-outline' },
