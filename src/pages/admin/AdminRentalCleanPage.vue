@@ -288,12 +288,6 @@ export default {
           field: "unitNumber",
           align: "left",
         },
-        // {
-        //   name: "floorLevel",
-        //   label: "Floor",
-        //   field: "floorLevel",
-        //   align: "left",
-        // },
         {
           name: "occupancy",
           label: "Occupancy",
