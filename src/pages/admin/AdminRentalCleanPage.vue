@@ -91,66 +91,140 @@
                     >
                       <q-td colspan="100%" class="q-pa-none">
                         <q-list bordered separator>
-<q-item v-for="(sub, idx) in props.row.subUnits" :key="idx">
-  <q-item-section>
-    <q-item-label>{{ sub.identifier }}</q-item-label>
-  </q-item-section>
+                          <q-item
+                            v-for="(sub, idx) in props.row.subUnits"
+                            :key="idx"
+                          >
+                            <q-item-section>
+                              <q-item-label>{{ sub.identifier }}</q-item-label>
+                            </q-item-section>
 
-  <template v-if="sub.rental">
-    <q-item-section>{{ sub.rental.firstName }} {{ sub.rental.lastName }}</q-item-section>
-    <q-item-section>{{ sub.rental.phone }}</q-item-section>
-    <q-item-section>{{ sub.rental.email }}</q-item-section>
-    <q-item-section>
-      <q-badge
-        style="width: 50%"
-        :color="sub.rental.gender === 'Male' ? 'blue' : sub.rental.gender === 'Female' ? 'purple' : 'red'"
-      >
-        {{ sub.rental.gender }}
-      </q-badge>
-    </q-item-section>
+                            <template v-if="sub.rental">
+                              <q-item-section
+                                >{{ sub.rental.firstName }}
+                                {{ sub.rental.lastName }}</q-item-section
+                              >
+                              <q-item-section>{{
+                                sub.rental.phone
+                              }}</q-item-section>
+                              <q-item-section>{{
+                                sub.rental.email
+                              }}</q-item-section>
+                              <q-item-section>
+                                <q-badge
+                                  style="width: 50%"
+                                  :color="
+                                    sub.rental.gender === 'Male'
+                                      ? 'blue'
+                                      : sub.rental.gender === 'Female'
+                                      ? 'purple'
+                                      : 'red'
+                                  "
+                                >
+                                  {{ sub.rental.gender }}
+                                </q-badge>
+                              </q-item-section>
 
-    <!-- 🆕 whole section new — labels the extension relationship -->
-    <q-item-section v-if="sub.viewContext === 'extendedInto'">
-      <q-badge color="teal">
-        Renewed from {{ sub.rental.unitYear - 1 }}
-      </q-badge>
-    </q-item-section>
-    <q-item-section v-else-if="sub.viewContext === 'extendedFrom'">
-      <q-badge color="grey-7">
-        Renewed to {{ sub.rental.unitYear }}
-      </q-badge>
-    </q-item-section>
+                              <!-- 🆕 whole section new — labels the extension relationship -->
+                              <q-item-section
+                                v-if="sub.viewContext === 'extendedInto'"
+                              >
+                                <q-badge color="teal">
+                                  Renewed from {{ sub.rental.unitYear - 1 }}
+                                </q-badge>
+                              </q-item-section>
+                              <q-item-section
+                                v-else-if="sub.viewContext === 'extendedFrom'"
+                              >
+                                <q-badge color="grey-7">
+                                  Renewed to {{ sub.rental.unitYear }}
+                                </q-badge>
+                              </q-item-section>
 
-    <q-item-section side>
-      <div class="row items-center">
-        <q-btn round class="q-mr-sm" color="red" size="sm" icon="eva-trash-outline"
-          @click.stop="deleteRental(sub.rental._id)">
-          <q-tooltip anchor="top middle" self="bottom middle">Delete Rental</q-tooltip>
-        </q-btn>
-        <q-btn round class="q-mr-sm" color="red" size="sm" icon="eva-archive-outline"
-          @click.stop="endRental(sub.rental._id)">
-          <q-tooltip anchor="top middle" self="bottom middle">End Rental</q-tooltip>
-        </q-btn>
-        <q-btn round class="q-mr-sm" color="red" size="sm" icon="arrow_back"
-          @click.stop="moveToPending(sub.rental)">
-          <q-tooltip anchor="top middle" self="bottom middle">Move to Pending</q-tooltip>
-        </q-btn>
-        <q-btn class="q-mr-sm" round color="primary" size="sm" icon="event"
-          @click.stop="openExtendDialog(sub.rental)">
-          <q-tooltip anchor="top middle" self="bottom middle">Extend Date</q-tooltip>
-        </q-btn>
-        <q-btn class="q-mr-sm" round color="secondary" size="sm" icon="edit"
-          @click.stop="openApprovalDialog(sub.rental, props.row)">
-          <q-tooltip anchor="top middle" self="bottom middle">Review Approval / Change Unit</q-tooltip>
-        </q-btn>
-      </div>
-    </q-item-section>
-  </template>
+                              <q-item-section side>
+                                <div class="row items-center">
+                                  <q-btn
+                                    round
+                                    class="q-mr-sm"
+                                    color="red"
+                                    size="sm"
+                                    icon="eva-trash-outline"
+                                    @click.stop="deleteRental(sub.rental._id)"
+                                  >
+                                    <q-tooltip
+                                      anchor="top middle"
+                                      self="bottom middle"
+                                      >Delete Rental</q-tooltip
+                                    >
+                                  </q-btn>
+                                  <q-btn
+                                    round
+                                    class="q-mr-sm"
+                                    color="red"
+                                    size="sm"
+                                    icon="eva-archive-outline"
+                                    @click.stop="endRental(sub.rental._id)"
+                                  >
+                                    <q-tooltip
+                                      anchor="top middle"
+                                      self="bottom middle"
+                                      >End Rental</q-tooltip
+                                    >
+                                  </q-btn>
+                                  <q-btn
+                                    round
+                                    class="q-mr-sm"
+                                    color="red"
+                                    size="sm"
+                                    icon="arrow_back"
+                                    @click.stop="moveToPending(sub.rental)"
+                                  >
+                                    <q-tooltip
+                                      anchor="top middle"
+                                      self="bottom middle"
+                                      >Move to Pending</q-tooltip
+                                    >
+                                  </q-btn>
+                                  <q-btn
+                                    class="q-mr-sm"
+                                    round
+                                    color="primary"
+                                    size="sm"
+                                    icon="event"
+                                    @click.stop="openExtendDialog(sub.rental)"
+                                  >
+                                    <q-tooltip
+                                      anchor="top middle"
+                                      self="bottom middle"
+                                      >Extend Date</q-tooltip
+                                    >
+                                  </q-btn>
+                                  <q-btn
+                                    class="q-mr-sm"
+                                    round
+                                    color="secondary"
+                                    size="sm"
+                                    icon="edit"
+                                    @click.stop="
+                                      openApprovalDialog(sub.rental, props.row)
+                                    "
+                                  >
+                                    <q-tooltip
+                                      anchor="top middle"
+                                      self="bottom middle"
+                                      >Review Approval / Change Unit</q-tooltip
+                                    >
+                                  </q-btn>
+                                </div>
+                              </q-item-section>
+                            </template>
 
-  <template v-else>
-    <q-item-section class="text-grey">Empty</q-item-section>
-  </template>
-</q-item>
+                            <template v-else>
+                              <q-item-section class="text-grey"
+                                >Empty</q-item-section
+                              >
+                            </template>
+                          </q-item>
                         </q-list>
                       </q-td>
                     </q-tr>
