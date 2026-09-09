@@ -125,21 +125,48 @@
                                 </q-badge>
                               </q-item-section>
 
-                              <!-- 🆕 whole section new — labels the extension relationship -->
-                              <q-item-section
-                                v-if="sub.viewContext === 'extendedInto'"
-                              >
-                                <q-badge color="teal">
-                                  Renewed from {{ sub.rental.unitYear - 1 }}
-                                </q-badge>
-                              </q-item-section>
-                              <q-item-section
-                                v-else-if="sub.viewContext === 'extendedFrom'"
-                              >
-                                <q-badge color="grey-7">
-                                  Renewed to {{ sub.rental.unitYear }}
-                                </q-badge>
-                              </q-item-section>
+<q-item-section v-if="sub.viewContext === 'extendedInto'">
+  <q-badge color="teal">
+    <template v-if="sub.historyEntry">
+      Renewed from {{ sub.historyEntry.fromYear || 'previous' }}
+      <span v-if="sub.historyEntry.sameRoom === false" class="q-ml-xs">
+        (room changed)
+      </span>
+    </template>
+    <template v-else-if="sub.rental.renewedFromUnit">
+      Renewed from previous year
+    </template>
+    <template v-else>
+      Renewed
+    </template>
+  </q-badge>
+</q-item-section>
+
+<q-item-section v-else-if="sub.viewContext === 'extendedFrom'">
+  <q-badge color="grey-7">
+    <template v-if="sub.historyEntry">
+      Renewed to {{ sub.historyEntry.toYear || 'next year' }}
+      <span v-if="sub.historyEntry.sameRoom === false" class="q-ml-xs">
+        (room changed)
+      </span>
+    </template>
+    <template v-else>
+      Renewed to next year
+    </template>
+  </q-badge>
+</q-item-section>
+
+<!-- Show renewal count badge -->
+<q-item-section v-if="sub.rental && sub.rental.renewalHistory && sub.rental.renewalHistory.length > 0">
+  <q-badge
+    color="info"
+    class="cursor-pointer"
+    @click.stop="showRenewalHistory(sub.rental)"
+  >
+    <q-icon name="history" size="xs" class="q-mr-xs" />
+    {{ sub.rental.renewalHistory.length }} renewals
+  </q-badge>
+</q-item-section>
 
                               <q-item-section side>
                                 <div class="row items-center">
@@ -376,11 +403,8 @@ export default {
         ];
         const usersMap = await UserService.findUsersByIds(userIds);
 
-        // console.log("user object:", usersMap);
-
         const rentalsWithUsers = activeRentals.map((rental) => {
           const user = usersMap[rental.user] || {};
-          // console.log("user object:", user);
           return {
             ...rental,
             username: user.username || "Unknown",
@@ -409,7 +433,6 @@ export default {
           const subUnits = unit.subUnits.map((sub) => {
             const identifier = sub.roomType || sub.bedType || sub.type;
 
-            // Case 1: a rental currently points AT this unit (the normal case)
             const directMatch = rentalsWithUsers.find(
               (r) =>
                 String(r.unit) === String(unit._id) &&
@@ -418,34 +441,60 @@ export default {
             );
 
             if (directMatch) {
-              return {
-                identifier,
-                rental: directMatch,
-                viewContext: directMatch.renewedFromUnit
-                  ? "extendedInto"
-                  : "normal", // 🆕
-              };
+              const hasRenewalHistory = directMatch.renewalHistory && directMatch.renewalHistory.length > 0;
+              let historyEntry = null;
+              let viewContext = "normal";
+
+              if (directMatch.renewedFromUnit) {
+                viewContext = "extendedInto";
+              }
+
+              if (hasRenewalHistory) {
+                const entry = directMatch.renewalHistory.find(
+                  (h) => String(h.toUnit) === String(unit._id)
+                );
+                if (entry) {
+                  historyEntry = entry;
+                  viewContext = "extendedInto";
+                }
+              }
+
+              return { identifier, rental: directMatch, viewContext, historyEntry };
             }
 
-            // 🆕 Case 2: no rental points here anymore, but a rental was extended AWAY from this
-            // unit — this is the 2026 side of an extended tenancy, same physical bed.
-            const linkedMatch = rentalsWithUsers.find(
-              (r) =>
+            // 🆕 Case 2 rewritten — search the FULL renewal chain, not just the single
+            // renewedFromUnit field, so middle units in a 3+ year chain are still found.
+            const linkedMatch = rentalsWithUsers.find((r) => {
+              // Check every hop in the renewal history for this unit as a "from"
+              if (r.renewalHistory && r.renewalHistory.length > 0) {
+                const inHistory = r.renewalHistory.some(
+                  (h) =>
+                    String(h.fromUnit) === String(unit._id) &&
+                    (h.fromSubUnit?.roomType === identifier || h.fromSubUnit?.bedType === identifier)
+                );
+                if (inHistory) return true;
+              }
+              // Fallback: still check the direct field too, covers rentals with no history yet
+              return (
                 r.renewedFromUnit &&
                 String(r.renewedFromUnit) === String(unit._id) &&
-                (r.selectedSubUnits?.roomType === identifier ||
-                  r.selectedSubUnits?.bedType === identifier)
-            );
+                (r.selectedSubUnits?.roomType === identifier || r.selectedSubUnits?.bedType === identifier)
+              );
+            });
 
             if (linkedMatch) {
-              return {
-                identifier,
-                rental: linkedMatch,
-                viewContext: "extendedFrom", // 🆕
-              };
+              let historyEntry = null;
+              if (linkedMatch.renewalHistory && linkedMatch.renewalHistory.length > 0) {
+                const entry = linkedMatch.renewalHistory.find(
+                  (h) => String(h.fromUnit) === String(unit._id)
+                );
+                if (entry) historyEntry = entry;
+              }
+
+              return { identifier, rental: linkedMatch, viewContext: "extendedFrom", historyEntry };
             }
 
-            return { identifier, rental: null, viewContext: null }; // 🆕
+            return { identifier, rental: null, viewContext: null, historyEntry: null };
           });
 
           const occupiedCount = subUnits.filter((s) => s.rental).length;
@@ -516,6 +565,46 @@ export default {
       } else {
         this.expandedUnitIds.add(unitId);
       }
+    },
+
+    showRenewalHistory(rental) {
+      if (!rental.renewalHistory || rental.renewalHistory.length === 0) {
+        this.$q.notify({
+          type: 'info',
+          message: 'No renewal history found.'
+        });
+        return;
+      }
+
+      let message = '<div style="font-family: monospace; font-size: 14px;">';
+      message += '<strong>Renewal Chain:</strong><br><br>';
+
+      rental.renewalHistory.forEach((entry, index) => {
+        const fromDisplay = `${entry.fromUnitNumber || 'Unit'} (${entry.fromYear || '??'})`;
+        const toDisplay = `${entry.toUnitNumber || 'Unit'} (${entry.toYear || '??'})`;
+        const roomChange = entry.sameRoom === false ? ' 🔄 <span style="color: orange;">Room Changed</span>' : '';
+
+        message += `${index + 1}. ${fromDisplay} → ${toDisplay}${roomChange}<br>`;
+      });
+
+      // Show current unit at the end
+      if (rental.unitNumber) {
+        message += `<br><strong>Current:</strong> ${rental.unitNumber} (${rental.unitYear || 'current'})`;
+      }
+
+      message += '</div>';
+
+      this.$q.dialog({
+        title: 'Renewal History',
+        message: message,
+        html: true,
+        color: 'primary',
+        ok: {
+          label: 'Close',
+          color: 'primary'
+        },
+        persistent: true,
+      });
     },
 
     async moveToPending(row) {

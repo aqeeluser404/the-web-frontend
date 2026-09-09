@@ -75,10 +75,14 @@ class RentalService {
       Logger.error(error)
     }
   }
-  static async extendRentalToNewYear(rentalId, rentalEndDate) {
+  static async extendRentalToNewYear(rentalId, rentalEndDate, overrideUnitId = null, overrideSubUnitFilter = null) {
     const ENDPOINT = `/rentals/${rentalId}/extend-to-new-year`
     try {
-      const response = await axiosInstance.put(ENDPOINT, { rentalEndDate })
+      const response = await axiosInstance.put(ENDPOINT, {
+        rentalEndDate,
+        overrideUnitId,
+        overrideSubUnitFilter
+      })
       return response.data
     } catch (error) {
       Logger.error(error)
