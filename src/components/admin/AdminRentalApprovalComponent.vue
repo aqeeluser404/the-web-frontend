@@ -187,6 +187,41 @@
 
         <q-card-section v-if="!rental.renewed">
           <div class="q-mb-md"><b>Reassign Tenant's Unit</b></div>
+  <!-- ✅ CASE 1: Chain is broken (only for renewed rentals) -->
+  <q-banner
+    v-if="validationState.isChainBroken"
+    class="bg-red-1 text-red-9 q-mb-md"
+    rounded
+  >
+    <template v-slot:avatar>
+      <q-icon name="warning" color="red-9" />
+    </template>
+    <div><b>Renewal chain is broken</b></div>
+    <div class="text-caption q-mt-xs">
+      The following units in this rental's renewal chain are now occupied by other tenants:
+      <b>{{ validationState.blockedUnits.join(", ") }}</b>.
+      <br>
+      You cannot re-approve this rental as-is. Please reassign the tenant to a new unit or break the chain manually.
+    </div>
+  </q-banner>
+
+  <!-- ✅ CASE 2: Unit occupied (no chain involved) -->
+  <q-banner
+    v-else-if="validationState.isOccupied"
+    class="bg-orange-1 text-orange-9 q-mb-md"
+    rounded
+  >
+    <template v-slot:avatar>
+      <q-icon name="info" color="orange-9" />
+    </template>
+    <div><b>Unit is currently occupied</b></div>
+    <div class="text-caption q-mt-xs">
+      The room <b>{{ rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType }}</b>
+      in unit <b>{{ validationState.blockedUnits.join(", ") }}</b> is already occupied by another tenant.
+      <br>
+      Please reassign this tenant to a different unit or room.
+    </div>
+  </q-banner>
           <q-item>
             This option is provided for cases where multiple pending
             applications of different genders exist for the same unit. Once one
@@ -202,54 +237,75 @@
             and accuracy in tenant records.
           </q-item>
 
-          <q-item>
-            <q-item-section v-if="unitDetails?.genderAssignment">
-              <div class="row items-center">
-                <div>Unit's Assignment: {{ unitDetails.genderAssignment }}</div>
-                <q-icon
-                  :name="
-                    unitDetails.genderAssignment === rental.userGender
-                      ? 'check'
-                      : 'close'
-                  "
-                  :color="
-                    unitDetails.genderAssignment === rental.userGender
-                      ? 'green'
-                      : 'red'
-                  "
-                  class="q-ml-sm"
-                />
-              </div>
-            </q-item-section>
-            <q-item-section v-else>
-              <div class="row items-center">
-                <div>Unit Gender Unassigned</div>
-                <q-icon name="check" color="green" class="q-ml-sm" />
-              </div>
-            </q-item-section>
+<q-item>
+  <q-item-section class="col-12 col-md-4">
+    <div class="row items-center">
+      <div>
+        <span v-if="unitDetails?.genderAssignment">
+          Unit's Assignment: {{ unitDetails.genderAssignment }}
+        </span>
+        <span v-else>Unit Gender Unassigned</span>
+      </div>
+      <q-icon
+        :name="
+          !unitDetails?.genderAssignment ||
+          unitDetails.genderAssignment === rental.userGender
+            ? 'check'
+            : 'close'
+        "
+        :color="
+          !unitDetails?.genderAssignment ||
+          unitDetails.genderAssignment === rental.userGender
+            ? 'green'
+            : 'red'
+        "
+        class="q-ml-sm"
+      />
+    </div>
+  </q-item-section>
 
-            <q-item-section>
-              <div class="row items-center">
-                <div>
-                  Unit's Occupancy: {{ unitDetails.currentOccupants }} /
-                  {{ unitDetails.unitOccupants }}
-                </div>
-                <q-icon
-                  :name="
-                    unitDetails.currentOccupants <= unitDetails.unitOccupants
-                      ? 'check'
-                      : 'close'
-                  "
-                  :color="
-                    unitDetails.currentOccupants <= unitDetails.unitOccupants
-                      ? 'green'
-                      : 'red'
-                  "
-                  class="q-ml-sm"
-                />
-              </div>
-            </q-item-section>
-          </q-item>
+  <q-item-section class="col-12 col-md-4">
+    <div class="row items-center">
+      <div>
+        Unit's Occupancy: {{ unitDetails.currentOccupants }} /
+        {{ unitDetails.unitOccupants }}
+      </div>
+      <q-icon
+        :name="
+          unitDetails.currentOccupants < unitDetails.unitOccupants
+            ? 'check'
+            : 'close'
+        "
+        :color="
+          unitDetails.currentOccupants < unitDetails.unitOccupants
+            ? 'green'
+            : 'red'
+        "
+        class="q-ml-sm"
+      />
+    </div>
+  </q-item-section>
+
+  <q-item-section class="col-12 col-md-4">
+    <div class="row items-center">
+      <div>
+        Room:
+        {{
+          validationState.isChainBroken
+            ? "Broken"
+            : validationState.isOccupied
+            ? "Occupied"
+            : "Valid"
+        }}
+      </div>
+      <q-icon
+        :name="validationState.state === 'valid' ? 'check' : 'close'"
+        :color="validationState.state === 'valid' ? 'green' : 'red'"
+        class="q-ml-sm"
+      />
+    </div>
+  </q-item-section>
+</q-item>
 
           <q-item>
             <div class="row q-col-gutter-md full-width">
@@ -305,29 +361,44 @@
             </div>
           </q-item>
 
-          <q-item>
-            <div
-              :class="[
-                (unitDetails.genderAssignment === rental.userGender ||
-                  !unitDetails.genderAssignment) &&
-                unitDetails.currentOccupants < unitDetails.unitOccupants
-                  ? 'text-green text-bold text-caption'
-                  : 'text-red text-bold text-caption',
-              ]"
-            >
-              <div class="row items-center">
-                <div>
-                  {{
-                    (unitDetails.genderAssignment === rental.userGender ||
-                      !unitDetails.genderAssignment) &&
-                    unitDetails.currentOccupants < unitDetails.unitOccupants
-                      ? "Unit is valid for approval. No reassignment needed."
-                      : "Unit has issues. Please reassign tenant."
-                  }}
-                </div>
-              </div>
-            </div>
-          </q-item>
+<q-item>
+<div class="row items-center">
+  <div class="col-12">
+    <span
+      :class="[
+        (unitDetails.genderAssignment === rental.userGender ||
+          !unitDetails.genderAssignment) &&
+        unitDetails.currentOccupants < unitDetails.unitOccupants &&
+        validationState.state === 'valid'
+          ? 'text-green text-bold text-caption'
+          : 'text-red text-bold text-caption',
+      ]"
+    >
+      {{
+        (unitDetails.genderAssignment === rental.userGender ||
+          !unitDetails.genderAssignment) &&
+        unitDetails.currentOccupants < unitDetails.unitOccupants &&
+        validationState.state === 'valid'
+          ? "Unit is valid for approval. No reassignment needed."
+          : "Unit has issues. Please reassign tenant"
+      }}
+    </span>
+
+    <span
+      v-if="validationState.isChainBroken"
+      class="text-red text-caption q-ml-sm"
+    >
+      - Chain broken: {{ validationState.blockedUnits.join(", ") }} are occupied by other tenants.
+    </span>
+    <span
+      v-else-if="validationState.isOccupied"
+      class="text-red "
+    >
+      - Current unit is occupied by another tenant.
+    </span>
+  </div>
+</div>
+</q-item>
 
           <q-item>
             <q-item-section>
@@ -344,6 +415,23 @@
 
         <q-card-section v-else>
           <div class="q-mb-md"><b>Reassign Tenant's Unit</b></div>
+
+          <q-banner
+            v-if="validationState.isChainBroken"
+            class="bg-red-1 text-red-9 q-mb-md"
+            rounded
+          >
+            <template v-slot:avatar>
+              <q-icon name="warning" color="red-9" />
+            </template>
+            <div><b>Renewal chain is broken</b></div>
+            <div class="text-caption q-mt-xs">
+              The following units in this rental's renewal chain are now occupied by other tenants:
+              <b>{{ validationState.blockedUnits.join(", ") }}</b>.
+              <br>
+              You cannot re-approve this rental as-is. Please reassign the tenant to a new unit or break the chain manually.
+            </div>
+          </q-banner>
           <q-banner class="bg-orange-1 text-orange-9" rounded>
             <template v-slot:avatar>
               <q-icon name="info" color="orange-9" />
@@ -820,6 +908,8 @@ export default {
       selectedPricePlan: null,
 
       selectedReassignYear: null,
+      allUnits: [],
+      allRentals: [],
     };
   },
   async created() {
@@ -836,6 +926,201 @@ export default {
     },
   },
   computed: {
+chainValidation() {
+  const subUnit = this.rental.selectedSubUnits;
+  if (!subUnit) {
+    return { isChainValid: true, blockedUnits: [] };
+  }
+
+  if (!this.allUnits || this.allUnits.length === 0) {
+    return { isChainValid: true, blockedUnits: [] };
+  }
+
+  const blockedUnits = [];
+
+  // ============================================================
+  // 1. Check the CURRENT unit's sub-unit
+  // ============================================================
+  const currentUnit = this.allUnits.find(
+    (u) => String(u._id) === String(this.rental.unit)
+  );
+
+  if (currentUnit && currentUnit.subUnits) {
+    const currentMatch = currentUnit.subUnits.find(
+      (su) =>
+        (subUnit.bedType && su.bedType === subUnit.bedType) ||
+        (subUnit.roomType && su.roomType === subUnit.roomType)
+    );
+
+    if (currentMatch && currentMatch.isAvailable === false) {
+      // Check if it's occupied by THIS rental (should be fine) or someone else
+      // Since we can't easily check from frontend, we show as blocked if not available
+      // unless we know this rental is the one pointing here
+      // (this.rental.unit already points here, so it should be this rental's own lock)
+      // If the rental is Pending, the unit SHOULD be available
+      if (this.rental.status === 'Pending') {
+        blockedUnits.push(
+          `${currentUnit.unitNumber} (${currentUnit.unitYear}) - current unit`
+        );
+      }
+    }
+  }
+
+  // ============================================================
+  // 2. Check chain units (only if there's a renewal history)
+  // ============================================================
+  if (this.rental.renewalHistory && this.rental.renewalHistory.length > 0) {
+    // Find where the chain broke (last room change)
+    let breakIndex = -1;
+    for (let i = this.rental.renewalHistory.length - 1; i >= 0; i--) {
+      if (this.rental.renewalHistory[i].sameRoom === false) {
+        breakIndex = i;
+        break;
+      }
+    }
+
+    // Collect chain units from the active chain
+    const chainUnitIds = [];
+    this.rental.renewalHistory.forEach((entry, index) => {
+      if (breakIndex !== -1 && index <= breakIndex) return;
+      if (entry.fromUnit && String(entry.fromUnit) !== String(this.rental.unit)) {
+        chainUnitIds.push({
+          unitId: entry.fromUnit,
+          unitNumber: entry.fromUnitNumber,
+          year: entry.fromYear,
+        });
+      }
+    });
+
+    // Check each chain unit
+    for (const chainUnit of chainUnitIds) {
+      const unitData = this.allUnits.find(
+        (u) => String(u._id) === String(chainUnit.unitId)
+      );
+
+      if (!unitData || !unitData.subUnits) continue;
+
+      const matchingSubUnit = unitData.subUnits.find(
+        (su) =>
+          (subUnit.bedType && su.bedType === subUnit.bedType) ||
+          (subUnit.roomType && su.roomType === subUnit.roomType)
+      );
+
+      if (matchingSubUnit && matchingSubUnit.isAvailable === false) {
+        blockedUnits.push(`${chainUnit.unitNumber} (${chainUnit.year})`);
+      }
+    }
+  }
+
+  return {
+    isChainValid: blockedUnits.length === 0,
+    blockedUnits,
+  };
+},
+validationState() {
+  const subUnit = this.rental.selectedSubUnits;
+  if (!subUnit) {
+    return { state: "valid", blockedUnits: [], isOccupied: false, isChainBroken: false };
+  }
+
+  if (!this.allUnits || this.allUnits.length === 0) {
+    return { state: "valid", blockedUnits: [], isOccupied: false, isChainBroken: false };
+  }
+
+  const blockedUnits = [];
+  let currentUnitOccupied = false;
+  let chainBroken = false;
+
+  // ============================================================
+  // 1. Check CURRENT unit's sub-unit
+  // ============================================================
+  const currentUnit = this.allUnits.find(
+    (u) => String(u._id) === String(this.rental.unit)
+  );
+
+  if (currentUnit && currentUnit.subUnits) {
+    const currentMatch = currentUnit.subUnits.find(
+      (su) =>
+        (subUnit.bedType && su.bedType === subUnit.bedType) ||
+        (subUnit.roomType && su.roomType === subUnit.roomType)
+    );
+
+    if (
+      currentMatch &&
+      currentMatch.isAvailable === false &&
+      this.rental.status === "Pending"
+    ) {
+      currentUnitOccupied = true;
+      blockedUnits.push(`${currentUnit.unitNumber} (${currentUnit.unitYear})`);
+    }
+  }
+
+  // ============================================================
+  // 2. Check chain units
+  // ============================================================
+  if (this.rental.renewalHistory && this.rental.renewalHistory.length > 0) {
+    let breakIndex = -1;
+    for (let i = this.rental.renewalHistory.length - 1; i >= 0; i--) {
+      if (this.rental.renewalHistory[i].sameRoom === false) {
+        breakIndex = i;
+        break;
+      }
+    }
+
+    const chainUnitIds = [];
+    this.rental.renewalHistory.forEach((entry, index) => {
+      if (breakIndex !== -1 && index <= breakIndex) return;
+      if (entry.fromUnit && String(entry.fromUnit) !== String(this.rental.unit)) {
+        chainUnitIds.push({
+          unitId: entry.fromUnit,
+          unitNumber: entry.fromUnitNumber,
+          year: entry.fromYear,
+        });
+      }
+    });
+
+    for (const chainUnit of chainUnitIds) {
+      const unitData = this.allUnits.find(
+        (u) => String(u._id) === String(chainUnit.unitId)
+      );
+
+      if (!unitData || !unitData.subUnits) continue;
+
+      const matchingSubUnit = unitData.subUnits.find(
+        (su) =>
+          (subUnit.bedType && su.bedType === subUnit.bedType) ||
+          (subUnit.roomType && su.roomType === subUnit.roomType)
+      );
+
+      if (matchingSubUnit && matchingSubUnit.isAvailable === false) {
+        // ✅ NEW: Check if it's occupied by ANOTHER rental (not this one)
+        const occupiedByAnother = (this.allRentals || []).some(
+          (r) =>
+            String(r.unit) === String(chainUnit.unitId) &&
+            String(r._id) !== String(this.rental._id) &&
+            ((subUnit.bedType && r.selectedSubUnits?.bedType === subUnit.bedType) ||
+              (subUnit.roomType && r.selectedSubUnits?.roomType === subUnit.roomType))
+        );
+
+        // Only mark as broken if someone ELSE has it
+        // If this rental is the one occupying it (chain link), it's fine
+        if (occupiedByAnother) {
+          chainBroken = true;
+          blockedUnits.push(`${chainUnit.unitNumber} (${chainUnit.year})`);
+        }
+      }
+    }
+  }
+
+  if (chainBroken) {
+    return { state: "chain-broken", blockedUnits, isOccupied: currentUnitOccupied, isChainBroken: true };
+  }
+  if (currentUnitOccupied) {
+    return { state: "occupied", blockedUnits, isOccupied: true, isChainBroken: false };
+  }
+  return { state: "valid", blockedUnits: [], isOccupied: false, isChainBroken: false };
+},
+
     hasAllRequiredDocuments() {
       // Define required docs per category (with prefixes)
       const requiredDocsByCategory = {
@@ -1031,19 +1316,26 @@ export default {
         });
     },
 
-    async getUnitAvailability() {
-      const response = await UnitService.getByIdUnit(this.rental.unit);
-      this.unitDetails = response;
+async getUnitAvailability() {
+  const response = await UnitService.getByIdUnit(this.rental.unit);
+  this.unitDetails = response;
 
-      console.log(this.rental);
-      this.selectedReassignYear = Number(this.rental.unitYear) || 2026;
+  // ✅ Load all units (unfiltered) for chain validation
+  const allUnitsResponse = await UnitService.getAllUnits();
+  this.allUnits = allUnitsResponse || [];
 
-      await this.findAllGenderBasedUnits(
-        this.rental.userGender,
-        this.rental?.selectedSubUnits?.price?.name,
-        this.rental?.selectedSubUnits?.price?.price
-      );
-    },
+  // ✅ Load all active rentals for occupancy checks
+  const allRentals = await RentalService.findAllRentals();
+  this.allRentals = (allRentals || []).filter((r) => r.status === "Active");
+
+  this.selectedReassignYear = Number(this.rental.unitYear) || 2026;
+
+  await this.findAllGenderBasedUnits(
+    this.rental.userGender,
+    this.rental?.selectedSubUnits?.price?.name,
+    this.rental?.selectedSubUnits?.price?.price
+  );
+},
 
     async fetchUserDetails() {
       try {
@@ -1196,6 +1488,26 @@ export default {
         }
       }
 
+if (this.validationState.state !== "valid") {
+  if (this.validationState.isChainBroken) {
+    this.$q.notify({
+      type: "negative",
+      color: "red",
+      position: "top",
+      timeout: 8000,
+      message: `Cannot re-approve: The following chained units are now occupied by other tenants: ${this.validationState.blockedUnits.join(", ")}. Please reassign the tenant or break the chain manually.`,
+    });
+  } else {
+    this.$q.notify({
+      type: "negative",
+      color: "red",
+      position: "top",
+      message: `Cannot approve: This unit is already occupied by another tenant. Please reassign.`,
+    });
+  }
+  return;
+}
+
       //const hasCreditCheck = this.rental?.documents?.some(doc =>
       //  doc.docType === 'Signed And Filled Application Form'
       //);
@@ -1263,14 +1575,14 @@ export default {
                 message: "Rental Approved!",
               });
 
-              const tenant = await UserService.findUserById(this.rental.userId);
-              await JotformService.sendSigningLinks(tenant, this.rental._id);
+              // const tenant = await UserService.findUserById(this.rental.userId);
+              // await JotformService.sendSigningLinks(tenant, this.rental._id);
 
-              await EmailService.ApprovedRental(
-                this.rental.userId,
-                this.rental.unit,
-                this.rental._id
-              );
+              // await EmailService.ApprovedRental(
+              //   this.rental.userId,
+              //   this.rental.unit,
+              //   this.rental._id
+              // );
               await UserService.findUserById(this.rental.userId);
               this.$emit("close");
             } else {
