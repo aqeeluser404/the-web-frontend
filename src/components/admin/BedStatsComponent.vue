@@ -1,7 +1,15 @@
 <template>
   <q-card class="stats-card col-md-12 col-12 full-height">
-    <q-card-section class="stats-header">
+    <q-card-section class="stats-header row justify-between items-center">
       <div class="text-h6">Bed Occupancy Stats</div>
+      <q-select
+        v-model="selectedYear"
+        :options="availableYears"
+        dense
+        filled
+        style="min-width: 120px"
+        @update:model-value="onYearChange"
+      />
       <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
@@ -28,6 +36,21 @@
         </div>
       </q-card>
     </q-card-section>
+
+    <q-card-section class="row justify-center q-pt-none q-pb-md">
+<!-- <div class="total-occupied-badge">
+  Total occupied: {{ totalOccupied }} / {{ totalBeds }}
+</div> -->
+        <q-chip
+          square
+          color="grey-3"
+          text-color="grey-9"
+          class="text-weight-bold"
+          size="md"
+        >
+          Total occupied: {{ totalOccupied }} / {{ totalBeds }}
+        </q-chip>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -43,200 +66,234 @@ export default {
       rentals: [],
       units: [],
       loading: false,
+      currentYear: new Date().getFullYear(),
+      // ✅ Selected year drives the whole component
+      // Defaults to current year (2026)
+      selectedYear: new Date().getFullYear(),
     };
   },
 
   computed: {
     // ============================================================
-    // 2027 UNITS
+    // DISPLAYED YEARS — derived from the selected year
     // ============================================================
+    //
+    // If selectedYear is 2026 → displayYear = 2026, nextDisplayYear = 2027
+    // If selectedYear is 2027 → displayYear = 2027, nextDisplayYear = 2028
+    // If selectedYear is 2028 → displayYear = 2028, nextDisplayYear = 2029
+    //
 
-    units2027() {
-      return this.units.filter((unit) => Number(unit.unitYear) === 2027);
+    displayYear() {
+      return this.selectedYear;
+    },
+
+    nextDisplayYear() {
+      return this.selectedYear + 1;
     },
 
     // ============================================================
-    // TOTAL 2027 BEDS
+    // AVAILABLE YEARS — built from units in the system
+    // ============================================================
+    //
+    // Only includes years >= currentYear so users can't select past years.
+    // Always includes currentYear as an option even if no units exist yet.
+    //
+
+    availableYears() {
+      const years = new Set([this.currentYear]);
+
+      this.units.forEach((unit) => {
+        const y = Number(unit.unitYear);
+        if (!isNaN(y) && y >= this.currentYear) {
+          years.add(y);
+        }
+      });
+
+      return Array.from(years).sort((a, b) => a - b);
+    },
+
+    // ============================================================
+    // UNITS FOR SELECTED YEAR + NEXT YEAR
+    // ============================================================
+
+    unitsCurrentYear() {
+      return this.units.filter(
+        (unit) => Number(unit.unitYear) === this.displayYear
+      );
+    },
+
+    unitsNextYear() {
+      return this.units.filter(
+        (unit) => Number(unit.unitYear) === this.nextDisplayYear
+      );
+    },
+
+    // ============================================================
+    // TOTAL BEDS
     // ============================================================
 
     totalBeds() {
-      return this.units2027.reduce((total, unit) => {
-        return total + Number(unit.unitOccupants || 0);
+      return this.unitsCurrentYear.reduce((total, unit) => {
+        const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
+        return total + subUnits.length;
       }, 0);
     },
 
+totalBedsNextYear() {
+  const nextYearBeds = this.unitsNextYear.reduce((total, unit) => {
+    const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
+    return total + subUnits.length;
+  }, 0);
+
+  // ✅ Fallback: if next-year units don't exist yet, mirror current year's
+  // capacity (since units are duplicated across years with the same layout)
+  return nextYearBeds > 0 ? nextYearBeds : this.totalBeds;
+},
+
     // ============================================================
-    // 2026 ACTIVE RENTALS
+    // SELECTED YEAR OCCUPIED RENTALS
     // ============================================================
     //
-    // We determine 2026 from the rental start date because some
-    // existing 2026 rentals have unitYear === null.
-    //
-    // Each rental represents ONE bed.
+    // Rentals active in the selected year.
+    // Renewed tenants are counted in the NEXT year bucket instead.
     //
 
-    occupied2026Rentals() {
+    occupiedCurrentYearRentals() {
       return this.rentals.filter((rental) => {
-        const startYear = new Date(rental.rentalStartDate).getFullYear();
+        const year =
+          Number(rental.unitYear) ||
+          new Date(rental.rentalStartDate).getFullYear();
 
         return (
-          startYear === 2026 &&
+          year === this.displayYear &&
           rental.status === "Active" &&
           rental.selectedSubUnits?.type === "bed"
         );
       });
     },
 
-    // ============================================================
-    // 2026 OCCUPIED
-    // ============================================================
-
-    occupied2026() {
-      return this.occupied2026Rentals.length;
+    occupiedCurrentYear() {
+      return this.occupiedCurrentYearRentals.length;
     },
 
-    // ============================================================
-    // 2026 OCCUPIED USERS
-    // ============================================================
-    //
-    // Used to determine whether a 2027 applicant is a renewal.
-    //
-
-    occupied2026Users() {
+    occupiedCurrentYearUsers() {
       return new Set(
-        this.occupied2026Rentals.map((rental) => {
-          return String(rental.user);
-        }),
+        this.occupiedCurrentYearRentals.map((rental) =>
+          String(rental.user)
+        )
       );
     },
 
     // ============================================================
-    // 2027 RENTALS / APPLICATIONS
+    // NEXT YEAR RENTALS / APPLICATIONS
     // ============================================================
-    //
-    // Again, use rentalStartDate rather than relying entirely
-    // on unitYear.
-    //
 
-    rentals2027() {
+    rentalsNextYear() {
       return this.rentals.filter((rental) => {
-        const startYear = new Date(rental.rentalStartDate).getFullYear();
+        const year =
+          Number(rental.unitYear) ||
+          new Date(rental.rentalStartDate).getFullYear();
 
-        return startYear === 2027 && rental.selectedSubUnits?.type === "bed";
+        return (
+          year === this.nextDisplayYear &&
+          rental.selectedSubUnits?.type === "bed"
+        );
       });
     },
 
     // ============================================================
-    // 2027 RENEWED
+    // NEXT YEAR RENEWED (Active only)
     // ============================================================
-    //
-    // A renewal is:
-    //
-    // 1. A 2027 bed application
-    // 2. The user had an active 2026 bed
-    //
-    // IMPORTANT:
-    // We do NOT require the 2027 rental to be Active.
-    //
-    // This allows Pending renewal applications to count.
-    //
 
-    renewed2027() {
-      return this.rentals2027.filter((rental) => {
-        return this.occupied2026Users.has(String(rental.user));
+    renewedNextYear() {
+      return this.rentalsNextYear.filter((rental) => {
+        return rental.renewed === true && rental.status === "Active";
       }).length;
     },
 
     // ============================================================
-    // 2027 CONFIRMED
+    // NEXT YEAR CONFIRMED (New active bookings)
     // ============================================================
-    //
-    // A confirmed 2027 bed is:
-    //
-    // 1. A 2027 bed
-    // 2. Status is Active
-    // 3. User was NOT an active 2026 occupant
-    //
-    // Renewals are excluded because they are already counted
-    // under 2027 Renewed.
-    //
 
-    newConfirmed2027() {
-      return this.rentals2027.filter((rental) => {
-        return (
-          rental.status === "Active" &&
-          !this.occupied2026Users.has(String(rental.user))
-        );
+    newConfirmedNextYear() {
+      return this.rentalsNextYear.filter((rental) => {
+        return rental.status === "Active" && rental.renewed !== true;
       }).length;
     },
 
     // ============================================================
-    // 2027 AVAILABLE
+    // NEXT YEAR AVAILABLE
     // ============================================================
-    //
-    // Both renewed beds and confirmed new beds occupy 2027
-    // capacity.
-    //
 
-    available2027() {
-      const allocated = this.renewed2027 + this.newConfirmed2027;
-
-      return Math.max(this.totalBeds - allocated, 0);
+    availableNextYear() {
+      const allocated = this.renewedNextYear + this.newConfirmedNextYear;
+      return Math.max(this.totalBedsNextYear - allocated, 0);
     },
 
     // ============================================================
     // DASHBOARD STATS
     // ============================================================
 
+  totalOccupied() {
+    return (
+      this.occupiedCurrentYear +
+      this.renewedNextYear +
+      this.newConfirmedNextYear
+    );
+  },
+
+nextYearAllocated() {
+  return this.renewedNextYear + this.newConfirmedNextYear;
+},
+
     items() {
       return [
         {
           title: "TOTAL BEDS",
           value: this.totalBeds,
-          subtitle: "(PHYSICAL CAPACITY)",
+          subtitle: `(${this.displayYear} PHYSICAL CAPACITY)`,
           icon: "hotel",
         },
-
         {
-          title: "2026 OCCUPIED",
-          value: this.occupied2026,
-          subtitle: "(ACTIVE 2026 BEDS)",
+          title: `${this.displayYear} OCCUPIED`,
+          value: this.occupiedCurrentYear,
+          subtitle: `(ACTIVE ${this.displayYear} BEDS)`,
           icon: "event",
         },
-
         {
-          title: "2027 RENEWED",
-          value: this.renewed2027,
-          subtitle: "(2026 OCCUPANTS)",
+          title: `${this.nextDisplayYear} RENEWED`,
+          value: this.renewedNextYear,
+          subtitle: `(${this.displayYear} OCCUPANTS)`,
           icon: "autorenew",
         },
-
         {
-          title: "2027 CONFIRMED",
-          value: this.newConfirmed2027,
+          title: `${this.nextDisplayYear} CONFIRMED`,
+          value: this.newConfirmedNextYear,
           subtitle: "(NEW ACTIVE BOOKINGS)",
           icon: "person_add",
         },
-
-        {
-          title: "2027 AVAILABLE",
-          value: this.available2027,
-          subtitle: "(LIVE BALANCE)",
-          icon: "pie_chart",
-        },
+{
+  title: `${this.nextDisplayYear} AVAILABLE`,
+  value: this.availableNextYear,
+  subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
+  icon: "pie_chart",
+},
       ];
     },
-  },
 
-  // ============================================================
-  // LOAD DATA
-  // ============================================================
+  },
 
   async mounted() {
     await this.fetchStatsData();
   },
 
   methods: {
+    onYearChange() {
+      // Computed props auto-update, but this hook lets you
+      // trigger side effects if needed later
+      console.log("Year changed to:", this.selectedYear);
+    },
+
     async fetchStatsData() {
       this.loading = true;
 
@@ -247,40 +304,41 @@ export default {
         ]);
 
         this.rentals = Array.isArray(rentals) ? rentals : [];
-
         this.units = Array.isArray(units) ? units : [];
 
-        // ========================================================
-        // DEBUG
-        // ========================================================
+        // ✅ If the default selectedYear isn't in the availableYears list,
+        // snap to the first available year
+        if (!this.availableYears.includes(this.selectedYear)) {
+          this.selectedYear = this.availableYears[0] ?? this.currentYear;
+        }
 
         console.log("========== BED STATS ==========");
-
-        console.log("Total units:", this.units.length);
-
+        console.log("Display Year:", this.displayYear);
+        console.log("Next Display Year:", this.nextDisplayYear);
+        console.log(`${this.displayYear} physical beds:`, this.totalBeds);
         console.log(
-          "2026 units:",
-          this.units.filter((unit) => Number(unit.unitYear) === 2026).length,
+          `${this.nextDisplayYear} physical beds:`,
+          this.totalBedsNextYear
         );
-
         console.log(
-          "2027 units:",
-          this.units.filter((unit) => Number(unit.unitYear) === 2027).length,
+          `${this.displayYear} occupied:`,
+          this.occupiedCurrentYear
         );
-
-        console.log("2027 physical beds:", this.totalBeds);
-
-        console.log("2026 occupied:", this.occupied2026);
-
-        console.log("2026 occupied users:", this.occupied2026Users.size);
-
-        console.log("2027 applications:", this.rentals2027.length);
-
-        console.log("2027 renewed:", this.renewed2027);
-
-        console.log("2027 confirmed:", this.newConfirmed2027);
-
-        console.log("2027 available:", this.available2027);
+        console.log(`${this.nextDisplayYear} renewed:`, this.renewedNextYear);
+        console.log(
+          `${this.nextDisplayYear} confirmed:`,
+          this.newConfirmedNextYear
+        );
+        console.log(
+          `${this.nextDisplayYear} available:`,
+          this.availableNextYear
+        );
+        console.log(
+          "Total allocated (occupied + renewed + confirmed):",
+          this.occupiedCurrentYear +
+            this.renewedNextYear +
+            this.newConfirmedNextYear
+        );
       } catch (error) {
         console.error("Failed to load occupancy statistics:", error);
       } finally {
@@ -290,3 +348,13 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scoped>
+.total-occupied-badge
+  background-color: #f0f0f0
+  padding: 8px 24px
+  border-radius: 6px
+  font-weight: bold
+  font-size: 15px
+  color: #333
+</style>

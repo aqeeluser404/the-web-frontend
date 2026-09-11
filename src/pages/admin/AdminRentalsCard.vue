@@ -6,7 +6,7 @@
     </div>
 
 
-    <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
+    <div class="constrain-standard q-pb-md row justify-center" v-show="!loading">
       <BedGraphComponent />
     </div>
 
@@ -51,8 +51,16 @@
           </q-card-section>
 
           <q-card-section>
-            <q-table flat bordered :rows="filteredRentals" :columns="rentalColumns" row-key="_id"
-              @row-click="viewUserTimeline">
+<q-table
+  flat
+  bordered
+  :rows="filteredRentals"
+  :columns="rentalColumns"
+  row-key="_id"
+  :pagination="{ rowsPerPage: 25 }"
+  :rows-per-page-options="[5, 10, 15, 20, 50, 0]"
+  @row-click="viewUserTimeline"
+>
               <template v-slot:body-cell-index="props">
                 <q-td :props="props">
                   {{ props.rowIndex + 1 }}

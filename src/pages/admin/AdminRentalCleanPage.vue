@@ -709,45 +709,60 @@ const linkedMatch = rentalsWithUsers.find((r) => {
       }
     },
 
-    showRenewalHistory(rental) {
-      if (!rental.renewalHistory || rental.renewalHistory.length === 0) {
-        this.$q.notify({
-          type: 'info',
-          message: 'No renewal history found.'
-        });
-        return;
-      }
+showRenewalHistory(rental) {
+  if (!rental.renewalHistory || rental.renewalHistory.length === 0) {
+    this.$q.notify({
+      type: 'info',
+      message: 'No renewal history found.'
+    });
+    return;
+  }
 
-      let message = '<div style="font-family: monospace; font-size: 14px;">';
-      message += '<strong>Renewal Chain:</strong><br><br>';
+  let message = '<div style="font-family: monospace; font-size: 13px; line-height: 1.6;">';
+  message += '<strong>Renewal Chain:</strong><br><br>';
 
-      rental.renewalHistory.forEach((entry, index) => {
-        const fromDisplay = `${entry.fromUnitNumber || 'Unit'} (${entry.fromYear || '??'})`;
-        const toDisplay = `${entry.toUnitNumber || 'Unit'} (${entry.toYear || '??'})`;
-        const roomChange = entry.sameRoom === false ? ' 🔄 <span style="color: orange;">Room Changed</span>' : '';
+  rental.renewalHistory.forEach((entry, index) => {
+    const fromUnit = entry.fromUnitNumber || 'Unit';
+    const toUnit = entry.toUnitNumber || 'Unit';
+    const fromRoom = entry.fromSubUnit?.bedType || entry.fromSubUnit?.roomType || 'Unknown Room';
+    const toRoom = entry.toSubUnit?.bedType || entry.toSubUnit?.roomType || 'Unknown Room';
 
-        message += `${index + 1}. ${fromDisplay} → ${toDisplay}${roomChange}<br>`;
-      });
+    const fromYear = entry.fromYear || '??';
+    const toYear = entry.toYear || '??';
 
-      // Show current unit at the end
-      if (rental.unitNumber) {
-        message += `<br><strong>Current:</strong> ${rental.unitNumber} (${rental.unitYear || 'current'})`;
-      }
+    const roomChange = entry.sameRoom === false
+      ? ' 🔄 <span style="color: orange; font-weight: bold;">Room Changed</span>'
+      : '';
 
-      message += '</div>';
+    message += `<strong>${index + 1}.</strong> ${fromYear} → ${toYear}${roomChange}<br>`;
+    message += `&nbsp;&nbsp;&nbsp;Unit: <b>${fromUnit}</b> → <b>${toUnit}</b><br>`;
+    message += `&nbsp;&nbsp;&nbsp;Room: <b>${fromRoom}</b> → <b>${toRoom}</b><br><br>`;
+  });
 
-      this.$q.dialog({
-        title: 'Renewal History',
-        message: message,
-        html: true,
-        color: 'primary',
-        ok: {
-          label: 'Close',
-          color: 'primary'
-        },
-        persistent: true,
-      });
+  // Show current unit + room at the end
+  if (rental.unitNumber) {
+    const currentRoom = rental.selectedSubUnits?.bedType
+      || rental.selectedSubUnits?.roomType
+      || 'Unknown Room';
+    message += `<hr style="border: none; border-top: 1px solid #ccc; margin: 8px 0;">`;
+    message += `<strong>Current:</strong> ${rental.unitNumber} (${rental.unitYear || 'current'})<br>`;
+    message += `&nbsp;&nbsp;&nbsp;Room: <b>${currentRoom}</b>`;
+  }
+
+  message += '</div>';
+
+  this.$q.dialog({
+    title: 'Renewal History',
+    message: message,
+    html: true,
+    color: 'primary',
+    ok: {
+      label: 'Close',
+      color: 'primary'
     },
+    persistent: true,
+  });
+},
 
     async moveToPending(row) {
       this.$q

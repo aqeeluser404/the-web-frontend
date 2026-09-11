@@ -1,12 +1,32 @@
 <template>
   <q-card class="stats-card col-md-12 col-12 full-height">
-    <q-card-section class="stats-header">
+    <q-card-section class="stats-header row justify-between items-center">
       <div class="text-h6">Bed Occupancy Line Chart</div>
-      <q-separator class="q-my-sm" style="width: 100%;" />
+      <q-select
+        v-model="selectedYear"
+        :options="availableYears"
+        dense
+        filled
+        style="min-width: 120px"
+        @update:model-value="onYearChange"
+      />
+      <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
     <q-card-section>
       <canvas ref="bedLineChart" style="max-height: 300px;"></canvas>
+
+      <div class="row justify-center q-mt-md">
+        <q-chip
+          square
+          color="grey-3"
+          text-color="grey-9"
+          class="text-weight-bold"
+          size="md"
+        >
+          Total occupied: {{ stats.overall.total - stats.overall.available }} / {{ stats.overall.total }}
+        </q-chip>
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -19,7 +39,7 @@ import {
 Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
   LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
 );
-
+import RentalService from 'src/services/api/RentalService';
 import UnitService from 'src/services/api/UnitService';
 
 export default {
@@ -28,6 +48,7 @@ export default {
       pieChart: null,
 
       units: [],
+      selectedYear: new Date().getFullYear(),  // ✅ Default to current year
       stats: {
         firstFloor: { available: 0, total: 0 },
         secondFloor: { available: 0, total: 0 },
@@ -42,6 +63,34 @@ export default {
       bedLineChart: null
     }
   },
+
+  computed: {
+    // ============================================================
+    // AVAILABLE YEARS — built from all units in the system
+    // ============================================================
+    availableYears() {
+      const years = new Set();
+
+      this.units.forEach(unit => {
+        if (unit.unitYear != null) {
+          years.add(Number(unit.unitYear));
+        }
+      });
+
+      // ✅ Sort ascending so 2026, 2027, 2028, etc.
+      return Array.from(years).sort((a, b) => a - b);
+    },
+
+    // ============================================================
+    // UNITS FOR THE SELECTED YEAR
+    // ============================================================
+    filteredUnits() {
+      return this.units.filter(
+        unit => Number(unit.unitYear) === this.selectedYear
+      );
+    }
+  },
+
   methods: {
     getAvailabilityColor(available, total) {
       const percentage = available / total
@@ -49,6 +98,13 @@ export default {
       if (percentage > 0.25) return 'warning'
       return 'negative'
     },
+
+    onYearChange() {
+      // ✅ Recompute stats + redraw chart when year changes
+      this.calculateBedStats();
+      this.drawLineChart();
+    },
+
 calculateBedStats() {
   const stats = {
     firstFloor: { available: 0, total: 0 },
@@ -57,19 +113,28 @@ calculateBedStats() {
     overall: { available: 0, total: 0 }
   };
 
-  this.units.forEach(unit => {
-    // 🚫 Skip entire unit if it's reserved
-    if (unit.reservedBy) return;
-
-    const floor = floorKey(unit.floorLevel);
+  this.filteredUnits.forEach(unit => {
+    const floor = this.floorKey(unit.floorLevel);
 
     if (Array.isArray(unit.subUnits)) {
       unit.subUnits.forEach(sub => {
-        if (!sub.reservedBy) {
-          stats[floor].total += 1;
-          if (sub.isAvailable) {
-            stats[floor].available += 1;
-          }
+        stats[floor].total += 1;
+
+        // A sub-unit only counts as truly occupied for THIS year if
+        // there's an Active rental whose current unitYear matches this
+        // year and points at this exact bed — not just isAvailable being
+        // false, since a locked-but-renewed-away bed shouldn't count here.
+        const identifier = sub.roomType || sub.bedType;
+        const genuinelyOccupiedThisYear = this.rentals.some(rental =>
+          rental.status === 'Active' &&
+          String(rental.unit) === String(unit._id) &&
+          Number(rental.unitYear) === this.selectedYear &&
+          (rental.selectedSubUnits?.roomType === identifier ||
+           rental.selectedSubUnits?.bedType === identifier)
+        );
+
+        if (!genuinelyOccupiedThisYear) {
+          stats[floor].available += 1;
         }
       });
     } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
@@ -93,19 +158,24 @@ calculateBedStats() {
     stats.thirdFloor.total;
 
   this.stats = stats;
-
-  function floorKey(level) {
-    switch (level) {
-      case 'First Floor': return 'firstFloor';
-      case 'Second Floor': return 'secondFloor';
-      case 'Third Floor': return 'thirdFloor';
-      default: return 'firstFloor';
-    }
-  }
 },
 
+    // ✅ Extracted so it can be used anywhere
+    floorKey(level) {
+      switch (level) {
+        case 'First Floor': return 'firstFloor';
+        case 'Second Floor': return 'secondFloor';
+        case 'Third Floor': return 'thirdFloor';
+        default: return 'firstFloor';
+      }
+    },
+
     drawLineChart() {
-      const labels = this.floors.map(f => f.label);
+      const labels = this.floors.map(f => {
+        const floor = this.stats[f.key];
+        const occupied = floor.total - floor.available;
+        return `${f.label} (${occupied}/${floor.total})`;
+      });
       const occupiedData = this.floors.map(f => {
         const floor = this.stats[f.key];
         return floor.total - floor.available;
@@ -121,12 +191,12 @@ calculateBedStats() {
           labels,
           datasets: [
             {
-              label: 'Occupied',
+              label: `${this.selectedYear} Occupied`,
               data: occupiedData,
               backgroundColor: '#F44336'
             },
             {
-              label: 'Available',
+              label: `${this.selectedYear} Available`,
               data: availableData,
               backgroundColor: '#4CAF50'
             }
@@ -162,17 +232,27 @@ calculateBedStats() {
       });
     },
 
-    async fetchUnits() {
-      try {
-        const response = await UnitService.getAllUnits()
-        this.units = response
-        this.calculateBedStats()
-        this.drawLineChart()
-      } catch (error) {
-        console.error('Error fetching units:', error)
-      }
-    },
+async fetchUnits() {
+  try {
+    const [units, rentals] = await Promise.all([
+      UnitService.getAllUnits(),
+      RentalService.findAllRentals()
+    ]);
+    this.units = units;
+    this.rentals = Array.isArray(rentals) ? rentals : [];
+
+    if (!this.availableYears.includes(this.selectedYear)) {
+      this.selectedYear = this.availableYears[0] ?? this.selectedYear;
+    }
+
+    this.calculateBedStats();
+    this.drawLineChart();
+  } catch (error) {
+    console.error('Error fetching units:', error);
+  }
+},
   },
+
   mounted() {
     this.fetchUnits()
   }
