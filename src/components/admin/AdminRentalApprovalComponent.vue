@@ -1575,14 +1575,14 @@ if (this.validationState.state !== "valid") {
                 message: "Rental Approved!",
               });
 
-              // const tenant = await UserService.findUserById(this.rental.userId);
-              // await JotformService.sendSigningLinks(tenant, this.rental._id);
+              const tenant = await UserService.findUserById(this.rental.userId);
+              await JotformService.sendSigningLinks(tenant, this.rental._id);
 
-              // await EmailService.ApprovedRental(
-              //   this.rental.userId,
-              //   this.rental.unit,
-              //   this.rental._id
-              // );
+              await EmailService.ApprovedRental(
+                this.rental.userId,
+                this.rental.unit,
+                this.rental._id
+              );
               await UserService.findUserById(this.rental.userId);
               this.$emit("close");
             } else {
