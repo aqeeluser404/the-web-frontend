@@ -37,20 +37,27 @@
       </q-card>
     </q-card-section>
 
-    <q-card-section class="row justify-center q-pt-none q-pb-md">
-<!-- <div class="total-occupied-badge">
-  Total occupied: {{ totalOccupied }} / {{ totalBeds }}
-</div> -->
-        <q-chip
-          square
-          color="grey-3"
-          text-color="grey-9"
-          class="text-weight-bold"
-          size="md"
-        >
-          Total occupied: {{ totalOccupied }} / {{ totalBeds }}
-        </q-chip>
-    </q-card-section>
+<q-card-section class="row justify-center items-center q-pt-none q-pb-md q-gutter-sm">
+  <q-chip
+    square
+    color="grey-3"
+    text-color="grey-9"
+    class="text-weight-bold"
+    size="md"
+  >
+    {{ displayYear }}: {{ occupiedCurrentYear }} / {{ totalBeds }} occupied
+  </q-chip>
+
+  <q-chip
+    square
+    color="grey-3"
+    text-color="grey-9"
+    class="text-weight-bold"
+    size="md"
+  >
+    {{ nextDisplayYear }}: {{ newConfirmedNextYear + renewedNextYear }} / {{ totalBedsNextYear }} occupied
+  </q-chip>
+</q-card-section>
   </q-card>
 </template>
 
@@ -140,37 +147,46 @@ export default {
     },
 
 totalBedsNextYear() {
-  const nextYearBeds = this.unitsNextYear.reduce((total, unit) => {
+  // ✅ No fallback — if next year has no units, capacity is 0
+  return this.unitsNextYear.reduce((total, unit) => {
     const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
     return total + subUnits.length;
   }, 0);
-
-  // ✅ Fallback: if next-year units don't exist yet, mirror current year's
-  // capacity (since units are duplicated across years with the same layout)
-  return nextYearBeds > 0 ? nextYearBeds : this.totalBeds;
 },
 
-    // ============================================================
-    // SELECTED YEAR OCCUPIED RENTALS
-    // ============================================================
-    //
-    // Rentals active in the selected year.
-    // Renewed tenants are counted in the NEXT year bucket instead.
-    //
+// ============================================================
+// CURRENT YEAR OCCUPIED
+// ============================================================
+//
+// Physical occupancy of the display year.
+// - Includes tenants whose lease started in the display year
+// - Includes renewed tenants assigned to the display year
+// - Excludes tenants who've moved forward (renewed into next year)
+//
 
-    occupiedCurrentYearRentals() {
-      return this.rentals.filter((rental) => {
-        const year =
-          Number(rental.unitYear) ||
-          new Date(rental.rentalStartDate).getFullYear();
+occupiedCurrentYearRentals() {
+  return this.rentals.filter((rental) => {
+    if (rental.status !== "Active") return false;
 
-        return (
-          year === this.displayYear &&
-          rental.status === "Active" &&
-          rental.selectedSubUnits?.type === "bed"
-        );
+    const startYear = new Date(rental.rentalStartDate).getFullYear();
+    const unitYear = Number(rental.unitYear) || startYear;
+
+    // ✅ Determine the chain head — the latest year this rental is in
+    let chainHead = unitYear;
+
+    if (Array.isArray(rental.renewalHistory)) {
+      rental.renewalHistory.forEach((entry) => {
+        const toYear = Number(entry.toYear);
+        if (!isNaN(toYear) && toYear > chainHead) {
+          chainHead = toYear;
+        }
       });
-    },
+    }
+
+    // ✅ Only count if the chain head matches the display year
+    return chainHead === this.displayYear;
+  });
+},
 
     occupiedCurrentYear() {
       return this.occupiedCurrentYearRentals.length;
@@ -225,10 +241,13 @@ totalBedsNextYear() {
     // NEXT YEAR AVAILABLE
     // ============================================================
 
-    availableNextYear() {
-      const allocated = this.renewedNextYear + this.newConfirmedNextYear;
-      return Math.max(this.totalBedsNextYear - allocated, 0);
-    },
+availableNextYear() {
+  // ✅ No next-year units = no available count
+  if (this.totalBedsNextYear === 0) return 0;
+
+  const allocated = this.renewedNextYear + this.newConfirmedNextYear;
+  return Math.max(this.totalBedsNextYear - allocated, 0);
+},
 
     // ============================================================
     // DASHBOARD STATS
