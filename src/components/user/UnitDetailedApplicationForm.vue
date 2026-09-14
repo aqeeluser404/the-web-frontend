@@ -743,6 +743,9 @@ export default {
   async created() {
     await this.checkLoginStatus();
 
+//     [Mon Sep 14 12:51:19 2026] unitYear debug — unit: 'MISSING', rentalDetails: '2026'
+// [Mon Sep 14 12:51:19 2026] unitYear resolved to: 2026
+
     this.rentalDetails.rentalStartDate = `${this.rentalYear}-02-01`;
     this.rentalDetails.rentalEndDate = `${this.rentalYear}-12-15`;
   },

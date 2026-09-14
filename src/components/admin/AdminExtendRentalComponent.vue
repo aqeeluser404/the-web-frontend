@@ -196,6 +196,25 @@
           </div>
         </q-card-section>
 
+        <!-- Room-taken banner -->
+        <q-banner
+          v-if="currentRoomTakenInTargetYear"
+          class="bg-orange-1 text-orange-9 q-mb-md"
+          rounded
+        >
+          <template v-slot:avatar>
+            <q-icon name="info" color="orange-9" />
+          </template>
+          <div>
+            <b>Your current room is unavailable in {{ selectedYear }}.</b>
+            <div class="text-caption q-mt-xs">
+              {{ currentRoom }} in {{ currentUnitNumber }} ({{ selectedYear }}) is already
+              reserved by another tenant. It's been excluded from the dropdown -
+              please choose a different room.
+            </div>
+          </div>
+        </q-banner>
+
         <q-card-section class="row justify-between">
           <CustomButton
             label="Save Changes"
@@ -255,6 +274,8 @@ export default {
       allUnits: [],
       currentRoom: "",
       currentUnitId: null,
+
+      currentRoomTakenInTargetYear: false,
     };
   },
 
@@ -423,6 +444,7 @@ export default {
       try {
         this.loadingRooms = true;
         this.selectedRoom = null;
+        this.currentRoomTakenInTargetYear = false;
 
         // Find the unit
         const unit = this.allUnits.find((u) => u._id === unitId);
@@ -441,6 +463,17 @@ export default {
         const availableRooms = unit.subUnits.filter(
           (sub) => sub.isAvailable !== false
         );
+
+        // ✅ Detect if the current room exists in this unit but is NOT available
+        const currentRoomInUnit = unit.subUnits.find(
+          (sub) =>
+            (sub.bedType && sub.bedType === currentRoomId) ||
+            (sub.roomType && sub.roomType === currentRoomId)
+        );
+
+        if (currentRoomInUnit && currentRoomInUnit.isAvailable === false) {
+          this.currentRoomTakenInTargetYear = true;
+        }
 
         this.roomOptions = availableRooms.map((sub) => ({
           label: sub.bedType || sub.roomType || sub.type || "Room",
