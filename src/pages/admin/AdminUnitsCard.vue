@@ -256,15 +256,15 @@ export default {
     async deleteUnit(unit) {
       // console.log(unit)
       // Check if there are active or pending rentals
-      const hasActiveRentals = unit.rentedHistory.some(rental => rental.status !== 'Ended');
+      // const hasActiveRentals = unit.rentedHistory.some(rental => rental.status !== 'Ended');
 
-      if (hasActiveRentals) {
-        this.$q.notify({
-          type: 'negative',
-          message: 'This unit cannot be deleted as it still has active or pending rentals.'
-        });
-        return;
-      }
+      // if (hasActiveRentals) {
+      //   this.$q.notify({
+      //     type: 'negative',
+      //     message: 'This unit cannot be deleted as it still has active or pending rentals.'
+      //   });
+      //   return;
+      // }
 
       // Proceed with deletion confirmation
       this.$q.dialog({

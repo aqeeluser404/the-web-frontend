@@ -1,176 +1,47 @@
 <template>
   <q-page class="bg-grey-3">
-
     <div class="constrain-standard q-pt-md q-pb-md row justify-center" v-show="!loading">
       <BedStatsComponent />
     </div>
 
-
     <div class="constrain-standard q-pb-md row justify-center" v-show="!loading">
-      <BedGraphComponent />
+      <BedGraphComponent class="col-md-9 col-12" />
+
+      <div class="col-md-3 col-12" :class="$q.screen.gt.sm ? 'q-mt-none' : 'q-mt-md'">
+        <RentalStatusPie
+          :rentals="currentRentals"
+          :class="$q.screen.gt.sm ? 'q-ml-md' : 'q-ml-none'"
+          @filter-status="filterRentalsByChart"
+        />
+      </div>
     </div>
 
+    <!-- ✅ Swappable table area -->
     <div class="constrain-standard row justify-center q-pb-md" v-show="!loading">
-      <div class="col-md-3 col-12 full-height">
-        <q-card :class="$q.screen.lt.sm ? 'q-mb-md' : 'q-mr-md'" class="soft-shadow-card">
-          <q-card-section class="row stats-header justify-center">
-            <div class="text-h6">Rental Status Distribution</div>
-            <q-separator class="q-my-sm" style="width: 100%;" />
-          </q-card-section>
-          <!-- <q-separator /> -->
-          <q-card-section class="row justify-center">
-            <div style="width: 300px; height: 300px;">
-              <canvas ref="pieChart"></canvas>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
+      <div class="col-md-12 col-12 full-height">
+        <!-- Rental History Table -->
+        <RentalHistoryTable
+          v-if="activeTable === 'history'"
+          :rentals="filteredRentals"
+          :columns="rentalColumns"
+          :rental-status="rentalStatus"
+          :initial-status="selectedRentalStatus"
+          @search="handleSearch"
+          @filter-status="filterRentalsByChart"
+          @row-click="viewUserTimeline"
+          @delete="deleteRental"
+          @extend="openExtendRentalDialog"
+          @end="endRental"
+          @open="openInNewTab"
+          @download="downloadData"
+          @switch-table="activeTable = $event"
+        />
 
-      <div class="col-md-9 col-12 full-height">
-        <q-card class="full-height soft-shadow-card">
-          <!-- Table Section -->
-          <q-card-section class="row justify-between items-center stats-header">
-            <div class="row justify-between items-center full-width">
-              <div class="text-h6">Rental History</div>
-              <!-- <q-btn @click="syncRentals()" label="Sync Rentals" class="custom-button"
-                flat rounded /> -->
-              <div>
-                <q-btn to="/admin/rentals/clean" class="custom-button" icon="eva-options-2-outline" flat rounded />
-                <q-btn @click="downloadData()" class="custom-button" icon="eva-cloud-download-outline" flat rounded />
-              </div>
-            </div>
-            <q-separator class="q-my-sm" style="width: 100%;" />
-          </q-card-section>
-
-          <q-card-section class="row justify-between">
-            <q-input filled v-model="search" placeholder="Search" @update:model-value="filterBySearch"
-              class="col-12 col-md-9" />
-
-            <q-select v-model="selectedRentalStatus" :options="rentalStatus" label="Rental Status"
-              @update:model-value="filteredByRentalStatus" class="col-12 col-md-2" />
-          </q-card-section>
-
-          <q-card-section>
-<q-table
-  flat
-  bordered
-  :rows="filteredRentals"
-  :columns="rentalColumns"
-  row-key="_id"
-  :pagination="{ rowsPerPage: 25 }"
-  :rows-per-page-options="[5, 10, 15, 20, 50, 0]"
-  @row-click="viewUserTimeline"
->
-              <template v-slot:body-cell-index="props">
-                <q-td :props="props">
-                  {{ props.rowIndex + 1 }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-applicationDate="props">
-                <q-td :props="props">
-                  <div>
-                    {{ formatDate(props.row.applicationDate) }}
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-id="props">
-                <q-td :props="props">
-                  <div class="id">
-                    <q-badge color="text-primary" align="middle" class="q-pa-xs q-px-sm">
-                      {{ props.row._id }}
-                    </q-badge>
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-floorLevel="props">
-                <q-td :props="props">
-                  <div class="text-center">
-                    {{ extractFirstNumber(props.row.selectedSubUnits?.bedType || props.row.selectedSubUnits?.roomType)
-                    }}
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-unitType="props">
-                <q-td :props="props">
-                  <div>
-                    {{ props.row.selectedSubUnits.bedType || props.row.selectedSubUnits.roomType }}
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-startDate="props">
-                <q-td :props="props">
-                  <div>
-                    {{ formatDate(props.row.rentalStartDate) }}
-                  </div>
-                </q-td>
-              </template>
-
-
-              <template v-slot:body-cell-endDate="props">
-                <q-td :props="props">
-                  <div>
-                    {{ formatDate(props.row.rentalEndDate) }}
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-beforeScheduled="props">
-                <q-td :props="props">
-                  <div v-if="props.row.earlyEndDate !== null" style="text-decoration: underline;">
-                    {{ formatDate(props.row.earlyEndDate) }}
-                  </div>
-                  <div v-else>
-                    N/A
-                  </div>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-status="props">
-                <q-td :props="props">
-                  <q-badge :color="props.row.status === 'Active'
-                      ? 'green'
-                      : props.row.status === 'Pending'
-                        ? 'orange'
-                        : props.row.status === 'Rejected'
-                          ? 'red'
-                          : props.row.status === 'Ended'
-                            ? 'grey'
-
-                            : 'red'
-                    " align="middle" class="q-pa-xs q-px-sm">
-                    {{ props.row.status }}
-                  </q-badge>
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-actions="props">
-                <q-td :props="props">
-                  <div class="row justify-center items-center q-gutter-sm no-wrap">
-                    <CustomButton flat color="red" text-color="red" class="inline-btn" icon="eva-trash-outline"
-                      @click.stop="deleteRental(props.row)" />
-
-                    <CustomButton :disable="props.row.status !== 'Active'" flat color="red" text-color="red"
-                      class="inline-btn" icon="eva-edit-2-outline" @click.stop="openExtendRentalDialog(props.row)" />
-
-                    <CustomButton :disable="props.row.status !== 'Active'" flat color="red" text-color="red"
-                      class="inline-btn" icon="eva-archive-outline" @click.stop="endRental(props.row)" />
-
-                    <CustomButton flat color="primary" text-color="primary" class="inline-btn" icon="open_in_new"
-                      label="Open" @click.stop="openInNewTab(props.row)" />
-
-                  </div>
-                </q-td>
-              </template>
-
-            </q-table>
-          </q-card-section>
-
-        </q-card>
+        <!-- Rental Approvals Table -->
+        <RentalApprovalsTable
+          v-else-if="activeTable === 'approvals'"
+          @switch-table="activeTable = $event"
+        />
       </div>
     </div>
 
@@ -183,34 +54,36 @@
 </template>
 
 <script>
-import {
-  Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
-  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
-} from 'chart.js';
-Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
-  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
-);
-
-import * as XLSX from 'xlsx';
-import CryptoJS from 'crypto-js';
-import BedGraphComponent from 'src/components/admin/BedGraphComponent.vue';
-import RentalService from 'src/services/api/RentalService';
-import UnitService from 'src/services/api/UnitService';
-import UserService from 'src/services/api/UserService';
-import Helper from 'src/services/helper/utils';
-import CustomButton from 'src/components/elements/CustomButton.vue';
-import AdminExtendRentalComponent from 'src/components/admin/AdminExtendRentalComponent.vue';
-import ExportDataService from 'src/services/api/ExportDataService'
-import BedStatsComponent from 'src/components/admin/BedStatsComponent.vue';
+import * as XLSX from "xlsx";
+import CryptoJS from "crypto-js";
+import RentalService from "src/services/api/RentalService";
+import UserService from "src/services/api/UserService";
+import Helper from "src/services/helper/utils";
+import BedGraphComponent from "src/components/admin/BedGraphComponent.vue";
+import BedStatsComponent from "src/components/admin/BedStatsComponent.vue";
+import RentalStatusPie from "src/components/admin/RentalStatusPie.vue";
+import RentalHistoryTable from "src/components/admin/RentalHistoryTable.vue";
+import RentalApprovalsTable from "src/components/admin/RentalApprovalsTable.vue";
+import AdminExtendRentalComponent from "src/components/admin/AdminExtendRentalComponent.vue";
 
 export default {
   name: "AdminRentalsCard",
 
+  components: {
+    BedGraphComponent,
+    BedStatsComponent,
+    RentalStatusPie,
+    RentalHistoryTable,
+    RentalApprovalsTable,
+    AdminExtendRentalComponent,
+  },
+
   data() {
     return {
+      activeTable: "history", // ✅ 'history' | 'approvals'
+
       loading: true,
       rentals: [],
-      search: '',
       filteredRentals: [],
       approvedRentals: [],
       pendingRentals: [],
@@ -219,68 +92,43 @@ export default {
       currentRentals: [],
       extendRentalDialog: false,
       selectedRental: null,
-      rentalStatus: ['All', 'Active', 'Pending', 'Rejected', 'Ended'],
-      selectedRentalStatus: 'All',
-      showAllStatuses: true,
+      rentalStatus: ["All", "Active", "Pending", "Rejected", "Ended"],
+      selectedRentalStatus: "All",
 
       rentalColumns: [
-        { name: "index", label: "#", field: "index", align: 'center' },
-        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: 'left' },
-        // { name: "applicant", label: "Username", field: "username", align: 'left' },
-        { name: "userFirstName", label: "First Name", field: "userFirstName", align: 'left' },
-        { name: "userLastName", label: "Last Name", field: "userLastName", align: 'left' },
-        { name: "applicantContact", label: "Applicant Contact", field: "userPhone", align: 'left' },
-        { name: "applicantEmail", label: "Applicant Email", field: "userEmail", align: 'left' },
-        { name: "id", label: "Application ID", field: "_id", align: 'left' },
-        { name: "floorLevel", label: "Floor Level", field: "selectedSubUnits", align: 'center' },
-        { name: "unitType", label: "Unit Type", field: "selectedSubUnits", align: 'left' },
-        { name: "startDate", label: "Start Date", field: "rentalStartDate", align: 'left' },
-        { name: "endDate", label: "End Date", field: "rentalEndDate", align: 'left' },
-        { name: "beforeScheduled", label: "Before Scheduled", field: "earlyEndDate", align: 'left' },
-        { name: "status", label: "Status", field: "status", align: 'center' },
-        { name: "actions", label: "Actions", field: "actions", align: 'center' },
+        { name: "index", label: "#", field: "index", align: "center" },
+        { name: "applicationDate", label: "Application Date", field: "applicationDate", align: "left" },
+        { name: "userFirstName", label: "First Name", field: "userFirstName", align: "left" },
+        { name: "userLastName", label: "Last Name", field: "userLastName", align: "left" },
+        { name: "applicantContact", label: "Applicant Contact", field: "userPhone", align: "left" },
+        { name: "applicantEmail", label: "Applicant Email", field: "userEmail", align: "left" },
+        { name: "id", label: "Application ID", field: "_id", align: "left" },
+        { name: "floorLevel", label: "Floor Level", field: "selectedSubUnits", align: "center" },
+        { name: "unitType", label: "Unit Type", field: "selectedSubUnits", align: "left" },
+        { name: "startDate", label: "Start Date", field: "rentalStartDate", align: "left" },
+        { name: "endDate", label: "End Date", field: "rentalEndDate", align: "left" },
+        { name: "beforeScheduled", label: "Before Scheduled", field: "earlyEndDate", align: "left" },
+        { name: "status", label: "Status", field: "status", align: "center" },
+        { name: "actions", label: "Actions", field: "actions", align: "center" },
       ],
     };
   },
-  components: {
-    CustomButton,
-    AdminExtendRentalComponent,
-    BedGraphComponent,
-    BedStatsComponent
-  },
-  computed: {
-    hasBeforeEnd() {
-      const hasBeforeEnd = this.rentals.find(rental =>
-        (rental?.earlyEndDate && rental.status === 'Ended')
-      );
-      return hasBeforeEnd;
-    }
-  },
+
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
     extractFirstNumber(str) {
-      if (!str) return '';
-      // Look for the first number anywhere in the string
+      if (!str) return "";
       const match = str.match(/\d+/);
       return match ? match[0] : str;
     },
 
     openInNewTab(row) {
       try {
-        const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), 'secret-key').toString();
+        const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), "secret-key").toString();
         const url = `/admin/rentals/view/${encodeURIComponent(encryptedId)}`;
-        window.open(url, '_blank'); // open in new tab
-      } catch (error) {
-        console.error("Failed to open rental in new tab:", error);
-      }
-    },
-    openInNewTab(row) {
-      try {
-        const encryptedId = CryptoJS.AES.encrypt(row._id.toString(), 'secret-key').toString();
-        const url = `/admin/rentals/view/${encodeURIComponent(encryptedId)}`;
-        window.open(url, '_blank'); // open in new tab
+        window.open(url, "_blank");
       } catch (error) {
         console.error("Failed to open rental in new tab:", error);
       }
@@ -288,321 +136,133 @@ export default {
 
     async downloadData() {
       this.$q.dialog({
-        title: 'Download Data',
-        message: 'You are about to export all rental history data. Would you like to proceed?',
-        color: 'primary',
+        title: "Download Data",
+        message: "You are about to export all rental history data. Would you like to proceed?",
+        color: "primary",
         cancel: true,
-        persistent: true
+        persistent: true,
       }).onOk(() => {
         try {
-          const today = new Date().toISOString().split('T')[0];
-
+          const today = new Date().toISOString().split("T")[0];
           const rows = this.filteredRentals.map((rental, index) => ({
-            'Field No.': index + 1,
-            'Application Date': this.formatDate(rental.applicationDate) || '',
-            'Applicant': rental.username || 'Unassigned',
-            'Applicant Contact': (rental.userPhone || 'Unassigned').replace(/,/g, ''),
-            'Applicant Email': rental.userEmail || 'Unassigned',
-            'Application ID': rental._id || '',
-            'Floor Level': this.extractFirstNumber(
+            "Field No.": index + 1,
+            "Application Date": this.formatDate(rental.applicationDate) || "",
+            Applicant: rental.username || "Unassigned",
+            "Applicant Contact": (rental.userPhone || "Unassigned").replace(/,/g, ""),
+            "Applicant Email": rental.userEmail || "Unassigned",
+            "Application ID": rental._id || "",
+            "Floor Level": this.extractFirstNumber(
               rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType
-            ) || '',
-            'Unit Type': rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType || 'N/A',
-            'Start Date': !this.defaultValues(rental)
-              ? this.formatDate(rental.rentalStartDate)
-              : 'Being processed...',
-            'End Date': !this.defaultValues(rental)
-              ? this.formatDate(rental.rentalEndDate)
-              : 'Being processed...',
-            'Before Scheduled': rental.earlyEndDate !== null
-              ? this.formatDate(rental.earlyEndDate)
-              : 'N/A',
-            'Status': this.capitalizeFirstLetter(rental.status || '')
+            ) || "",
+            "Unit Type": rental.selectedSubUnits?.bedType || rental.selectedSubUnits?.roomType || "N/A",
+            "Start Date": this.defaultValues(rental) ? "Being processed..." : this.formatDate(rental.rentalStartDate),
+            "End Date": this.defaultValues(rental) ? "Being processed..." : this.formatDate(rental.rentalEndDate),
+            "Before Scheduled": rental.earlyEndDate !== null ? this.formatDate(rental.earlyEndDate) : "N/A",
+            Status: this.capitalizeFirstLetter(rental.status || ""),
           }));
 
-          // Convert JSON to worksheet
           const worksheet = XLSX.utils.json_to_sheet(rows);
-
-          // Create a new workbook and append the worksheet
           const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'RentalHistory');
-
-          // Trigger download as .xlsx
+          XLSX.utils.book_append_sheet(workbook, worksheet, "RentalHistory");
           XLSX.writeFile(workbook, `rental_history_export_${today}.xlsx`);
-
         } catch (error) {
           this.$q.notify({
-            type: 'negative',
-            message: 'Export failed: ' + (error.message || 'Please try again')
+            type: "negative",
+            message: "Export failed: " + (error.message || "Please try again"),
           });
         }
       });
     },
 
-    needsAttention(rental) {
-      if (!rental) return true;
-
-      const emailVerified = rental.userVerification?.isVerified === true;
-      const uploadedDocs = Array.isArray(rental.userDocuments)
-        ? rental.userDocuments.map(doc => doc.docType)
-        : [];
-
-      if (uploadedDocs.length === 0) return true;
-
-      // Define required docs per category
-      const requiredDocsByCategory = {
-        'Private Client': [
-          // 'private_application_form',
-          'private_student_registration',
-          'private_id_student',
-          'private_id_person',
-          'private_proof_of_address',
-          'private_3_months_payslips',
-          'private_3_months_bank_statements',
-          'private_credit_check_proof_of_payment',
-        ],
-        'Business': [
-          // 'business_application_form',
-          'business_student_registration',
-          'business_id_directors',
-          'business_proof_of_address',
-          'business_cipc_documents',
-          'business_6_months_bank_statements',
-          'business_credit_check_proof_of_payment',
-        ],
-        'Bursary Application': [
-          // 'bursary_application_form',
-          'bursary_student_registration',
-          'bursary_confirmation',
-          'bursary_proof_of_address',
-          'bursary_id_documents',
-          'bursary_credit_check_proof_of_payment',
-        ]
-      };
-
-      // Detect category from prefix of first uploaded doc
-      let category = null;
-      const firstDoc = uploadedDocs[0];
-      if (firstDoc.startsWith('private_')) category = 'Private Client';
-      else if (firstDoc.startsWith('business_')) category = 'Business';
-      else if (firstDoc.startsWith('bursary_')) category = 'Bursary Application';
-
-      if (!category) return true;
-
-      const requiredTypes = requiredDocsByCategory[category] || [];
-      const documentsComplete = requiredTypes.every(type => uploadedDocs.includes(type));
-
-      return !(emailVerified && documentsComplete);
-    },
-
     defaultValues(rental) {
       if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
+      if (rental?.status === "Active") return false;
 
-      if (rental?.status === "Active") {
-        return false;
-      }
-
-      const toDateObj = (dateStr) => new Date(dateStr);
-
-      const start = toDateObj(rental.rentalStartDate);
-      const end = toDateObj(rental.rentalEndDate);
-
-      // Default is always Feb 1 → Dec 15 (any year)
-      const isDefaultStart =
-        start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
-      const isDefaultEnd =
-        end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
-
-      console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
-        "Default?", isDefaultStart && isDefaultEnd);
-
+      const start = new Date(rental.rentalStartDate);
+      const end = new Date(rental.rentalEndDate);
+      const isDefaultStart = start.getMonth() === 1 && start.getDate() === 1;
+      const isDefaultEnd = end.getMonth() === 11 && end.getDate() === 15;
       return isDefaultStart && isDefaultEnd;
-    },
-
-    copyToClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Copied to clipboard!' });
-        }).catch(err => {
-          this.$q.notify({ type: 'negative', message: `Failed to copy text: ${err}` });
-        })
     },
 
     async findAllRentals() {
       this.loading = true;
       try {
         const response = await RentalService.findAllRentals();
-
-        console.log('ALL RENTALS FROM API:', response);
-
-        const userIds = [...new Set(response.map(rental => rental.user))];
-
+        const userIds = [...new Set(response.map((r) => r.user))];
         const usersMap = await UserService.findUsersByIds(userIds);
 
-        this.rentals = response.map(rental => {
+        this.rentals = response.map((rental) => {
           const user = usersMap[rental.user] || {};
           return {
             ...rental,
-            username: user.username || 'Unknown',
-            userFirstName: user.userFirstName || 'Unknown',
-            userLastName: user.userLastName || '',
+            username: user.username || "Unknown",
+            userFirstName: user.userFirstName || "Unknown",
+            userLastName: user.userLastName || "",
             userId: user.userId || rental.user,
-            userEmail: user.userEmail || '',
-            userPhone: user.userPhone || '',
+            userEmail: user.userEmail || "",
+            userPhone: user.userPhone || "",
             userVerification: user.userVerification || null,
-            userDocuments: user.userDocuments || []
+            userDocuments: user.userDocuments || [],
           };
         });
 
-        const filteredRentals = this.rentals.filter(rental =>
-          rental.status === 'Pending' ||
-          rental.status === 'Active' ||
-          rental.status === 'Rejected' ||
-          rental.status === 'Ended'
+        const filtered = this.rentals.filter((r) =>
+          ["Pending", "Active", "Rejected", "Ended"].includes(r.status)
         );
 
-        const sortedRentals = filteredRentals.sort((a, b) => {
-          const dateA = new Date(a.applicationDate);
-          const dateB = new Date(b.applicationDate);
-          return dateB - dateA; // Descending: newest first
-        });
+        const sorted = filtered.sort(
+          (a, b) => new Date(b.applicationDate) - new Date(a.applicationDate)
+        );
 
-        this.currentRentals = sortedRentals;
-        this.approvedRentals = sortedRentals.filter(rental => rental.status === 'Active');
-        this.pendingRentals = sortedRentals.filter(rental => rental.status === 'Pending');
-        this.rejectedRentals = sortedRentals.filter(rental => rental.status === 'Rejected');
-        this.endedRentals = sortedRentals.filter(rental => rental.status === 'Ended');
+        this.currentRentals = sorted;
+        this.approvedRentals = sorted.filter((r) => r.status === "Active");
+        this.pendingRentals = sorted.filter((r) => r.status === "Pending");
+        this.rejectedRentals = sorted.filter((r) => r.status === "Rejected");
+        this.endedRentals = sorted.filter((r) => r.status === "Ended");
 
         this.filteredByRentalStatus();
-        this.updateChart();
       } catch (error) {
-        console.error('Error loading rentals:', error);
-        this.$q?.notify({
-          type: 'negative',
-          message: 'Failed to load rentals. Please try again.'
-        });
+        console.error("Error loading rentals:", error);
+        this.$q?.notify({ type: "negative", message: "Failed to load rentals. Please try again." });
       } finally {
         this.loading = false;
       }
     },
 
-    updateChart() {
-      const statusData = this.showAllStatuses
-        ? {
-          Active: this.approvedRentals.length,
-          Pending: this.pendingRentals.length,
-          Rejected: this.rejectedRentals.length,
-          Ended: this.endedRentals.length
-        }
-        : {
-          Active: this.approvedRentals.length,
-          Ended: this.endedRentals.length
-        };
+    handleSearch(term) {
+      const searchTerm = term.toLowerCase();
+      const base = this.selectedRentalStatus === "All" ? this.currentRentals : this.filteredRentals;
 
-      // Labels now include count in brackets
-      const labels = Object.keys(statusData).map(status => `${status} (${statusData[status]})`);
-      const data = Object.values(statusData);
-
-      if (this.pieChart) {
-        this.pieChart.destroy();
-      }
-
-      const ctx = this.$refs.pieChart.getContext('2d');
-      this.pieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: [
-              '#4CAF50', // Green for Approved/Active
-              '#CC5500', // Yellow for Pending
-              '#F44336', // Red for Rejected
-              '#6C757D'  // Grey for Ended
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            },
-            tooltip: {
-              callbacks: {
-                label: function (tooltipItem) {
-                  const dataset = tooltipItem.chart.data.datasets[0];
-                  const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                  const value = dataset.data[tooltipItem.dataIndex];
-                  const percentage = ((value / total) * 100).toFixed(1);
-                  // const label = tooltipItem.chart.data.labels[tooltipItem.dataIndex] || '';
-                  return `${percentage}%`;
-                }
-              }
-            }
-          },
-          onClick: (event, elements) => {
-            if (elements.length > 0) {
-              const index = elements[0].index;
-              const selectedStatus = Object.keys(statusData)[index];
-              this.filterRentalsByChart(selectedStatus);
-            }
-          }
-        }
-      });
-    },
-
-    viewUserDetails(id) {
-      Helper.adminUserDetails(id, this.$router);
-    },
-
-    filterBySearch() {
-      const searchTerm = this.search.toLowerCase();
-
-      const base = this.selectedRentalStatus === 'All'
-        ? this.currentRentals
-        : this.filteredRentals;
-
-      if (this.search === '') {
+      if (!term) {
         this.filteredByRentalStatus();
         return;
       }
 
-      this.filteredRentals = base.filter(rental =>
-        rental.username?.toLowerCase().includes(searchTerm) ||
-        rental.unitType?.toLowerCase().includes(searchTerm) ||
-        rental.status?.toLowerCase().includes(searchTerm) ||
-        rental.applicationDate?.toLowerCase().includes(searchTerm) ||
-        rental.rentalStartDate?.toLowerCase().includes(searchTerm) ||
-        rental.rentalEndDate?.toLowerCase().includes(searchTerm) ||
-        rental.earlyEndDate?.toLowerCase().includes(searchTerm) ||
-        rental._id?.toLowerCase().includes(searchTerm) ||
-        rental.userFirstName?.toLowerCase().includes(searchTerm) ||
-        rental.userLastName?.toLowerCase().includes(searchTerm) ||
-        rental.userEmail?.toLowerCase().includes(searchTerm) ||
-        rental.userPhone?.toLowerCase().includes(searchTerm)
+      this.filteredRentals = base.filter(
+        (rental) =>
+          rental.username?.toLowerCase().includes(searchTerm) ||
+          rental.unitType?.toLowerCase().includes(searchTerm) ||
+          rental.status?.toLowerCase().includes(searchTerm) ||
+          rental._id?.toLowerCase().includes(searchTerm) ||
+          rental.userFirstName?.toLowerCase().includes(searchTerm) ||
+          rental.userLastName?.toLowerCase().includes(searchTerm) ||
+          rental.userEmail?.toLowerCase().includes(searchTerm) ||
+          rental.userPhone?.toLowerCase().includes(searchTerm)
       );
     },
 
     filterRentalsByChart(selectedStatus) {
-      this.selectedRentalStatus = selectedStatus; // Sync dropdown filter
-
-      if (selectedStatus === 'Active') {
-        this.filteredRentals = this.approvedRentals;
-      } else if (selectedStatus === 'Pending') {
-        this.filteredRentals = this.pendingRentals;
-      } else if (selectedStatus === 'Rejected') {
-        this.filteredRentals = this.rejectedRentals;
-      } else if (selectedStatus === 'Ended') {
-        this.filteredRentals = this.endedRentals;
-      } else {
-        this.filteredRentals = this.currentRentals;
-      }
+      this.selectedRentalStatus = selectedStatus;
+      if (selectedStatus === "Active") this.filteredRentals = this.approvedRentals;
+      else if (selectedStatus === "Pending") this.filteredRentals = this.pendingRentals;
+      else if (selectedStatus === "Rejected") this.filteredRentals = this.rejectedRentals;
+      else if (selectedStatus === "Ended") this.filteredRentals = this.endedRentals;
+      else this.filteredRentals = this.currentRentals;
     },
 
     filteredByRentalStatus() {
-      if (this.selectedRentalStatus === 'All') {
+      if (this.selectedRentalStatus === "All") {
         this.filteredRentals = this.currentRentals;
       } else {
         this.filterRentalsByChart(this.selectedRentalStatus);
@@ -616,85 +276,65 @@ export default {
 
     handleClose() {
       this.extendRentalDialog = false;
+      this.selectedRental = null;
       this.findAllRentals();
     },
 
-    async syncRentals() {
-      this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to sync all rentals. Do you wish to continue?`,
-        color: 'primary',
-        cancel: true,
-        persistent: true
-      }).onOk(async () => {
-        const response = await RentalService.syncRentals();
-        if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Sync successful!' });
-          this.findAllRentals();
-        } else {
-          this.$q.notify({ type: 'negative', message: 'Sync failed. Please try again.' });
-        }
-      }).onCancel(() => { });
-    },
-
-
     async deleteRental(rental) {
       this.$q.dialog({
-        title: 'Confirm',
-        message: `You are about to delete this rental application. This action is irreversible and will permanently remove the entry from the associated user, unit rented history and the database, leaving no record behind. Proceed with caution. Do you wish to continue?`,
-        color: 'primary',
+        title: "Confirm",
+        message: "You are about to delete this rental application. This action is irreversible. Continue?",
+        color: "primary",
         cancel: true,
-        persistent: true
+        persistent: true,
       }).onOk(async () => {
         const response = await RentalService.deleteRental(rental._id);
         if (response) {
-          this.$q.notify({ type: 'positive', color: 'primary', message: 'Delete successful!' });
+          this.$q.notify({ type: "positive", color: "primary", message: "Delete successful!" });
           this.findAllRentals();
-          this.filteredByRentalStatus();
         } else {
-          this.$q.notify({ type: 'negative', message: 'Delete failed. Please try again.' });
+          this.$q.notify({ type: "negative", message: "Delete failed. Please try again." });
         }
-      }).onCancel(() => { });
+      });
     },
 
     async endRental(rental) {
-      if (rental.status === 'Active') {
-        this.$q.dialog({
-          title: 'Confirm',
-          message: 'You are about to terminate this rental application before the agreement end date. Do you wish to proceed?',
-          color: 'primary',
-          cancel: true,
-          persistent: true
-        }).onOk(async () => {
-          const response = await RentalService.endRental(rental._id);
-          if (response) {
-            this.$q.notify({ type: 'positive', color: 'primary', message: 'Rental Ended successful!' });
-            this.findAllRentals();
-          } else {
-            this.$q.notify({ type: 'negative', message: 'End rental failed. Please try again.' });
-          }
-        });
-      } else {
-        this.$q.notify({ type: 'negative', message: 'End rental failed. You can only end an active rental.' });
+      if (rental.status !== "Active") {
+        this.$q.notify({ type: "negative", message: "You can only end an active rental." });
+        return;
       }
-    },
-    viewUserTimeline(evt, row) {
-      const id = row._id
-      Helper.adminRentalDetails(id, this.$router);
+
+      this.$q.dialog({
+        title: "Confirm",
+        message: "You are about to terminate this rental before the agreement end date. Continue?",
+        color: "primary",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const response = await RentalService.endRental(rental._id);
+        if (response) {
+          this.$q.notify({ type: "positive", color: "primary", message: "Rental Ended!" });
+          this.findAllRentals();
+        } else {
+          this.$q.notify({ type: "negative", message: "End rental failed. Please try again." });
+        }
+      });
     },
 
+    viewUserTimeline(row) {
+      Helper.adminRentalDetails(row._id, this.$router);
+    },
   },
+
   created() {
     this.findAllRentals();
-  }
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .inline-btn {
   display: inline-flex;
-  /* ensures they sit side by side */
   width: auto;
-  /* prevents full-width stretching */
 }
 </style>

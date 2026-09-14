@@ -37,27 +37,27 @@
       </q-card>
     </q-card-section>
 
-<q-card-section class="row justify-center items-center q-pt-none q-pb-md q-gutter-sm">
-  <q-chip
-    square
-    color="grey-3"
-    text-color="grey-9"
-    class="text-weight-bold"
-    size="md"
-  >
-    {{ displayYear }}: {{ occupiedCurrentYear }} / {{ totalBeds }} occupied
-  </q-chip>
+    <q-card-section class="row justify-start q-pt-none q-pb-md q-gutter-sm">
+      <q-chip
+        square
+        color="grey-3"
+        text-color="grey-9"
+        class="text-weight-bold"
+        size="md"
+      >
+        {{ displayYear }} · {{ occupiedCurrentYear }}/{{ totalBeds }}
+      </q-chip>
 
-  <q-chip
-    square
-    color="grey-3"
-    text-color="grey-9"
-    class="text-weight-bold"
-    size="md"
-  >
-    {{ nextDisplayYear }}: {{ newConfirmedNextYear + renewedNextYear }} / {{ totalBedsNextYear }} occupied
-  </q-chip>
-</q-card-section>
+      <q-chip
+        square
+        color="grey-3"
+        text-color="grey-9"
+        class="text-weight-bold"
+        size="md"
+      >
+        {{ nextDisplayYear }} · {{ renewedNextYear + newConfirmedNextYear }}/{{ totalBedsNextYear }}
+      </q-chip>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -146,47 +146,47 @@ export default {
       }, 0);
     },
 
-totalBedsNextYear() {
-  // ✅ No fallback — if next year has no units, capacity is 0
-  return this.unitsNextYear.reduce((total, unit) => {
-    const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
-    return total + subUnits.length;
-  }, 0);
-},
+    totalBedsNextYear() {
+      // ✅ No fallback — if next year has no units, capacity is 0
+      return this.unitsNextYear.reduce((total, unit) => {
+        const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
+        return total + subUnits.length;
+      }, 0);
+    },
 
-// ============================================================
-// CURRENT YEAR OCCUPIED
-// ============================================================
-//
-// Physical occupancy of the display year.
-// - Includes tenants whose lease started in the display year
-// - Includes renewed tenants assigned to the display year
-// - Excludes tenants who've moved forward (renewed into next year)
-//
+    // ============================================================
+    // CURRENT YEAR OCCUPIED
+    // ============================================================
+    //
+    // Physical occupancy of the display year.
+    // - Includes tenants whose lease started in the display year
+    // - Includes renewed tenants assigned to the display year
+    // - Excludes tenants who've moved forward (renewed into next year)
+    //
 
-occupiedCurrentYearRentals() {
-  return this.rentals.filter((rental) => {
-    if (rental.status !== "Active") return false;
+    occupiedCurrentYearRentals() {
+      return this.rentals.filter((rental) => {
+        if (rental.status !== "Active") return false;
 
-    const startYear = new Date(rental.rentalStartDate).getFullYear();
-    const unitYear = Number(rental.unitYear) || startYear;
+        const startYear = new Date(rental.rentalStartDate).getFullYear();
+        const unitYear = Number(rental.unitYear) || startYear;
 
-    // ✅ Determine the chain head — the latest year this rental is in
-    let chainHead = unitYear;
+        // ✅ Determine the chain head — the latest year this rental is in
+        let chainHead = unitYear;
 
-    if (Array.isArray(rental.renewalHistory)) {
-      rental.renewalHistory.forEach((entry) => {
-        const toYear = Number(entry.toYear);
-        if (!isNaN(toYear) && toYear > chainHead) {
-          chainHead = toYear;
+        if (Array.isArray(rental.renewalHistory)) {
+          rental.renewalHistory.forEach((entry) => {
+            const toYear = Number(entry.toYear);
+            if (!isNaN(toYear) && toYear > chainHead) {
+              chainHead = toYear;
+            }
+          });
         }
-      });
-    }
 
-    // ✅ Only count if the chain head matches the display year
-    return chainHead === this.displayYear;
-  });
-},
+        // ✅ Only count if the chain head matches the display year
+        return chainHead === this.displayYear;
+      });
+    },
 
     occupiedCurrentYear() {
       return this.occupiedCurrentYearRentals.length;
@@ -194,9 +194,7 @@ occupiedCurrentYearRentals() {
 
     occupiedCurrentYearUsers() {
       return new Set(
-        this.occupiedCurrentYearRentals.map((rental) =>
-          String(rental.user)
-        )
+        this.occupiedCurrentYearRentals.map((rental) => String(rental.user))
       );
     },
 
@@ -241,29 +239,29 @@ occupiedCurrentYearRentals() {
     // NEXT YEAR AVAILABLE
     // ============================================================
 
-availableNextYear() {
-  // ✅ No next-year units = no available count
-  if (this.totalBedsNextYear === 0) return 0;
+    availableNextYear() {
+      // ✅ No next-year units = no available count
+      if (this.totalBedsNextYear === 0) return 0;
 
-  const allocated = this.renewedNextYear + this.newConfirmedNextYear;
-  return Math.max(this.totalBedsNextYear - allocated, 0);
-},
+      const allocated = this.renewedNextYear + this.newConfirmedNextYear;
+      return Math.max(this.totalBedsNextYear - allocated, 0);
+    },
 
     // ============================================================
     // DASHBOARD STATS
     // ============================================================
 
-  totalOccupied() {
-    return (
-      this.occupiedCurrentYear +
-      this.renewedNextYear +
-      this.newConfirmedNextYear
-    );
-  },
+    totalOccupied() {
+      return (
+        this.occupiedCurrentYear +
+        this.renewedNextYear +
+        this.newConfirmedNextYear
+      );
+    },
 
-nextYearAllocated() {
-  return this.renewedNextYear + this.newConfirmedNextYear;
-},
+    nextYearAllocated() {
+      return this.renewedNextYear + this.newConfirmedNextYear;
+    },
 
     items() {
       return [
@@ -291,15 +289,14 @@ nextYearAllocated() {
           subtitle: "(NEW ACTIVE BOOKINGS)",
           icon: "person_add",
         },
-{
-  title: `${this.nextDisplayYear} AVAILABLE`,
-  value: this.availableNextYear,
-  subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
-  icon: "pie_chart",
-},
+        {
+          title: `${this.nextDisplayYear} AVAILABLE`,
+          value: this.availableNextYear,
+          subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
+          icon: "pie_chart",
+        },
       ];
     },
-
   },
 
   async mounted() {
@@ -339,10 +336,7 @@ nextYearAllocated() {
           `${this.nextDisplayYear} physical beds:`,
           this.totalBedsNextYear
         );
-        console.log(
-          `${this.displayYear} occupied:`,
-          this.occupiedCurrentYear
-        );
+        console.log(`${this.displayYear} occupied:`, this.occupiedCurrentYear);
         console.log(`${this.nextDisplayYear} renewed:`, this.renewedNextYear);
         console.log(
           `${this.nextDisplayYear} confirmed:`,

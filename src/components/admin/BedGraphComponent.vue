@@ -1,5 +1,5 @@
 <template>
-  <q-card class="stats-card col-md-12 col-12 full-height">
+  <q-card class="soft-shadow-card">
     <q-card-section class="stats-header row justify-between items-center">
       <div class="text-h6">Bed Occupancy Line Chart</div>
       <q-select
