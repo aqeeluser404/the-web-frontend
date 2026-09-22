@@ -89,6 +89,16 @@ class RentalService {
       throw error
     }
   }
+  static async revertLastExtension(rentalId) {
+    const ENDPOINT = `/rentals/${rentalId}/revert-extension`
+    try {
+      const response = await axiosInstance.put(ENDPOINT)
+      return response.data
+    } catch (error) {
+      Logger.error(error)
+      throw error
+    }
+  }
   static async verifyAndSavePayer(rentalId, payerData) {
     const ENDPOINT = `/rentals/${rentalId}/payer`
     try {

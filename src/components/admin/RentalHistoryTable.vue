@@ -13,7 +13,7 @@
             rounded
           /> -->
 
-          <!-- ✅ View switcher -->
+          <!-- View switcher -->
           <q-btn-toggle
             :model-value="'history'"
             @update:model-value="$emit('switch-table', $event)"
@@ -35,13 +35,13 @@
     </q-card-section>
 
     <!-- Search + Filter -->
-    <q-card-section class="row justify-between">
+    <q-card-section class="row justify-between q-col-gutter-sm">
       <q-input
         filled
         v-model="search"
         placeholder="Search"
         @update:model-value="$emit('search', search)"
-        class="col-12 col-md-9"
+        class="col-12 col-md-7"
       />
       <q-select
         filled
@@ -51,6 +51,17 @@
         @update:model-value="$emit('filter-status', selectedRentalStatus)"
         class="col-12 col-md-2"
       />
+      <!-- <q-select
+        filled
+        v-model="selectedYear"
+        :options="years"
+        label="Year"
+        clearable
+        emit-value
+        map-options
+        @update:model-value="$emit('filter-year', selectedYear)"
+        class="col-12 col-md-2"
+      /> -->
     </q-card-section>
 
     <!-- Table -->
@@ -475,11 +486,14 @@ export default {
       default: () => ["All", "Active", "Pending", "Rejected", "Ended"],
     },
     initialStatus: { type: String, default: "All" },
+    years: { type: Array, default: () => [] },
+    initialYear: { type: [Number, String], default: null },
   },
 
   emits: [
     "search",
     "filter-status",
+    "filter-year",
     "row-click",
     "delete",
     "extend",
@@ -493,12 +507,16 @@ export default {
     return {
       search: "",
       selectedRentalStatus: this.initialStatus,
+      selectedYear: this.initialYear,
     };
   },
 
   watch: {
     initialStatus(newVal) {
       this.selectedRentalStatus = newVal;
+    },
+    initialYear(newVal) {
+      this.selectedYear = newVal;
     },
   },
 

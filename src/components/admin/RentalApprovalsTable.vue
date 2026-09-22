@@ -489,6 +489,86 @@
     />
   </q-dialog>
 
+  <q-dialog v-model="renewalHistoryDialog">
+    <q-card style="min-width: 480px; max-width: 90vw">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Renewal History</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section
+        v-if="selectedRenewalRental"
+        style="font-family: monospace; font-size: 13px; line-height: 1.6"
+      >
+        <div class="text-weight-bold q-mb-md">Renewal Chain:</div>
+
+        <div
+          v-for="(entry, index) in selectedRenewalRental.renewalHistory"
+          :key="index"
+          class="q-mb-md"
+        >
+          <div>
+            <strong>{{ index + 1 }}.</strong>
+            {{ entry.fromYear || "??" }} → {{ entry.toYear || "??" }}
+            <span
+              v-if="entry.sameRoom === false"
+              style="color: orange; font-weight: bold"
+            >
+              🔄 Room Changed
+            </span>
+          </div>
+          <div class="q-pl-md">
+            Unit: <b>{{ entry.fromUnitNumber || "Unit" }}</b> →
+            <b>{{ entry.toUnitNumber || "Unit" }}</b>
+          </div>
+          <div class="q-pl-md">
+            Room:
+            <b>{{
+              entry.fromSubUnit?.bedType ||
+              entry.fromSubUnit?.roomType ||
+              "Unknown Room"
+            }}</b>
+            →
+            <b>{{
+              entry.toSubUnit?.bedType ||
+              entry.toSubUnit?.roomType ||
+              "Unknown Room"
+            }}</b>
+          </div>
+        </div>
+
+        <q-separator class="q-my-md" />
+
+        <div>
+          <strong>Current:</strong>
+          {{ selectedRenewalRental.unitNumber }}
+          ({{ selectedRenewalRental.unitYear || "current" }})
+          <br />
+          <span class="q-pl-md">
+            Room:
+            <b>{{
+              selectedRenewalRental.selectedSubUnits?.bedType ||
+              selectedRenewalRental.selectedSubUnits?.roomType ||
+              "Unknown Room"
+            }}</b>
+          </span>
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Close" color="primary" v-close-popup />
+        <q-btn
+          label="Revert Last Extension"
+          color="negative"
+          icon="undo"
+          :disable="!selectedRenewalRental?.renewalHistory?.length"
+          @click="revertLastExtension"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <q-dialog v-model="approvalDialog">
     <AdminRentalApprovalComponent
       v-if="selectedRentalForApproval"
@@ -530,6 +610,8 @@ export default {
       approvalDialog: false,
       selectedRentalForExtend: null,
       selectedRentalForApproval: null,
+      renewalHistoryDialog: false,
+      selectedRenewalRental: null,
 
       unitColumns: [
         {
@@ -818,58 +900,46 @@ export default {
         this.$q.notify({ type: "info", message: "No renewal history found." });
         return;
       }
+      this.selectedRenewalRental = rental;
+      this.renewalHistoryDialog = true;
+    },
 
-      let message =
-        '<div style="font-family: monospace; font-size: 13px; line-height: 1.6;">';
-      message += "<strong>Renewal Chain:</strong><br><br>";
+    async revertLastExtension() {
+      const rental = this.selectedRenewalRental;
+      if (!rental) return;
 
-      rental.renewalHistory.forEach((entry, index) => {
-        const fromUnit = entry.fromUnitNumber || "Unit";
-        const toUnit = entry.toUnitNumber || "Unit";
-        const fromRoom =
-          entry.fromSubUnit?.bedType ||
-          entry.fromSubUnit?.roomType ||
-          "Unknown Room";
-        const toRoom =
-          entry.toSubUnit?.bedType ||
-          entry.toSubUnit?.roomType ||
-          "Unknown Room";
-        const fromYear = entry.fromYear || "??";
-        const toYear = entry.toYear || "??";
-        const roomChange =
-          entry.sameRoom === false
-            ? ' 🔄 <span style="color: orange; font-weight: bold;">Room Changed</span>'
-            : "";
-
-        message += `<strong>${
-          index + 1
-        }.</strong> ${fromYear} → ${toYear}${roomChange}<br>`;
-        message += `&nbsp;&nbsp;&nbsp;Unit: <b>${fromUnit}</b> → <b>${toUnit}</b><br>`;
-        message += `&nbsp;&nbsp;&nbsp;Room: <b>${fromRoom}</b> → <b>${toRoom}</b><br><br>`;
-      });
-
-      if (rental.unitNumber) {
-        const currentRoom =
-          rental.selectedSubUnits?.bedType ||
-          rental.selectedSubUnits?.roomType ||
-          "Unknown Room";
-        message += `<hr style="border: none; border-top: 1px solid #ccc; margin: 8px 0;">`;
-        message += `<strong>Current:</strong> ${rental.unitNumber} (${
-          rental.unitYear || "current"
-        })<br>`;
-        message += `&nbsp;&nbsp;&nbsp;Room: <b>${currentRoom}</b>`;
-      }
-
-      message += "</div>";
-
-      this.$q.dialog({
-        title: "Renewal History",
-        message: message,
-        html: true,
-        color: "primary",
-        ok: { label: "Close", color: "primary" },
-        persistent: true,
-      });
+      this.$q
+        .dialog({
+          title: "Confirm Revert",
+          message:
+            "You are about to undo the last extension. The rental will move back to its previous unit/year and the current unit will be freed. Continue?",
+          color: "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            const response = await RentalService.revertLastExtension(
+              rental._id
+            );
+            if (response) {
+              this.$q.notify({
+                type: "positive",
+                color: "primary",
+                message: "Extension reverted successfully!",
+              });
+              this.renewalHistoryDialog = false;
+              this.selectedRenewalRental = null;
+              this.findAllRentals();
+            }
+          } catch (error) {
+            this.$q.notify({
+              type: "negative",
+              message:
+                error.response?.data?.error || "Failed to revert extension.",
+            });
+          }
+        });
     },
 
     async moveToPending(row) {

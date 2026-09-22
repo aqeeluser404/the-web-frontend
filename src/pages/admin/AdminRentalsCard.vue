@@ -5,22 +5,22 @@
     </div>
 
     <div class="constrain-standard q-pb-md row justify-center" v-show="!loading">
-      <BedGraphComponent class="col-md-9 col-12" />
+      <BedGraphComponent class="col-md-12 col-12" />
 
-      <div class="col-md-3 col-12" :class="$q.screen.gt.sm ? 'q-mt-none' : 'q-mt-md'">
+      <!-- <div class="col-md-3 col-12" :class="$q.screen.gt.sm ? 'q-mt-none' : 'q-mt-md'">
         <RentalStatusPie
           :rentals="currentRentals"
           :class="$q.screen.gt.sm ? 'q-ml-md' : 'q-ml-none'"
           @filter-status="filterRentalsByChart"
         />
-      </div>
+      </div> -->
     </div>
 
-    <!-- ✅ Swappable table area -->
+    <!-- Swappable table area -->
     <div class="constrain-standard row justify-center q-pb-md" v-show="!loading">
       <div class="col-md-12 col-12 full-height">
         <!-- Rental History Table -->
-        <RentalHistoryTable
+        <!-- <RentalHistoryTable
           v-if="activeTable === 'history'"
           :rentals="filteredRentals"
           :columns="rentalColumns"
@@ -35,7 +35,27 @@
           @open="openInNewTab"
           @download="downloadData"
           @switch-table="activeTable = $event"
-        />
+        /> -->
+
+<RentalHistoryTable
+  v-if="activeTable === 'history'"
+  :rentals="filteredRentals"
+  :columns="rentalColumns"
+  :rental-status="rentalStatus"
+  :initial-status="selectedRentalStatus"
+  :years="availableYears"
+  :initial-year="selectedHistoryYear"
+  @search="handleSearch"
+  @filter-status="filterRentalsByChart"
+  @filter-year="handleHistoryYearFilter"
+  @row-click="viewUserTimeline"
+  @delete="deleteRental"
+  @extend="openExtendRentalDialog"
+  @end="endRental"
+  @open="openInNewTab"
+  @download="downloadData"
+  @switch-table="activeTable = $event"
+/>
 
         <!-- Rental Approvals Table -->
         <RentalApprovalsTable
@@ -78,9 +98,19 @@ export default {
     AdminExtendRentalComponent,
   },
 
+computed: {
+  availableYears() {
+    const years = new Set(
+      this.currentRentals.map((r) => Number(r.unitYear)).filter(Boolean)
+    );
+    return [...years].sort((a, b) => a - b);
+  },
+},
+
   data() {
     return {
-      activeTable: "history", // ✅ 'history' | 'approvals'
+      activeTable: "history", // 'history' | 'approvals'
+      selectedHistoryYear: null,
 
       loading: true,
       rentals: [],
@@ -135,6 +165,8 @@ export default {
         console.error("Failed to open rental in new tab:", error);
       }
     },
+
+
 
     async downloadData() {
       this.$q.dialog({
@@ -231,6 +263,10 @@ export default {
         this.loading = false;
       }
     },
+    handleHistoryYearFilter(year) {
+      this.selectedHistoryYear = year;
+      this.filteredByRentalStatus();
+    },
 
     handleSearch(term) {
       const searchTerm = term.toLowerCase();
@@ -264,11 +300,22 @@ export default {
     },
 
     filteredByRentalStatus() {
+      let base;
       if (this.selectedRentalStatus === "All") {
-        this.filteredRentals = this.currentRentals;
+        base = this.currentRentals;
       } else {
+        base = this.filteredRentals; // or recompute from status buckets
         this.filterRentalsByChart(this.selectedRentalStatus);
+        base = this.filteredRentals;
       }
+
+      if (this.selectedHistoryYear) {
+        base = base.filter(
+          (r) => Number(r.unitYear) === Number(this.selectedHistoryYear)
+        );
+      }
+
+      this.filteredRentals = base;
     },
 
     openExtendRentalDialog(rental) {
