@@ -642,9 +642,9 @@ export default {
                 message: `Rental extended to ${this.selectedYear}!`,
               });
 
-              await EmailService.SendExtendedDate(this.rental.user, {
-                message,
-              });
+              // await EmailService.SendExtendedDate(this.rental.user, {
+              //   message,
+              // });
               this.$emit("close");
             } else {
               this.$q.notify({
