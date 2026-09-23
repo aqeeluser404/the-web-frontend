@@ -274,13 +274,13 @@ export default {
         {
           title: `${this.displayYear} OCCUPIED`,
           value: this.occupiedCurrentYear,
-          subtitle: `(ACTIVE ${this.displayYear} BEDS)`,
+          subtitle: `(ACTIVE ${this.displayYear} OCCUPANTS)`,
           icon: "event",
         },
         {
           title: `${this.nextDisplayYear} RENEWED`,
           value: this.renewedNextYear,
-          subtitle: `(${this.displayYear} OCCUPANTS)`,
+          subtitle: `(${this.displayYear} RENEWED OCCUPANTS)`,
           icon: "autorenew",
         },
         {
@@ -295,6 +295,37 @@ export default {
           subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
           icon: "pie_chart",
         },
+
+        // {
+        //   title: "TOTAL BEDS",
+        //   value: this.totalBeds,
+        //   subtitle: `(${this.displayYear} PHYSICAL CAPACITY)`,
+        //   icon: "hotel",
+        // },
+        // {
+        //   title: `${this.displayYear} OCCUPIED`,
+        //   value: this.occupiedCurrentYear,
+        //   subtitle: `(ACTIVE ${this.displayYear} BEDS)`,
+        //   icon: "event",
+        // },
+        // {
+        //   title: `${this.nextDisplayYear} RENEWED`,
+        //   value: this.renewedNextYear,
+        //   subtitle: `(${this.displayYear} OCCUPANTS)`,
+        //   icon: "autorenew",
+        // },
+        // {
+        //   title: `${this.nextDisplayYear} CONFIRMED`,
+        //   value: this.newConfirmedNextYear,
+        //   subtitle: "(NEW ACTIVE BOOKINGS)",
+        //   icon: "person_add",
+        // },
+        // {
+        //   title: `${this.nextDisplayYear} AVAILABLE`,
+        //   value: this.availableNextYear,
+        //   subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
+        //   icon: "pie_chart",
+        // },
       ];
     },
   },

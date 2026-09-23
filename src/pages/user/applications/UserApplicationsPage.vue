@@ -90,171 +90,93 @@
           <div class="text-h6">Application History</div>
         </q-card-section>
 
-        <!-- <q-separator /> -->
-
-        <!-- <q-card-section v-if="userDetails.rentals && userDetails.rentals.length > 0">
-          <q-markup-table flat bordered>
-            <thead>
-              <tr>
-                <th></th>
-                <th class="text-left">Application Date</th>
-                <th class="text-left">Application ID</th>
-                <th class="text-left">Start Date</th>
-                <th class="text-left">End Date</th>
-                <th class="text-left">Parking</th>
-                <th class="text-left">Bed/Room Price</th>
-                <th class="text-left">Payment Plan</th>
-                <th class="text-center">Unit Number</th>
-                <th class="text-left">Status</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody v-for="(rental, index) in rentals" :key="rental._id">
-              <tr @click="viewRentalDetails(rental._id)">
-                <td class="text-left cursor-pointer">{{ index + 1 }}</td>
-                <td class="text-left cursor-pointer">{{ formatDate(rental.applicationDate) }}</td>
-                <td class="text-left cursor-pointer id">{{ rental._id }}</td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="!defaultValues(rental)">
-                    {{ formatDate(rental.rentalStartDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="!defaultValues(rental)">
-                    {{ formatDate(rental.rentalEndDate) }}
-                  </div>
-                  <div v-else>
-                    Being processed...
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">
-                  <div v-if="rental.parking?.hasParking">
-                    R {{ Number(rental.parking?.fee).toFixed(2) }}
-                  </div>
-                  <div v-else>
-                    No
-                  </div>
-                </td>
-                <td class="text-left cursor-pointer">R {{ Number(rental.selectedSubUnits.price.price).toFixed(2) }} </td>
-                <td class="text-left cursor-pointer">{{ capitalizeFirstLetter(rental.selectedSubUnits.price.name) }}</td>
-                <td class="text-center cursor-pointer">{{ rental.unitNumber }} </td>
-                <td class="text-left cursor-pointer text-uppercase" :class="{ 'pending-status': rental.status === 'Pending' },
-                  { 'active-status': rental.status === 'Active' },
-                  { 'rejected-status': rental.status === 'Rejected' },
-                  { 'ended-status': rental.status === 'Ended' }">
-                  {{ capitalizeFirstLetter(rental.status) }}
-                </td>
-                <td class="text-left cursor-pointer">
-                  <CustomButton v-if="rental.status === 'Pending'" flat color="red" text-color="red"
-                    customStyle="width: 15%" icon="eva-trash-outline" @click.stop="deleteRental(rental)" />
-                  <CustomButton flat color="black" text-color="positive" customStyle="width: 15%"
-                    icon="eva-cloud-upload-outline" to="/user/profile" />
-                  <CustomButton
-                    v-if="rental.payerData.isValidated && rental.status === 'Pending' && viewPayerInformation" flat
-                    color="red" text-color="red" customStyle="width: 15%" icon="eva-edit-2-outline"
-                    @click="openAddPayer" />
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-card-section>
-
-        <q-card-section v-else class="row justify-center">
-          <q-item>
-            <q-item-section class="text-subtitle1">You currently have no rental applications on file.</q-item-section>
-          </q-item>
-        </q-card-section> -->
-
         <q-card-section>
           <q-table
             flat
             bordered
             :rows="rentals"
-            :columns="rentalColumns"
+            :columns="compactColumns"
             @row-click="viewRentalDetails"
             row-key="_id"
           >
-            <template v-slot:body-cell-index="props">
+            <template v-slot:body-cell-id="props">
               <q-td :props="props">
-                {{ props.rowIndex + 1 }}
+                <q-badge
+                  color="text-primary"
+                  align="middle"
+                  class="q-pa-xs q-px-sm"
+                >
+                  {{ props.row._id }}
+                </q-badge>
               </q-td>
             </template>
 
             <template v-slot:body-cell-applicationDate="props">
+              <q-td :props="props">{{
+                formatDate(props.row.applicationDate)
+              }}</q-td>
+            </template>
+
+            <template v-slot:body-cell-unitType="props">
               <q-td :props="props">
-                <div>
-                  {{ formatDate(props.row.applicationDate) }}
-                </div>
+                {{
+                  props.row.selectedSubUnits?.bedType ||
+                  props.row.selectedSubUnits?.roomType ||
+                  "—"
+                }}
               </q-td>
             </template>
 
-            <template v-slot:body-cell-id="props">
-              <q-td :props="props">
-                <div class="id">
-                  <q-badge
-                    color="text-primary"
-                    align="middle"
-                    class="q-pa-xs q-px-sm"
-                  >
-                    {{ props.row._id }}
+            <template v-slot:body-cell-unitYear="props">
+              <q-td :props="props" class="text-center">
+                {{ props.row.unitYear }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-renewed="props">
+              <q-td :props="props" class="text-center">
+                <q-badge
+                  v-if="props.row.renewed === true"
+                  color="teal"
+                  class="q-pa-xs q-px-sm"
+                >
+                  <q-icon name="autorenew" size="xs" class="q-mr-xs" />
+                  Renewed
+                </q-badge>
+                <span v-else class="">—</span>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-renewedTo="props">
+              <q-td :props="props" class="text-center">
+                <template
+                  v-if="
+                    props.row.renewalHistory &&
+                    props.row.renewalHistory.length > 0
+                  "
+                >
+                  <q-badge color="teal" class="q-pa-xs q-px-sm">
+                    <q-icon name="autorenew" size="xs" class="q-mr-xs" />
+                    {{
+                      props.row.renewalHistory[
+                        props.row.renewalHistory.length - 1
+                      ].toYear
+                    }}
                   </q-badge>
-                </div>
+                </template>
+                <span v-else class="">—</span>
               </q-td>
             </template>
 
-            <template v-slot:body-cell-startDate="props">
-              <q-td :props="props">
-                <div>
-                  {{ formatDate(props.row.rentalStartDate) }}
+            <template v-slot:body-cell-beforeScheduled="props">
+              <q-td :props="props" class="text-center">
+                <div
+                  v-if="props.row.earlyEndDate"
+                  style="text-decoration: underline"
+                >
+                  {{ formatDate(props.row.earlyEndDate) }}
                 </div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-endDate="props">
-              <q-td :props="props">
-                <div>
-                  {{ formatDate(props.row.rentalEndDate) }}
-                </div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-parking="props">
-              <q-td :props="props">
-                <div v-if="props.row.parking?.hasParking">
-                  R {{ Number(props.row.parking?.fee).toFixed(2) }}
-                </div>
-                <div v-else>No</div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-unitPrice="props">
-              <q-td :props="props">
-                <div>
-                  {{
-                    Number(props.row.selectedSubUnits.price.price).toFixed(2)
-                  }}
-                </div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-paymentPlan="props">
-              <q-td :props="props">
-                <div>
-                  {{
-                    capitalizeFirstLetter(props.row.selectedSubUnits.price.name)
-                  }}
-                </div>
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-unitNumber="props">
-              <q-td :props="props">
-                <div>
-                  {{ capitalizeFirstLetter(props.row.unitNumber) }}
-                </div>
+                <div v-else>N/A</div>
               </q-td>
             </template>
 
@@ -265,61 +187,334 @@
                     props.row.status === 'Active'
                       ? 'green'
                       : props.row.status === 'Pending'
-                        ? 'orange'
-                        : props.row.status === 'Rejected'
-                          ? 'red'
-                          : props.row.status === 'Ended'
-                            ? 'grey'
-                            : 'red'
+                      ? 'orange'
+                      : props.row.status === 'Rejected'
+                      ? 'red'
+                      : props.row.status === 'Ended'
+                      ? 'grey'
+                      : 'red'
                   "
-                  align="middle"
                   class="q-pa-xs q-px-sm"
                 >
                   {{ props.row.status }}
                 </q-badge>
               </q-td>
             </template>
-
             <template v-slot:body-cell-actions="props">
-              <q-td :props="props">
-                <div
-                  class="row justify-center items-center q-gutter-sm no-wrap"
+              <q-td :props="props" class="text-center">
+                <q-btn
+                  round
+                  flat
+                  color="grey-8"
+                  size="sm"
+                  icon="more_horiz"
+                  @click.stop
                 >
-                  <CustomButton
-                    :disable="props.row.status !== 'Pending'"
-                    flat
-                    color="red"
-                    text-color="red"
-                    class="inline-btn"
-                    icon="eva-trash-outline"
-                    @click.stop="deleteRental(props.row)"
-                  />
+                  <q-tooltip>Actions</q-tooltip>
+                  <q-menu
+                    anchor="bottom right"
+                    self="top right"
+                    :offset="[0, 10]"
+                    class="modern-menu"
+                    @before-show="onMenuOpen"
+                    @before-hide="onMenuClose"
+                  >
+                    <div class="menu-card">
+                      <!-- ===================== -->
+                      <!-- APPLICATION DETAILS -->
+                      <!-- ===================== -->
+                      <div class="menu-section">
+                        <div class="menu-section-title">Application</div>
 
-                  <CustomButton
-                    flat
-                    color="black"
-                    text-color="positive"
-                    class="inline-btn"
-                    icon="eva-cloud-upload-outline"
-                    to="/user/profile"
-                  />
+                        <div class="menu-grid">
+                          <div class="menu-item">
+                            <div class="menu-icon bg-blue-1">
+                              <q-icon name="tag" size="16px" color="blue-7" />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value ellipsis">
+                                {{ props.row.unitYear }}
+                              </div>
+                              <div class="menu-item-label">Applied For</div>
+                            </div>
+                          </div>
 
-                  <CustomButton
-                    :disable="
-                      !(
-                        (props.row.status === 'Pending' ||
-                          props.row.status === 'Active') &&
-                        props.row.payerData.isValidated === false
-                      )
-                    "
-                    flat
-                    color="red"
-                    text-color="red"
-                    class="inline-btn"
-                    icon="eva-edit-2-outline"
-                    @click.stop="openAddPayer"
-                  />
-                </div>
+                          <div class="menu-item">
+                            <div class="menu-icon bg-purple-1">
+                              <q-icon
+                                name="schedule"
+                                size="16px"
+                                color="purple-7"
+                              />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{ formatDate(props.row.applicationDate) }}
+                              </div>
+                              <div class="menu-item-label">
+                                Application Date
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="menu-item">
+                            <div class="menu-icon bg-teal-1">
+                              <q-icon name="event" size="16px" color="teal-7" />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{ formatDate(props.row.rentalStartDate) }}
+                              </div>
+                              <div class="menu-item-label">Start Date</div>
+                            </div>
+                          </div>
+
+                          <div class="menu-item">
+                            <div class="menu-icon bg-orange-1">
+                              <q-icon
+                                name="event_available"
+                                size="16px"
+                                color="orange-7"
+                              />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{ formatDate(props.row.rentalEndDate) }}
+                              </div>
+                              <div class="menu-item-label">End Date</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ===================== -->
+                      <!-- UNIT & PRICING -->
+                      <!-- ===================== -->
+                      <div class="menu-section">
+                        <div class="menu-section-title">Unit & Pricing</div>
+
+                        <div class="menu-grid">
+                          <div class="menu-item">
+                            <div class="menu-icon bg-green-1">
+                              <q-icon name="home" size="16px" color="green-7" />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{
+                                  props.row.selectedSubUnits?.bedType ||
+                                  props.row.selectedSubUnits?.roomType ||
+                                  "N/A"
+                                }}
+                              </div>
+                              <div class="menu-item-label">Room / Bed</div>
+                            </div>
+                          </div>
+
+                          <div class="menu-item">
+                            <div class="menu-icon bg-indigo-1">
+                              <q-icon
+                                name="payments"
+                                size="16px"
+                                color="indigo-7"
+                              />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                R
+                                {{
+                                  Number(
+                                    props.row.selectedSubUnits?.price?.price ||
+                                      0
+                                  ).toFixed(2)
+                                }}
+                              </div>
+                              <div class="menu-item-label">
+                                Bed / Room Price
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="menu-item">
+                            <div class="menu-icon bg-cyan-1">
+                              <q-icon
+                                name="credit_card"
+                                size="16px"
+                                color="cyan-7"
+                              />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{
+                                  capitalizeFirstLetter(
+                                    props.row.selectedSubUnits?.price?.name
+                                  )
+                                }}
+                              </div>
+                              <div class="menu-item-label">Payment Plan</div>
+                            </div>
+                          </div>
+
+                          <div class="menu-item">
+                            <div class="menu-icon bg-pink-1">
+                              <q-icon
+                                name="local_parking"
+                                size="16px"
+                                color="pink-7"
+                              />
+                            </div>
+                            <div class="menu-item-body">
+                              <div class="menu-item-value">
+                                {{
+                                  props.row.parking?.hasParking
+                                    ? "R " +
+                                      Number(props.row.parking.fee).toFixed(2)
+                                    : "None"
+                                }}
+                              </div>
+                              <div class="menu-item-label">Parking</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ===================== -->
+                      <!-- RENEWAL HISTORY -->
+                      <!-- ===================== -->
+                      <div
+                        v-if="
+                          props.row.renewalHistory &&
+                          props.row.renewalHistory.length > 0
+                        "
+                        class="menu-section"
+                      >
+                        <div
+                          class="menu-section-title row items-center justify-between"
+                        >
+                          <span>Renewal History</span>
+                          <q-badge
+                            color="primary"
+                            text-color="white"
+                            class="q-px-sm"
+                            style="font-size: 11px"
+                          >
+                            {{ props.row.renewalHistory.length }}
+                          </q-badge>
+                        </div>
+
+                        <div class="renewal-timeline">
+                          <div
+                            v-for="(entry, index) in props.row.renewalHistory"
+                            :key="index"
+                            class="renewal-entry"
+                          >
+                            <div class="renewal-timeline-marker">
+                              <div
+                                class="renewal-dot"
+                                :class="{
+                                  'room-changed': entry.sameRoom === false,
+                                }"
+                              />
+                              <div
+                                v-if="
+                                  index < props.row.renewalHistory.length - 1
+                                "
+                                class="renewal-line"
+                              />
+                            </div>
+
+                            <div class="renewal-body">
+                              <div class="row items-center q-gutter-xs">
+                                <span class="renewal-year">
+                                  {{ entry.fromYear }}
+                                  <q-icon
+                                    name="arrow_forward"
+                                    size="12px"
+                                    class="q-mx-xs text-grey-5"
+                                  />
+                                  {{ entry.toYear }}
+                                </span>
+                                <q-badge
+                                  v-if="entry.sameRoom === false"
+                                  color="orange-7"
+                                  class="q-ml-sm renewal-badge"
+                                >
+                                  Room changed
+                                </q-badge>
+                              </div>
+
+                              <div class="renewal-detail">
+                                {{
+                                  entry.fromSubUnit?.bedType ||
+                                  entry.fromSubUnit?.roomType ||
+                                  "?"
+                                }}
+                                <q-icon
+                                  name="arrow_forward"
+                                  size="11px"
+                                  class="q-mx-xs text-grey-5"
+                                />
+                                {{
+                                  entry.toSubUnit?.bedType ||
+                                  entry.toSubUnit?.roomType ||
+                                  "?"
+                                }}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="renewal-current">
+                            <q-icon
+                              name="check_circle"
+                              size="14px"
+                              color="positive"
+                            />
+                            <span>
+                              Currently on <b>{{ props.row.unitNumber }}</b> ({{
+                                props.row.unitYear
+                              }})
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ===================== -->
+                      <!-- ACTIONS -->
+                      <!-- ===================== -->
+                      <div class="menu-section menu-actions">
+                        <q-btn
+                          flat
+                          no-caps
+                          align="left"
+                          class="menu-action-btn"
+                          :disable="props.row.status !== 'Pending'"
+                          @click.stop="deleteRental(props.row)"
+                        >
+                          <q-icon
+                            name="delete_outline"
+                            size="18px"
+                            class="q-mr-sm"
+                          />
+                          <span>Delete application</span>
+                        </q-btn>
+
+                        <q-btn
+                          flat
+                          no-caps
+                          align="left"
+                          class="menu-action-btn"
+                          @click.stop="$router.push('/user/profile')"
+                        >
+                          <q-icon
+                            name="cloud_upload"
+                            size="18px"
+                            class="q-mr-sm"
+                          />
+                          <span>Upload documents</span>
+                        </q-btn>
+                      </div>
+                    </div>
+                  </q-menu>
+                </q-btn>
               </q-td>
             </template>
           </q-table>
@@ -367,48 +562,44 @@ export default {
       addPayerRental: null,
       selectedRental: null,
 
-      rentalColumns: [
-        { name: "index", label: "#", field: "index", align: "center" },
+      compactColumns: [
+        { name: "id", label: "Application ID", field: "_id", align: "left" },
         {
           name: "applicationDate",
           label: "Application Date",
           field: "applicationDate",
-          align: "left",
-        },
-        { name: "id", label: "Application ID", field: "_id", align: "left" },
-        {
-          name: "startDate",
-          label: "Start Date",
-          field: "rentalStartDate",
-          align: "left",
-        },
-        {
-          name: "endDate",
-          label: "End Date",
-          field: "rentalEndDate",
-          align: "left",
-        },
-        { name: "parking", label: "Parking", field: "parking", align: "left" },
-
-        {
-          name: "unitPrice",
-          label: "Bed/Room Price",
-          field: "selectedSubUnits",
-          align: "left",
-        },
-        {
-          name: "paymentPlan",
-          label: "Payment Plan",
-          field: "selectedSubUnits",
-          align: "left",
-        },
-        {
-          name: "unitNumber",
-          label: "Unit Number",
-          field: "unitNumber",
           align: "center",
         },
-
+        {
+          name: "unitType",
+          label: "Unit Type",
+          field: "selectedSubUnits",
+          align: "center",
+        },
+        {
+          name: "unitYear",
+          label: "For Year",
+          field: "unitYear",
+          align: "center",
+        },
+        {
+          name: "renewed",
+          label: "Renewed",
+          field: "renewed",
+          align: "center",
+        },
+        {
+          name: "renewedTo",
+          label: "Renewed To",
+          field: "renewedToUnit",
+          align: "center",
+        },
+        {
+          name: "beforeScheduled",
+          label: "Before Scheduled End",
+          field: "earlyEndDate",
+          align: "center",
+        },
         { name: "status", label: "Status", field: "status", align: "center" },
         {
           name: "actions",
@@ -430,7 +621,7 @@ export default {
       const rentalNeedingPayer = this.rentals.find(
         (rental) =>
           (rental.status === "Pending" || rental.status === "Active") &&
-          rental.payerData.isValidated === false,
+          rental.payerData.isValidated === false
       );
       this.addPayerRental = rentalNeedingPayer;
       return !!rentalNeedingPayer;
@@ -438,7 +629,7 @@ export default {
     viewPayerInformation() {
       // Find the rental that requires payer information
       const rentalNeedingPayer = this.rentals.find(
-        (rental) => rental.status === "Pending",
+        (rental) => rental.status === "Pending"
       );
       this.addPayerRental = rentalNeedingPayer; // Set the addPayerRental
       return !!rentalNeedingPayer; // Return true if such a rental exists
@@ -448,42 +639,28 @@ export default {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
 
-    // defaultValues(rental) {
-    //   const toDateOnly = (dateStr) => (dateStr?.split('T')[0] || '');
-    //   const today = new Date();
-    //   const nextYear = today.getFullYear() + 1;
-    //   const defaultStart = `${nextYear}-01-01`;
-    //   const defaultEnd = `${nextYear}-12-31`;
+    onMenuOpen() {
+      this._closeMenuOnScroll = (event) => {
+        const menu = event.target.closest?.(".q-menu");
+        if (menu) return;
+        document.body.dispatchEvent(
+          new MouseEvent("mousedown", { bubbles: true })
+        );
+      };
+      window.addEventListener("scroll", this._closeMenuOnScroll, {
+        capture: true,
+        passive: true,
+      });
+    },
 
-    //   const start = toDateOnly(rental?.rentalStartDate);
-    //   const end = toDateOnly(rental?.rentalEndDate);
-
-    //   return start === defaultStart && end === defaultEnd;
-    // },
-
-    // defaultValues(rental) {
-    //   if (!rental?.rentalStartDate || !rental?.rentalEndDate) return false;
-
-    //   if (rental?.status === "Active") {
-    //     return false;
-    //   }
-
-    //   const toDateObj = (dateStr) => new Date(dateStr);
-
-    //   const start = toDateObj(rental.rentalStartDate);
-    //   const end = toDateObj(rental.rentalEndDate);
-
-    //   // Default is always Feb 1 → Dec 15 (any year)
-    //   const isDefaultStart =
-    //     start.getMonth() === 1 && start.getDate() === 1;   // Feb = 1 (0-based index)
-    //   const isDefaultEnd =
-    //     end.getMonth() === 11 && end.getDate() === 15;     // Dec = 11 (0-based index)
-
-    //   console.log("Row:", start.toISOString().split("T")[0], end.toISOString().split("T")[0],
-    //               "Default?", isDefaultStart && isDefaultEnd);
-
-    //   return isDefaultStart && isDefaultEnd;
-    // },
+    onMenuClose() {
+      if (this._closeMenuOnScroll) {
+        window.removeEventListener("scroll", this._closeMenuOnScroll, {
+          capture: true,
+        });
+        this._closeMenuOnScroll = null;
+      }
+    },
 
     copyToClipboard(text) {
       navigator.clipboard
@@ -522,7 +699,7 @@ export default {
               unitNumber: "N/A",
             };
           }
-        }),
+        })
       );
       this.loading = false;
     },
@@ -569,7 +746,7 @@ export default {
       }
     },
     openRequestUser(rental) {
-      ((this.selectedRental = rental), (this.requestDialog = true));
+      (this.selectedRental = rental), (this.requestDialog = true);
     },
     openAddPayer() {
       this.addPayerDialog = true;
@@ -589,12 +766,210 @@ export default {
   mounted() {
     this.fetchUserDetails();
   },
+  beforeUnmount() {
+    this.onMenuClose();
+  },
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .inline-btn {
-  display: inline-flex; /* ensures they sit side by side */
-  width: auto; /* prevents full-width stretching */
+  display: inline-flex;
+  width: auto;
+}
+
+/* ============================ */
+/* MENU SHELL                   */
+/* ============================ */
+.modern-menu :deep(.q-menu) {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.menu-card {
+  min-width: 420px;
+  max-width: 480px;
+  background: #fff;
+}
+
+.menu-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-section:last-child {
+  border-bottom: none;
+}
+
+.menu-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9e9e9e;
+  margin-bottom: 12px;
+}
+
+/* ============================ */
+/* MENU GRID                    */
+/* ============================ */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.menu-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.menu-item-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #212121;
+  line-height: 1.3;
+}
+
+.menu-item-label {
+  font-size: 10.5px;
+  color: #9e9e9e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+
+/* ============================ */
+/* ACTIONS                      */
+/* ============================ */
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+}
+
+.menu-action-btn {
+  justify-content: flex-start;
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #424242;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 36px;
+}
+
+.menu-action-btn:hover {
+  background: #f5f5f5;
+}
+
+.menu-action-btn.q-btn--disabled {
+  color: #bdbdbd !important;
+}
+
+.menu-action-btn :deep(.q-btn__content) {
+  justify-content: flex-start;
+}
+
+/* ============================ */
+/* RENEWAL TIMELINE             */
+/* ============================ */
+.renewal-timeline {
+  position: relative;
+  padding-top: 4px;
+}
+
+.renewal-entry {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+.renewal-timeline-marker {
+  position: relative;
+  flex: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3px;
+}
+
+.renewal-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #26a69a;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(38, 166, 154, 0.15);
+}
+
+.renewal-dot.room-changed {
+  background: #fb8c00;
+  box-shadow: 0 0 0 3px rgba(251, 140, 0, 0.15);
+}
+
+.renewal-line {
+  flex: 1;
+  width: 2px;
+  background: #e8e8e8;
+  margin-top: 4px;
+  border-radius: 1px;
+}
+
+.renewal-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.renewal-year {
+  font-size: 13px;
+  font-weight: 600;
+  color: #212121;
+}
+
+.renewal-badge {
+  font-size: 10px;
+  padding: 3px 6px;
+}
+
+.renewal-detail {
+  font-size: 12px;
+  color: #616161;
+  margin-top: 2px;
+}
+
+.renewal-current {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed #e8e8e8;
+  font-size: 12px;
+  color: #616161;
+}
+
+.renewal-current b {
+  color: #212121;
 }
 </style>

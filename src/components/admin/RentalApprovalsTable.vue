@@ -104,171 +104,146 @@
                         :key="idx"
                         class="sub-unit-item"
                       >
-                        <!-- Desktop View -->
-                        <div class="desktop-view">
-                          <q-item-section>
-                            <q-item-label>{{ sub.identifier }}</q-item-label>
-                          </q-item-section>
+<!-- Desktop View -->
+<div class="desktop-view">
+  <div class="col col-room">
+    <q-item-label class="text-weight-medium">{{ sub.identifier }}</q-item-label>
+  </div>
 
-                          <template v-if="sub.rental">
-                            <q-item-section>
-                              {{ sub.rental.firstName }}
-                              {{ sub.rental.lastName }}
-                            </q-item-section>
-                            <q-item-section>{{
-                              sub.rental.phone
-                            }}</q-item-section>
-                            <q-item-section>{{
-                              sub.rental.email
-                            }}</q-item-section>
-                            <q-item-section>
-                              <q-badge
-                                style="width: 50%"
-                                :color="
-                                  sub.rental.gender === 'Male'
-                                    ? 'blue'
-                                    : sub.rental.gender === 'Female'
-                                    ? 'purple'
-                                    : 'red'
-                                "
-                              >
-                                {{ sub.rental.gender }}
-                              </q-badge>
-                            </q-item-section>
+  <template v-if="sub.rental">
+    <div class="col col-name">
+      {{ sub.rental.firstName }} {{ sub.rental.lastName }}
+    </div>
+    <div class="col col-phone">{{ sub.rental.phone }}</div>
+    <div class="col col-email">{{ sub.rental.email }}</div>
+    <div class="col col-gender">
+      <q-badge
+        :color="
+          sub.rental.gender === 'Male'
+            ? 'blue'
+            : sub.rental.gender === 'Female'
+            ? 'purple'
+            : 'red'
+        "
+      >
+        {{ sub.rental.gender }}
+      </q-badge>
+    </div>
 
-                            <q-item-section
-                              v-if="sub.viewContext === 'extendedInto'"
-                            >
-                              <q-badge color="teal">
-                                <template v-if="sub.historyEntry">
-                                  Renewed from
-                                  {{ sub.historyEntry.fromYear || "previous" }}
-                                  <q-icon
-                                    v-if="sub.historyEntry.sameRoom === false"
-                                    name="swap_horiz"
-                                    size="xs"
-                                    class="q-ml-xs"
-                                  >
-                                    <q-tooltip>Room changed</q-tooltip>
-                                  </q-icon>
-                                </template>
-                                <template
-                                  v-else-if="sub.rental.renewedFromUnit"
-                                >
-                                  Renewed from previous year
-                                </template>
-                                <template v-else>Renewed</template>
-                              </q-badge>
-                            </q-item-section>
+    <div class="col col-renewed">
+      <q-badge v-if="sub.viewContext === 'extendedInto'" color="teal">
+        <template v-if="sub.historyEntry">
+          Renewed from {{ sub.historyEntry.fromYear || "previous" }}
+          <q-icon
+            v-if="sub.historyEntry.sameRoom === false"
+            name="swap_horiz"
+            size="xs"
+            class="q-ml-xs"
+          >
+            <q-tooltip>Room changed</q-tooltip>
+          </q-icon>
+        </template>
+        <template v-else-if="sub.rental.renewedFromUnit">
+          Renewed from previous year
+        </template>
+        <template v-else>Renewed</template>
+      </q-badge>
 
-                            <q-item-section
-                              v-else-if="sub.viewContext === 'extendedFrom'"
-                            >
-                              <q-badge color="grey-7">
-                                <template v-if="sub.historyEntry">
-                                  Renewed to
-                                  {{ sub.historyEntry.toYear || "next year" }}
-                                  <q-icon
-                                    v-if="sub.historyEntry.sameRoom === false"
-                                    name="swap_horiz"
-                                    size="xs"
-                                    class="q-ml-xs"
-                                  >
-                                    <q-tooltip>Room changed</q-tooltip>
-                                  </q-icon>
-                                </template>
-                                <template v-else>Renewed to next year</template>
-                              </q-badge>
-                            </q-item-section>
+      <q-badge v-else-if="sub.viewContext === 'extendedFrom'" color="grey-7">
+        <template v-if="sub.historyEntry">
+          Renewed to {{ sub.historyEntry.toYear || "next year" }}
+          <q-icon
+            v-if="sub.historyEntry.sameRoom === false"
+            name="swap_horiz"
+            size="xs"
+            class="q-ml-xs"
+          >
+            <q-tooltip>Room changed</q-tooltip>
+          </q-icon>
+        </template>
+        <template v-else>Renewed to next year</template>
+      </q-badge>
+    </div>
 
-                            <q-item-section
-                              v-if="
-                                sub.rental &&
-                                sub.rental.renewalHistory &&
-                                sub.rental.renewalHistory.length > 0
-                              "
-                            >
-                              <q-badge
-                                color="info"
-                                class="cursor-pointer"
-                                @click.stop="showRenewalHistory(sub.rental)"
-                              >
-                                <q-icon
-                                  name="history"
-                                  size="xs"
-                                  class="q-mr-xs"
-                                />
-                                {{ sub.rental.renewalHistory.length }}
-                                renewals
-                              </q-badge>
-                            </q-item-section>
+    <div class="col col-history">
+      <q-badge
+        v-if="sub.rental.renewalHistory && sub.rental.renewalHistory.length > 0"
+        color="info"
+        class="cursor-pointer"
+        @click.stop="showRenewalHistory(sub.rental)"
+      >
+        <q-icon name="history" size="xs" class="q-mr-xs" />
+        {{ sub.rental.renewalHistory.length }} renewals
+      </q-badge>
+    </div>
 
-                            <q-item-section side>
-                              <div class="row items-center">
-                                <q-btn
-                                  round
-                                  class="q-mr-sm"
-                                  color="red"
-                                  size="sm"
-                                  icon="eva-trash-outline"
-                                  @click.stop="deleteRental(sub.rental._id)"
-                                >
-                                  <q-tooltip>Delete Rental</q-tooltip>
-                                </q-btn>
-                                <q-btn
-                                  round
-                                  class="q-mr-sm"
-                                  color="red"
-                                  size="sm"
-                                  icon="eva-archive-outline"
-                                  @click.stop="endRental(sub.rental._id)"
-                                >
-                                  <q-tooltip>End Rental</q-tooltip>
-                                </q-btn>
-                                <q-btn
-                                  round
-                                  class="q-mr-sm"
-                                  color="red"
-                                  size="sm"
-                                  icon="arrow_back"
-                                  @click.stop="moveToPending(sub.rental)"
-                                >
-                                  <q-tooltip>Move to Pending</q-tooltip>
-                                </q-btn>
-                                <q-btn
-                                  class="q-mr-sm"
-                                  round
-                                  color="primary"
-                                  size="sm"
-                                  icon="event"
-                                  @click.stop="openExtendDialog(sub.rental)"
-                                >
-                                  <q-tooltip>Extend Date</q-tooltip>
-                                </q-btn>
-                                <q-btn
-                                  class="q-mr-sm"
-                                  round
-                                  color="secondary"
-                                  size="sm"
-                                  icon="edit"
-                                  @click.stop="
-                                    openApprovalDialog(sub.rental, props.row)
-                                  "
-                                >
-                                  <q-tooltip
-                                    >Review Approval / Change Unit</q-tooltip
-                                  >
-                                </q-btn>
-                              </div>
-                            </q-item-section>
-                          </template>
+    <div class="col-auto col-actions">
+      <div class="row items-center no-wrap">
+        <q-btn
+          round
+          class="q-mr-sm"
+          color="red"
+          size="sm"
+          icon="eva-trash-outline"
+          @click.stop="deleteRental(sub.rental._id)"
+        >
+          <q-tooltip>Delete Rental</q-tooltip>
+        </q-btn>
+        <q-btn
+          round
+          class="q-mr-sm"
+          color="red"
+          size="sm"
+          icon="eva-archive-outline"
+          @click.stop="endRental(sub.rental._id)"
+        >
+          <q-tooltip>End Rental</q-tooltip>
+        </q-btn>
+        <q-btn
+          round
+          class="q-mr-sm"
+          color="red"
+          size="sm"
+          icon="arrow_back"
+          @click.stop="moveToPending(sub.rental)"
+        >
+          <q-tooltip>Move to Pending</q-tooltip>
+        </q-btn>
+        <q-btn
+          class="q-mr-sm"
+          round
+          color="primary"
+          size="sm"
+          icon="event"
+          @click.stop="openExtendDialog(sub.rental)"
+        >
+          <q-tooltip>Extend Date</q-tooltip>
+        </q-btn>
+        <q-btn
+          class="q-mr-sm"
+          round
+          color="secondary"
+          size="sm"
+          icon="edit"
+          @click.stop="openApprovalDialog(sub.rental, props.row)"
+        >
+          <q-tooltip>Review Approval / Change Unit</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
+  </template>
 
-                          <template v-else>
-                            <q-item-section class="text-grey"
-                              >Empty</q-item-section
-                            >
-                          </template>
-                        </div>
+  <!-- Empty sub-unit — same column structure, blank blocks -->
+  <template v-else>
+    <div class="col col-name text-grey">Empty</div>
+    <div class="col col-phone"></div>
+    <div class="col col-email"></div>
+    <div class="col col-gender"></div>
+    <div class="col col-renewed"></div>
+    <div class="col col-history"></div>
+    <div class="col-auto col-actions"></div>
+  </template>
+</div>
 
                         <!-- Mobile View -->
                         <div class="mobile-view">
@@ -1067,7 +1042,37 @@ export default {
   display: flex;
   width: 100%;
   align-items: center;
+  padding: 8px 16px;
+  gap: 8px;
+
+  // All cells share the same line-height so rows don't jump in height
+  > div {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
+
+// Fixed widths — tune these to taste
+.col-room    { flex: 0 0 200px; font-weight: 500; }
+.col-name    { flex: 1 1 180px; min-width: 140px; }
+.col-phone   { flex: 0 0 130px; }
+.col-email   { flex: 1 1 220px; min-width: 160px; }
+.col-gender  { flex: 0 0 90px; }
+.col-renewed { flex: 0 0 180px; }
+.col-history { flex: 0 0 140px; }
+.col-actions { flex: 0 0 auto; justify-content: flex-end; }
+
+// .sub-unit-item {
+//   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+// }
+
+// .sub-unit-item:last-child {
+//   border-bottom: none;
+// }
 
 .mobile-view {
   display: none;

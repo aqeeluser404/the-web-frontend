@@ -51,17 +51,17 @@
         @update:model-value="$emit('filter-status', selectedRentalStatus)"
         class="col-12 col-md-2"
       />
-      <!-- <q-select
+      <q-select
         filled
         v-model="selectedYear"
         :options="years"
-        label="Year"
+        label="Applying For"
         clearable
         emit-value
         map-options
         @update:model-value="$emit('filter-year', selectedYear)"
         class="col-12 col-md-2"
-      /> -->
+      />
     </q-card-section>
 
     <!-- Table -->
@@ -464,7 +464,7 @@
           </q-td>
         </template>
       </q-table>
-      <!-- ✅ Context Menu -->
+      <!-- Context Menu -->
     </q-card-section>
   </q-card>
 </template>
