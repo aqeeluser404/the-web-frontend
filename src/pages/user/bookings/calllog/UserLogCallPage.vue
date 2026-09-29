@@ -380,9 +380,6 @@ import UserService from "src/services/api/UserService";
 import CallLogUpdatesComponent from "src/components/user/CallLogUpdatesComponent.vue";
 
 export default {
-  components: {
-    CustomButton,
-  },
   data() {
     return {
       loading: true,
@@ -513,6 +510,7 @@ export default {
   },
   components: {
     CallLogUpdatesComponent,
+    CustomButton
   },
   watch: {
     selectedIssue(value) {
