@@ -70,111 +70,111 @@ export default {
         {
           title: "Open plan living",
           images: [
-            "/public/assets/gallery/open plan living/opl1.jpg",
-            "/public/assets/gallery/open plan living/opl2.jpg",
-            "/public/assets/gallery/open plan living/opl3.jpg",
-            "/public/assets/gallery/open plan living/opl4.jpg",
-            "/public/assets/gallery/open plan living/opl5.jpg",
+            "/assets/gallery/open plan living/opl1.jpg",
+            "/assets/gallery/open plan living/opl2.jpg",
+            "/assets/gallery/open plan living/opl3.jpg",
+            "/assets/gallery/open plan living/opl4.jpg",
+            "/assets/gallery/open plan living/opl5.jpg",
           ],
         },
         {
           title: "Exterior identity",
           images: [
-            "/public/assets/gallery/exterior identity/ei1.jpg",
-            "/public/assets/gallery/exterior identity/ei2.jpg",
-            "/public/assets/gallery/exterior identity/ei3.jpg",
-            "/public/assets/gallery/exterior identity/ei4.jpg",
-            "/public/assets/gallery/exterior identity/ei5.jpg",
+            "/assets/gallery/exterior identity/ei1.jpg",
+            "/assets/gallery/exterior identity/ei2.jpg",
+            "/assets/gallery/exterior identity/ei3.jpg",
+            "/assets/gallery/exterior identity/ei4.jpg",
+            "/assets/gallery/exterior identity/ei5.jpg",
           ],
         },
         {
           title: "Shared living + kitchen",
           images: [
-            "/public/assets/gallery/shared living + kitchen/slk1.jpg",
-            "/public/assets/gallery/shared living + kitchen/slk2.jpg",
-            "/public/assets/gallery/shared living + kitchen/slk3.jpg",
-            "/public/assets/gallery/shared living + kitchen/slk4.jpg",
-            "/public/assets/gallery/shared living + kitchen/slk5.jpg",
-            "/public/assets/gallery/shared living + kitchen/slk6.jpg",
+            "/assets/gallery/shared living + kitchen/slk1.jpg",
+            "/assets/gallery/shared living + kitchen/slk2.jpg",
+            "/assets/gallery/shared living + kitchen/slk3.jpg",
+            "/assets/gallery/shared living + kitchen/slk4.jpg",
+            "/assets/gallery/shared living + kitchen/slk5.jpg",
+            "/assets/gallery/shared living + kitchen/slk6.jpg",
           ],
         },
         {
           title: "Private room + study",
           images: [
-            "/public/assets/gallery/private room + study/prs1.jpg",
-            "/public/assets/gallery/private room + study/prs2.jpg",
-            "/public/assets/gallery/private room + study/prs3.jpg",
-            "/public/assets/gallery/private room + study/prs4.jpg",
-            "/public/assets/gallery/private room + study/prs5.jpg",
+            "/assets/gallery/private room + study/prs1.jpg",
+            "/assets/gallery/private room + study/prs2.jpg",
+            "/assets/gallery/private room + study/prs3.jpg",
+            "/assets/gallery/private room + study/prs4.jpg",
+            "/assets/gallery/private room + study/prs5.jpg",
           ],
         },
         {
           title: "Rest room",
           images: [
-            "/public/assets/gallery/rest room/rr1.jpg",
-            "/public/assets/gallery/rest room/rr2.jpg",
-            "/public/assets/gallery/rest room/rr3.jpg",
-            "/public/assets/gallery/rest room/rr4.jpg",
-            "/public/assets/gallery/rest room/rr5.jpg",
+            "/assets/gallery/rest room/rr1.jpg",
+            "/assets/gallery/rest room/rr2.jpg",
+            "/assets/gallery/rest room/rr3.jpg",
+            "/assets/gallery/rest room/rr4.jpg",
+            "/assets/gallery/rest room/rr5.jpg",
           ],
         },
         {
           title: "Rooftop + mountain",
           images: [
-            "/public/assets/gallery/rooftop + mountain/rtm1.jpg",
-            "/public/assets/gallery/rooftop + mountain/rtm2.jpg",
-            "/public/assets/gallery/rooftop + mountain/rtm3.jpg",
-            "/public/assets/gallery/rooftop + mountain/rtm4.jpg",
-            "/public/assets/gallery/rooftop + mountain/rtm5.jpg",
+            "/assets/gallery/rooftop + mountain/rtm1.jpg",
+            "/assets/gallery/rooftop + mountain/rtm2.jpg",
+            "/assets/gallery/rooftop + mountain/rtm3.jpg",
+            "/assets/gallery/rooftop + mountain/rtm4.jpg",
+            "/assets/gallery/rooftop + mountain/rtm5.jpg",
           ],
         },
         {
           title: "Wardrobe capacity",
           images: [
-            "/public/assets/gallery/wardrobe capacity/wc1.jpg",
-            "/public/assets/gallery/wardrobe capacity/wc2.jpg",
-            "/public/assets/gallery/wardrobe capacity/wc3.jpg",
+            "/assets/gallery/wardrobe capacity/wc1.jpg",
+            "/assets/gallery/wardrobe capacity/wc2.jpg",
+            "/assets/gallery/wardrobe capacity/wc3.jpg",
           ],
         },
         {
           title: "Solar array",
           images: [
-            "/public/assets/gallery/solar array/sa1.jpg",
-            "/public/assets/gallery/solar array/sa2.jpg",
+            "/assets/gallery/solar array/sa1.jpg",
+            "/assets/gallery/solar array/sa2.jpg",
           ],
         },
         {
           title: "Pool",
           images: [
-            "/public/assets/gallery/pool/p1.jpg",
-            "/public/assets/gallery/pool/p2.jpg",
-            "/public/assets/gallery/pool/p3.jpg",
-            "/public/assets/gallery/pool/p4.jpg",
+            "/assets/gallery/pool/p1.jpg",
+            "/assets/gallery/pool/p2.jpg",
+            "/assets/gallery/pool/p3.jpg",
+            "/assets/gallery/pool/p4.jpg",
           ],
         },
         {
           title: "Mountain location",
           images: [
-            "/public/assets/gallery/mountain location/ml1.jpg",
-            "/public/assets/gallery/mountain location/ml2.jpg",
-            "/public/assets/gallery/mountain location/ml3.jpg",
-            "/public/assets/gallery/mountain location/ml4.jpg",
-            "/public/assets/gallery/mountain location/ml5.jpg",
+            "/assets/gallery/mountain location/ml1.jpg",
+            "/assets/gallery/mountain location/ml2.jpg",
+            "/assets/gallery/mountain location/ml3.jpg",
+            "/assets/gallery/mountain location/ml4.jpg",
+            "/assets/gallery/mountain location/ml5.jpg",
           ],
         },
         {
           title: "Laundry",
           images: [
-            "/public/assets/gallery/laundry/l1.jpg",
-            "/public/assets/gallery/laundry/l2.jpg",
-            "/public/assets/gallery/laundry/l3.jpg",
+            "/assets/gallery/laundry/l1.jpg",
+            "/assets/gallery/laundry/l2.jpg",
+            "/assets/gallery/laundry/l3.jpg",
           ],
         },
         {
           title: "Biometric security",
           images: [
-            "/public/assets/gallery/biometric security/bs1.jpg",
-            "/public/assets/gallery/biometric security/bs2.jpg",
+            "/assets/gallery/biometric security/bs1.jpg",
+            "/assets/gallery/biometric security/bs2.jpg",
           ],
         },
       ],
@@ -184,7 +184,7 @@ export default {
   computed: {
     currentImages() {
       const section = this.sections.find(
-        (section) => section.title === this.activeSection,
+        (section) => section.title === this.activeSection
       );
 
       return section ? section.images : [];
@@ -282,9 +282,7 @@ export default {
 
   color: #777777;
 
-  transition:
-    color 0.25s ease,
-    background 0.25s ease;
+  transition: color 0.25s ease, background 0.25s ease;
 }
 
 .nav-item::before {
@@ -406,9 +404,7 @@ export default {
 
   object-fit: cover;
 
-  transition:
-    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
-    filter 0.4s ease;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
 }
 
 .image-card:hover img {

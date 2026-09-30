@@ -21,6 +21,7 @@ over animation, cleaner typography, and a responsive grid.
 </template>
 
 <script>
+import h0 from 'src/assets/resources/home/hero/h0.png';
 export default {
   name: "CardGrid",
   data() {
@@ -30,73 +31,73 @@ export default {
           label: "HERO",
           title: "Exterior identity",
           description: "Main establishing image",
-          image: "src/assets/resources/home/hero/h0.png",
+          image: h0,
         },
         {
           label: "PRIMARY",
           title: "Shared living + kitchen",
           description: "Strongest interior lifestyle frame",
-          image: "/public/assets/gallery/open plan living/DSC_5252.jpg",
+          image: "/assets/gallery/open plan living/DSC_5252.jpg",
         },
         {
           label: "PRIMARY",
           title: "Private room + study",
           description: "Best room-plan frame",
-          image: "/public/assets/gallery/private room + study/prs1.jpg",
+          image: "/assets/gallery/private room + study/prs1.jpg",
         },
         {
           label: "PRIMARY",
           title: "Open-plan living",
           description: "Promoted to core pack",
-          image: "/public/assets/gallery/open plan living/opl3.jpg",
+          image: "/assets/gallery/open plan living/opl3.jpg",
         },
         {
           label: "PRIMARY",
           title: "Rooftop + mountain",
           description: "Identity and setting",
-          image: "/public/assets/gallery/rooftop + mountain/rtm4.jpg",
+          image: "/assets/gallery/rooftop + mountain/rtm4.jpg",
         },
         {
           label: "PRIMARY",
           title: "Pool",
           description: "Amenity proof point",
-          image: "/public/assets/gallery/pool/p1.jpg",
+          image: "/assets/gallery/pool/p1.jpg",
         },
         {
           label: "DETAIL",
           title: "Rest Room",
           description: "Bathroom lifestyle detail",
-          image: "/public/assets/gallery/rest room/rr2.jpg",
+          image: "/assets/gallery/rest room/rr2.jpg",
         },
         {
           label: "FEATURE",
           title: "Laundry",
           description: "Amenity support",
-          image: "/public/assets/gallery/laundry/l1.jpg",
+          image: "/assets/gallery/laundry/l1.jpg",
         },
         {
           label: "FEATURE",
           title: "Biometric security",
           description: "Optional proof",
-          image: "/public/assets/gallery/biometric security/bs1.jpg",
+          image: "/assets/gallery/biometric security/bs1.jpg",
         },
         {
           label: "FEATURE",
           title: "Solar array",
           description: "Sustainability support",
-          image: "/public/assets/gallery/solar array/sa1.jpg",
+          image: "/assets/gallery/solar array/sa1.jpg",
         },
         {
           label: "SETTING",
           title: "Mountain / location",
           description: "Site support",
-          image: "/public/assets/gallery/mountain location/ml1.jpg",
+          image: "/assets/gallery/mountain location/ml1.jpg",
         },
         {
           label: "DETAIL",
           title: "Wardrobe capacity",
           description: "Practical detail",
-          image: "/public/assets/gallery/wardrobe capacity/wc2.jpg",
+          image: "/assets/gallery/wardrobe capacity/wc2.jpg",
         },
       ],
     };
