@@ -103,6 +103,11 @@
       </div>
     </section>
 
+    <!-- gallery -->
+    <section>
+      <GalleryComponent/>
+    </section>
+
 
 
     <!-- Rooms Section -->
@@ -456,6 +461,7 @@ import EmailService from 'src/services/api/EmailService';
 import Helper from 'src/services/helper/utils';
 import UnitCardComponent from 'src/components/user/UnitCardComponent.vue';
 import UnitCardComponentBlack from 'src/components/user/UnitCardComponentBlack.vue';
+import GalleryComponent from 'src/components/user/GalleryComponent.vue';
 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -501,6 +507,7 @@ export default {
     UnitCardComponent,
     UnitCardComponentBlack,
     ImageDialog,
+    GalleryComponent,
   },
 
   setup() {

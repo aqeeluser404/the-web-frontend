@@ -50,9 +50,9 @@
 
           { id: 6, type: 'Deposit', annual: '', over10: '', over11: '', annually: '' },
 
-          { id: 2, type: 'A Rooms', annual: '', over10: 'R 6 500.00', over11: 'R 6 500.00', annually: 'R 6 500.00' },
-          { id: 3, type: 'B Rooms', annual: '', over10: 'R 6 750.00', over11: 'R 6 750.00', annually: 'R 6 750.00' },
-          { id: 3, type: 'Single rooms', annual: '', over10: 'R 9 250.00', over11: 'R 9 250.00', annually: 'R 9 250.00' },
+          { id: 2, type: 'A Rooms', annual: '', over10: 'R 13 000.00', over11: 'R 6 500.00', annually: 'R 6 500.00' },
+          { id: 3, type: 'B Rooms', annual: '', over10: 'R 13 500.00', over11: 'R 6 750.00', annually: 'R 6 750.00' },
+          { id: 3, type: 'Single rooms', annual: '', over10: 'R 18 500.00', over11: 'R 9 250.00', annually: 'R 9 250.00' },
           { id: 9, type: 'Application Fee (Non refundable)', annual: '', over10: 'R 1 200', over11: 'R 1 200', annually: 'R 1 200' }
         ]" row-key="id" flat bordered hide-pagination :pagination="{ rowsPerPage: 0 }"
 

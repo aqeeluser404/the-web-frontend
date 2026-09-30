@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Carousel section (always shown) -->
-    <div class="q-py-md">
+    <div v-if="!isHomeRoute" class="q-py-md">
       <q-card class="carousel-wrapper row justify-center bg-grey-3 soft-shadow-card">
         <q-carousel v-show="!isSpecificFloorRoute" animated v-model="currentSlide" infinite
           :autoplay="!isSpecificFloorRoute" :autoplay-interval="5000" transition-prev="slide-right"
