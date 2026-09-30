@@ -2,7 +2,7 @@
   <q-page>
 
     <!-- Hero Carousel -->
-    <section class="hero-carousel bg-grey">
+    <!-- <section class="hero-carousel bg-grey">
       <q-carousel animated v-model="currentSlide" infinite autoplay :autoplay-interval="3000"
         transition-prev="slide-right" transition-next="slide-left" transition-duration="1800"
         :height="$q.screen.lt.sm ? '340px' : '100vh'" control-color="white" class="hero-carousel__container">
@@ -12,7 +12,18 @@
             class="hero-carousel__image" :fit="getFit(index)" loading="eager" no-transition />
         </q-carousel-slide>
       </q-carousel>
-    </section>
+    </section> -->
+
+    <section class="hero-carousel bg-grey">
+    <q-img
+      :src="main"
+      alt="The-WEB Residence"
+      class="hero-carousel__image hero-carousel__image--static"
+      fit="cover"
+      loading="eager"
+      no-transition
+    />
+  </section>
 
 
 
@@ -590,6 +601,8 @@ export default {
       showImageDialog: false,
       currentDialogImageUrl: '',
 
+      main: home4,
+
       heroCards: [
         { _id: 1, imageUrl: main },
         { _id: 2, imageUrl: home1 },
@@ -850,51 +863,13 @@ export default {
 <style lang="scss" scoped>
 /* #region HERO CAROUSEL */
 .hero-carousel {
+  height: calc(100vh - 75px);
   margin-top: 0;
   position: relative;
   overflow: hidden;
 
-  &__container {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
-
-    .q-carousel__navigation-inner {
-      padding-bottom: 1.5rem;
-
-      @media (max-width: 600px) {
-        padding-bottom: 1rem;
-      }
-    }
-
-    .q-carousel__arrow {
-      color: white;
-      font-size: 1.75rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 50%;
-      width: 2.5rem;
-      height: 2.5rem;
-
-      @media (max-width: 600px) {
-        font-size: 1.5rem;
-        width: 2rem;
-        height: 2rem;
-      }
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.5);
-      }
-
-      &:focus {
-        outline: 2px solid white;
-        outline-offset: 2px;
-      }
-    }
-  }
-
-  &__slide {
-    padding: 0 !important;
-    margin: 0;
+  @media (max-width: 600px) {
+    height: 340px;
   }
 
   &__image {
@@ -904,25 +879,29 @@ export default {
     display: block;
   }
 }
+/* Carousel-specific */
+/*
+.hero-carousel__container {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100%;
+
+  .q-carousel__navigation-inner { ... }
+  .q-carousel__arrow { ... }
+}
+
+.hero-carousel__slide { ... }
 
 @media (max-width: 600px) {
   .hero-carousel__container {
-    .q-carousel__navigation {
-      bottom: 0.5rem;
-    }
+    .q-carousel__navigation { ... }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-carousel__container {
-    transition-duration: 0.01ms !important;
-
-    * {
-      transition-duration: 0.01ms !important;
-      animation-duration: 0.01ms !important;
-    }
-  }
+  .hero-carousel__container { ... }
 }
+*/
 
 .hero-overlay {
   position: absolute;
