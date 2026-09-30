@@ -30,6 +30,11 @@ const routes = [
         path: '/install-app',
         component: () => import('src/pages/public/InstallApp.vue')
       },
+      {
+        path: '/gallery',
+        name: 'gallery',
+        component: () => import('src/pages/public/GalleryPage.vue')
+      },
 
       // ==========================================================
       // AUTHENTICATION ROUTES
