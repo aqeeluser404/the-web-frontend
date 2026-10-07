@@ -14,7 +14,7 @@
     </q-card-section>
 
     <q-card-section>
-      <canvas ref="bedLineChart" style="max-height: 300px;"></canvas>
+      <canvas ref="bedLineChart" style="max-height: 300px"></canvas>
 
       <div class="row justify-center q-mt-md">
         <q-chip
@@ -24,7 +24,9 @@
           class="text-weight-bold"
           size="md"
         >
-          Total occupied: {{ stats.overall.total - stats.overall.available }} / {{ stats.overall.total }}
+          Total occupied:
+          {{ stats.overall.total - stats.overall.available }} /
+          {{ stats.overall.total }}
         </q-chip>
       </div>
     </q-card-section>
@@ -33,230 +35,404 @@
 
 <script>
 import {
-  Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
-  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
-} from 'chart.js';
-Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend,
-  LineController, LineElement, PointElement, LinearScale, Title, CategoryScale
+  Chart,
+  PieController,
+  BarController,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale,
+} from "chart.js";
+
+Chart.register(
+  PieController,
+  BarController,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale
 );
-import RentalService from 'src/services/api/RentalService';
-import UnitService from 'src/services/api/UnitService';
+
+import RentalService from "src/services/api/RentalService";
+import UnitService from "src/services/api/UnitService";
 
 export default {
   data() {
     return {
       pieChart: null,
-
       units: [],
-      selectedYear: new Date().getFullYear(),  // ✅ Default to current year
+      rentals: [],
+      selectedYear: new Date().getFullYear(),
       stats: {
         firstFloor: { available: 0, total: 0 },
         secondFloor: { available: 0, total: 0 },
         thirdFloor: { available: 0, total: 0 },
-        overall: { available: 0, total: 0 }
+        overall: { available: 0, total: 0 },
       },
       floors: [
-        { key: 'firstFloor', label: '1st Floor' },
-        { key: 'secondFloor', label: '2nd Floor' },
-        { key: 'thirdFloor', label: '3rd Floor' }
+        { key: "firstFloor", label: "1st Floor" },
+        { key: "secondFloor", label: "2nd Floor" },
+        { key: "thirdFloor", label: "3rd Floor" },
       ],
-      bedLineChart: null
-    }
+      bedLineChart: null,
+    };
   },
 
   computed: {
-    // ============================================================
-    // AVAILABLE YEARS — built from all units in the system
-    // ============================================================
     availableYears() {
       const years = new Set();
-
-      this.units.forEach(unit => {
+      this.units.forEach((unit) => {
         if (unit.unitYear != null) {
           years.add(Number(unit.unitYear));
         }
       });
-
-      // ✅ Sort ascending so 2026, 2027, 2028, etc.
       return Array.from(years).sort((a, b) => a - b);
     },
 
-    // ============================================================
-    // UNITS FOR THE SELECTED YEAR
-    // ============================================================
     filteredUnits() {
       return this.units.filter(
-        unit => Number(unit.unitYear) === this.selectedYear
+        (unit) => Number(unit.unitYear) === this.selectedYear
       );
-    }
+    },
   },
 
   methods: {
     getAvailabilityColor(available, total) {
-      const percentage = available / total
-      if (percentage > 0.5) return 'positive'
-      if (percentage > 0.25) return 'warning'
-      return 'negative'
+      const percentage = available / total;
+      if (percentage > 0.5) return "positive";
+      if (percentage > 0.25) return "warning";
+      return "negative";
     },
 
     onYearChange() {
-      // ✅ Recompute stats + redraw chart when year changes
       this.calculateBedStats();
       this.drawLineChart();
     },
 
-calculateBedStats() {
-  const stats = {
-    firstFloor: { available: 0, total: 0 },
-    secondFloor: { available: 0, total: 0 },
-    thirdFloor: { available: 0, total: 0 },
-    overall: { available: 0, total: 0 }
-  };
+    // Returns the sub-unit identifier this rental occupies in a given year,
+    // or null if it doesn't occupy anything that year.
+    rentalOccupiedIdentifier(rental, year) {
+      if (rental.status !== "Active") return null;
 
-  this.filteredUnits.forEach(unit => {
-    const floor = this.floorKey(unit.floorLevel);
-
-    if (Array.isArray(unit.subUnits)) {
-      unit.subUnits.forEach(sub => {
-        stats[floor].total += 1;
-
-        // A sub-unit only counts as truly occupied for THIS year if
-        // there's an Active rental whose current unitYear matches this
-        // year and points at this exact bed — not just isAvailable being
-        // false, since a locked-but-renewed-away bed shouldn't count here.
-        const identifier = sub.roomType || sub.bedType;
-        const genuinelyOccupiedThisYear = this.rentals.some(rental =>
-          rental.status === 'Active' &&
-          String(rental.unit) === String(unit._id) &&
-          Number(rental.unitYear) === this.selectedYear &&
-          (rental.selectedSubUnits?.roomType === identifier ||
-           rental.selectedSubUnits?.bedType === identifier)
+      // Case 1: rental is currently assigned to this year
+      const unitYear = Number(rental.unitYear);
+      if (unitYear === year) {
+        return (
+          rental.selectedSubUnits?.bedType ||
+          rental.selectedSubUnits?.roomType ||
+          null
         );
+      }
 
-        if (!genuinelyOccupiedThisYear) {
-          stats[floor].available += 1;
+      // Case 2: rental started in this year (no renewal yet, or first-year)
+      const startYear = new Date(rental.rentalStartDate).getFullYear();
+      if (
+        startYear === year &&
+        (!rental.renewalHistory || rental.renewalHistory.length === 0)
+      ) {
+        return (
+          rental.selectedSubUnits?.bedType ||
+          rental.selectedSubUnits?.roomType ||
+          null
+        );
+      }
+
+      // Case 3: rental renewed into or out of this year — find the entry
+      // where fromYear === year and use its fromSubUnit
+      if (Array.isArray(rental.renewalHistory)) {
+        const entryFromYear = rental.renewalHistory.find(
+          (e) => Number(e.fromYear) === year
+        );
+        if (entryFromYear) {
+          return (
+            entryFromYear.fromSubUnit?.bedType ||
+            entryFromYear.fromSubUnit?.roomType ||
+            null
+          );
+        }
+
+        const entryToYear = rental.renewalHistory.find(
+          (e) => Number(e.toYear) === year
+        );
+        if (entryToYear) {
+          return (
+            entryToYear.toSubUnit?.bedType ||
+            entryToYear.toSubUnit?.roomType ||
+            null
+          );
+        }
+      }
+
+      return null;
+    },
+
+    calculateBedStats() {
+      // ============================================================
+      // 🔍 DEBUG BLOCK — REMOVE AFTER DIAGNOSING
+      // ============================================================
+      const debugYear = this.selectedYear;
+      const occupiedMatches = []; // { rentalId, unitId, unitNumber, identifier }
+      const matchedPerRental = {}; // rentalId -> [ { unitId, identifier } ]
+      const totalBedsPerUnit = {}; // unitId -> count
+      const duplicateIdentifiersPerUnit = {}; // unitId -> Set(identifier)
+      // ============================================================
+
+      const stats = {
+        firstFloor: { available: 0, total: 0 },
+        secondFloor: { available: 0, total: 0 },
+        thirdFloor: { available: 0, total: 0 },
+        overall: { available: 0, total: 0 },
+      };
+
+      this.filteredUnits.forEach((unit) => {
+        const floor = this.floorKey(unit.floorLevel);
+
+        if (Array.isArray(unit.subUnits)) {
+          // 🔍 track duplicate identifiers on the same unit doc
+          const seenIdentifiers = new Set();
+
+          unit.subUnits.forEach((sub) => {
+            stats[floor].total += 1;
+
+            const identifier = sub.roomType || sub.bedType;
+
+            const occupiedThisYear = this.rentals.some((rental) => {
+              // unit id must match somewhere in the rental's chain
+              const targetId = String(unit._id);
+              const referencesUnit =
+                String(rental.unit) === targetId ||
+                (Array.isArray(rental.renewalHistory) &&
+                  rental.renewalHistory.some(
+                    (e) =>
+                      String(e.fromUnit) === targetId ||
+                      String(e.toUnit) === targetId
+                  ));
+
+              if (!referencesUnit) return false;
+
+              // which identifier does the rental actually occupy this year?
+              const occupiedId = this.rentalOccupiedIdentifier(
+                rental,
+                this.selectedYear
+              );
+              return occupiedId === identifier;
+            });
+
+            if (!occupiedThisYear) {
+              stats[floor].available += 1;
+            }
+          });
+
+          totalBedsPerUnit[String(unit._id)] = unit.subUnits.length;
+        } else if (
+          unit.unitOccupants != null &&
+          unit.currentOccupants != null
+        ) {
+          const occupants = Math.floor(unit.unitOccupants || 0);
+          const current = Math.floor(unit.currentOccupants || 0);
+          const availableBeds = Math.max(0, occupants - current);
+
+          stats[floor].total += occupants;
+          stats[floor].available += availableBeds;
         }
       });
-    } else if (unit.unitOccupants != null && unit.currentOccupants != null) {
-      const occupants = Math.floor(unit.unitOccupants || 0);
-      const current = Math.floor(unit.currentOccupants || 0);
-      const availableBeds = Math.max(0, occupants - current);
 
-      stats[floor].total += occupants;
-      stats[floor].available += availableBeds;
-    }
-  });
+      stats.overall.available =
+        stats.firstFloor.available +
+        stats.secondFloor.available +
+        stats.thirdFloor.available;
 
-  stats.overall.available =
-    stats.firstFloor.available +
-    stats.secondFloor.available +
-    stats.thirdFloor.available;
+      stats.overall.total =
+        stats.firstFloor.total +
+        stats.secondFloor.total +
+        stats.thirdFloor.total;
 
-  stats.overall.total =
-    stats.firstFloor.total +
-    stats.secondFloor.total +
-    stats.thirdFloor.total;
+      this.stats = stats;
 
-  this.stats = stats;
-},
+      // ============================================================
+      // 🔍 DEBUG OUTPUT
+      // ============================================================
+      console.log(`========== BED STATS DEBUG (year ${debugYear}) ==========`);
+      console.log(
+        "Total beds:",
+        stats.overall.total,
+        "| Occupied:",
+        stats.overall.total - stats.overall.available,
+        "| Available:",
+        stats.overall.available
+      );
+      console.log("Total matches:", occupiedMatches.length);
 
-    // ✅ Extracted so it can be used anywhere
+      // 1. Rentals that matched MULTIPLE beds in the same year
+      const multiMatches = Object.entries(matchedPerRental).filter(
+        ([, matches]) => matches.length > 1
+      );
+      if (multiMatches.length) {
+        console.warn(
+          `⚠️ ${multiMatches.length} rentals matched MULTIPLE beds:`
+        );
+        multiMatches.forEach(([rentalId, matches]) => {
+          console.warn(`  rental ${rentalId}:`);
+          matches.forEach((m) => {
+            console.warn(
+              `    → unit ${m.unitNumber} (${m.unitId}) / ${m.identifier}`
+            );
+          });
+        });
+      } else {
+        console.log("✅ No rental matched multiple beds");
+      }
+
+      // 2. Units with duplicate sub-unit identifiers
+      const dupUnits = Object.entries(duplicateIdentifiersPerUnit);
+      if (dupUnits.length) {
+        console.warn(
+          `⚠️ ${dupUnits.length} units have DUPLICATE sub-unit identifiers:`
+        );
+        dupUnits.forEach(([unitId, ids]) => {
+          console.warn(`  unit ${unitId}: ${[...new Set(ids)].join(", ")}`);
+        });
+      } else {
+        console.log("✅ No duplicate sub-unit identifiers");
+      }
+
+      // 3. Rental IDs appearing in this.rentals more than once
+      const rentalIdCounts = {};
+      this.rentals.forEach((r) => {
+        const id = String(r._id);
+        rentalIdCounts[id] = (rentalIdCounts[id] || 0) + 1;
+      });
+      const dupRentals = Object.entries(rentalIdCounts).filter(
+        ([, count]) => count > 1
+      );
+      if (dupRentals.length) {
+        console.warn(
+          `⚠️ ${dupRentals.length} rental IDs appear MULTIPLE times in this.rentals:`
+        );
+        dupRentals.forEach(([id, count]) => {
+          console.warn(`  rental ${id} appears ${count} times`);
+        });
+      } else {
+        console.log("✅ No duplicate rentals in this.rentals");
+      }
+      // ============================================================
+    },
+
     floorKey(level) {
       switch (level) {
-        case 'First Floor': return 'firstFloor';
-        case 'Second Floor': return 'secondFloor';
-        case 'Third Floor': return 'thirdFloor';
-        default: return 'firstFloor';
+        case "First Floor":
+          return "firstFloor";
+        case "Second Floor":
+          return "secondFloor";
+        case "Third Floor":
+          return "thirdFloor";
+        default:
+          return "firstFloor";
       }
     },
 
     drawLineChart() {
-      const labels = this.floors.map(f => {
+      const labels = this.floors.map((f) => {
         const floor = this.stats[f.key];
         const occupied = floor.total - floor.available;
         return `${f.label} (${occupied}/${floor.total})`;
       });
-      const occupiedData = this.floors.map(f => {
+
+      const occupiedData = this.floors.map((f) => {
         const floor = this.stats[f.key];
         return floor.total - floor.available;
       });
-      const availableData = this.floors.map(f => this.stats[f.key].available);
+
+      const availableData = this.floors.map((f) => this.stats[f.key].available);
 
       if (this.bedLineChart) this.bedLineChart.destroy();
 
-      const ctx = this.$refs.bedLineChart.getContext('2d');
+      const ctx = this.$refs.bedLineChart.getContext("2d");
       this.bedLineChart = new Chart(ctx, {
-        type: 'bar',
+        type: "bar",
         data: {
           labels,
           datasets: [
             {
               label: `${this.selectedYear} Occupied`,
               data: occupiedData,
-              backgroundColor: '#F44336'
+              backgroundColor: "#F44336",
             },
             {
               label: `${this.selectedYear} Available`,
               data: availableData,
-              backgroundColor: '#4CAF50'
-            }
-          ]
+              backgroundColor: "#4CAF50",
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             legend: {
-              position: 'top'
+              position: "top",
             },
             tooltip: {
-              mode: 'index',
-              intersect: false
-            }
+              mode: "index",
+              intersect: false,
+            },
           },
           scales: {
             y: {
               beginAtZero: true,
               title: {
                 display: true,
-                text: 'Beds'
-              }
+                text: "Beds",
+              },
             },
             x: {
               title: {
                 display: true,
-                text: 'Floor'
-              }
-            }
-          }
-        }
+                text: "Floor",
+              },
+            },
+          },
+        },
       });
     },
 
-async fetchUnits() {
-  try {
-    const [units, rentals] = await Promise.all([
-      UnitService.getAllUnits(),
-      RentalService.findAllRentals()
-    ]);
-    this.units = units;
-    this.rentals = Array.isArray(rentals) ? rentals : [];
+    async fetchUnits() {
+      try {
+        const [units, rentals] = await Promise.all([
+          UnitService.getAllUnits(),
+          RentalService.findAllRentals(),
+        ]);
 
-    if (!this.availableYears.includes(this.selectedYear)) {
-      this.selectedYear = this.availableYears[0] ?? this.selectedYear;
-    }
+        this.units = units;
+        this.rentals = Array.isArray(rentals) ? rentals : [];
 
-    this.calculateBedStats();
-    this.drawLineChart();
-  } catch (error) {
-    console.error('Error fetching units:', error);
-  }
-},
+        if (!this.availableYears.includes(this.selectedYear)) {
+          this.selectedYear = this.availableYears[0] ?? this.selectedYear;
+        }
+
+        this.calculateBedStats();
+        this.drawLineChart();
+      } catch (error) {
+        console.error("Error fetching units:", error);
+      }
+    },
   },
 
   mounted() {
-    this.fetchUnits()
-  }
-}
+    this.fetchUnits();
+  },
+};
 </script>
 
 <style lang="sass" scoped>

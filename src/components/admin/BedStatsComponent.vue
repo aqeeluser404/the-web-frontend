@@ -171,20 +171,23 @@ export default {
         const startYear = new Date(rental.rentalStartDate).getFullYear();
         const unitYear = Number(rental.unitYear) || startYear;
 
-        // ✅ Determine the chain head — the latest year this rental is in
-        let chainHead = unitYear;
+        // ✅ 1. Rental is currently assigned to the display year
+        if (unitYear === this.displayYear) return true;
 
+        // ✅ 2. Rental was renewed INTO the display year (from a prior year)
         if (Array.isArray(rental.renewalHistory)) {
-          rental.renewalHistory.forEach((entry) => {
+          const touchedDisplayYear = rental.renewalHistory.some((entry) => {
+            const fromYear = Number(entry.fromYear);
             const toYear = Number(entry.toYear);
-            if (!isNaN(toYear) && toYear > chainHead) {
-              chainHead = toYear;
-            }
+            return fromYear === this.displayYear || toYear === this.displayYear;
           });
+          if (touchedDisplayYear) return true;
         }
 
-        // ✅ Only count if the chain head matches the display year
-        return chainHead === this.displayYear;
+        // ✅ 3. Rental started in the display year (no renewal yet)
+        if (startYear === this.displayYear) return true;
+
+        return false;
       });
     },
 
