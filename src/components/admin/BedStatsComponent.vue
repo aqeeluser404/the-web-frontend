@@ -37,7 +37,7 @@
       </q-card>
     </q-card-section>
 
-    <q-card-section class="row justify-start q-pt-none q-pb-md q-gutter-sm">
+    <!-- <q-card-section class="row justify-start q-pt-none q-pb-md q-gutter-sm">
       <q-chip
         square
         color="grey-3"
@@ -55,9 +55,19 @@
         class="text-weight-bold"
         size="md"
       >
-        {{ nextDisplayYear }} · {{ renewedNextYear + newConfirmedNextYear }}/{{ totalBedsNextYear }}
+        Renewed in {{ displayYear }}: {{ renewedInYear }}
       </q-chip>
-    </q-card-section>
+
+      <q-chip
+        square
+        color="grey-3"
+        text-color="grey-9"
+        class="text-weight-bold"
+        size="md"
+      >
+        Confirmed in {{ displayYear }}: {{ confirmedInYear }}
+      </q-chip>
+    </q-card-section> -->
   </q-card>
 </template>
 
@@ -74,38 +84,21 @@ export default {
       units: [],
       loading: false,
       currentYear: new Date().getFullYear(),
-      // ✅ Selected year drives the whole component
-      // Defaults to current year (2026)
       selectedYear: new Date().getFullYear(),
     };
   },
 
   computed: {
     // ============================================================
-    // DISPLAYED YEARS — derived from the selected year
+    // DISPLAY YEAR — single year, no "next year" concept
     // ============================================================
-    //
-    // If selectedYear is 2026 → displayYear = 2026, nextDisplayYear = 2027
-    // If selectedYear is 2027 → displayYear = 2027, nextDisplayYear = 2028
-    // If selectedYear is 2028 → displayYear = 2028, nextDisplayYear = 2029
-    //
-
     displayYear() {
       return this.selectedYear;
     },
 
-    nextDisplayYear() {
-      return this.selectedYear + 1;
-    },
-
     // ============================================================
-    // AVAILABLE YEARS — built from units in the system
+    // AVAILABLE YEARS
     // ============================================================
-    //
-    // Only includes years >= currentYear so users can't select past years.
-    // Always includes currentYear as an option even if no units exist yet.
-    //
-
     availableYears() {
       const years = new Set([this.currentYear]);
 
@@ -120,25 +113,17 @@ export default {
     },
 
     // ============================================================
-    // UNITS FOR SELECTED YEAR + NEXT YEAR
+    // UNITS FOR SELECTED YEAR
     // ============================================================
-
     unitsCurrentYear() {
       return this.units.filter(
         (unit) => Number(unit.unitYear) === this.displayYear
       );
     },
 
-    unitsNextYear() {
-      return this.units.filter(
-        (unit) => Number(unit.unitYear) === this.nextDisplayYear
-      );
-    },
-
     // ============================================================
     // TOTAL BEDS
     // ============================================================
-
     totalBeds() {
       return this.unitsCurrentYear.reduce((total, unit) => {
         const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
@@ -146,24 +131,15 @@ export default {
       }, 0);
     },
 
-    totalBedsNextYear() {
-      // ✅ No fallback — if next year has no units, capacity is 0
-      return this.unitsNextYear.reduce((total, unit) => {
-        const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
-        return total + subUnits.length;
-      }, 0);
-    },
-
     // ============================================================
-    // CURRENT YEAR OCCUPIED
+    // OCCUPIED RENTALS FOR THE SELECTED YEAR
     // ============================================================
     //
-    // Physical occupancy of the display year.
-    // - Includes tenants whose lease started in the display year
-    // - Includes renewed tenants assigned to the display year
-    // - Excludes tenants who've moved forward (renewed into next year)
+    // A rental counts as occupied in year X if it's Active AND:
+    //   - it's currently assigned to year X, OR
+    //   - it started in year X, OR
+    //   - it touched year X in its renewal chain (fromYear or toYear)
     //
-
     occupiedCurrentYearRentals() {
       return this.rentals.filter((rental) => {
         if (rental.status !== "Active") return false;
@@ -171,21 +147,22 @@ export default {
         const startYear = new Date(rental.rentalStartDate).getFullYear();
         const unitYear = Number(rental.unitYear) || startYear;
 
-        // ✅ 1. Rental is currently assigned to the display year
+        // 1. Currently assigned to this year
         if (unitYear === this.displayYear) return true;
 
-        // ✅ 2. Rental was renewed INTO the display year (from a prior year)
+        // 2. Started in this year
+        if (startYear === this.displayYear) return true;
+
+        // 3. Touched this year via renewal chain
         if (Array.isArray(rental.renewalHistory)) {
-          const touchedDisplayYear = rental.renewalHistory.some((entry) => {
+          return rental.renewalHistory.some((entry) => {
             const fromYear = Number(entry.fromYear);
             const toYear = Number(entry.toYear);
-            return fromYear === this.displayYear || toYear === this.displayYear;
+            return (
+              fromYear === this.displayYear || toYear === this.displayYear
+            );
           });
-          if (touchedDisplayYear) return true;
         }
-
-        // ✅ 3. Rental started in the display year (no renewal yet)
-        if (startYear === this.displayYear) return true;
 
         return false;
       });
@@ -195,77 +172,50 @@ export default {
       return this.occupiedCurrentYearRentals.length;
     },
 
-    occupiedCurrentYearUsers() {
-      return new Set(
-        this.occupiedCurrentYearRentals.map((rental) => String(rental.user))
-      );
-    },
-
     // ============================================================
-    // NEXT YEAR RENTALS / APPLICATIONS
+    // RENEWED INTO THIS YEAR
     // ============================================================
-
-    rentalsNextYear() {
-      return this.rentals.filter((rental) => {
-        const year =
-          Number(rental.unitYear) ||
-          new Date(rental.rentalStartDate).getFullYear();
-
-        return (
-          year === this.nextDisplayYear &&
-          rental.selectedSubUnits?.type === "bed"
+    //
+    // Occupants in this year whose renewal chain shows they arrived
+    // here via a renewal (i.e. an entry with toYear === displayYear).
+    //
+    renewedInYear() {
+      return this.occupiedCurrentYearRentals.filter((rental) => {
+        if (!Array.isArray(rental.renewalHistory)) return false;
+        return rental.renewalHistory.some(
+          (entry) => Number(entry.toYear) === this.displayYear
         );
-      });
-    },
-
-    // ============================================================
-    // NEXT YEAR RENEWED (Active only)
-    // ============================================================
-
-    renewedNextYear() {
-      return this.rentalsNextYear.filter((rental) => {
-        return rental.renewed === true && rental.status === "Active";
       }).length;
     },
 
     // ============================================================
-    // NEXT YEAR CONFIRMED (New active bookings)
+    // CONFIRMED IN THIS YEAR
     // ============================================================
-
-    newConfirmedNextYear() {
-      return this.rentalsNextYear.filter((rental) => {
-        return rental.status === "Active" && rental.renewed !== true;
+    //
+    // Occupants in this year that did NOT arrive via renewal.
+    // Fresh bookings and first-year applications.
+    //
+    confirmedInYear() {
+      return this.occupiedCurrentYearRentals.filter((rental) => {
+        if (!Array.isArray(rental.renewalHistory) || rental.renewalHistory.length === 0) {
+          return true; // no renewal history at all = first-time
+        }
+        return !rental.renewalHistory.some(
+          (entry) => Number(entry.toYear) === this.displayYear
+        );
       }).length;
     },
 
     // ============================================================
-    // NEXT YEAR AVAILABLE
+    // AVAILABLE FOR THIS YEAR
     // ============================================================
-
-    availableNextYear() {
-      // ✅ No next-year units = no available count
-      if (this.totalBedsNextYear === 0) return 0;
-
-      const allocated = this.renewedNextYear + this.newConfirmedNextYear;
-      return Math.max(this.totalBedsNextYear - allocated, 0);
+    availableInYear() {
+      return Math.max(this.totalBeds - this.occupiedCurrentYear, 0);
     },
 
     // ============================================================
-    // DASHBOARD STATS
+    // DASHBOARD CARDS
     // ============================================================
-
-    totalOccupied() {
-      return (
-        this.occupiedCurrentYear +
-        this.renewedNextYear +
-        this.newConfirmedNextYear
-      );
-    },
-
-    nextYearAllocated() {
-      return this.renewedNextYear + this.newConfirmedNextYear;
-    },
-
     items() {
       return [
         {
@@ -281,54 +231,23 @@ export default {
           icon: "event",
         },
         {
-          title: `${this.nextDisplayYear} RENEWED`,
-          value: this.renewedNextYear,
-          subtitle: `(${this.displayYear} RENEWED OCCUPANTS)`,
+          title: `${this.displayYear} RENEWED`,
+          value: this.renewedInYear,
+          subtitle: `(RENEWED INTO ${this.displayYear})`,
           icon: "autorenew",
         },
         {
-          title: `${this.nextDisplayYear} CONFIRMED`,
-          value: this.newConfirmedNextYear,
-          subtitle: "(NEW ACTIVE BOOKINGS)",
+          title: `${this.displayYear} CONFIRMED`,
+          value: this.confirmedInYear,
+          subtitle: `(NEW ${this.displayYear} BOOKINGS)`,
           icon: "person_add",
         },
         {
-          title: `${this.nextDisplayYear} AVAILABLE`,
-          value: this.availableNextYear,
-          subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
+          title: `${this.displayYear} AVAILABLE`,
+          value: this.availableInYear,
+          subtitle: `(${this.occupiedCurrentYear} / ${this.totalBeds} USED)`,
           icon: "pie_chart",
         },
-
-        // {
-        //   title: "TOTAL BEDS",
-        //   value: this.totalBeds,
-        //   subtitle: `(${this.displayYear} PHYSICAL CAPACITY)`,
-        //   icon: "hotel",
-        // },
-        // {
-        //   title: `${this.displayYear} OCCUPIED`,
-        //   value: this.occupiedCurrentYear,
-        //   subtitle: `(ACTIVE ${this.displayYear} BEDS)`,
-        //   icon: "event",
-        // },
-        // {
-        //   title: `${this.nextDisplayYear} RENEWED`,
-        //   value: this.renewedNextYear,
-        //   subtitle: `(${this.displayYear} OCCUPANTS)`,
-        //   icon: "autorenew",
-        // },
-        // {
-        //   title: `${this.nextDisplayYear} CONFIRMED`,
-        //   value: this.newConfirmedNextYear,
-        //   subtitle: "(NEW ACTIVE BOOKINGS)",
-        //   icon: "person_add",
-        // },
-        // {
-        //   title: `${this.nextDisplayYear} AVAILABLE`,
-        //   value: this.availableNextYear,
-        //   subtitle: `(${this.nextYearAllocated} / ${this.totalBedsNextYear} FOR NEW YEAR)`,
-        //   icon: "pie_chart",
-        // },
       ];
     },
   },
@@ -339,8 +258,6 @@ export default {
 
   methods: {
     onYearChange() {
-      // Computed props auto-update, but this hook lets you
-      // trigger side effects if needed later
       console.log("Year changed to:", this.selectedYear);
     },
 
@@ -356,35 +273,22 @@ export default {
         this.rentals = Array.isArray(rentals) ? rentals : [];
         this.units = Array.isArray(units) ? units : [];
 
-        // ✅ If the default selectedYear isn't in the availableYears list,
-        // snap to the first available year
         if (!this.availableYears.includes(this.selectedYear)) {
           this.selectedYear = this.availableYears[0] ?? this.currentYear;
         }
 
         console.log("========== BED STATS ==========");
         console.log("Display Year:", this.displayYear);
-        console.log("Next Display Year:", this.nextDisplayYear);
         console.log(`${this.displayYear} physical beds:`, this.totalBeds);
-        console.log(
-          `${this.nextDisplayYear} physical beds:`,
-          this.totalBedsNextYear
-        );
         console.log(`${this.displayYear} occupied:`, this.occupiedCurrentYear);
-        console.log(`${this.nextDisplayYear} renewed:`, this.renewedNextYear);
+        console.log(`${this.displayYear} renewed:`, this.renewedInYear);
+        console.log(`${this.displayYear} confirmed:`, this.confirmedInYear);
+        console.log(`${this.displayYear} available:`, this.availableInYear);
         console.log(
-          `${this.nextDisplayYear} confirmed:`,
-          this.newConfirmedNextYear
-        );
-        console.log(
-          `${this.nextDisplayYear} available:`,
-          this.availableNextYear
-        );
-        console.log(
-          "Total allocated (occupied + renewed + confirmed):",
-          this.occupiedCurrentYear +
-            this.renewedNextYear +
-            this.newConfirmedNextYear
+          "Check: renewed + confirmed =",
+          this.renewedInYear + this.confirmedInYear,
+          "| occupied =",
+          this.occupiedCurrentYear
         );
       } catch (error) {
         console.error("Failed to load occupancy statistics:", error);
