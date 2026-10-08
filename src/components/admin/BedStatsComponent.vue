@@ -7,13 +7,29 @@
         :options="availableYears"
         dense
         filled
+        :disable="loading || availableYears.length === 0"
         style="min-width: 120px"
         @update:model-value="onYearChange"
       />
       <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
-    <q-card-section class="row justify-between">
+    <!-- ✅ Loading state -->
+    <q-card-section
+      v-if="loading"
+      class="row justify-center items-center"
+      style="min-height: 180px"
+    >
+      <div class="column items-center">
+        <q-spinner color="primary" size="48px" />
+        <div class="text-caption text-grey-7 q-mt-md">
+          Loading occupancy stats…
+        </div>
+      </div>
+    </q-card-section>
+
+    <!-- ✅ Loaded state -->
+    <q-card-section v-else class="row justify-between">
       <q-card
         v-for="item in items"
         :key="item.title"
@@ -36,38 +52,6 @@
         </div>
       </q-card>
     </q-card-section>
-
-    <!-- <q-card-section class="row justify-start q-pt-none q-pb-md q-gutter-sm">
-      <q-chip
-        square
-        color="grey-3"
-        text-color="grey-9"
-        class="text-weight-bold"
-        size="md"
-      >
-        {{ displayYear }} · {{ occupiedCurrentYear }}/{{ totalBeds }}
-      </q-chip>
-
-      <q-chip
-        square
-        color="grey-3"
-        text-color="grey-9"
-        class="text-weight-bold"
-        size="md"
-      >
-        Renewed in {{ displayYear }}: {{ renewedInYear }}
-      </q-chip>
-
-      <q-chip
-        square
-        color="grey-3"
-        text-color="grey-9"
-        class="text-weight-bold"
-        size="md"
-      >
-        Confirmed in {{ displayYear }}: {{ confirmedInYear }}
-      </q-chip>
-    </q-card-section> -->
   </q-card>
 </template>
 
@@ -82,48 +66,34 @@ export default {
     return {
       rentals: [],
       units: [],
-      loading: false,
+      loading: true,               // ✅ start loading
       currentYear: new Date().getFullYear(),
-      selectedYear: new Date().getFullYear(),
+      selectedYear: null,
     };
   },
 
   computed: {
-    // ============================================================
-    // DISPLAY YEAR — single year, no "next year" concept
-    // ============================================================
     displayYear() {
       return this.selectedYear;
     },
 
-    // ============================================================
-    // AVAILABLE YEARS
-    // ============================================================
     availableYears() {
       const years = new Set([this.currentYear]);
-
       this.units.forEach((unit) => {
         const y = Number(unit.unitYear);
         if (!isNaN(y) && y >= this.currentYear) {
           years.add(y);
         }
       });
-
       return Array.from(years).sort((a, b) => a - b);
     },
 
-    // ============================================================
-    // UNITS FOR SELECTED YEAR
-    // ============================================================
     unitsCurrentYear() {
       return this.units.filter(
         (unit) => Number(unit.unitYear) === this.displayYear
       );
     },
 
-    // ============================================================
-    // TOTAL BEDS
-    // ============================================================
     totalBeds() {
       return this.unitsCurrentYear.reduce((total, unit) => {
         const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
@@ -131,15 +101,6 @@ export default {
       }, 0);
     },
 
-    // ============================================================
-    // OCCUPIED RENTALS FOR THE SELECTED YEAR
-    // ============================================================
-    //
-    // A rental counts as occupied in year X if it's Active AND:
-    //   - it's currently assigned to year X, OR
-    //   - it started in year X, OR
-    //   - it touched year X in its renewal chain (fromYear or toYear)
-    //
     occupiedCurrentYearRentals() {
       return this.rentals.filter((rental) => {
         if (rental.status !== "Active") return false;
@@ -147,13 +108,9 @@ export default {
         const startYear = new Date(rental.rentalStartDate).getFullYear();
         const unitYear = Number(rental.unitYear) || startYear;
 
-        // 1. Currently assigned to this year
         if (unitYear === this.displayYear) return true;
-
-        // 2. Started in this year
         if (startYear === this.displayYear) return true;
 
-        // 3. Touched this year via renewal chain
         if (Array.isArray(rental.renewalHistory)) {
           return rental.renewalHistory.some((entry) => {
             const fromYear = Number(entry.fromYear);
@@ -172,13 +129,6 @@ export default {
       return this.occupiedCurrentYearRentals.length;
     },
 
-    // ============================================================
-    // RENEWED INTO THIS YEAR
-    // ============================================================
-    //
-    // Occupants in this year whose renewal chain shows they arrived
-    // here via a renewal (i.e. an entry with toYear === displayYear).
-    //
     renewedInYear() {
       return this.occupiedCurrentYearRentals.filter((rental) => {
         if (!Array.isArray(rental.renewalHistory)) return false;
@@ -188,17 +138,13 @@ export default {
       }).length;
     },
 
-    // ============================================================
-    // CONFIRMED IN THIS YEAR
-    // ============================================================
-    //
-    // Occupants in this year that did NOT arrive via renewal.
-    // Fresh bookings and first-year applications.
-    //
     confirmedInYear() {
       return this.occupiedCurrentYearRentals.filter((rental) => {
-        if (!Array.isArray(rental.renewalHistory) || rental.renewalHistory.length === 0) {
-          return true; // no renewal history at all = first-time
+        if (
+          !Array.isArray(rental.renewalHistory) ||
+          rental.renewalHistory.length === 0
+        ) {
+          return true;
         }
         return !rental.renewalHistory.some(
           (entry) => Number(entry.toYear) === this.displayYear
@@ -206,44 +152,41 @@ export default {
       }).length;
     },
 
-    // ============================================================
-    // AVAILABLE FOR THIS YEAR
-    // ============================================================
     availableInYear() {
       return Math.max(this.totalBeds - this.occupiedCurrentYear, 0);
     },
 
-    // ============================================================
-    // DASHBOARD CARDS
-    // ============================================================
     items() {
+      // ✅ Guard: don't render labels with null year
+      const year = this.displayYear ?? this.currentYear;
+
       return [
         {
           title: "TOTAL BEDS",
           value: this.totalBeds,
-          subtitle: `(${this.displayYear} PHYSICAL CAPACITY)`,
+          subtitle: `(${year} PHYSICAL CAPACITY)`,
           icon: "hotel",
         },
         {
-          title: `${this.displayYear} OCCUPIED`,
+          title: `${year} OCCUPIED`,
           value: this.occupiedCurrentYear,
-          subtitle: `(ACTIVE ${this.displayYear} OCCUPANTS)`,
+          subtitle: `(ACTIVE ${year} OCCUPANTS)`,
           icon: "event",
         },
         {
-          title: `${this.displayYear} RENEWED`,
+          title: `${year} RENEWED`,
           value: this.renewedInYear,
-          subtitle: `(RENEWED INTO ${this.displayYear})`,
+          subtitle: `(RENEWED INTO ${year})`,
           icon: "autorenew",
         },
         {
-          title: `${this.displayYear} CONFIRMED`,
+          title: `${year} CONFIRMED`,
           value: this.confirmedInYear,
-          subtitle: `(NEW ${this.displayYear} BOOKINGS)`,
+          subtitle: `(NEW ${year} BOOKINGS)`,
           icon: "person_add",
         },
         {
-          title: `${this.displayYear} AVAILABLE`,
+          title: `${year} AVAILABLE`,
           value: this.availableInYear,
           subtitle: `(${this.occupiedCurrentYear} / ${this.totalBeds} USED)`,
           icon: "pie_chart",
@@ -273,8 +216,16 @@ export default {
         this.rentals = Array.isArray(rentals) ? rentals : [];
         this.units = Array.isArray(units) ? units : [];
 
-        if (!this.availableYears.includes(this.selectedYear)) {
-          this.selectedYear = this.availableYears[0] ?? this.currentYear;
+        // ✅ Default to the latest year with units
+        if (
+          !this.selectedYear ||
+          !this.availableYears.includes(this.selectedYear)
+        ) {
+          const years = this.availableYears;
+          this.selectedYear =
+            years.length > 0
+              ? years[years.length - 1]
+              : this.currentYear;
         }
 
         console.log("========== BED STATS ==========");

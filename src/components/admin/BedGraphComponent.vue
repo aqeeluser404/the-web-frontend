@@ -7,13 +7,29 @@
         :options="availableYears"
         dense
         filled
+        :disable="loading || availableYears.length === 0"
         style="min-width: 120px"
         @update:model-value="onYearChange"
       />
       <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
-    <q-card-section>
+    <!-- ✅ Loading state -->
+    <q-card-section
+      v-if="loading"
+      class="row justify-center items-center"
+      style="min-height: 300px"
+    >
+      <div class="column items-center">
+        <q-spinner color="primary" size="48px" />
+        <div class="text-caption text-grey-7 q-mt-md">
+          Loading occupancy chart…
+        </div>
+      </div>
+    </q-card-section>
+
+    <!-- ✅ Loaded state -->
+    <q-card-section v-else>
       <canvas ref="bedLineChart" style="max-height: 300px"></canvas>
 
       <div class="row justify-center q-mt-md">
@@ -74,7 +90,9 @@ export default {
       pieChart: null,
       units: [],
       rentals: [],
-      selectedYear: new Date().getFullYear(),
+      loading: true,               // ✅ start loading
+      currentYear: new Date().getFullYear(),
+      selectedYear: null,          // ✅ set after data loads
       stats: {
         firstFloor: { available: 0, total: 0 },
         secondFloor: { available: 0, total: 0 },
@@ -92,10 +110,11 @@ export default {
 
   computed: {
     availableYears() {
-      const years = new Set();
+      const years = new Set([this.currentYear]); // ✅ always include current
       this.units.forEach((unit) => {
-        if (unit.unitYear != null) {
-          years.add(Number(unit.unitYear));
+        const y = Number(unit.unitYear);
+        if (!isNaN(y) && y >= this.currentYear) {
+          years.add(y);
         }
       });
       return Array.from(years).sort((a, b) => a - b);
@@ -149,8 +168,7 @@ export default {
         );
       }
 
-      // Case 3: rental renewed into or out of this year — find the entry
-      // where fromYear === year and use its fromSubUnit
+      // Case 3: rental renewed into or out of this year
       if (Array.isArray(rental.renewalHistory)) {
         const entryFromYear = rental.renewalHistory.find(
           (e) => Number(e.fromYear) === year
@@ -179,16 +197,6 @@ export default {
     },
 
     calculateBedStats() {
-      // ============================================================
-      // 🔍 DEBUG BLOCK — REMOVE AFTER DIAGNOSING
-      // ============================================================
-      const debugYear = this.selectedYear;
-      const occupiedMatches = []; // { rentalId, unitId, unitNumber, identifier }
-      const matchedPerRental = {}; // rentalId -> [ { unitId, identifier } ]
-      const totalBedsPerUnit = {}; // unitId -> count
-      const duplicateIdentifiersPerUnit = {}; // unitId -> Set(identifier)
-      // ============================================================
-
       const stats = {
         firstFloor: { available: 0, total: 0 },
         secondFloor: { available: 0, total: 0 },
@@ -200,16 +208,12 @@ export default {
         const floor = this.floorKey(unit.floorLevel);
 
         if (Array.isArray(unit.subUnits)) {
-          // 🔍 track duplicate identifiers on the same unit doc
-          const seenIdentifiers = new Set();
-
           unit.subUnits.forEach((sub) => {
             stats[floor].total += 1;
 
             const identifier = sub.roomType || sub.bedType;
 
             const occupiedThisYear = this.rentals.some((rental) => {
-              // unit id must match somewhere in the rental's chain
               const targetId = String(unit._id);
               const referencesUnit =
                 String(rental.unit) === targetId ||
@@ -222,7 +226,6 @@ export default {
 
               if (!referencesUnit) return false;
 
-              // which identifier does the rental actually occupy this year?
               const occupiedId = this.rentalOccupiedIdentifier(
                 rental,
                 this.selectedYear
@@ -234,8 +237,6 @@ export default {
               stats[floor].available += 1;
             }
           });
-
-          totalBedsPerUnit[String(unit._id)] = unit.subUnits.length;
         } else if (
           unit.unitOccupants != null &&
           unit.currentOccupants != null
@@ -260,74 +261,6 @@ export default {
         stats.thirdFloor.total;
 
       this.stats = stats;
-
-      // ============================================================
-      // 🔍 DEBUG OUTPUT
-      // ============================================================
-      console.log(`========== BED STATS DEBUG (year ${debugYear}) ==========`);
-      console.log(
-        "Total beds:",
-        stats.overall.total,
-        "| Occupied:",
-        stats.overall.total - stats.overall.available,
-        "| Available:",
-        stats.overall.available
-      );
-      console.log("Total matches:", occupiedMatches.length);
-
-      // 1. Rentals that matched MULTIPLE beds in the same year
-      const multiMatches = Object.entries(matchedPerRental).filter(
-        ([, matches]) => matches.length > 1
-      );
-      if (multiMatches.length) {
-        console.warn(
-          `⚠️ ${multiMatches.length} rentals matched MULTIPLE beds:`
-        );
-        multiMatches.forEach(([rentalId, matches]) => {
-          console.warn(`  rental ${rentalId}:`);
-          matches.forEach((m) => {
-            console.warn(
-              `    → unit ${m.unitNumber} (${m.unitId}) / ${m.identifier}`
-            );
-          });
-        });
-      } else {
-        console.log("✅ No rental matched multiple beds");
-      }
-
-      // 2. Units with duplicate sub-unit identifiers
-      const dupUnits = Object.entries(duplicateIdentifiersPerUnit);
-      if (dupUnits.length) {
-        console.warn(
-          `⚠️ ${dupUnits.length} units have DUPLICATE sub-unit identifiers:`
-        );
-        dupUnits.forEach(([unitId, ids]) => {
-          console.warn(`  unit ${unitId}: ${[...new Set(ids)].join(", ")}`);
-        });
-      } else {
-        console.log("✅ No duplicate sub-unit identifiers");
-      }
-
-      // 3. Rental IDs appearing in this.rentals more than once
-      const rentalIdCounts = {};
-      this.rentals.forEach((r) => {
-        const id = String(r._id);
-        rentalIdCounts[id] = (rentalIdCounts[id] || 0) + 1;
-      });
-      const dupRentals = Object.entries(rentalIdCounts).filter(
-        ([, count]) => count > 1
-      );
-      if (dupRentals.length) {
-        console.warn(
-          `⚠️ ${dupRentals.length} rental IDs appear MULTIPLE times in this.rentals:`
-        );
-        dupRentals.forEach(([id, count]) => {
-          console.warn(`  rental ${id} appears ${count} times`);
-        });
-      } else {
-        console.log("✅ No duplicate rentals in this.rentals");
-      }
-      // ============================================================
     },
 
     floorKey(level) {
@@ -355,7 +288,9 @@ export default {
         return floor.total - floor.available;
       });
 
-      const availableData = this.floors.map((f) => this.stats[f.key].available);
+      const availableData = this.floors.map(
+        (f) => this.stats[f.key].available
+      );
 
       if (this.bedLineChart) this.bedLineChart.destroy();
 
@@ -380,53 +315,57 @@ export default {
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              position: "top",
-            },
-            tooltip: {
-              mode: "index",
-              intersect: false,
-            },
+            legend: { position: "top" },
+            tooltip: { mode: "index", intersect: false },
           },
           scales: {
             y: {
               beginAtZero: true,
-              title: {
-                display: true,
-                text: "Beds",
-              },
+              title: { display: true, text: "Beds" },
             },
             x: {
-              title: {
-                display: true,
-                text: "Floor",
-              },
+              title: { display: true, text: "Floor" },
             },
           },
         },
       });
     },
 
-    async fetchUnits() {
-      try {
-        const [units, rentals] = await Promise.all([
-          UnitService.getAllUnits(),
-          RentalService.findAllRentals(),
-        ]);
+async fetchUnits() {
+  this.loading = true;
 
-        this.units = units;
-        this.rentals = Array.isArray(rentals) ? rentals : [];
+  try {
+    const [units, rentals] = await Promise.all([
+      UnitService.getAllUnits(),
+      RentalService.findAllRentals(),
+    ]);
 
-        if (!this.availableYears.includes(this.selectedYear)) {
-          this.selectedYear = this.availableYears[0] ?? this.selectedYear;
-        }
+    this.units = Array.isArray(units) ? units : [];
+    this.rentals = Array.isArray(rentals) ? rentals : [];
 
-        this.calculateBedStats();
-        this.drawLineChart();
-      } catch (error) {
-        console.error("Error fetching units:", error);
-      }
-    },
+    // ✅ Default to the LATEST available year (with units)
+    if (
+      !this.selectedYear ||
+      !this.availableYears.includes(this.selectedYear)
+    ) {
+      const years = this.availableYears;
+      this.selectedYear =
+        years.length > 0 ? years[years.length - 1] : this.currentYear;
+    }
+
+    this.calculateBedStats();
+
+    // ✅ CRITICAL: flip loading OFF so v-if renders the canvas,
+    //    then wait for Vue to actually paint it before drawing
+    this.loading = false;
+    await this.$nextTick();
+
+    this.drawLineChart();
+  } catch (error) {
+    console.error("Error fetching units:", error);
+    this.loading = false;
+  }
+},
   },
 
   mounted() {
