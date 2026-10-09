@@ -711,7 +711,7 @@ export default {
 
       main: '/assets/gallery/exterior identity/ei4.jpg',
       heroCards: [
-        { _id: 1, imageUrl: main },
+        { _id: 1, imageUrl: '/assets/gallery/exterior identity/ei2.jpg' },
         { _id: 2, imageUrl: home1 },
         { _id: 3, imageUrl: home2 },
         { _id: 4, imageUrl: home3 },
