@@ -5,25 +5,61 @@
     <aside class="sidebar">
       <div class="sidebar-inner">
         <p class="eyebrow">Explore</p>
-
         <h1>Gallery</h1>
 
         <nav class="navigation">
-          <button
+          <div
             v-for="(section, index) in sections"
-            :key="index"
-            class="nav-item"
-            :class="{ active: activeSection === section.title }"
-            @click="activeSection = section.title"
+            :key="section.title"
+            class="nav-group"
           >
-            <span class="number">
-              {{ String(index + 1).padStart(2, "0") }}
-            </span>
+            <!-- Main heading -->
+            <button
+              class="nav-item"
+              :class="{
+                active: activeSection === section.title && !activeSubsection,
+              }"
+              @click="selectSection(section)"
+            >
+              <span class="number">
+                {{ String(index + 1).padStart(2, "0") }}
+              </span>
 
-            <span class="title">
-              {{ section.title }}
-            </span>
-          </button>
+              <span class="title">{{ section.title }}</span>
+
+              <span
+                v-if="section.subsections && section.subsections.length"
+                class="dropdown-arrow"
+                :class="{ rotated: expandedSection === section.title }"
+              >
+                &#9662;
+              </span>
+            </button>
+
+            <!-- Subheadings dropdown -->
+            <div
+              v-if="
+                section.subsections &&
+                section.subsections.length &&
+                expandedSection === section.title
+              "
+              class="subnavigation"
+            >
+              <button
+                v-for="subsection in section.subsections"
+                :key="subsection.title"
+                class="subnav-item"
+                :class="{
+                  active:
+                    activeSection === section.title &&
+                    activeSubsection === subsection.title,
+                }"
+                @click="selectSubsection(section, subsection)"
+              >
+                {{ subsection.title }}
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
     </aside>
@@ -32,28 +68,38 @@
     <main class="gallery-content">
       <div class="gallery-header">
         <div>
-          <p class="eyebrow">Gallery</p>
-          <h2>{{ activeSection }}</h2>
+          <p class="eyebrow">
+            {{ activeSubsection ? activeSection : "Gallery" }}
+          </p>
+
+          <h2>{{ displayedTitle }}</h2>
         </div>
 
-        <span class="image-count"> {{ currentImages.length }} Images </span>
+        <span class="image-count">
+          {{ currentImages.length }}
+          {{ currentImages.length === 1 ? "Image" : "Images" }}
+        </span>
       </div>
 
+      <!-- Images -->
       <div class="images-grid">
         <div
           v-for="(img, index) in currentImages"
-          :key="index"
+          :key="img"
           class="image-card"
         >
-          <img :src="img" :alt="`${activeSection} ${index + 1}`" />
+          <img :src="img" :alt="`${displayedTitle} ${index + 1}`" />
 
           <div class="image-overlay">
-            <span>
-              {{ String(index + 1).padStart(2, "0") }}
-            </span>
+            <span>{{ String(index + 1).padStart(2, "0") }}</span>
           </div>
         </div>
       </div>
+
+      <!-- Empty state -->
+      <p v-if="!currentImages.length" class="empty-state">
+        No images available in this section yet.
+      </p>
     </main>
   </div>
 </template>
@@ -65,7 +111,9 @@ export default {
   data() {
     return {
       activeSection: "Exterior identity",
- 
+      activeSubsection: null,
+      expandedSection: "Exterior identity",
+
       sections: [
         {
           title: "Exterior identity",
@@ -75,6 +123,15 @@ export default {
             "/assets/gallery/exterior identity/ei3.jpg",
             "/assets/gallery/exterior identity/ei4.jpg",
             "/assets/gallery/exterior identity/ei5.jpg",
+          ],
+          subsections: [
+            {
+              title: "Street-edge identity",
+              images: [
+                "/assets/gallery/exterior identity/ei1.jpg",
+                "/assets/gallery/exterior identity/ei2.jpg",
+              ],
+            },
           ],
         },
         {
@@ -87,6 +144,24 @@ export default {
             "/assets/gallery/shared living + kitchen/slk5.jpg",
             "/assets/gallery/shared living + kitchen/slk6.jpg",
           ],
+          subsections: [
+            {
+              title: "Kitchen elevation",
+              images: [
+                "/assets/gallery/shared living + kitchen/slk1.jpg",
+                "/assets/gallery/shared living + kitchen/slk2.jpg",
+                "/assets/gallery/shared living + kitchen/slk3.jpg",
+              ],
+            },
+            {
+              title: "Living / breakfast",
+              images: [
+                "/assets/gallery/shared living + kitchen/slk4.jpg",
+                "/assets/gallery/shared living + kitchen/slk5.jpg",
+                "/assets/gallery/shared living + kitchen/slk6.jpg",
+              ],
+            },
+          ],
         },
         {
           title: "Private room + study",
@@ -96,6 +171,24 @@ export default {
             "/assets/gallery/private room + study/prs3.jpg",
             "/assets/gallery/private room + study/prs4.jpg",
             "/assets/gallery/private room + study/prs5.jpg",
+          ],
+          subsections: [
+            {
+              title: "Room daylight",
+              images: [
+                "/assets/gallery/private room + study/prs1.jpg",
+                "/assets/gallery/private room + study/prs2.jpg",
+                "/assets/gallery/private room + study/prs3.jpg",
+              ],
+            },
+            {
+              title: "Wardrobe",
+              images: [
+                "/assets/gallery/wardrobe capacity/wc1.jpg",
+                "/assets/gallery/wardrobe capacity/wc2.jpg",
+                "/assets/gallery/wardrobe capacity/wc3.jpg",
+              ],
+            },
           ],
         },
         {
@@ -107,15 +200,37 @@ export default {
             "/assets/gallery/open plan living/opl4.jpg",
             "/assets/gallery/open plan living/opl5.jpg",
           ],
+          subsections: [
+            {
+              title: "Living detail",
+              images: [
+                "/assets/gallery/open plan living/opl1.jpg",
+                "/assets/gallery/open plan living/opl2.jpg",
+                "/assets/gallery/open plan living/opl3.jpg",
+              ],
+            },
+          ],
         },
         {
           title: "Rooftop + mountain",
           images: [
             "/assets/gallery/rooftop + mountain/rtm1.jpg",
             "/assets/gallery/rooftop + mountain/rtm2.jpg",
-            "/assets/gallery/rooftop + mountain/rtm3.jpg",
+            // "/assets/gallery/rooftop + mountain/rtm3.jpg",
             "/assets/gallery/rooftop + mountain/rtm4.jpg",
             "/assets/gallery/rooftop + mountain/rtm5.jpg",
+          ],
+          subsections: [
+            {
+              title: "Rooftop terrace",
+              images: [
+                "/assets/gallery/rooftop + mountain/rtm1.jpg",
+                "/assets/gallery/rooftop + mountain/rtm2.jpg",
+                "/assets/gallery/rooftop + mountain/rtm3.jpg",
+                "/assets/gallery/rooftop + mountain/rtm4.jpg",
+                "/assets/gallery/rooftop + mountain/rtm5.jpg",
+              ],
+            },
           ],
         },
         {
@@ -126,8 +241,9 @@ export default {
             "/assets/gallery/pool/p3.jpg",
             "/assets/gallery/pool/p4.jpg",
           ],
+          subsections: [],
         },
- 
+
         {
           title: "Bathroom",
           images: [
@@ -137,6 +253,23 @@ export default {
             "/assets/gallery/rest room/rr4.jpg",
             "/assets/gallery/rest room/rr5.jpg",
           ],
+          subsections: [
+            {
+              title: "Basin detail",
+              images: [
+                "/assets/gallery/rest room/rr1.jpg",
+                "/assets/gallery/rest room/rr2.jpg",
+              ],
+            },
+            {
+              title: "Bathroom context",
+              images: [
+                "/assets/gallery/rest room/rr3.jpg",
+                "/assets/gallery/rest room/rr4.jpg",
+                "/assets/gallery/rest room/rr5.jpg",
+              ],
+            },
+          ],
         },
         {
           title: "Laundry",
@@ -145,6 +278,7 @@ export default {
             "/assets/gallery/laundry/l2.jpg",
             "/assets/gallery/laundry/l3.jpg",
           ],
+          subsections: [],
         },
         {
           title: "Biometric security",
@@ -152,6 +286,7 @@ export default {
             "/assets/gallery/biometric security/bs1.jpg",
             "/assets/gallery/biometric security/bs2.jpg",
           ],
+          subsections: [],
         },
         {
           title: "Solar array",
@@ -159,15 +294,33 @@ export default {
             "/assets/gallery/solar array/sa1.jpg",
             "/assets/gallery/solar array/sa2.jpg",
           ],
+          subsections: [],
         },
         {
           title: "Mountain / location",
           images: [
             "/assets/gallery/mountain location/ml1.jpg",
-            "/assets/gallery/mountain location/ml2.jpg",
+            // "/assets/gallery/mountain location/ml2.jpg",
             "/assets/gallery/mountain location/ml3.jpg",
             "/assets/gallery/mountain location/ml4.jpg",
             "/assets/gallery/mountain location/ml5.jpg",
+          ],
+          subsections: [
+            {
+              title: "Balcony view",
+              images: [
+                "/assets/gallery/mountain location/ml1.jpg",
+                // "/assets/gallery/mountain location/ml2.jpg",
+              ],
+            },
+            {
+              title: "Neighbourhood view",
+              images: [
+                "/assets/gallery/mountain location/ml3.jpg",
+                "/assets/gallery/mountain location/ml4.jpg",
+                "/assets/gallery/mountain location/ml5.jpg",
+              ],
+            },
           ],
         },
         {
@@ -177,33 +330,75 @@ export default {
             "/assets/gallery/wardrobe capacity/wc2.jpg",
             "/assets/gallery/wardrobe capacity/wc3.jpg",
           ],
+          subsections: [],
         },
       ],
     };
   },
 
-    watch: {
-  "$route.params.label": {
-    immediate: true,
-    handler(title) {
-      const section = this.sections.find(
-        (section) => section.title === title
-      );
- 
-      if (section) {
-        this.activeSection = section.title;
-      }
+  watch: {
+    "$route.params.label": {
+      immediate: true,
+
+      handler(title) {
+        if (!title) return;
+
+        const section = this.sections.find((item) => item.title === title);
+
+        if (section) {
+          this.activeSection = section.title;
+          this.activeSubsection = null;
+          this.expandedSection =
+            section.subsections && section.subsections.length
+              ? section.title
+              : null;
+        }
+      },
     },
   },
-},
 
   computed: {
-    currentImages() {
-      const section = this.sections.find(
-        (section) => section.title === this.activeSection
+    selectedSection() {
+      return this.sections.find(
+        (section) => section.title === this.activeSection,
       );
+    },
 
-      return section ? section.images : [];
+    currentImages() {
+      if (!this.selectedSection) return [];
+
+      if (this.activeSubsection) {
+        const subsection = this.selectedSection.subsections.find(
+          (item) => item.title === this.activeSubsection,
+        );
+
+        return subsection ? subsection.images : [];
+      }
+
+      return this.selectedSection.images;
+    },
+
+    displayedTitle() {
+      return this.activeSubsection || this.activeSection;
+    },
+  },
+
+  methods: {
+    selectSection(section) {
+      this.activeSection = section.title;
+      this.activeSubsection = null;
+
+      if (section.subsections && section.subsections.length) {
+        this.expandedSection =
+          this.expandedSection === section.title ? null : section.title;
+      } else {
+        this.expandedSection = null;
+      }
+    },
+    selectSubsection(section, subsection) {
+      this.activeSection = section.title;
+      this.activeSubsection = subsection.title;
+      this.expandedSection = section.title;
     },
   },
 };
@@ -225,7 +420,8 @@ export default {
   top: 0;
 
   height: 100vh;
-
+  scrollbar-width: none;
+  overflow-y: scroll;
   border-right: 1px solid #e8e8e8;
 
   background: #fafafa;
@@ -272,6 +468,9 @@ export default {
 
   gap: 4px;
 }
+.nav-group {
+  width: 100%;
+}
 
 .nav-item {
   position: relative;
@@ -279,7 +478,8 @@ export default {
   width: 100%;
 
   display: grid;
-  grid-template-columns: 32px 1fr;
+  /* grid-template-columns: 32px 1fr; */
+  grid-template-columns: 32px minmax(0, 1fr) 16px;
 
   align-items: center;
 
@@ -298,7 +498,9 @@ export default {
 
   color: #777777;
 
-  transition: color 0.25s ease, background 0.25s ease;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease;
 }
 
 .nav-item::before {
@@ -330,6 +532,62 @@ export default {
 
 .nav-item.active::before {
   height: 24px;
+}
+
+.dropdown-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #999999;
+  transition: transform 0.25s ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.subnavigation {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 8px 42px;
+  padding-left: 12px;
+  border-left: 1px solid #e5e5e5;
+}
+
+.subnav-item {
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #777777;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.subnav-item:hover {
+  background: #f0f0f0;
+  color: #111111;
+}
+
+.subnav-item.active {
+  background: #eeeeee;
+  color: #111111;
+  font-weight: 600;
+}
+
+.empty-state {
+  padding: 40px 0;
+  color: #999999;
+  font-size: 14px;
 }
 
 .number {
@@ -420,7 +678,9 @@ export default {
 
   object-fit: cover;
 
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
+  transition:
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.4s ease;
 }
 
 .image-card:hover img {
