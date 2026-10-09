@@ -64,19 +64,9 @@ export default {
 
   data() {
     return {
-      activeSection: "Open plan living",
-
+      activeSection: "Exterior identity",
+ 
       sections: [
-        {
-          title: "Open plan living",
-          images: [
-            "/assets/gallery/open plan living/opl1.jpg",
-            "/assets/gallery/open plan living/opl2.jpg",
-            "/assets/gallery/open plan living/opl3.jpg",
-            "/assets/gallery/open plan living/opl4.jpg",
-            "/assets/gallery/open plan living/opl5.jpg",
-          ],
-        },
         {
           title: "Exterior identity",
           images: [
@@ -109,13 +99,13 @@ export default {
           ],
         },
         {
-          title: "Rest room",
+          title: "Open-plan living",
           images: [
-            "/assets/gallery/rest room/rr1.jpg",
-            "/assets/gallery/rest room/rr2.jpg",
-            "/assets/gallery/rest room/rr3.jpg",
-            "/assets/gallery/rest room/rr4.jpg",
-            "/assets/gallery/rest room/rr5.jpg",
+            "/assets/gallery/open plan living/opl1.jpg",
+            "/assets/gallery/open plan living/opl2.jpg",
+            "/assets/gallery/open plan living/opl3.jpg",
+            "/assets/gallery/open plan living/opl4.jpg",
+            "/assets/gallery/open plan living/opl5.jpg",
           ],
         },
         {
@@ -129,21 +119,6 @@ export default {
           ],
         },
         {
-          title: "Wardrobe capacity",
-          images: [
-            "/assets/gallery/wardrobe capacity/wc1.jpg",
-            "/assets/gallery/wardrobe capacity/wc2.jpg",
-            "/assets/gallery/wardrobe capacity/wc3.jpg",
-          ],
-        },
-        {
-          title: "Solar array",
-          images: [
-            "/assets/gallery/solar array/sa1.jpg",
-            "/assets/gallery/solar array/sa2.jpg",
-          ],
-        },
-        {
           title: "Pool",
           images: [
             "/assets/gallery/pool/p1.jpg",
@@ -152,14 +127,15 @@ export default {
             "/assets/gallery/pool/p4.jpg",
           ],
         },
+ 
         {
-          title: "Mountain location",
+          title: "Bathroom",
           images: [
-            "/assets/gallery/mountain location/ml1.jpg",
-            "/assets/gallery/mountain location/ml2.jpg",
-            "/assets/gallery/mountain location/ml3.jpg",
-            "/assets/gallery/mountain location/ml4.jpg",
-            "/assets/gallery/mountain location/ml5.jpg",
+            "/assets/gallery/rest room/rr1.jpg",
+            "/assets/gallery/rest room/rr2.jpg",
+            "/assets/gallery/rest room/rr3.jpg",
+            "/assets/gallery/rest room/rr4.jpg",
+            "/assets/gallery/rest room/rr5.jpg",
           ],
         },
         {
@@ -177,9 +153,49 @@ export default {
             "/assets/gallery/biometric security/bs2.jpg",
           ],
         },
+        {
+          title: "Solar array",
+          images: [
+            "/assets/gallery/solar array/sa1.jpg",
+            "/assets/gallery/solar array/sa2.jpg",
+          ],
+        },
+        {
+          title: "Mountain / location",
+          images: [
+            "/assets/gallery/mountain location/ml1.jpg",
+            "/assets/gallery/mountain location/ml2.jpg",
+            "/assets/gallery/mountain location/ml3.jpg",
+            "/assets/gallery/mountain location/ml4.jpg",
+            "/assets/gallery/mountain location/ml5.jpg",
+          ],
+        },
+        {
+          title: "Wardrobe capacity",
+          images: [
+            "/assets/gallery/wardrobe capacity/wc1.jpg",
+            "/assets/gallery/wardrobe capacity/wc2.jpg",
+            "/assets/gallery/wardrobe capacity/wc3.jpg",
+          ],
+        },
       ],
     };
   },
+
+    watch: {
+  "$route.params.label": {
+    immediate: true,
+    handler(title) {
+      const section = this.sections.find(
+        (section) => section.title === title
+      );
+ 
+      if (section) {
+        this.activeSection = section.title;
+      }
+    },
+  },
+},
 
   computed: {
     currentImages() {

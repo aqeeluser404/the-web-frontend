@@ -31,7 +31,7 @@ const routes = [
         component: () => import('src/pages/public/InstallApp.vue')
       },
       {
-        path: '/gallery',
+        path: '/gallery/:label',
         name: 'gallery',
         component: () => import('src/pages/public/GalleryPage.vue')
       },

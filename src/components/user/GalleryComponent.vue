@@ -4,7 +4,7 @@ over animation, cleaner typography, and a responsive grid.
     <router-link
       v-for="(card, index) in cards"
       :key="index"
-      :to="{ name: 'gallery', params: { label: card.label } }"
+      :to="{ name: 'gallery', params: { label: card.title } }"
       class="card"
     >
       <div class="image">
@@ -14,7 +14,7 @@ over animation, cleaner typography, and a responsive grid.
 
       <div class="content">
         <h3>{{ card.title }}</h3>
-        <p>{{ card.description }}</p>
+        <!-- <p>{{ card.description }}</p> -->
       </div>
     </router-link>
   </div>
