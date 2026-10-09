@@ -65,7 +65,7 @@ export default {
         },
         {
           label: "DETAIL",
-          title: "Rest Room",
+          title: "Bathroom",
           description: "Bathroom lifestyle detail",
           image: "/assets/gallery/rest room/rr4.jpg",
         },
