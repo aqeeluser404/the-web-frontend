@@ -21,7 +21,7 @@ over animation, cleaner typography, and a responsive grid.
 </template>
 
 <script>
-import h0 from 'src/assets/resources/home/hero/h0.png';
+// import h0 from 'src/assets/resources/home/hero/h0.png';
 export default {
   name: "CardGrid",
   data() {
@@ -31,25 +31,25 @@ export default {
           label: "HERO",
           title: "Exterior identity",
           description: "Main establishing image",
-          image: h0,
+          image: '/assets/gallery/exterior identity/ei4.jpg',
         },
         {
           label: "PRIMARY",
           title: "Shared living + kitchen",
           description: "Strongest interior lifestyle frame",
-          image: "/assets/gallery/open plan living/DSC_5252.jpg",
+          image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
         {
           label: "PRIMARY",
           title: "Private room + study",
           description: "Best room-plan frame",
-          image: "/assets/gallery/private room + study/prs1.jpg",
+          image: "/assets/gallery/private room + study/DSC_5184.jpg",
         },
         {
           label: "PRIMARY",
           title: "Open-plan living",
           description: "Promoted to core pack",
-          image: "/assets/gallery/open plan living/opl3.jpg",
+          image: "/assets/gallery/open plan living/DSC_5243.jpg",
         },
         {
           label: "PRIMARY",
@@ -67,7 +67,7 @@ export default {
           label: "DETAIL",
           title: "Rest Room",
           description: "Bathroom lifestyle detail",
-          image: "/assets/gallery/rest room/rr2.jpg",
+          image: "/assets/gallery/rest room/rr4.jpg",
         },
         {
           label: "FEATURE",
@@ -91,13 +91,13 @@ export default {
           label: "SETTING",
           title: "Mountain / location",
           description: "Site support",
-          image: "/assets/gallery/mountain location/ml1.jpg",
+          image: "/assets/gallery/mountain location/ml4.jpg",
         },
         {
           label: "DETAIL",
           title: "Wardrobe capacity",
           description: "Practical detail",
-          image: "/assets/gallery/wardrobe capacity/wc2.jpg",
+          image: "/assets/gallery/wardrobe capacity/wc1.jpg",
         },
       ],
     };

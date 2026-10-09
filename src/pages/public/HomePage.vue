@@ -709,7 +709,7 @@ export default {
       showImageDialog: false,
       currentDialogImageUrl: '',
 
-      main: '/assets/gallery/exterior identity/DSC_5085.jpg',
+      main: '/assets/gallery/exterior identity/ei4.jpg',
       heroCards: [
         { _id: 1, imageUrl: main },
         { _id: 2, imageUrl: home1 },
