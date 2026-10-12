@@ -33,6 +33,7 @@ over animation, cleaner typography, and a responsive grid.
     Experience living, through images
   </div>
 
+<!-- middle section -->
   <div class="grid grid_style1">
     <router-link
       v-for="(card, index) in cards"
@@ -91,31 +92,31 @@ export default {
       cards: [
         {
           label: "HERO",
-          title: "Exterior identity",
+          title: "Exterior",
           description: "Main establishing image",
           image: "/assets/gallery/exterior identity/ei4.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Shared living + kitchen",
+          title: "Shared living & Kitchen",
           description: "Strongest interior lifestyle frame",
           image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Private room + study",
+          title: "Private Room",
           description: "Best room-plan frame",
           image: "/assets/gallery/private room + study/DSC_5184.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Open-plan living",
+          title: "Open-plan Living",
           description: "Promoted to core pack",
           image: "/assets/gallery/open plan living/DSC_5243.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Rooftop + mountain",
+          title: "Rooftop & Mountain",
           description: "Identity and setting",
           image: "/assets/gallery/rooftop + mountain/rtm4.jpg",
         },
@@ -139,45 +140,45 @@ export default {
         },
         {
           label: "FEATURE",
-          title: "Biometric security",
+          title: "Biometric Security",
           description: "Optional proof",
           image: "/assets/gallery/biometric security/bs1.jpg",
         },
         {
           label: "FEATURE",
-          title: "Solar array",
+          title: "Solar Array",
           description: "Sustainability support",
           image: "/assets/gallery/solar array/sa1.jpg",
         },
         {
           label: "SETTING",
-          title: "Mountain / location",
+          title: "Location",
           description: "Site support",
           image: "/assets/gallery/mountain location/ml4.jpg",
         },
-        {
-          label: "DETAIL",
-          title: "Wardrobe capacity",
-          description: "Practical detail",
-          image: "/assets/gallery/wardrobe capacity/wc1.jpg",
-        },
+        // {
+        //   label: "DETAIL",
+        //   title: "Wardrobe capacity",
+        //   description: "Practical detail",
+        //   image: "/assets/gallery/wardrobe capacity/wc1.jpg",
+        // },
       ],
       cards2: [
         {
           label: "HERO",
-          title: "Exterior identity",
+          title: "Exterior",
           description: "Main establishing image",
           image: "/assets/gallery/exterior identity/ei4.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Shared living + kitchen",
+          title: "Shared living & Kitchen",
           description: "Strongest interior lifestyle frame",
           image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Private room + study",
+          title: "Private Room",
           description: "Best room-plan frame",
           image: "/assets/gallery/private room + study/DSC_5184.jpg",
         },
@@ -185,12 +186,12 @@ export default {
       cards3: [
         {
           label: "HERO",
-          title: "Open-plan living + kitchen",
+          title: "Open-plan Living & Kitchen",
           image: "/assets/gallery/open plan living/DSC_5243.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Basin detail",
+          title: "Basin Detail",
           image: "/assets/gallery/rest room/rr4.jpg",
         },
       ],
@@ -354,14 +355,49 @@ export default {
   gap: 24px;
   margin-bottom: 2rem;
   margin-top: 5rem;
+  
 }
 
 .grid_style .image {
   height: 400px;
 }
+ 
 .grid_style1 {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  width: 100%;
   margin-top: 2rem;
+  padding: 40px 24px;
 }
+
+.grid_style1 .card {
+  flex: 1 1 400px;
+  max-width: 420px;
+  min-width: 0;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+  .grid_style1 .card {
+    flex-basis: 280px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  .grid_style1 {
+    padding: 24px 16px;
+    gap: 20px;
+  }
+
+  .grid_style1 .card {
+    flex: 1 1 100%;
+    max-width: 420px;
+  }
+}
+
 
 .grid_style2 {
   display: grid;
