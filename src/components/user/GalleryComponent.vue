@@ -1,5 +1,24 @@
 over animation, cleaner typography, and a responsive grid.
 <template>
+  <!-- top 3 images -->
+  <div class="grid grid_style">
+    <div
+      v-for="(card, indx) in cards2"
+      :key="indx"
+      class="card"
+    >
+      <div class="image">
+        <img :src="card.image" alt="card" />
+        <div class="image-overlay"></div>
+      </div>
+
+      <!-- <div class="content"> -->
+        <!-- <h3>{{ card.title }}</h3> -->
+        <!-- <p>{{ card.description }}</p> -->
+      <!-- </div> -->
+    </div>
+  </div>
+
   <div class="grid">
     <router-link
       v-for="(card, index) in cards"
@@ -18,6 +37,25 @@ over animation, cleaner typography, and a responsive grid.
       </div>
     </router-link>
   </div>
+
+  <!-- bottom 2 images -->
+  <div class="grid grid_style2">
+    <div
+      v-for="(card, indx) in cards3"
+      :key="indx"
+      class="card"
+    >
+      <div class="image">
+        <img :src="card.image" alt="card" />
+        <div class="image-overlay"></div>
+      </div>
+
+      <!-- <div class="content"> -->
+        <!-- <h3>{{ card.title }}</h3> -->
+        <!-- <p>{{ card.description }}</p> -->
+      <!-- </div> -->
+    </div>
+  </div>
 </template>
 
 <script>
@@ -31,7 +69,7 @@ export default {
           label: "HERO",
           title: "Exterior identity",
           description: "Main establishing image",
-          image: '/assets/gallery/exterior identity/ei4.jpg',
+          image: "/assets/gallery/exterior identity/ei4.jpg",
         },
         {
           label: "PRIMARY",
@@ -98,6 +136,38 @@ export default {
           title: "Wardrobe capacity",
           description: "Practical detail",
           image: "/assets/gallery/wardrobe capacity/wc1.jpg",
+        },
+      ],
+      cards2: [
+        {
+          label: "HERO",
+          title: "Exterior identity",
+          description: "Main establishing image",
+          image: "/assets/gallery/exterior identity/ei4.jpg",
+        },
+        {
+          label: "PRIMARY",
+          title: "Shared living + kitchen",
+          description: "Strongest interior lifestyle frame",
+          image: "/assets/gallery/shared living + kitchen/slk6.jpg",
+        },
+        {
+          label: "PRIMARY",
+          title: "Private room + study",
+          description: "Best room-plan frame",
+          image: "/assets/gallery/private room + study/DSC_5184.jpg",
+        },
+      ],
+      cards3: [
+        {
+          label: "HERO",
+          title: "Open-plan living + kitchen",
+          image: "/assets/gallery/open plan living/DSC_5243.jpg",
+        },
+        {
+          label: "PRIMARY",
+          title: "Basin detail",
+          image: "/assets/gallery/rest room/rr4.jpg",
         },
       ],
     };
@@ -242,5 +312,24 @@ export default {
   .content h3 {
     font-size: 20px;
   }
+}
+
+.grid_style{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.grid_style .image {
+  height: 400px;
+}
+
+.grid_style2 {
+    display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.grid_style2 .image {
+  height: 400px;
 }
 </style>
