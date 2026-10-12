@@ -53,8 +53,19 @@
               </div>
               <div class="col-md-6 col-7">
                 <q-select v-if="filteredSubUnits.length" v-model="selectedOption" :options="selectOptions"
-                  option-label="label" class="text-caption" dense filled :label="selectLabel"
-                  :menu-anchor="'bottom start'" :menu-self="'top start'" :menu-cover="false" fit />
+                  option-label="label" option-disable="disable" class="text-caption" dense filled :label="selectLabel"
+                  :menu-anchor="'bottom start'" :menu-self="'top start'" :menu-cover="false" fit>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section v-if="scope.opt.disable" side>
+                        <q-badge color="grey-5" text-color="grey-8" label="Reserved" />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </div>
             </div>
 
@@ -647,9 +658,8 @@ export default {
         const matchesBed = this.selectedBedType
           ? su.bedType === this.selectedBedType
           : true;
-        const isAvailable = su.isAvailable && !su.reservedBy;
 
-        return matchesRoom && matchesBed && isAvailable;
+        return matchesRoom && matchesBed;
       });
     },
     selectOptions() {
@@ -666,9 +676,14 @@ export default {
         } else {
           label = `${su.roomType ?? 'Room'} - ${su.bedType ?? 'Bed'}`;
         }
+
+        // Same availability rule as before, now used to disable instead of hide
+        const isAvailable = !!su.isAvailable && !su.reservedBy;
+
         return {
           ...su,
-          label
+          label,
+          disable: !isAvailable
         };
       });
     },
@@ -771,7 +786,7 @@ export default {
         const fullRoomType = `${basePrefix} ${floorNumber}-${this.subUnit}`;
 
         const option = this.selectOptions.find(
-          su => su.roomType === fullRoomType || su.bedType === fullRoomType
+          su => (su.roomType === fullRoomType || su.bedType === fullRoomType) && !su.disable
         );
 
         if (option) {
