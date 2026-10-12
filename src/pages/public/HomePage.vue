@@ -74,7 +74,26 @@
 
 
 
-    <!-- Amenities Section -->
+
+    <!-- gallery -->
+    <section>
+      <GalleryComponent/>
+    </section>
+
+
+
+    <!-- Rooms Section -->
+    <section id="units-section" class="rooms-section">
+      <div class="padding-y-xl">
+        <div class="section-spacer-sm"></div>
+        <div class="rooms-component constrain-standard">
+          <UnitCardComponentBlack />
+        </div>
+        <div class="section-spacer-sm"></div>
+      </div>
+    </section>
+
+        <!-- Amenities Section -->
     <section id="amenities-section" class="amenities-section">
       <div class="padding-y-xl constrain-standard">
         <div class="section-spacer-md"></div>
@@ -111,24 +130,6 @@
         </div>
         <div class="section-spacer-md"></div>
         <ImageDialog v-model="showImageDialog" :imageUrl="currentDialogImageUrl" />
-      </div>
-    </section>
-
-    <!-- gallery -->
-    <section>
-      <GalleryComponent/>
-    </section>
-
-
-
-    <!-- Rooms Section -->
-    <section id="units-section" class="rooms-section">
-      <div class="padding-y-xl">
-        <div class="section-spacer-sm"></div>
-        <div class="rooms-component constrain-standard">
-          <UnitCardComponentBlack />
-        </div>
-        <div class="section-spacer-sm"></div>
       </div>
     </section>
 
