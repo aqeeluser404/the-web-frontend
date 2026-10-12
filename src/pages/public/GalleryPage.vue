@@ -27,17 +27,17 @@
 
               <span class="title">{{ section.title }}</span>
 
-              <span
+              <!-- <span
                 v-if="section.subsections && section.subsections.length"
                 class="dropdown-arrow"
                 :class="{ rotated: expandedSection === section.title }"
               >
                 &#9662;
-              </span>
+              </span> -->
             </button>
 
             <!-- Subheadings dropdown -->
-            <div
+            <!-- <div
               v-if="
                 section.subsections &&
                 section.subsections.length &&
@@ -58,7 +58,7 @@
               >
                 {{ subsection.title }}
               </button>
-            </div>
+            </div> -->
           </div>
         </nav>
       </div>
@@ -88,7 +88,11 @@
           :key="img"
           class="image-card"
         >
-          <img :src="img" :alt="`${displayedTitle} ${index + 1}`" @click="openImageDialog(img)" />
+          <img
+            :src="img"
+            :alt="`${displayedTitle} ${index + 1}`"
+            @click="openImageDialog(img)"
+          />
 
           <div class="image-overlay">
             <span>{{ String(index + 1).padStart(2, "0") }}</span>
@@ -117,16 +121,16 @@ export default {
 
   data() {
     return {
-      activeSection: "Exterior identity",
+      activeSection: "Exterior",
       activeSubsection: null,
-      expandedSection: "Exterior identity",
+      expandedSection: "Exterior",
 
       showImageDialog: false,
       currentDialogImageUrl: "",
 
       sections: [
         {
-          title: "Exterior identity",
+          title: "Exterior",
           images: [
             "/assets/gallery/exterior identity/ei1.jpg",
             "/assets/gallery/exterior identity/ei2.jpg",
@@ -145,7 +149,7 @@ export default {
           ],
         },
         {
-          title: "Shared living + kitchen",
+          title: "Shared living & Kitchen",
           images: [
             "/assets/gallery/shared living + kitchen/slk1.jpg",
             "/assets/gallery/shared living + kitchen/slk2.jpg",
@@ -174,13 +178,16 @@ export default {
           ],
         },
         {
-          title: "Private room + study",
+          title: "Private Room",
           images: [
             "/assets/gallery/private room + study/prs1.jpg",
             "/assets/gallery/private room + study/prs2.jpg",
             "/assets/gallery/private room + study/prs3.jpg",
             "/assets/gallery/private room + study/prs4.jpg",
             "/assets/gallery/private room + study/prs5.jpg",
+            "/assets/gallery/wardrobe capacity/wc1.jpg",
+            "/assets/gallery/wardrobe capacity/wc2.jpg",
+            "/assets/gallery/wardrobe capacity/wc3.jpg",
           ],
           subsections: [
             {
@@ -202,7 +209,7 @@ export default {
           ],
         },
         {
-          title: "Open-plan living",
+          title: "Open-plan Living",
           images: [
             "/assets/gallery/open plan living/opl1.jpg",
             "/assets/gallery/open plan living/opl2.jpg",
@@ -222,7 +229,7 @@ export default {
           ],
         },
         {
-          title: "Rooftop + mountain",
+          title: "Rooftop & Mountain",
           images: [
             "/assets/gallery/rooftop + mountain/rtm1.jpg",
             "/assets/gallery/rooftop + mountain/rtm2.jpg",
@@ -291,7 +298,7 @@ export default {
           subsections: [],
         },
         {
-          title: "Biometric security",
+          title: "Biometric Security",
           images: [
             "/assets/gallery/biometric security/bs1.jpg",
             "/assets/gallery/biometric security/bs2.jpg",
@@ -299,7 +306,7 @@ export default {
           subsections: [],
         },
         {
-          title: "Solar array",
+          title: "Solar Array",
           images: [
             "/assets/gallery/solar array/sa1.jpg",
             "/assets/gallery/solar array/sa2.jpg",
@@ -307,7 +314,7 @@ export default {
           subsections: [],
         },
         {
-          title: "Mountain / location",
+          title: "Location",
           images: [
             "/assets/gallery/mountain location/ml1.jpg",
             // "/assets/gallery/mountain location/ml2.jpg",
@@ -333,15 +340,15 @@ export default {
             },
           ],
         },
-        {
-          title: "Wardrobe capacity",
-          images: [
-            "/assets/gallery/wardrobe capacity/wc1.jpg",
-            "/assets/gallery/wardrobe capacity/wc2.jpg",
-            "/assets/gallery/wardrobe capacity/wc3.jpg",
-          ],
-          subsections: [],
-        },
+        // {
+        //   title: "Wardrobe capacity",
+        //   images: [
+        //     "/assets/gallery/wardrobe capacity/wc1.jpg",
+        //     "/assets/gallery/wardrobe capacity/wc2.jpg",
+        //     "/assets/gallery/wardrobe capacity/wc3.jpg",
+        //   ],
+        //   subsections: [],
+        // },
       ],
     };
   },
