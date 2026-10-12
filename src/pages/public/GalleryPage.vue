@@ -88,7 +88,7 @@
           :key="img"
           class="image-card"
         >
-          <img :src="img" :alt="`${displayedTitle} ${index + 1}`" />
+          <img :src="img" :alt="`${displayedTitle} ${index + 1}`" @click="openImageDialog(img)" />
 
           <div class="image-overlay">
             <span>{{ String(index + 1).padStart(2, "0") }}</span>
@@ -102,17 +102,27 @@
       </p>
     </main>
   </div>
+  <ImageDialog v-model="showImageDialog" :imageUrl="currentDialogImageUrl" />
 </template>
 
 <script>
+import ImageDialog from "src/components/elements/ImageDialog.vue";
+
 export default {
   name: "GalleryPage",
+
+  components: {
+    ImageDialog,
+  },
 
   data() {
     return {
       activeSection: "Exterior identity",
       activeSubsection: null,
       expandedSection: "Exterior identity",
+
+      showImageDialog: false,
+      currentDialogImageUrl: "",
 
       sections: [
         {
@@ -399,6 +409,13 @@ export default {
       this.activeSection = section.title;
       this.activeSubsection = subsection.title;
       this.expandedSection = section.title;
+    },
+
+    openImageDialog(url) {
+      if (!url) return;
+
+      this.currentDialogImageUrl = url;
+      this.showImageDialog = true;
     },
   },
 };

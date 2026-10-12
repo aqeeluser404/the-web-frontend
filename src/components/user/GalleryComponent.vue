@@ -2,24 +2,38 @@ over animation, cleaner typography, and a responsive grid.
 <template>
   <!-- top 3 images -->
   <div class="grid grid_style">
-    <div
-      v-for="(card, indx) in cards2"
-      :key="indx"
-      class="card"
-    >
+    <div v-for="(card, indx) in cards2" :key="indx" class="card">
       <div class="image">
-        <img :src="card.image" alt="card" />
+        <img
+          :src="card.image"
+          alt="card"
+          @click="openImageDialog(card.image)"
+        />
         <div class="image-overlay"></div>
       </div>
 
       <!-- <div class="content"> -->
-        <!-- <h3>{{ card.title }}</h3> -->
-        <!-- <p>{{ card.description }}</p> -->
+      <!-- <h3>{{ card.title }}</h3> -->
+      <!-- <p>{{ card.description }}</p> -->
       <!-- </div> -->
     </div>
   </div>
 
-  <div class="grid">
+  <div
+    class="text-h6 text-center section-label large-screen-only small-heading"
+  >
+    <b>⸻&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;⸻</b>
+  </div>
+  <div class="text-h6 text-center section-label small-screen-only">
+    <b>—&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;—</b>
+  </div>
+  <div
+    class="text-h3 text-center text-weight-bold location-title line-height-normal"
+  >
+    Experience living, through images
+  </div>
+
+  <div class="grid grid_style1">
     <router-link
       v-for="(card, index) in cards"
       :key="index"
@@ -40,30 +54,40 @@ over animation, cleaner typography, and a responsive grid.
 
   <!-- bottom 2 images -->
   <div class="grid grid_style2">
-    <div
-      v-for="(card, indx) in cards3"
-      :key="indx"
-      class="card"
-    >
+    <div v-for="(card, indx) in cards3" :key="indx" class="card">
       <div class="image">
-        <img :src="card.image" alt="card" />
+        <img
+          :src="card.image"
+          alt="card"
+          @click="openImageDialog(card.image)"
+        />
         <div class="image-overlay"></div>
       </div>
 
       <!-- <div class="content"> -->
-        <!-- <h3>{{ card.title }}</h3> -->
-        <!-- <p>{{ card.description }}</p> -->
+      <!-- <h3>{{ card.title }}</h3> -->
+      <!-- <p>{{ card.description }}</p> -->
       <!-- </div> -->
     </div>
   </div>
+  <ImageDialog v-model="showImageDialog" :imageUrl="currentDialogImageUrl" />
 </template>
 
 <script>
 // import h0 from 'src/assets/resources/home/hero/h0.png';
+import ImageDialog from "src/components/elements/ImageDialog.vue";
 export default {
   name: "CardGrid",
+
+  components: {
+    ImageDialog,
+  },
+
   data() {
     return {
+      showImageDialog: false,
+      currentDialogImageUrl: "",
+
       cards: [
         {
           label: "HERO",
@@ -172,6 +196,15 @@ export default {
       ],
     };
   },
+
+  methods: {
+    openImageDialog(url) {
+      if (!url) return;
+
+      this.currentDialogImageUrl = url;
+      this.showImageDialog = true;
+    },
+  },
 };
 </script>
 
@@ -180,11 +213,11 @@ export default {
   width: 100%;
   margin: 0 auto;
   padding: 40px 24px;
+  margin-top: 5rem;
 
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
-  cursor: pointer;
 }
 
 .card {
@@ -192,6 +225,7 @@ export default {
   background: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 18px;
+  cursor: pointer;
 
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 
@@ -314,22 +348,31 @@ export default {
   }
 }
 
-.grid_style{
+.grid_style {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
+  margin-bottom: 2rem;
+  margin-top: 5rem;
 }
 
 .grid_style .image {
   height: 400px;
 }
+.grid_style1 {
+  margin-top: 2rem;
+}
 
 .grid_style2 {
-    display: grid;
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+  margin-top: 0rem;
 }
 .grid_style2 .image {
   height: 400px;
+}
+.small-heading b {
+  color: var(--q-primary);
 }
 </style>
