@@ -60,7 +60,7 @@
                 getting around effortless.</p>
 
               <p>As a green building, it features backup solar power and natural spring water on tap, ensuring
-                uninterrupted living. Students enjoy world-class amenities, including high-speed Wi-Fi, on-site laundry,
+                uninterrupted living. Students enjoy world-class amenities, including high-speed <br>Wi-Fi, on-site laundry,
                 stylish social lounges, communal study areas, dedicated gaming and entertainment spaces, a braai area
                 and
                 swimming pool, a tranquil Zen garden, and secure on-site parking. For peace of mind, The-Web offers
