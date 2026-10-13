@@ -92,7 +92,7 @@ export default {
       cards: [
         {
           label: "HERO",
-          title: "Exterior",
+          title: "The Building",
           description: "Main establishing image",
           image: "/assets/gallery/exterior identity/ei4.jpg",
         },

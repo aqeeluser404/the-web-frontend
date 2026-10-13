@@ -925,6 +925,8 @@ export default {
 .image-card img[src*="ei5.jpg"] {
   object-position: center top;
 }
-
+.image-card img[src*="rr4.jpg"] {
+  object-position: center 80%
+}
 
 </style>
