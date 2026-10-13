@@ -149,7 +149,7 @@ export default {
           ],
         },
         {
-          title: "Shared living & Kitchen",
+          title: "Shared Living & Kitchen",
           images: [
             "/assets/gallery/shared living + kitchen/slk1.jpg",
             "/assets/gallery/shared living + kitchen/slk2.jpg",

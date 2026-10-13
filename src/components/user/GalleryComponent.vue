@@ -98,7 +98,7 @@ export default {
         },
         {
           label: "PRIMARY",
-          title: "Shared living & Kitchen",
+          title: "Shared Living & Kitchen",
           description: "Strongest interior lifestyle frame",
           image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
@@ -355,13 +355,13 @@ export default {
   gap: 24px;
   margin-bottom: 2rem;
   margin-top: 5rem;
-  
+
 }
 
 .grid_style .image {
   height: 400px;
 }
- 
+
 .grid_style1 {
   display: flex;
   justify-content: center;
