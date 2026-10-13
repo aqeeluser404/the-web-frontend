@@ -1,7 +1,7 @@
 over animation, cleaner typography, and a responsive grid.
 <template>
   <!-- top 3 images -->
-  <div class="grid grid_style">
+  <!-- <div class="grid grid_style">
     <div v-for="(card, indx) in cards2" :key="indx" class="card">
       <div class="image">
         <img
@@ -10,27 +10,27 @@ over animation, cleaner typography, and a responsive grid.
           @click="openImageDialog(card.image)"
         />
         <div class="image-overlay"></div>
-      </div>
+      </div> -->
 
       <!-- <div class="content"> -->
       <!-- <h3>{{ card.title }}</h3> -->
       <!-- <p>{{ card.description }}</p> -->
       <!-- </div> -->
-    </div>
-  </div>
+    <!-- </div>
+  </div> -->
 
   <div
-    class="text-h6 text-center section-label large-screen-only small-heading"
+    class="text-h6 text-center section-label large-screen-only small-heading padding-t-xl"
   >
     <b>⸻&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;⸻</b>
   </div>
-  <div class="text-h6 text-center section-label small-screen-only">
+  <div class="text-h6 text-center section-label small-screen-only padding-t-xl">
     <b>—&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;—</b>
   </div>
   <div
     class="text-h3 text-center text-weight-bold location-title line-height-normal"
   >
-    Experience living, through images
+    Explore The-WEB
   </div>
 
 <!-- middle section -->
@@ -98,27 +98,27 @@ export default {
         },
         {
           label: "PRIMARY",
-          title: "Shared Living & Kitchen",
+          title: "Shared Living",
           description: "Strongest interior lifestyle frame",
-          image: "/assets/gallery/shared living + kitchen/slk6.jpg",
+          image: "/assets/gallery/open plan living/opl3.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Private Room",
+          title: "Private Rooms",
           description: "Best room-plan frame",
-          image: "/assets/gallery/private room + study/DSC_5184.jpg",
+          image: "/assets/gallery/private room + study/DSC_5236_.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Open-plan Living",
+          title: "Study Spaces",
           description: "Promoted to core pack",
-          image: "/assets/gallery/open plan living/DSC_5243.jpg",
+          image: "/assets/gallery/open plan living/opl1.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Rooftop & Mountain",
+          title: "Rooftop Views",
           description: "Identity and setting",
-          image: "/assets/gallery/rooftop + mountain/rtm4.jpg",
+          image: "/assets/gallery/rooftop + mountain/rtm2.jpg",
         },
         {
           label: "PRIMARY",
@@ -128,7 +128,7 @@ export default {
         },
         {
           label: "DETAIL",
-          title: "Bathroom",
+          title: "Bathrooms",
           description: "Bathroom lifestyle detail",
           image: "/assets/gallery/rest room/rr4.jpg",
         },
@@ -136,26 +136,26 @@ export default {
           label: "FEATURE",
           title: "Laundry",
           description: "Amenity support",
-          image: "/assets/gallery/laundry/l1.jpg",
+          image: "/assets/gallery/laundry/l3.jpg",
         },
         {
           label: "FEATURE",
-          title: "Biometric Security",
+          title: "Security",
           description: "Optional proof",
           image: "/assets/gallery/biometric security/bs1.jpg",
         },
         {
           label: "FEATURE",
-          title: "Solar Array",
+          title: "Solar Energy",
           description: "Sustainability support",
           image: "/assets/gallery/solar array/sa1.jpg",
         },
-        {
-          label: "SETTING",
-          title: "Location",
-          description: "Site support",
-          image: "/assets/gallery/mountain location/ml4.jpg",
-        },
+        // {
+        //   label: "SETTING",
+        //   title: "Location",
+        //   description: "Site support",
+        //   image: "/assets/gallery/mountain location/ml4.jpg",
+        // },
         // {
         //   label: "DETAIL",
         //   title: "Wardrobe capacity",
@@ -166,13 +166,13 @@ export default {
       cards2: [
         {
           label: "HERO",
-          title: "Exterior",
+          title: "The Building",
           description: "Main establishing image",
           image: "/assets/gallery/exterior identity/ei4.jpg",
         },
         {
           label: "PRIMARY",
-          title: "Shared living & Kitchen",
+          title: "Shared living",
           description: "Strongest interior lifestyle frame",
           image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
@@ -186,8 +186,8 @@ export default {
       cards3: [
         {
           label: "HERO",
-          title: "Open-plan Living & Kitchen",
-          image: "/assets/gallery/open plan living/DSC_5243.jpg",
+          title: "Shared Living",
+          image: "/assets/gallery/shared living + kitchen/slk6.jpg",
         },
         {
           label: "PRIMARY",
@@ -210,6 +210,14 @@ export default {
 </script>
 
 <style scoped>
+.image img[src*="rr4.jpg"] {
+  object-position: center 75%
+}
+
+.image img[src*="l3.jpg"] {
+  object-position: center 65%
+}
+
 .grid {
   width: 100%;
   margin: 0 auto;
