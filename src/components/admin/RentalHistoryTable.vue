@@ -210,7 +210,7 @@
                 <q-tooltip>Open</q-tooltip>
               </q-btn>
 
-              <!-- ✅ 3-dot context menu -->
+              <!--  3-dot context menu -->
               <q-btn
                 round
                 flat
@@ -569,18 +569,18 @@ export default {
 
 .view-toggle {
   :deep(.q-btn) {
-    padding: 8px 20px; /* ✅ generous horizontal padding */
-    min-height: 36px; /* ✅ taller buttons */
+    padding: 8px 20px; /*  generous horizontal padding */
+    min-height: 36px; /*  taller buttons */
     font-weight: 600;
     font-size: 13px;
   }
 
   :deep(.q-btn__content) {
-    gap: 8px; /* ✅ space between icon and label */
+    gap: 8px; /*  space between icon and label */
   }
 
   :deep(.q-btn .q-icon) {
-    font-size: 18px; /* ✅ bigger icons */
+    font-size: 18px; /*  bigger icons */
   }
 }
 

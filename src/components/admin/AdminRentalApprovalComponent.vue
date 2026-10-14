@@ -187,7 +187,7 @@
 
         <q-card-section v-if="!rental.renewed">
           <div class="q-mb-md"><b>Reassign Tenant's Unit</b></div>
-  <!-- ✅ CASE 1: Chain is broken (only for renewed rentals) -->
+  <!--  CASE 1: Chain is broken (only for renewed rentals) -->
   <q-banner
     v-if="validationState.isChainBroken"
     class="bg-red-1 text-red-9 q-mb-md"
@@ -205,7 +205,7 @@
     </div>
   </q-banner>
 
-  <!-- ✅ CASE 2: Unit occupied (no chain involved) -->
+  <!--  CASE 2: Unit occupied (no chain involved) -->
   <q-banner
     v-else-if="validationState.isOccupied"
     class="bg-orange-1 text-orange-9 q-mb-md"
@@ -1093,7 +1093,7 @@ validationState() {
       );
 
       if (matchingSubUnit && matchingSubUnit.isAvailable === false) {
-        // ✅ NEW: Check if it's occupied by ANOTHER rental (not this one)
+        //  NEW: Check if it's occupied by ANOTHER rental (not this one)
         const occupiedByAnother = (this.allRentals || []).some(
           (r) =>
             String(r.unit) === String(chainUnit.unitId) &&
@@ -1320,11 +1320,11 @@ async getUnitAvailability() {
   const response = await UnitService.getByIdUnit(this.rental.unit);
   this.unitDetails = response;
 
-  // ✅ Load all units (unfiltered) for chain validation
+  //  Load all units (unfiltered) for chain validation
   const allUnitsResponse = await UnitService.getAllUnits();
   this.allUnits = allUnitsResponse || [];
 
-  // ✅ Load all active rentals for occupancy checks
+  //  Load all active rentals for occupancy checks
   const allRentals = await RentalService.findAllRentals();
   this.allRentals = (allRentals || []).filter((r) => r.status === "Active");
 

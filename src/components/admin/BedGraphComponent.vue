@@ -3,18 +3,16 @@
     <q-card-section class="stats-header row justify-between items-center">
       <div class="text-h6">Bed Occupancy Line Chart</div>
       <q-select
-        v-model="selectedYear"
+        v-model="internalYear"
         :options="availableYears"
         dense
         filled
         :disable="loading || availableYears.length === 0"
         style="min-width: 120px"
-        @update:model-value="onYearChange"
       />
       <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
-    <!-- ✅ Loading state -->
     <q-card-section
       v-if="loading"
       class="row justify-center items-center"
@@ -28,7 +26,6 @@
       </div>
     </q-card-section>
 
-    <!-- ✅ Loaded state -->
     <q-card-section v-else>
       <canvas ref="bedLineChart" style="max-height: 300px"></canvas>
 
@@ -85,14 +82,20 @@ import RentalService from "src/services/api/RentalService";
 import UnitService from "src/services/api/UnitService";
 
 export default {
+  props: {
+    refreshKey: { type: Number, default: 0 },
+    selectedYear: { type: [Number, String], default: null },
+  },
+
+  emits: ["update:selected-year"],
+
   data() {
     return {
       pieChart: null,
       units: [],
       rentals: [],
-      loading: true,               // ✅ start loading
+      loading: true,
       currentYear: new Date().getFullYear(),
-      selectedYear: null,          // ✅ set after data loads
       stats: {
         firstFloor: { available: 0, total: 0 },
         secondFloor: { available: 0, total: 0 },
@@ -109,8 +112,17 @@ export default {
   },
 
   computed: {
+    internalYear: {
+      get() {
+        return this.selectedYear;
+      },
+      set(val) {
+        this.$emit("update:selected-year", val);
+      },
+    },
+
     availableYears() {
-      const years = new Set([this.currentYear]); // ✅ always include current
+      const years = new Set([this.currentYear]);
       this.units.forEach((unit) => {
         const y = Number(unit.unitYear);
         if (!isNaN(y) && y >= this.currentYear) {
@@ -122,8 +134,18 @@ export default {
 
     filteredUnits() {
       return this.units.filter(
-        (unit) => Number(unit.unitYear) === this.selectedYear
+        (unit) => Number(unit.unitYear) === this.internalYear
       );
+    },
+  },
+
+  watch: {
+    internalYear() {
+      this.calculateBedStats();
+      this.$nextTick(() => this.drawLineChart());
+    },
+    refreshKey() {
+      this.fetchUnits();
     },
   },
 
@@ -135,17 +157,9 @@ export default {
       return "negative";
     },
 
-    onYearChange() {
-      this.calculateBedStats();
-      this.drawLineChart();
-    },
-
-    // Returns the sub-unit identifier this rental occupies in a given year,
-    // or null if it doesn't occupy anything that year.
     rentalOccupiedIdentifier(rental, year) {
       if (rental.status !== "Active") return null;
 
-      // Case 1: rental is currently assigned to this year
       const unitYear = Number(rental.unitYear);
       if (unitYear === year) {
         return (
@@ -155,7 +169,6 @@ export default {
         );
       }
 
-      // Case 2: rental started in this year (no renewal yet, or first-year)
       const startYear = new Date(rental.rentalStartDate).getFullYear();
       if (
         startYear === year &&
@@ -168,7 +181,6 @@ export default {
         );
       }
 
-      // Case 3: rental renewed into or out of this year
       if (Array.isArray(rental.renewalHistory)) {
         const entryFromYear = rental.renewalHistory.find(
           (e) => Number(e.fromYear) === year
@@ -213,7 +225,7 @@ export default {
 
             const identifier = sub.roomType || sub.bedType;
 
-            const occupiedThisYear = this.rentals.some((rental) => {
+            const occupiedByRental = this.rentals.some((rental) => {
               const targetId = String(unit._id);
               const referencesUnit =
                 String(rental.unit) === targetId ||
@@ -228,10 +240,16 @@ export default {
 
               const occupiedId = this.rentalOccupiedIdentifier(
                 rental,
-                this.selectedYear
+                this.internalYear
               );
               return occupiedId === identifier;
             });
+
+            const occupiedByReservation =
+              sub.reservedAt != null && sub.isAvailable !== false;
+
+            const occupiedThisYear =
+              occupiedByRental || occupiedByReservation;
 
             if (!occupiedThisYear) {
               stats[floor].available += 1;
@@ -277,6 +295,11 @@ export default {
     },
 
     drawLineChart() {
+      if (!this.$refs.bedLineChart) {
+        console.warn("drawLineChart: canvas ref not ready");
+        return;
+      }
+
       const labels = this.floors.map((f) => {
         const floor = this.stats[f.key];
         const occupied = floor.total - floor.available;
@@ -301,12 +324,12 @@ export default {
           labels,
           datasets: [
             {
-              label: `${this.selectedYear} Occupied`,
+              label: `${this.internalYear} Occupied`,
               data: occupiedData,
               backgroundColor: "#F44336",
             },
             {
-              label: `${this.selectedYear} Available`,
+              label: `${this.internalYear} Available`,
               data: availableData,
               backgroundColor: "#4CAF50",
             },
@@ -331,41 +354,38 @@ export default {
       });
     },
 
-async fetchUnits() {
-  this.loading = true;
+    async fetchUnits() {
+      this.loading = true;
 
-  try {
-    const [units, rentals] = await Promise.all([
-      UnitService.getAllUnits(),
-      RentalService.findAllRentals(),
-    ]);
+      try {
+        const [units, rentals] = await Promise.all([
+          UnitService.getAllUnits(),
+          RentalService.findAllRentals(),
+        ]);
 
-    this.units = Array.isArray(units) ? units : [];
-    this.rentals = Array.isArray(rentals) ? rentals : [];
+        this.units = Array.isArray(units) ? units : [];
+        this.rentals = Array.isArray(rentals) ? rentals : [];
 
-    // ✅ Default to the LATEST available year (with units)
-    if (
-      !this.selectedYear ||
-      !this.availableYears.includes(this.selectedYear)
-    ) {
-      const years = this.availableYears;
-      this.selectedYear =
-        years.length > 0 ? years[years.length - 1] : this.currentYear;
-    }
+        if (
+          !this.internalYear ||
+          !this.availableYears.includes(this.internalYear)
+        ) {
+          const years = this.availableYears;
+          this.internalYear =
+            years.length > 0 ? years[years.length - 1] : this.currentYear;
+        }
 
-    this.calculateBedStats();
+        this.calculateBedStats();
 
-    // ✅ CRITICAL: flip loading OFF so v-if renders the canvas,
-    //    then wait for Vue to actually paint it before drawing
-    this.loading = false;
-    await this.$nextTick();
+        this.loading = false;
+        await this.$nextTick();
 
-    this.drawLineChart();
-  } catch (error) {
-    console.error("Error fetching units:", error);
-    this.loading = false;
-  }
-},
+        this.drawLineChart();
+      } catch (error) {
+        console.error("Error fetching units:", error);
+        this.loading = false;
+      }
+    },
   },
 
   mounted() {

@@ -1349,19 +1349,19 @@ export default {
   &__container {
     margin: 0 !important;
     padding: 0 !important;
-    background-color: #fff;   /* ✅ fill any gap with white, not grey */
+    background-color: #fff;   /*  fill any gap with white, not grey */
   }
 
   &__slide {
     padding: 0 !important;
-    background-color: #fff;   /* ✅ same for slides */
+    background-color: #fff;   /*  same for slides */
   }
 
   &__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;           /* ✅ kills inline-gap under img */
+    display: block;           /*  kills inline-gap under img */
   }
 }
 

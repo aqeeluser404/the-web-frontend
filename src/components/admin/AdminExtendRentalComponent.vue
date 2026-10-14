@@ -196,7 +196,7 @@
           </div>
         </q-card-section>
 
-        <!-- Room-taken banner -->
+        <!-- Room-taken / reserved banner -->
         <q-banner
           v-if="currentRoomTakenInTargetYear"
           class="bg-orange-1 text-orange-9 q-mb-md"
@@ -206,11 +206,21 @@
             <q-icon name="info" color="orange-9" />
           </template>
           <div>
-            <b>Your current room is unavailable in {{ selectedYear }}.</b>
+            <b>
+              Your current room is
+              {{ currentRoomTakenReason === "reserved" ? "reserved" : "unavailable" }}
+              in {{ selectedYear }}.
+            </b>
             <div class="text-caption q-mt-xs">
-              {{ currentRoom }} in {{ currentUnitNumber }} ({{ selectedYear }}) is already
-              reserved by another tenant. It's been excluded from the dropdown -
-              please choose a different room.
+              {{ currentRoom }} in {{ currentUnitNumber }} ({{ selectedYear }})
+              is
+              {{
+                currentRoomTakenReason === "reserved"
+                  ? "currently reserved by another tenant"
+                  : "already occupied by another tenant"
+              }}.
+              It's been excluded from the dropdown — please choose a different
+              room.
             </div>
           </div>
         </q-banner>
@@ -275,7 +285,9 @@ export default {
       currentRoom: "",
       currentUnitId: null,
 
+      //  new — track why current room is unavailable
       currentRoomTakenInTargetYear: false,
+      currentRoomTakenReason: null, // "reserved" | "occupied"
     };
   },
 
@@ -283,12 +295,10 @@ export default {
     crossesIntoNewYear() {
       return this.selectedYear && this.selectedYear > this.currentYear;
     },
-    // ✅ Computed for current unit number (no params)
     currentUnitNumber() {
       const unit = this.allUnits.find((u) => u._id === this.rental.unit);
       return unit ? unit.unitNumber : "N/A";
     },
-    // ✅ Computed for selected unit number (no params)
     selectedUnitNumber() {
       const unit = this.allUnits.find((u) => u._id === this.selectedUnit);
       return unit ? unit.unitNumber : "N/A";
@@ -332,39 +342,46 @@ export default {
       return "N/A";
     },
 
-    // ✅ Add this as a method for looking up any unit number
     getUnitNumber(unitId) {
       if (!unitId) return "N/A";
       const unit = this.allUnits.find((u) => u._id === unitId);
       return unit ? unit.unitNumber : "N/A";
     },
 
+    //  A sub-unit is "blocked" if it's occupied (isAvailable false)
+    //    or reserved by anyone.
+    isSubUnitBlocked(sub) {
+      if (sub.isAvailable === false) return true;
+      if (sub.reservedAt != null) return true;
+      return false;
+    },
+
+    //  Why is it blocked?
+    blockedReason(sub) {
+      if (sub.reservedAt != null) return "reserved";
+      if (sub.isAvailable === false) return "occupied";
+      return null;
+    },
+
     async fetchAvailableYears() {
       try {
         this.loadingYears = true;
 
-        // Get all units
         const units = await UnitService.getAllUnits();
         this.allUnits = units;
 
-        // Find the current unit
         const currentUnit = units.find((u) => u._id === this.rental.unit);
         this.currentUnitId = currentUnit?._id || null;
 
-        // Extract unique years from units, sort ascending
         const years = [...new Set(units.map((u) => u.unitYear))].sort(
           (a, b) => a - b
         );
 
-        // Generate options from available years
         const options = years.map((year) => ({
           label: year.toString(),
           value: year,
         }));
 
-        // Only show years that are:
-        // 1. Future years (greater than current year)
-        // 2. NOT the current year (user can't extend to the same year)
         const filteredOptions = options.filter((opt) => {
           const isCurrentYear = opt.value === this.currentYear;
           const isFutureYear = opt.value > this.currentYear;
@@ -373,7 +390,6 @@ export default {
 
         this.yearOptions = filteredOptions;
 
-        // Auto-select the first available future year
         if (this.yearOptions.length > 0) {
           this.selectedYear = this.yearOptions[0].value;
           this.updateNewDates();
@@ -403,7 +419,6 @@ export default {
         this.selectedRoom = null;
         this.roomOptions = [];
 
-        // Filter units by selected year
         const unitsForYear = this.allUnits.filter((u) => u.unitYear === year);
 
         this.unitOptions = unitsForYear.map((unit) => ({
@@ -412,7 +427,6 @@ export default {
           unit: unit,
         }));
 
-        // ✅ Try to find the matching unit by unitNumber (same as current)
         const currentUnit = this.allUnits.find(
           (u) => u._id === this.rental.unit
         );
@@ -421,11 +435,9 @@ export default {
         );
 
         if (matchingUnit) {
-          // Auto-select the matching unit
           this.selectedUnit = matchingUnit._id;
           await this.loadRoomsForUnit(this.selectedUnit);
         } else if (this.unitOptions.length > 0) {
-          // Fallback to first unit
           this.selectedUnit = this.unitOptions[0].value;
           await this.loadRoomsForUnit(this.selectedUnit);
         }
@@ -445,34 +457,34 @@ export default {
         this.loadingRooms = true;
         this.selectedRoom = null;
         this.currentRoomTakenInTargetYear = false;
+        this.currentRoomTakenReason = null;
 
-        // Find the unit
         const unit = this.allUnits.find((u) => u._id === unitId);
         if (!unit || !unit.subUnits) {
           this.roomOptions = [];
           return;
         }
 
-        // Get current room identifier
         const currentRoomId =
           this.rental.selectedSubUnits?.bedType ||
           this.rental.selectedSubUnits?.roomType ||
           this.rental.selectedSubUnits?.type;
 
-        // Get available rooms (isAvailable = true) OR the matching room if it exists
+        //  Filter out blocked sub-units (occupied OR reserved)
         const availableRooms = unit.subUnits.filter(
-          (sub) => sub.isAvailable !== false
+          (sub) => !this.isSubUnitBlocked(sub)
         );
 
-        // ✅ Detect if the current room exists in this unit but is NOT available
+        //  If the current room exists but is blocked, show the banner
         const currentRoomInUnit = unit.subUnits.find(
           (sub) =>
             (sub.bedType && sub.bedType === currentRoomId) ||
             (sub.roomType && sub.roomType === currentRoomId)
         );
 
-        if (currentRoomInUnit && currentRoomInUnit.isAvailable === false) {
+        if (currentRoomInUnit && this.isSubUnitBlocked(currentRoomInUnit)) {
           this.currentRoomTakenInTargetYear = true;
+          this.currentRoomTakenReason = this.blockedReason(currentRoomInUnit);
         }
 
         this.roomOptions = availableRooms.map((sub) => ({
@@ -480,7 +492,7 @@ export default {
           value: sub,
         }));
 
-        // ✅ Try to find the matching room by bedType/roomType
+        //  Try to auto-select the matching room, but only if it's not blocked
         const matchingRoom = availableRooms.find(
           (sub) =>
             (sub.bedType && sub.bedType === currentRoomId) ||
@@ -488,10 +500,8 @@ export default {
         );
 
         if (matchingRoom) {
-          // Auto-select the matching room
           this.selectedRoom = matchingRoom;
         } else if (this.roomOptions.length > 0) {
-          // Fallback to first available room
           this.selectedRoom = this.roomOptions[0].value;
         }
       } catch (error) {
@@ -546,15 +556,13 @@ export default {
       const newEndDate = `${this.selectedYear}-12-15`;
       const message = `Extended to ${newEndDate}`;
 
-      // Check if same unit and room (for history tracking)
-      const unitChanged = this.getSelectedUnitNumber() !== this.currentUnitNumber; // 🆕 was: this.selectedUnit !== this.rental.unit
+      const unitChanged = this.getSelectedUnitNumber() !== this.currentUnitNumber;
 
       const roomChanged =
         (this.selectedRoom.bedType || this.selectedRoom.roomType) !==
         (this.rental.selectedSubUnits?.bedType ||
           this.rental.selectedSubUnits?.roomType);
 
-      // ✅ Only show warning if rental is already renewed AND changing unit/room
       const isAlreadyRenewed = this.rental.renewed === true;
       const showRoomChangeWarning =
         isAlreadyRenewed && (unitChanged || roomChanged);
@@ -604,7 +612,6 @@ export default {
           try {
             let response;
 
-            // If unit or room changed, pass the override parameters
             if (this.crossesIntoNewYear && (unitChanged || roomChanged)) {
               response = await RentalService.extendRentalToNewYear(
                 this.rental._id,
@@ -613,7 +620,6 @@ export default {
                 this.selectedRoom
               );
             } else if (this.crossesIntoNewYear) {
-              // Same unit and room, just extend
               response = await RentalService.extendRentalToNewYear(
                 this.rental._id,
                 newEndDate
@@ -642,9 +648,6 @@ export default {
                 message: `Rental extended to ${this.selectedYear}!`,
               });
 
-              // await EmailService.SendExtendedDate(this.rental.user, {
-              //   message,
-              // });
               this.$emit("close");
             } else {
               this.$q.notify({
@@ -672,18 +675,14 @@ export default {
   },
 
   async created() {
-    // Set current year from rental
     const endDate = new Date(this.rental.rentalEndDate);
     this.currentYear = endDate.getFullYear();
 
-    // Get current room
     this.currentRoom = this.getCurrentRoom();
 
-    // Format current dates
     this.formattedCurrentStart = this.formatDate(this.rental.rentalStartDate);
     this.formattedCurrentEnd = this.formatDate(this.rental.rentalEndDate);
 
-    // Fetch available years from units
     await this.fetchAvailableYears();
   },
 };

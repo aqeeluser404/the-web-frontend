@@ -8,12 +8,11 @@
             <q-select
               filled
               dense
-              v-model="selectedYear"
+              v-model="internalYear"
               :options="availableYears"
               style="min-width: 120px"
-              @update:model-value="applyYearFilter"
             />
-            <!-- ✅ View switcher -->
+            <!--   View switcher -->
             <q-btn-toggle
               :model-value="'approvals'"
               @update:model-value="$emit('switch-table', $event)"
@@ -56,11 +55,22 @@
                 <q-tr
                   :props="props"
                   class="cursor-pointer"
+                  :class="{
+                    'unit-row--has-reserved': props.row.reservedCount > 0,
+                  }"
                   @click="toggleExpand(props.row._id)"
                 >
-                  <q-td key="unitNumber" :props="props">{{
-                    props.row.unitNumber
-                  }}</q-td>
+                  <q-td key="unitNumber" :props="props">
+                    {{ props.row.unitNumber }}
+                    <q-badge
+                      v-if="props.row.reservedCount > 0"
+                      color="grey-7"
+                      class="q-ml-sm"
+                      style="font-size: 10px"
+                    >
+                      {{ props.row.reservedCount }} reserved
+                    </q-badge>
+                  </q-td>
                   <q-td key="occupancy" :props="props">
                     <q-badge
                       :color="props.row.emptyCount > 0 ? 'orange' : 'green'"
@@ -87,7 +97,7 @@
                   <q-td key="expand" :props="props">
                     <q-icon
                       :name="
-                        expandedUnitIds.has(props.row._id)
+                        String(expandedUnitId) === String(props.row._id)
                           ? 'expand_less'
                           : 'expand_more'
                       "
@@ -96,164 +106,244 @@
                   </q-td>
                 </q-tr>
 
-                <q-tr v-if="expandedUnitIds.has(props.row._id)" :props="props">
+                <q-tr
+                  v-if="String(expandedUnitId) === String(props.row._id)"
+                  :props="props"
+                >
                   <q-td colspan="100%" class="q-pa-none">
                     <q-list bordered separator>
                       <q-item
                         v-for="(sub, idx) in props.row.subUnits"
                         :key="idx"
                         class="sub-unit-item"
+                        :class="{ 'sub-unit-item--reserved': sub.reservedAt }"
                       >
-<!-- Desktop View -->
-<div class="desktop-view">
-  <div class="col col-room">
-    <q-item-label class="text-weight-medium">{{ sub.identifier }}</q-item-label>
-  </div>
+                        <!-- Desktop View -->
+                        <div class="desktop-view">
+                          <div class="col col-room">
+                            <q-item-label class="text-weight-medium">
+                              {{ sub.identifier || "—" }}
+                              <q-badge
+                                v-if="sub.reservedAt"
+                                color="grey-7"
+                                class="q-ml-sm"
+                                style="font-size: 10px"
+                              >
+                                Reserved
+                                <q-tooltip>
+                                  Reserved on
+                                  {{
+                                    new Date(sub.reservedAt).toLocaleString()
+                                  }}
+                                </q-tooltip>
+                              </q-badge>
+                            </q-item-label>
+                          </div>
 
-  <template v-if="sub.rental">
-    <div class="col col-name">
-      {{ sub.rental.firstName }} {{ sub.rental.lastName }}
-    </div>
-    <div class="col col-phone">{{ sub.rental.phone }}</div>
-    <div class="col col-email">{{ sub.rental.email }}</div>
-    <div class="col col-gender">
-      <q-badge
-        :color="
-          sub.rental.gender === 'Male'
-            ? 'blue'
-            : sub.rental.gender === 'Female'
-            ? 'purple'
-            : 'red'
-        "
-      >
-        {{ sub.rental.gender }}
-      </q-badge>
-    </div>
+                          <template v-if="sub.rental">
+                            <div class="col col-name">
+                              {{ sub.rental.firstName }}
+                              {{ sub.rental.lastName }}
+                            </div>
+                            <div class="col col-phone">
+                              {{ sub.rental.phone }}
+                            </div>
+                            <div class="col col-email">
+                              {{ sub.rental.email }}
+                            </div>
+                            <div class="col col-gender">
+                              <q-badge
+                                :color="
+                                  sub.rental.gender === 'Male'
+                                    ? 'blue'
+                                    : sub.rental.gender === 'Female'
+                                    ? 'purple'
+                                    : 'red'
+                                "
+                              >
+                                {{ sub.rental.gender }}
+                              </q-badge>
+                            </div>
 
-    <div class="col col-renewed">
-      <q-badge v-if="sub.viewContext === 'extendedInto'" color="teal">
-        <template v-if="sub.historyEntry">
-          Renewed from {{ sub.historyEntry.fromYear || "previous" }}
-          <q-icon
-            v-if="sub.historyEntry.sameRoom === false"
-            name="swap_horiz"
-            size="xs"
-            class="q-ml-xs"
-          >
-            <q-tooltip>Room changed</q-tooltip>
-          </q-icon>
-        </template>
-        <template v-else-if="sub.rental.renewedFromUnit">
-          Renewed from previous year
-        </template>
-        <template v-else>Renewed</template>
-      </q-badge>
+                            <div class="col col-renewed">
+                              <q-badge
+                                v-if="sub.viewContext === 'extendedInto'"
+                                color="teal"
+                              >
+                                <template v-if="sub.historyEntry">
+                                  Renewed from
+                                  {{ sub.historyEntry.fromYear || "previous" }}
+                                  <q-icon
+                                    v-if="sub.historyEntry.sameRoom === false"
+                                    name="swap_horiz"
+                                    size="xs"
+                                    class="q-ml-xs"
+                                  >
+                                    <q-tooltip>Room changed</q-tooltip>
+                                  </q-icon>
+                                </template>
+                                <template
+                                  v-else-if="sub.rental.renewedFromUnit"
+                                >
+                                  Renewed from previous year
+                                </template>
+                                <template v-else>Renewed</template>
+                              </q-badge>
 
-      <q-badge v-else-if="sub.viewContext === 'extendedFrom'" color="grey-7">
-        <template v-if="sub.historyEntry">
-          Renewed to {{ sub.historyEntry.toYear || "next year" }}
-          <q-icon
-            v-if="sub.historyEntry.sameRoom === false"
-            name="swap_horiz"
-            size="xs"
-            class="q-ml-xs"
-          >
-            <q-tooltip>Room changed</q-tooltip>
-          </q-icon>
-        </template>
-        <template v-else>Renewed to next year</template>
-      </q-badge>
-    </div>
+                              <q-badge
+                                v-else-if="sub.viewContext === 'extendedFrom'"
+                                color="grey-7"
+                              >
+                                <template v-if="sub.historyEntry">
+                                  Renewed to
+                                  {{ sub.historyEntry.toYear || "next year" }}
+                                  <q-icon
+                                    v-if="sub.historyEntry.sameRoom === false"
+                                    name="swap_horiz"
+                                    size="xs"
+                                    class="q-ml-xs"
+                                  >
+                                    <q-tooltip>Room changed</q-tooltip>
+                                  </q-icon>
+                                </template>
+                                <template v-else>Renewed to next year</template>
+                              </q-badge>
+                            </div>
 
-    <div class="col col-history">
-      <q-badge
-        v-if="sub.rental.renewalHistory && sub.rental.renewalHistory.length > 0"
-        color="info"
-        class="cursor-pointer"
-        @click.stop="showRenewalHistory(sub.rental)"
-      >
-        <q-icon name="history" size="xs" class="q-mr-xs" />
-        {{ sub.rental.renewalHistory.length }} renewals
-      </q-badge>
-    </div>
+                            <div class="col col-history">
+                              <q-badge
+                                v-if="
+                                  sub.rental.renewalHistory &&
+                                  sub.rental.renewalHistory.length > 0
+                                "
+                                color="info"
+                                class="cursor-pointer"
+                                @click.stop="showRenewalHistory(sub.rental)"
+                              >
+                                <q-icon
+                                  name="history"
+                                  size="xs"
+                                  class="q-mr-xs"
+                                />
+                                {{ sub.rental.renewalHistory.length }} renewals
+                              </q-badge>
+                            </div>
 
-    <div class="col-auto col-actions">
-      <div class="row items-center no-wrap">
-        <q-btn
-          round
-          class="q-mr-sm"
-          color="red"
-          size="sm"
-          icon="eva-trash-outline"
-          @click.stop="deleteRental(sub.rental._id)"
-        >
-          <q-tooltip>Delete Rental</q-tooltip>
-        </q-btn>
-        <q-btn
-          round
-          class="q-mr-sm"
-          color="red"
-          size="sm"
-          icon="eva-archive-outline"
-          @click.stop="endRental(sub.rental._id)"
-        >
-          <q-tooltip>End Rental</q-tooltip>
-        </q-btn>
-        <q-btn
-          round
-          class="q-mr-sm"
-          color="red"
-          size="sm"
-          icon="arrow_back"
-          @click.stop="moveToPending(sub.rental)"
-        >
-          <q-tooltip>Move to Pending</q-tooltip>
-        </q-btn>
-        <q-btn
-          class="q-mr-sm"
-          round
-          color="primary"
-          size="sm"
-          icon="event"
-          @click.stop="openExtendDialog(sub.rental)"
-        >
-          <q-tooltip>Extend Date</q-tooltip>
-        </q-btn>
-        <q-btn
-          class="q-mr-sm"
-          round
-          color="secondary"
-          size="sm"
-          icon="edit"
-          @click.stop="openApprovalDialog(sub.rental, props.row)"
-        >
-          <q-tooltip>Review Approval / Change Unit</q-tooltip>
-        </q-btn>
-      </div>
-    </div>
-  </template>
+                            <div class="col-auto col-actions">
+                              <div class="row items-center no-wrap">
+                                <q-btn
+                                  round
+                                  class="q-mr-sm"
+                                  color="red"
+                                  size="sm"
+                                  icon="eva-trash-outline"
+                                  @click.stop="deleteRental(sub.rental._id)"
+                                >
+                                  <q-tooltip>Delete Rental</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                  round
+                                  class="q-mr-sm"
+                                  color="red"
+                                  size="sm"
+                                  icon="eva-archive-outline"
+                                  @click.stop="endRental(sub.rental._id)"
+                                >
+                                  <q-tooltip>End Rental</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                  round
+                                  class="q-mr-sm"
+                                  color="red"
+                                  size="sm"
+                                  icon="arrow_back"
+                                  @click.stop="moveToPending(sub.rental)"
+                                >
+                                  <q-tooltip>Move to Pending</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                  class="q-mr-sm"
+                                  round
+                                  color="primary"
+                                  size="sm"
+                                  icon="event"
+                                  @click.stop="openExtendDialog(sub.rental)"
+                                >
+                                  <q-tooltip>Extend Date</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                  class="q-mr-sm"
+                                  round
+                                  color="secondary"
+                                  size="sm"
+                                  icon="edit"
+                                  @click.stop="
+                                    openApprovalDialog(sub.rental, props.row)
+                                  "
+                                >
+                                  <q-tooltip
+                                    >Review Approval / Change Unit</q-tooltip
+                                  >
+                                </q-btn>
+                              </div>
+                            </div>
+                          </template>
 
-  <!-- Empty sub-unit — same column structure, blank blocks -->
-  <template v-else>
-    <div class="col col-name text-grey">Empty</div>
-    <div class="col col-phone"></div>
-    <div class="col col-email"></div>
-    <div class="col col-gender"></div>
-    <div class="col col-renewed"></div>
-    <div class="col col-history"></div>
-    <div class="col-auto col-actions"></div>
-  </template>
-</div>
+                          <!-- Empty sub-unit — reserve button visible -->
+                          <template v-else>
+                            <div class="col col-name text-grey">Empty</div>
+                            <div class="col col-phone"></div>
+                            <div class="col col-email"></div>
+                            <div class="col col-gender"></div>
+                            <div class="col col-renewed"></div>
+                            <div class="col col-history"></div>
+                            <div class="col-auto col-actions">
+                              <div class="row items-center no-wrap">
+                                <q-btn
+                                  round
+                                  :color="sub.reservedAt ? 'grey-7' : 'primary'"
+                                  size="sm"
+                                  :icon="
+                                    sub.reservedAt
+                                      ? 'bookmark_remove'
+                                      : 'bookmark_add'
+                                  "
+                                  @click.stop="
+                                    toggleSubUnitReservation(
+                                      props.row,
+                                      sub,
+                                      idx
+                                    )
+                                  "
+                                >
+                                  <q-tooltip>
+                                    {{
+                                      sub.reservedAt
+                                        ? "Unreserve this " +
+                                          (sub.type || "bed/room")
+                                        : "Reserve this " +
+                                          (sub.type || "bed/room")
+                                    }}
+                                  </q-tooltip>
+                                </q-btn>
+                              </div>
+                            </div>
+                          </template>
+                        </div>
 
                         <!-- Mobile View -->
                         <div class="mobile-view">
-                          <q-item>
-                            <q-item-section>
-                              <q-item-label class="text-weight-bold">{{
-                                sub.identifier
-                              }}</q-item-label>
-                            </q-item-section>
-                          </q-item>
+                          <q-item-label class="text-weight-bold">
+                            {{ sub.identifier || "—" }}
+                            <q-badge
+                              v-if="sub.reservedAt"
+                              color="grey-7"
+                              class="q-ml-sm"
+                              style="font-size: 10px"
+                            >
+                              Reserved
+                            </q-badge>
+                          </q-item-label>
 
                           <template v-if="sub.rental">
                             <q-item dense>
@@ -435,11 +525,44 @@
                             </q-item>
                           </template>
 
+                          <!-- Empty sub-unit — reserve button visible -->
                           <template v-else>
                             <q-item>
                               <q-item-section class="text-grey"
                                 >Empty</q-item-section
                               >
+                            </q-item>
+                            <q-item dense>
+                              <q-item-section>
+                                <div class="row q-gutter-xs">
+                                  <q-btn
+                                    flat
+                                    round
+                                    :color="
+                                      sub.reservedAt ? 'grey-7' : 'primary'
+                                    "
+                                    size="sm"
+                                    :icon="
+                                      sub.reservedAt
+                                        ? 'bookmark_remove'
+                                        : 'bookmark_add'
+                                    "
+                                    @click.stop="
+                                      toggleSubUnitReservation(
+                                        props.row,
+                                        sub,
+                                        idx
+                                      )
+                                    "
+                                  >
+                                    <q-tooltip>
+                                      {{
+                                        sub.reservedAt ? "Unreserve" : "Reserve"
+                                      }}
+                                    </q-tooltip>
+                                  </q-btn>
+                                </div>
+                              </q-item-section>
                             </q-item>
                           </template>
                         </div>
@@ -570,16 +693,20 @@ export default {
     AdminRentalApprovalComponent,
   },
 
-  emits: ["switch-table"],
+  props: {
+    refreshKey: { type: Number, default: 0 },
+    selectedYear: { type: [Number, String], default: null },
+  },
+
+  emits: ["switch-table", "refresh", "update:selected-year"],
 
   data() {
     return {
       loading: true,
       allUnitRows: [],
       filteredUnits: [],
-      selectedYear: null,
       availableYears: [],
-      expandedUnitIds: new Set(),
+      expandedUnitId: null,
 
       extendDialog: false,
       approvalDialog: false,
@@ -613,6 +740,16 @@ export default {
   },
 
   computed: {
+    //   v-model bridge: reads parent's selectedYear, writes back to it
+    internalYear: {
+      get() {
+        return this.selectedYear;
+      },
+      set(val) {
+        this.$emit("update:selected-year", val);
+      },
+    },
+
     floorGroups() {
       const groups = {};
       for (const unit of this.filteredUnits) {
@@ -638,6 +775,15 @@ export default {
     },
   },
 
+  watch: {
+    internalYear() {
+      this.applyYearFilter();
+    },
+    refreshKey() {
+      this.findAllRentals();
+    },
+  },
+
   methods: {
     getActiveRentalId(subUnits) {
       const subWithRental = subUnits?.find((s) => s.rental);
@@ -654,7 +800,10 @@ export default {
           genderAssignment: u.genderAssignment || null,
           unitType: u.unitType,
           unitYear: Number(u.unitYear) || 2026,
-          subUnits: u.subUnits || [],
+          subUnits: (u.subUnits || []).map((s) => ({
+            ...s,
+            identifier: s.roomType || s.bedType || s.type || null,
+          })),
         }));
       } catch (err) {
         console.error("Error fetching units:", err);
@@ -704,7 +853,7 @@ export default {
 
         const unitRows = units.map((unit) => {
           const subUnits = unit.subUnits.map((sub) => {
-            const identifier = sub.roomType || sub.bedType || sub.type;
+            const identifier = sub.identifier;
 
             const directMatch = rentalsWithUsers.find(
               (r) =>
@@ -735,6 +884,7 @@ export default {
               }
 
               return {
+                ...sub,
                 identifier,
                 rental: directMatch,
                 viewContext,
@@ -785,6 +935,7 @@ export default {
               }
 
               return {
+                ...sub,
                 identifier,
                 rental: linkedMatch,
                 viewContext: "extendedFrom",
@@ -793,6 +944,7 @@ export default {
             }
 
             return {
+              ...sub,
               identifier,
               rental: null,
               viewContext: null,
@@ -802,6 +954,7 @@ export default {
 
           const occupiedCount = subUnits.filter((s) => s.rental).length;
           const totalCount = subUnits.length;
+          const reservedCount = subUnits.filter((s) => s.reservedAt).length;
 
           return {
             _id: unit._id,
@@ -814,17 +967,20 @@ export default {
             occupiedCount,
             totalCount,
             emptyCount: totalCount - occupiedCount,
+            reservedCount,
           };
         });
 
         this.availableYears = [...new Set(units.map((u) => u.unitYear))].sort(
           (a, b) => a - b
         );
+
+        //   default the shared year if needed
         if (
-          !this.selectedYear ||
-          !this.availableYears.includes(this.selectedYear)
+          !this.internalYear ||
+          !this.availableYears.includes(this.internalYear)
         ) {
-          this.selectedYear = this.availableYears[0] ?? 2026;
+          this.internalYear = this.availableYears[0] ?? 2026;
         }
 
         this.allUnitRows = unitRows;
@@ -842,7 +998,7 @@ export default {
 
     applyYearFilter() {
       const yearFiltered = this.allUnitRows.filter(
-        (u) => u.unitYear === this.selectedYear
+        (u) => u.unitYear === this.internalYear
       );
 
       const parseUnitNumber = (unitNumber) => {
@@ -863,10 +1019,76 @@ export default {
     },
 
     toggleExpand(unitId) {
-      if (this.expandedUnitIds.has(unitId)) {
-        this.expandedUnitIds.delete(unitId);
-      } else {
-        this.expandedUnitIds.add(unitId);
+      this.expandedUnitId =
+        String(this.expandedUnitId) === String(unitId) ? null : unitId;
+    },
+
+    async toggleSubUnitReservation(unitRow, sub, subIndex) {
+      const isReserved = !!sub.reservedAt;
+      const unitId = unitRow._id;
+      const rawIndex = subIndex;
+
+      const confirmMessage = isReserved
+        ? `Unreserve "${sub.identifier}"?`
+        : `Reserve "${sub.identifier}"?`;
+
+      this.$q
+        .dialog({
+          title: isReserved ? "Confirm Unreserve" : "Confirm Reserve",
+          message: confirmMessage,
+          color: isReserved ? "negative" : "primary",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(async () => {
+          try {
+            const userId = (await this.getCurrentUserId()) || undefined;
+
+            if (isReserved) {
+              await UnitService.cancelReserveRoom(unitId, rawIndex, userId);
+              sub.reservedAt = null;
+              sub.reservedBy = null;
+            } else {
+              await UnitService.reserveRoom(unitId, rawIndex, userId);
+              sub.reservedAt = new Date().toISOString();
+              sub.reservedBy = userId;
+            }
+
+            unitRow.reservedCount = unitRow.subUnits.filter(
+              (s) => s.reservedAt
+            ).length;
+
+            this.$q.notify({
+              type: "positive",
+              color: "primary",
+              message: isReserved
+                ? "Sub-unit unreserved."
+                : "Sub-unit reserved.",
+            });
+
+            this.$emit("refresh");
+          } catch (error) {
+            console.error("Reserve toggle error:", error);
+            this.$q.notify({
+              type: "negative",
+              message:
+                error.response?.data?.error ||
+                error.message ||
+                "Failed to update reservation.",
+            });
+          }
+        });
+    },
+
+    async getCurrentUserId() {
+      if (this._cachedUserId) return this._cachedUserId;
+      try {
+        const user = await UserService.FindUserByToken();
+        this._cachedUserId = user?._id || null;
+        return this._cachedUserId;
+      } catch (err) {
+        console.warn("Could not resolve current admin user id:", err);
+        return null;
       }
     },
 
@@ -905,7 +1127,7 @@ export default {
               });
               this.renewalHistoryDialog = false;
               this.selectedRenewalRental = null;
-              this.findAllRentals();
+              this.$emit("refresh");
             }
           } catch (error) {
             this.$q.notify({
@@ -938,7 +1160,7 @@ export default {
               color: "primary",
               message: "Rental moved to Pending!",
             });
-            this.findAllRentals();
+            this.$emit("refresh");
           } else {
             this.$q.notify({
               type: "negative",
@@ -965,7 +1187,7 @@ export default {
               color: "primary",
               message: "Delete successful!",
             });
-            this.findAllRentals();
+            this.$emit("refresh");
           } else {
             this.$q.notify({
               type: "negative",
@@ -994,7 +1216,7 @@ export default {
               color: "primary",
               message: "Rental Ended successful!",
             });
-            this.findAllRentals();
+            this.$emit("refresh");
           } else {
             this.$q.notify({
               type: "negative",
@@ -1021,13 +1243,13 @@ export default {
     handleExtendClose() {
       this.extendDialog = false;
       this.selectedRentalForExtend = null;
-      this.findAllRentals();
+      this.$emit("refresh");
     },
 
     handleApprovalClose() {
       this.approvalDialog = false;
       this.selectedRentalForApproval = null;
-      this.findAllRentals();
+      this.$emit("refresh");
     },
   },
 
@@ -1045,7 +1267,6 @@ export default {
   padding: 8px 16px;
   gap: 8px;
 
-  // All cells share the same line-height so rows don't jump in height
   > div {
     display: flex;
     align-items: center;
@@ -1056,23 +1277,34 @@ export default {
   }
 }
 
-// Fixed widths — tune these to taste
-.col-room    { flex: 0 0 200px; font-weight: 500; }
-.col-name    { flex: 1 1 180px; min-width: 140px; }
-.col-phone   { flex: 0 0 130px; }
-.col-email   { flex: 1 1 220px; min-width: 160px; }
-.col-gender  { flex: 0 0 90px; }
-.col-renewed { flex: 0 0 180px; }
-.col-history { flex: 0 0 140px; }
-.col-actions { flex: 0 0 auto; justify-content: flex-end; }
-
-// .sub-unit-item {
-//   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-// }
-
-// .sub-unit-item:last-child {
-//   border-bottom: none;
-// }
+.col-room {
+  flex: 0 0 200px;
+  font-weight: 500;
+}
+.col-name {
+  flex: 1 1 180px;
+  min-width: 140px;
+}
+.col-phone {
+  flex: 0 0 130px;
+}
+.col-email {
+  flex: 1 1 220px;
+  min-width: 160px;
+}
+.col-gender {
+  flex: 0 0 90px;
+}
+.col-renewed {
+  flex: 0 0 180px;
+}
+.col-history {
+  flex: 0 0 140px;
+}
+.col-actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
 
 .mobile-view {
   display: none;
@@ -1104,18 +1336,31 @@ export default {
 
 .view-toggle {
   :deep(.q-btn) {
-    padding: 8px 20px; /* ✅ generous horizontal padding */
-    min-height: 36px; /* ✅ taller buttons */
+    padding: 8px 20px;
+    min-height: 36px;
     font-weight: 600;
     font-size: 13px;
   }
 
   :deep(.q-btn__content) {
-    gap: 8px; /* ✅ space between icon and label */
+    gap: 8px;
   }
 
   :deep(.q-btn .q-icon) {
-    font-size: 18px; /* ✅ bigger icons */
+    font-size: 18px;
   }
+}
+
+.sub-unit-item.sub-unit-item--reserved {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  border-left: 3px solid #757575 !important;
+}
+
+.sub-unit-item.sub-unit-item--reserved:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.unit-row--has-reserved) {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 </style>

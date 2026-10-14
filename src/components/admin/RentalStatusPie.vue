@@ -20,7 +20,7 @@ export default {
   name: "RentalStatusPie",
 
   props: {
-    // ✅ Receive pre-fetched rentals from parent
+    //  Receive pre-fetched rentals from parent
     rentals: {
       type: Array,
       default: () => [],

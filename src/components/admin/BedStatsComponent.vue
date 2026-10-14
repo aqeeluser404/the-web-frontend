@@ -3,18 +3,16 @@
     <q-card-section class="stats-header row justify-between items-center">
       <div class="text-h6">Bed Occupancy Stats</div>
       <q-select
-        v-model="selectedYear"
+        v-model="internalYear"
         :options="availableYears"
         dense
         filled
         :disable="loading || availableYears.length === 0"
         style="min-width: 120px"
-        @update:model-value="onYearChange"
       />
       <q-separator class="q-my-sm" style="width: 100%" />
     </q-card-section>
 
-    <!-- ✅ Loading state -->
     <q-card-section
       v-if="loading"
       class="row justify-center items-center"
@@ -28,7 +26,6 @@
       </div>
     </q-card-section>
 
-    <!-- ✅ Loaded state -->
     <q-card-section v-else class="row justify-between">
       <q-card
         v-for="item in items"
@@ -62,19 +59,35 @@ import UnitService from "src/services/api/UnitService";
 export default {
   name: "BedOccupancyStats",
 
+  props: {
+    refreshKey: { type: Number, default: 0 },
+    selectedYear: { type: [Number, String], default: null },
+  },
+
+  emits: ["update:selected-year"],
+
   data() {
     return {
       rentals: [],
       units: [],
-      loading: true,               // ✅ start loading
+      loading: true,
       currentYear: new Date().getFullYear(),
-      selectedYear: null,
     };
   },
 
   computed: {
+    //   v-model bridge: reads parent's selectedYear, writes back to it
+    internalYear: {
+      get() {
+        return this.selectedYear;
+      },
+      set(val) {
+        this.$emit("update:selected-year", val);
+      },
+    },
+
     displayYear() {
-      return this.selectedYear;
+      return this.internalYear;
     },
 
     availableYears() {
@@ -98,6 +111,18 @@ export default {
       return this.unitsCurrentYear.reduce((total, unit) => {
         const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
         return total + subUnits.length;
+      }, 0);
+    },
+
+    reservedInYear() {
+      return this.unitsCurrentYear.reduce((total, unit) => {
+        const subUnits = Array.isArray(unit.subUnits) ? unit.subUnits : [];
+        return (
+          total +
+          subUnits.filter(
+            (s) => s.reservedAt != null && s.isAvailable !== false
+          ).length
+        );
       }, 0);
     },
 
@@ -126,7 +151,7 @@ export default {
     },
 
     occupiedCurrentYear() {
-      return this.occupiedCurrentYearRentals.length;
+      return this.occupiedCurrentYearRentals.length + this.reservedInYear;
     },
 
     renewedInYear() {
@@ -139,7 +164,7 @@ export default {
     },
 
     confirmedInYear() {
-      return this.occupiedCurrentYearRentals.filter((rental) => {
+      const freshRentals = this.occupiedCurrentYearRentals.filter((rental) => {
         if (
           !Array.isArray(rental.renewalHistory) ||
           rental.renewalHistory.length === 0
@@ -150,6 +175,8 @@ export default {
           (entry) => Number(entry.toYear) === this.displayYear
         );
       }).length;
+
+      return freshRentals + this.reservedInYear;
     },
 
     availableInYear() {
@@ -157,7 +184,6 @@ export default {
     },
 
     items() {
-      // ✅ Guard: don't render labels with null year
       const year = this.displayYear ?? this.currentYear;
 
       return [
@@ -170,7 +196,7 @@ export default {
         {
           title: `${year} OCCUPIED`,
           value: this.occupiedCurrentYear,
-          subtitle: `(ACTIVE ${year} OCCUPANTS)`,
+          subtitle: `(ACTIVE ${year} + ${this.reservedInYear} RESERVED)`,
           icon: "event",
         },
         {
@@ -182,7 +208,7 @@ export default {
         {
           title: `${year} CONFIRMED`,
           value: this.confirmedInYear,
-          subtitle: `(NEW ${year} BOOKINGS)`,
+          subtitle: `(NEW BOOKINGS + ${this.reservedInYear} RESERVED)`,
           icon: "person_add",
         },
         {
@@ -195,15 +221,17 @@ export default {
     },
   },
 
+  watch: {
+    refreshKey() {
+      this.fetchStatsData();
+    },
+  },
+
   async mounted() {
     await this.fetchStatsData();
   },
 
   methods: {
-    onYearChange() {
-      console.log("Year changed to:", this.selectedYear);
-    },
-
     async fetchStatsData() {
       this.loading = true;
 
@@ -216,31 +244,17 @@ export default {
         this.rentals = Array.isArray(rentals) ? rentals : [];
         this.units = Array.isArray(units) ? units : [];
 
-        // ✅ Default to the latest year with units
+        //   default to latest year if the shared year isn't set
         if (
-          !this.selectedYear ||
-          !this.availableYears.includes(this.selectedYear)
+          !this.internalYear ||
+          !this.availableYears.includes(this.internalYear)
         ) {
           const years = this.availableYears;
-          this.selectedYear =
+          this.internalYear =
             years.length > 0
               ? years[years.length - 1]
               : this.currentYear;
         }
-
-        console.log("========== BED STATS ==========");
-        console.log("Display Year:", this.displayYear);
-        console.log(`${this.displayYear} physical beds:`, this.totalBeds);
-        console.log(`${this.displayYear} occupied:`, this.occupiedCurrentYear);
-        console.log(`${this.displayYear} renewed:`, this.renewedInYear);
-        console.log(`${this.displayYear} confirmed:`, this.confirmedInYear);
-        console.log(`${this.displayYear} available:`, this.availableInYear);
-        console.log(
-          "Check: renewed + confirmed =",
-          this.renewedInYear + this.confirmedInYear,
-          "| occupied =",
-          this.occupiedCurrentYear
-        );
       } catch (error) {
         console.error("Failed to load occupancy statistics:", error);
       } finally {

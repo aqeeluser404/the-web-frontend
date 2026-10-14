@@ -688,11 +688,11 @@ export default {
   },
   computed: {
     showVerifyButton() {
-      // ✅ Email verification check
+      //  Email verification check
       const emailUnverified =
         this.userDetails?.verification?.isVerified === false;
 
-      // ✅ Guardian verification check - only if guardianEmail exists
+      //  Guardian verification check - only if guardianEmail exists
       const hasGuardianEmail = !!this.userDetails?.guardianEmail;
       const guardianUnverified =
         hasGuardianEmail &&

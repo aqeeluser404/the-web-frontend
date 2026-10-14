@@ -4,48 +4,28 @@
       class="constrain-standard q-pt-md q-pb-md row justify-center"
       v-show="!loading"
     >
-      <BedStatsComponent />
+      <BedStatsComponent
+        :refresh-key="refreshKey"
+        v-model:selected-year="selectedYear"
+      />
     </div>
 
     <div
       class="constrain-standard q-pb-md row justify-center"
       v-show="!loading"
     >
-      <BedGraphComponent class="col-md-12 col-12" />
-
-      <!-- <div class="col-md-3 col-12" :class="$q.screen.gt.sm ? 'q-mt-none' : 'q-mt-md'">
-        <RentalStatusPie
-          :rentals="currentRentals"
-          :class="$q.screen.gt.sm ? 'q-ml-md' : 'q-ml-none'"
-          @filter-status="filterRentalsByChart"
-        />
-      </div> -->
+      <BedGraphComponent
+        :refresh-key="refreshKey"
+        v-model:selected-year="selectedYear"
+        class="col-md-12 col-12"
+      />
     </div>
 
-    <!-- Swappable table area -->
     <div
       class="constrain-standard row justify-center q-pb-md"
       v-show="!loading"
     >
       <div class="col-md-12 col-12 full-height">
-        <!-- Rental History Table -->
-        <!-- <RentalHistoryTable
-          v-if="activeTable === 'history'"
-          :rentals="filteredRentals"
-          :columns="rentalColumns"
-          :rental-status="rentalStatus"
-          :initial-status="selectedRentalStatus"
-          @search="handleSearch"
-          @filter-status="filterRentalsByChart"
-          @row-click="viewUserTimeline"
-          @delete="deleteRental"
-          @extend="openExtendRentalDialog"
-          @end="endRental"
-          @open="openInNewTab"
-          @download="downloadData"
-          @switch-table="activeTable = $event"
-        /> -->
-
         <RentalHistoryTable
           v-if="activeTable === 'history'"
           :rentals="filteredRentals"
@@ -66,9 +46,11 @@
           @switch-table="activeTable = $event"
         />
 
-        <!-- Rental Approvals Table -->
         <RentalApprovalsTable
           v-else-if="activeTable === 'approvals'"
+          :refresh-key="refreshKey"
+          v-model:selected-year="selectedYear"
+          @refresh="onChildRefresh"
           @switch-table="activeTable = $event"
         />
       </div>
@@ -121,8 +103,14 @@ export default {
 
   data() {
     return {
-      activeTable: "history", // 'history' | 'approvals'
+      activeTable: "history",
       selectedHistoryYear: null,
+
+      //   shared refresh signal
+      refreshKey: 0,
+
+      //   shared year across stats, graph, and approvals
+      selectedYear: null,
 
       loading: true,
       rentals: [],
@@ -139,7 +127,6 @@ export default {
 
       rentalColumns: [
         { name: "id", label: "Application ID", field: "_id", align: "left" },
-        // { name: "index", label: "#", field: "index", align: "center" },
         {
           name: "applicationDate",
           label: "Application Date",
@@ -158,9 +145,6 @@ export default {
           field: "userLastName",
           align: "left",
         },
-        // { name: "applicantContact", label: "Applicant Contact", field: "userPhone", align: "left" },
-        // { name: "applicantEmail", label: "Applicant Email", field: "userEmail", align: "left" },
-
         {
           name: "floorLevel",
           label: "Floor Level",
@@ -173,8 +157,6 @@ export default {
           field: "selectedSubUnits",
           align: "left",
         },
-        // { name: "startDate", label: "Start Date", field: "rentalStartDate", align: "left" },
-        // { name: "endDate", label: "End Date", field: "rentalEndDate", align: "left" },
         {
           name: "renewed",
           label: "Renewed",
@@ -201,6 +183,12 @@ export default {
   methods: {
     formatDate: Helper.formatDate,
     capitalizeFirstLetter: Helper.capitalizeFirstLetter,
+
+    //   called when any child signals a mutation
+    onChildRefresh() {
+      this.refreshKey += 1;
+      this.findAllRentals();
+    },
 
     extractFirstNumber(str) {
       if (!str) return "";
@@ -343,6 +331,7 @@ export default {
         this.loading = false;
       }
     },
+
     handleHistoryYearFilter(year) {
       this.selectedHistoryYear = year;
       this.filteredByRentalStatus();
@@ -379,14 +368,12 @@ export default {
     },
 
     filteredByRentalStatus() {
-      // 1. Year filter first — independent, always applied
       let base = this.selectedHistoryYear
         ? this.currentRentals.filter(
             (r) => Number(r.unitYear) === Number(this.selectedHistoryYear)
           )
         : this.currentRentals;
 
-      // 2. Status filter applies WITHIN that year's subset
       if (this.selectedRentalStatus && this.selectedRentalStatus !== "All") {
         base = base.filter((r) => r.status === this.selectedRentalStatus);
       }
@@ -402,7 +389,7 @@ export default {
     handleClose() {
       this.extendRentalDialog = false;
       this.selectedRental = null;
-      this.findAllRentals();
+      this.onChildRefresh();
     },
 
     async deleteRental(rental) {
@@ -423,7 +410,7 @@ export default {
               color: "primary",
               message: "Delete successful!",
             });
-            this.findAllRentals();
+            this.onChildRefresh();
           } else {
             this.$q.notify({
               type: "negative",
@@ -459,7 +446,7 @@ export default {
               color: "primary",
               message: "Rental Ended!",
             });
-            this.findAllRentals();
+            this.onChildRefresh();
           } else {
             this.$q.notify({
               type: "negative",
