@@ -184,6 +184,7 @@ export default {
         {
           title: "Private Rooms",
           images: [
+            "/assets/gallery/private room + study/DSC_5236_.jpg",
             "/assets/gallery/private room + study/prs1.jpg",
             "/assets/gallery/private room + study/prs2.jpg",
             "/assets/gallery/private room + study/prs3.jpg",
@@ -272,6 +273,8 @@ export default {
             "/assets/gallery/rest room/rr4.jpg",
             "/assets/gallery/rest room/rr1.jpg",
             "/assets/gallery/rest room/rr2.jpg",
+            "/assets/gallery/rest room/rr6.jpg",
+            "/assets/gallery/rest room/rr7.jpg",
             // "/assets/gallery/rest room/rr3.jpg",
             // "/assets/gallery/rest room/rr5.jpg",
           ],
