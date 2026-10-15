@@ -140,9 +140,7 @@ export default {
           return rental.renewalHistory.some((entry) => {
             const fromYear = Number(entry.fromYear);
             const toYear = Number(entry.toYear);
-            return (
-              fromYear === this.displayYear || toYear === this.displayYear
-            );
+            return fromYear === this.displayYear || toYear === this.displayYear;
           });
         }
 
@@ -154,17 +152,48 @@ export default {
       return this.occupiedCurrentYearRentals.length + this.reservedInYear;
     },
 
+    // renewedInYear() {
+    //   return this.occupiedCurrentYearRentals.filter((rental) => {
+    //     if (!Array.isArray(rental.renewalHistory)) return false;
+    //     return rental.renewalHistory.some(
+    //       (entry) => Number(entry.toYear) === this.displayYear
+    //     );
+    //   }).length;
+    // },
+
+    // confirmedInYear() {
+    //   const freshRentals = this.occupiedCurrentYearRentals.filter((rental) => {
+    //     if (
+    //       !Array.isArray(rental.renewalHistory) ||
+    //       rental.renewalHistory.length === 0
+    //     ) {
+    //       return true;
+    //     }
+    //     return !rental.renewalHistory.some(
+    //       (entry) => Number(entry.toYear) === this.displayYear
+    //     );
+    //   }).length;
+
+    //   return freshRentals + this.reservedInYear;
+    // },
+
     renewedInYear() {
-      return this.occupiedCurrentYearRentals.filter((rental) => {
-        if (!Array.isArray(rental.renewalHistory)) return false;
-        return rental.renewalHistory.some(
-          (entry) => Number(entry.toYear) === this.displayYear
-        );
-      }).length;
+      const renewedRentals = this.occupiedCurrentYearRentals.filter(
+        (rental) => {
+          if (!Array.isArray(rental.renewalHistory)) return false;
+          return rental.renewalHistory.some(
+            (entry) => Number(entry.toYear) === this.displayYear
+          );
+        }
+      ).length;
+
+      // ✅ Reserved sub-units now count toward Renewed
+      return renewedRentals + this.reservedInYear;
     },
 
     confirmedInYear() {
-      const freshRentals = this.occupiedCurrentYearRentals.filter((rental) => {
+      // ✅ Fresh rentals only — no reserved added here
+      return this.occupiedCurrentYearRentals.filter((rental) => {
         if (
           !Array.isArray(rental.renewalHistory) ||
           rental.renewalHistory.length === 0
@@ -175,8 +204,6 @@ export default {
           (entry) => Number(entry.toYear) === this.displayYear
         );
       }).length;
-
-      return freshRentals + this.reservedInYear;
     },
 
     availableInYear() {
@@ -196,19 +223,33 @@ export default {
         {
           title: `${year} OCCUPIED`,
           value: this.occupiedCurrentYear,
-          subtitle: `(ACTIVE ${year} + ${this.reservedInYear} RESERVED)`,
+          subtitle: `(ACTIVE ${year})`,
+          // subtitle: `(ACTIVE ${year} + ${this.reservedInYear} RESERVED)`,
           icon: "event",
         },
+        // {
+        //   title: `${year} RENEWED`,
+        //   value: this.renewedInYear,
+        //   subtitle: `(RENEWED INTO ${year})`,
+        //   icon: "autorenew",
+        // },
+        // {
+        //   title: `${year} CONFIRMED`,
+        //   value: this.confirmedInYear,
+        //   subtitle: `(NEW BOOKINGS + ${this.reservedInYear} RESERVED)`,
+        //   icon: "person_add",
+        // },
         {
           title: `${year} RENEWED`,
           value: this.renewedInYear,
           subtitle: `(RENEWED INTO ${year})`,
+          // subtitle: `(RENEWED INTO ${year} + ${this.reservedInYear} RESERVED)`,
           icon: "autorenew",
         },
         {
           title: `${year} CONFIRMED`,
           value: this.confirmedInYear,
-          subtitle: `(NEW BOOKINGS + ${this.reservedInYear} RESERVED)`,
+          subtitle: `(NEW ${year} BOOKINGS)`,
           icon: "person_add",
         },
         {
@@ -251,9 +292,7 @@ export default {
         ) {
           const years = this.availableYears;
           this.internalYear =
-            years.length > 0
-              ? years[years.length - 1]
-              : this.currentYear;
+            years.length > 0 ? years[years.length - 1] : this.currentYear;
         }
       } catch (error) {
         console.error("Failed to load occupancy statistics:", error);
