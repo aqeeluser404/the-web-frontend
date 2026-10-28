@@ -892,56 +892,102 @@ export default {
               };
             }
 
-            const linkedMatch = rentalsWithUsers.find((r) => {
-              if (
-                !r.renewalHistory ||
-                r.renewalHistory.length === 0 ||
-                r.status !== "Active"
-              ) {
-                return false;
-              }
+            // const linkedMatch = rentalsWithUsers.find((r) => {
+            //   if (
+            //     !r.renewalHistory ||
+            //     r.renewalHistory.length === 0 ||
+            //     r.status !== "Active"
+            //   ) {
+            //     return false;
+            //   }
 
-              const entryIndex = r.renewalHistory.findIndex(
-                (h) =>
-                  String(h.fromUnit) === String(unit._id) &&
-                  (h.fromSubUnit?.roomType === identifier ||
-                    h.fromSubUnit?.bedType === identifier)
-              );
+            //   const entryIndex = r.renewalHistory.findIndex(
+            //     (h) =>
+            //       String(h.fromUnit) === String(unit._id) &&
+            //       (h.fromSubUnit?.roomType === identifier ||
+            //         h.fromSubUnit?.bedType === identifier)
+            //   );
 
-              if (entryIndex === -1) return false;
+            //   if (entryIndex === -1) return false;
 
-              let breakIndex = -1;
-              for (let i = r.renewalHistory.length - 1; i >= 0; i--) {
-                if (r.renewalHistory[i].sameRoom === false) {
-                  breakIndex = i;
-                  break;
-                }
-              }
+            //   let breakIndex = -1;
+            //   for (let i = r.renewalHistory.length - 1; i >= 0; i--) {
+            //     if (r.renewalHistory[i].sameRoom === false) {
+            //       breakIndex = i;
+            //       break;
+            //     }
+            //   }
 
-              if (breakIndex === -1) return true;
-              return entryIndex > breakIndex;
-            });
+            //   if (breakIndex === -1) return true;
+            //   return entryIndex > breakIndex;
+            // });
 
-            if (linkedMatch) {
-              let historyEntry = null;
-              if (
-                linkedMatch.renewalHistory &&
-                linkedMatch.renewalHistory.length > 0
-              ) {
-                const entry = linkedMatch.renewalHistory.find(
-                  (h) => String(h.fromUnit) === String(unit._id)
-                );
-                if (entry) historyEntry = entry;
-              }
+const linkedMatch = rentalsWithUsers.find((r) => {
+  if (
+    !r.renewalHistory ||
+    r.renewalHistory.length === 0 ||
+    r.status !== "Active"
+  ) {
+    return false;
+  }
 
-              return {
-                ...sub,
-                identifier,
-                rental: linkedMatch,
-                viewContext: "extendedFrom",
-                historyEntry,
-              };
-            }
+  // ✅ Match ANY renewal entry whose fromUnit matches this unit and
+  //    whose fromSubUnit matches this sub-unit — even if the chain
+  //    later broke due to a room change. This keeps the rental
+  //    visible on the year it moved away from.
+  return r.renewalHistory.some(
+    (h) =>
+      String(h.fromUnit) === String(unit._id) &&
+      (h.fromSubUnit?.roomType === identifier ||
+        h.fromSubUnit?.bedType === identifier)
+  );
+});
+
+            // if (linkedMatch) {
+            //   let historyEntry = null;
+            //   if (
+            //     linkedMatch.renewalHistory &&
+            //     linkedMatch.renewalHistory.length > 0
+            //   ) {
+            //     const entry = linkedMatch.renewalHistory.find(
+            //       (h) => String(h.fromUnit) === String(unit._id)
+            //     );
+            //     if (entry) historyEntry = entry;
+            //   }
+
+            //   return {
+            //     ...sub,
+            //     identifier,
+            //     rental: linkedMatch,
+            //     viewContext: "extendedFrom",
+            //     historyEntry,
+            //   };
+            // }
+
+if (linkedMatch) {
+  let historyEntry = null;
+  if (
+    linkedMatch.renewalHistory &&
+    linkedMatch.renewalHistory.length > 0
+  ) {
+    // ✅ Pick the specific history entry that references this unit + sub-unit
+    const entry = linkedMatch.renewalHistory.find(
+      (h) =>
+        String(h.fromUnit) === String(unit._id) &&
+        (h.fromSubUnit?.roomType === identifier ||
+          h.fromSubUnit?.bedType === identifier)
+    );
+    if (entry) historyEntry = entry;
+  }
+
+  return {
+    ...sub,
+    identifier,
+    rental: linkedMatch,
+    viewContext: "extendedFrom",
+    historyEntry,
+  };
+}
 
             return {
               ...sub,
@@ -952,23 +998,44 @@ export default {
             };
           });
 
-          const occupiedCount = subUnits.filter((s) => s.rental).length;
-          const totalCount = subUnits.length;
-          const reservedCount = subUnits.filter((s) => s.reservedAt).length;
+          // const occupiedCount = subUnits.filter((s) => s.rental).length;
+          // const totalCount = subUnits.length;
+          // const reservedCount = subUnits.filter((s) => s.reservedAt).length;
 
-          return {
-            _id: unit._id,
-            unitNumber: unit.unitNumber,
-            floorLevel: unit.floorLevel,
-            unitType: unit.unitType,
-            unitYear: unit.unitYear,
-            genderAssignment: unit.genderAssignment,
-            subUnits,
-            occupiedCount,
-            totalCount,
-            emptyCount: totalCount - occupiedCount,
-            reservedCount,
-          };
+          // return {
+          //   _id: unit._id,
+          //   unitNumber: unit.unitNumber,
+          //   floorLevel: unit.floorLevel,
+          //   unitType: unit.unitType,
+          //   unitYear: unit.unitYear,
+          //   genderAssignment: unit.genderAssignment,
+          //   subUnits,
+          //   occupiedCount,
+          //   totalCount,
+          //   emptyCount: totalCount - occupiedCount,
+          //   reservedCount,
+          // };
+
+// ✅ A bed counts as "occupied" for the header if it's rented OR reserved
+const occupiedCount = subUnits.filter(
+  (s) => s.rental || s.reservedAt
+).length;
+const totalCount = subUnits.length;
+const reservedCount = subUnits.filter((s) => s.reservedAt).length;
+
+return {
+  _id: unit._id,
+  unitNumber: unit.unitNumber,
+  floorLevel: unit.floorLevel,
+  unitType: unit.unitType,
+  unitYear: unit.unitYear,
+  genderAssignment: unit.genderAssignment,
+  subUnits,
+  occupiedCount,
+  totalCount,
+  emptyCount: totalCount - occupiedCount,
+  reservedCount,
+};
         });
 
         this.availableYears = [...new Set(units.map((u) => u.unitYear))].sort(

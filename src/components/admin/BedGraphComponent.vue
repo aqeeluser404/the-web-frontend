@@ -278,6 +278,49 @@ export default {
         stats.secondFloor.total +
         stats.thirdFloor.total;
 
+          // ✅ PASTE THIS RIGHT HERE — before `this.stats = stats;`
+  const occupiedIds = [];
+  this.filteredUnits.forEach((unit) => {
+    (unit.subUnits || []).forEach((sub) => {
+      const id = sub.roomType || sub.bedType;
+      const occupiedByRental = this.rentals.some((r) => {
+        const tid = String(unit._id);
+        const refs =
+          String(r.unit) === tid ||
+          (Array.isArray(r.renewalHistory) &&
+            r.renewalHistory.some(
+              (e) => String(e.fromUnit) === tid || String(e.toUnit) === tid
+            ));
+        if (!refs) return false;
+        const oid = this.rentalOccupiedIdentifier(r, this.internalYear);
+        return oid === id;
+      });
+      const occupiedByReservation =
+        sub.reservedAt != null && sub.isAvailable !== false;
+      if (occupiedByRental || occupiedByReservation) {
+        occupiedIds.push({
+          unit: unit.unitNumber,
+          sub: id,
+          byRental: occupiedByRental,
+          byReservation: occupiedByReservation,
+          reservedAt: sub.reservedAt,
+          isAvailable: sub.isAvailable,
+        });
+      }
+    });
+  });
+
+  console.log("[CHART] total:", occupiedIds.length);
+  console.log("[CHART] by rental:", occupiedIds.filter((o) => o.byRental).length);
+  console.log(
+    "[CHART] by reservation only:",
+    occupiedIds.filter((o) => o.byReservation && !o.byRental).length
+  );
+  console.log(
+    "[CHART] both:",
+    occupiedIds.filter((o) => o.byRental && o.byReservation).length
+  );
+
       this.stats = stats;
     },
 

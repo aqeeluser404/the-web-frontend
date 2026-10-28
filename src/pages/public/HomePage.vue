@@ -137,7 +137,8 @@
 
     <!-- Location Section -->
     <section id="location-section" class="location-section">
-      <div class="padding-b-xl constrain-standard">
+      <div class="padding-y-xl constrain-standard">
+        <div class="section-spacer-sm"></div>
         <div class="location-content bg-transparent column items-center full-width">
           <div class="location-info fade-in-scale">
             <div class="text-h6 text-center section-label large-screen-only">
@@ -158,302 +159,302 @@
             </div>
 
             <div class="location-grid row justify-between">
-<div class="col-md-12 col-12 q-gutter-y-sm padding-y-xl">
-  <!-- ============================ -->
-  <!-- WALKING — already fixed -->
-  <!-- ============================ -->
-  <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
-    <q-expansion-item
-      v-model="expanded[0]"
-      @hide="expanded[0] = false"
-      @click="handleExpansion(0)"
-      header-class="text-h6 text-left q-pa-md"
-      expand-icon-class="text-black"
-      style="border: 1px solid #ccc"
-      @show="setSlide(1, $event)"
-    >
-      <template v-slot:header>
-        <div class="full-width row items-center">
-          <div class="text-h6">Within walking or easy cycling distance</div>
-        </div>
-      </template>
-      <div class="q-pa-lg row justify-between items-start">
-        <div class="col-md-6 col-12">
-          <ul class="custom-list text-h6">
-            <li><span class="tick-emoji">✔️</span> Stellenbosch University main campus</li>
-            <li><span class="tick-emoji">✔️</span> Spar Convenience Centre for groceries and daily needs</li>
-            <li><span class="tick-emoji">✔️</span> Trendy cafés, takeaways, and student hangouts</li>
-            <li><span class="tick-emoji">✔️</span> University Shuttle Service access point</li>
-            <li>
-              <span class="tick-emoji">✔️</span> Jan S Marais Park - perfect for:
-              <ul style="list-style: disc inside; padding-left: 1.5rem;">
-                <li>Outdoor study sessions</li>
-                <li>Picnics</li>
-              </ul>
-            </li>
-            <li><span class="tick-emoji">✔️</span> Coetzenburg high-performance sports precinct</li>
-          </ul>
-        </div>
-        <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
-          <section class="location-carousel-section border-radius">
-            <q-carousel
-              animated
-              v-model="walkingSlide"
-              transition-prev="slide-left"
-              transition-next="slide-left"
-              transition-duration="600"
-              autoplay
-              infinite
-              :autoplay-interval="32000"
-              :height="$q.screen.lt.sm ? '340px' : '450px'"
-              control-color="white"
-              class="location-carousel__container"
-            >
-              <q-carousel-slide
-                v-for="card in walkingCards"
-                :key="card._id"
-                :name="card._id"
-                class="location-carousel__slide"
-              >
-                <q-img
-                  :src="card.imageUrl"
-                  :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                  class="location-carousel__image"
-                  fit="cover"
-                  loading="eager"
-                  no-transition
-                />
-              </q-carousel-slide>
-            </q-carousel>
-          </section>
-        </div>
-      </div>
-    </q-expansion-item>
-  </div>
+            <div class="col-md-12 col-12 q-gutter-y-sm padding-y-xl">
+              <!-- ============================ -->
+              <!-- WALKING — already fixed -->
+              <!-- ============================ -->
+              <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
+                <q-expansion-item
+                  v-model="expanded[0]"
+                  @hide="expanded[0] = false"
+                  @click="handleExpansion(0)"
+                  header-class="text-h6 text-left q-pa-md"
+                  expand-icon-class="text-black"
+                  style="border: 1px solid #ccc"
+                  @show="setSlide(1, $event)"
+                >
+                  <template v-slot:header>
+                    <div class="full-width row items-center">
+                      <div class="text-h6">Within walking or easy cycling distance</div>
+                    </div>
+                  </template>
+                  <div class="q-pa-lg row justify-between items-start">
+                    <div class="col-md-6 col-12">
+                      <ul class="custom-list text-h6">
+                        <li><span class="tick-emoji">✔️</span> Stellenbosch University main campus</li>
+                        <li><span class="tick-emoji">✔️</span> Spar Convenience Centre for groceries and daily needs</li>
+                        <li><span class="tick-emoji">✔️</span> Trendy cafés, takeaways, and student hangouts</li>
+                        <li><span class="tick-emoji">✔️</span> University Shuttle Service access point</li>
+                        <li>
+                          <span class="tick-emoji">✔️</span> Jan S Marais Park - perfect for:
+                          <ul style="list-style: disc inside; padding-left: 1.5rem;">
+                            <li>Outdoor study sessions</li>
+                            <li>Picnics</li>
+                          </ul>
+                        </li>
+                        <li><span class="tick-emoji">✔️</span> Coetzenburg high-performance sports precinct</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
+                      <section class="location-carousel-section border-radius">
+                        <q-carousel
+                          animated
+                          v-model="walkingSlide"
+                          transition-prev="slide-left"
+                          transition-next="slide-left"
+                          transition-duration="600"
+                          autoplay
+                          infinite
+                          :autoplay-interval="32000"
+                          :height="$q.screen.lt.sm ? '340px' : '450px'"
+                          control-color="white"
+                          class="location-carousel__container"
+                        >
+                          <q-carousel-slide
+                            v-for="card in walkingCards"
+                            :key="card._id"
+                            :name="card._id"
+                            class="location-carousel__slide"
+                          >
+                            <q-img
+                              :src="card.imageUrl"
+                              :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
+                              class="location-carousel__image"
+                              fit="cover"
+                              loading="eager"
+                              no-transition
+                            />
+                          </q-carousel-slide>
+                        </q-carousel>
+                      </section>
+                    </div>
+                  </div>
+                </q-expansion-item>
+              </div>
 
-  <!-- ============================ -->
-  <!-- NATURE -->
-  <!-- ============================ -->
-  <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
-    <q-expansion-item
-      v-model="expanded[1]"
-      @hide="expanded[1] = false"
-      @click="handleExpansion(1)"
-      header-class="text-h6 text-left q-pa-md"
-      @show="setSlide(1, $event)"
-      expand-icon-class="text-black"
-      style="border: 1px solid #ccc"
-    >
-      <template v-slot:header>
-        <div class="full-width row items-center">
-          <div class="full-width text-h6">Surrounded by nature and adventure</div>
-        </div>
-      </template>
-      <div class="q-pa-lg row justify-between items-start">
-        <div class="col-md-6 col-12">
-          <p class="text-h6">Explore breathtaking natural reserves and trails nearby:</p>
-          <ul class="custom-list text-h6">
-            <li><span class="tick-emoji">✔️</span> Idas Valley Nature Reserve right in your backyard</li>
-            <li><span class="tick-emoji">✔️</span> Incredible views of the Simonsberg and Jonkershoek mountain ranges</li>
-            <li>
-              <span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve - world renowned for:
-              <ul style="list-style: disc inside; padding-left: 1.5rem;">
-                <li>Mountain biking</li>
-                <li>Hiking</li>
-                <li>Trail running</li>
-              </ul>
-            </li>
-            <li>
-              <span class="tick-emoji">✔️</span> Network of cycling and hiking trails through:
-              <ul style="list-style: disc inside; padding-left: 1.5rem;">
-                <li>Pine forests, fynbos, and mountain passes</li>
-                <li>Perfect for beginners and advanced riders</li>
-                <li>Guided tours available</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
-          <section class="location-carousel-section border-radius">
-            <q-carousel
-              animated
-              v-model="natureSlide"
-              transition-prev="slide-left"
-              transition-next="slide-left"
-              transition-duration="600"
-              autoplay
-              infinite
-              :autoplay-interval="32000"
-              :height="$q.screen.lt.sm ? '340px' : '450px'"
-              control-color="white"
-              class="location-carousel__container"
-            >
-              <q-carousel-slide
-                v-for="card in natureCards"
-                :key="card._id"
-                :name="card._id"
-                class="location-carousel__slide"
-              >
-                <q-img
-                  :src="card.imageUrl"
-                  :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                  class="location-carousel__image"
-                  fit="cover"
-                  loading="eager"
-                  no-transition
-                />
-              </q-carousel-slide>
-            </q-carousel>
-          </section>
-        </div>
-      </div>
-    </q-expansion-item>
-  </div>
+              <!-- ============================ -->
+              <!-- NATURE -->
+              <!-- ============================ -->
+              <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
+                <q-expansion-item
+                  v-model="expanded[1]"
+                  @hide="expanded[1] = false"
+                  @click="handleExpansion(1)"
+                  header-class="text-h6 text-left q-pa-md"
+                  @show="setSlide(1, $event)"
+                  expand-icon-class="text-black"
+                  style="border: 1px solid #ccc"
+                >
+                  <template v-slot:header>
+                    <div class="full-width row items-center">
+                      <div class="full-width text-h6">Surrounded by nature and adventure</div>
+                    </div>
+                  </template>
+                  <div class="q-pa-lg row justify-between items-start">
+                    <div class="col-md-6 col-12">
+                      <p class="text-h6">Explore breathtaking natural reserves and trails nearby:</p>
+                      <ul class="custom-list text-h6">
+                        <li><span class="tick-emoji">✔️</span> Idas Valley Nature Reserve right in your backyard</li>
+                        <li><span class="tick-emoji">✔️</span> Incredible views of the Simonsberg and Jonkershoek mountain ranges</li>
+                        <li>
+                          <span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve - world renowned for:
+                          <ul style="list-style: disc inside; padding-left: 1.5rem;">
+                            <li>Mountain biking</li>
+                            <li>Hiking</li>
+                            <li>Trail running</li>
+                          </ul>
+                        </li>
+                        <li>
+                          <span class="tick-emoji">✔️</span> Network of cycling and hiking trails through:
+                          <ul style="list-style: disc inside; padding-left: 1.5rem;">
+                            <li>Pine forests, fynbos, and mountain passes</li>
+                            <li>Perfect for beginners and advanced riders</li>
+                            <li>Guided tours available</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
+                      <section class="location-carousel-section border-radius">
+                        <q-carousel
+                          animated
+                          v-model="natureSlide"
+                          transition-prev="slide-left"
+                          transition-next="slide-left"
+                          transition-duration="600"
+                          autoplay
+                          infinite
+                          :autoplay-interval="32000"
+                          :height="$q.screen.lt.sm ? '340px' : '450px'"
+                          control-color="white"
+                          class="location-carousel__container"
+                        >
+                          <q-carousel-slide
+                            v-for="card in natureCards"
+                            :key="card._id"
+                            :name="card._id"
+                            class="location-carousel__slide"
+                          >
+                            <q-img
+                              :src="card.imageUrl"
+                              :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
+                              class="location-carousel__image"
+                              fit="cover"
+                              loading="eager"
+                              no-transition
+                            />
+                          </q-carousel-slide>
+                        </q-carousel>
+                      </section>
+                    </div>
+                  </div>
+                </q-expansion-item>
+              </div>
 
-  <!-- ============================ -->
-  <!-- WEEKEND -->
-  <!-- ============================ -->
-  <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
-    <q-expansion-item
-      v-model="expanded[2]"
-      @hide="expanded[2] = false"
-      @click="handleExpansion(2)"
-      header-class="text-h6 text-left q-pa-md"
-      @show="setSlide(1, $event)"
-      expand-icon-class="text-black"
-      style="border: 1px solid #ccc"
-    >
-      <template v-slot:header>
-        <div class="full-width row items-center">
-          <div class="full-width text-h6">Weekend escapes</div>
-        </div>
-      </template>
-      <div class="q-pa-lg row justify-between items-start">
-        <div class="col-md-6 col-12">
-          <p class="text-h6">Surrounded by stunning nature destinations that include:</p>
-          <ul class="custom-list text-h6">
-            <li><span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve</li>
-            <li><span class="tick-emoji">✔️</span> Helderberg Nature Reserve</li>
-            <li><span class="tick-emoji">✔️</span> Strand Beach</li>
-            <li><span class="tick-emoji">✔️</span> Stellenbosch Botanical Garden</li>
-            <li><span class="tick-emoji">✔️</span> Coetzenburg Hiking Trails</li>
-          </ul>
-          <p class="text-h6">Ideal for long lunches, scenic views, and the perfect break from the books.</p>
-        </div>
-        <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
-          <section class="location-carousel-section border-radius">
-            <q-carousel
-              animated
-              v-model="weekendSlide"
-              transition-prev="slide-left"
-              transition-next="slide-left"
-              transition-duration="600"
-              autoplay
-              infinite
-              :autoplay-interval="32000"
-              :height="$q.screen.lt.sm ? '340px' : '450px'"
-              control-color="white"
-              class="location-carousel__container"
-            >
-              <q-carousel-slide
-                v-for="card in weekendCards"
-                :key="card._id"
-                :name="card._id"
-                class="location-carousel__slide"
-              >
-                <q-img
-                  :src="card.imageUrl"
-                  :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                  class="location-carousel__image"
-                  fit="cover"
-                  loading="eager"
-                  no-transition
-                />
-              </q-carousel-slide>
-            </q-carousel>
-          </section>
-        </div>
-      </div>
-    </q-expansion-item>
-  </div>
+              <!-- ============================ -->
+              <!-- WEEKEND -->
+              <!-- ============================ -->
+              <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
+                <q-expansion-item
+                  v-model="expanded[2]"
+                  @hide="expanded[2] = false"
+                  @click="handleExpansion(2)"
+                  header-class="text-h6 text-left q-pa-md"
+                  @show="setSlide(1, $event)"
+                  expand-icon-class="text-black"
+                  style="border: 1px solid #ccc"
+                >
+                  <template v-slot:header>
+                    <div class="full-width row items-center">
+                      <div class="full-width text-h6">Weekend escapes</div>
+                    </div>
+                  </template>
+                  <div class="q-pa-lg row justify-between items-start">
+                    <div class="col-md-6 col-12">
+                      <p class="text-h6">Surrounded by stunning nature destinations that include:</p>
+                      <ul class="custom-list text-h6">
+                        <li><span class="tick-emoji">✔️</span> Jonkershoek Nature Reserve</li>
+                        <li><span class="tick-emoji">✔️</span> Helderberg Nature Reserve</li>
+                        <li><span class="tick-emoji">✔️</span> Strand Beach</li>
+                        <li><span class="tick-emoji">✔️</span> Stellenbosch Botanical Garden</li>
+                        <li><span class="tick-emoji">✔️</span> Coetzenburg Hiking Trails</li>
+                      </ul>
+                      <p class="text-h6">Ideal for long lunches, scenic views, and the perfect break from the books.</p>
+                    </div>
+                    <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
+                      <section class="location-carousel-section border-radius">
+                        <q-carousel
+                          animated
+                          v-model="weekendSlide"
+                          transition-prev="slide-left"
+                          transition-next="slide-left"
+                          transition-duration="600"
+                          autoplay
+                          infinite
+                          :autoplay-interval="32000"
+                          :height="$q.screen.lt.sm ? '340px' : '450px'"
+                          control-color="white"
+                          class="location-carousel__container"
+                        >
+                          <q-carousel-slide
+                            v-for="card in weekendCards"
+                            :key="card._id"
+                            :name="card._id"
+                            class="location-carousel__slide"
+                          >
+                            <q-img
+                              :src="card.imageUrl"
+                              :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
+                              class="location-carousel__image"
+                              fit="cover"
+                              loading="eager"
+                              no-transition
+                            />
+                          </q-carousel-slide>
+                        </q-carousel>
+                      </section>
+                    </div>
+                  </div>
+                </q-expansion-item>
+              </div>
 
-  <!-- ============================ -->
-  <!-- SPORT -->
-  <!-- ============================ -->
-  <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
-    <q-expansion-item
-      v-model="expanded[3]"
-      @hide="expanded[3] = false"
-      @click="handleExpansion(3)"
-      header-class="text-h6 text-left q-pa-md"
-      @show="setSlide(1, $event)"
-      expand-icon-class="text-black"
-      style="border: 1px solid #ccc"
-    >
-      <template v-slot:header>
-        <div class="full-width row items-center">
-          <div class="full-width text-h6">Sporting excellence nearby</div>
-        </div>
-      </template>
-      <div class="q-pa-lg row justify-between items-start">
-        <div class="col-md-6 col-12">
-          <ul class="custom-list text-h6">
-            <li>
-              <span class="tick-emoji">✔️</span> Idas Valley Sports Ground: <br />
-              Home of -
-              <ul style="list-style: disc inside; padding-left: 1.5rem;">
-                <li>Stellenbosch FC</li>
-                <li>Federico Coppini Tennis Foundation</li>
-              </ul>
-            </li>
-            <li>
-              <span class="tick-emoji">✔️</span> Lentelus Sports Ground:
-              <ul style="list-style: disc inside; padding-left: 1.5rem;">
-                <li>Historic home of Maties Football Club</li>
-              </ul>
-            </li>
-            <li><span class="tick-emoji">✔️</span> Community tennis courts</li>
-            <li><span class="tick-emoji">✔️</span> Rugby fields</li>
-            <li><span class="tick-emoji">✔️</span> Running routes</li>
-          </ul>
-        </div>
-        <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
-          <section class="location-carousel-section border-radius">
-            <q-carousel
-              animated
-              v-model="sportSlide"
-              transition-prev="slide-left"
-              transition-next="slide-left"
-              transition-duration="600"
-              autoplay
-              infinite
-              :autoplay-interval="32000"
-              :height="$q.screen.lt.sm ? '340px' : '450px'"
-              control-color="white"
-              class="location-carousel__container"
-            >
-              <q-carousel-slide
-                v-for="card in sportCards"
-                :key="card._id"
-                :name="card._id"
-                class="location-carousel__slide"
-              >
-                <q-img
-                  :src="card.imageUrl"
-                  :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
-                  class="location-carousel__image"
-                  fit="cover"
-                  loading="eager"
-                  no-transition
-                />
-              </q-carousel-slide>
-            </q-carousel>
-          </section>
-        </div>
-      </div>
-    </q-expansion-item>
-  </div>
-</div>
+              <!-- ============================ -->
+              <!-- SPORT -->
+              <!-- ============================ -->
+              <div class="col-12" :class="{ 'q-mr-md': $q.screen.gt.sm }">
+                <q-expansion-item
+                  v-model="expanded[3]"
+                  @hide="expanded[3] = false"
+                  @click="handleExpansion(3)"
+                  header-class="text-h6 text-left q-pa-md"
+                  @show="setSlide(1, $event)"
+                  expand-icon-class="text-black"
+                  style="border: 1px solid #ccc"
+                >
+                  <template v-slot:header>
+                    <div class="full-width row items-center">
+                      <div class="full-width text-h6">Sporting excellence nearby</div>
+                    </div>
+                  </template>
+                  <div class="q-pa-lg row justify-between items-start">
+                    <div class="col-md-6 col-12">
+                      <ul class="custom-list text-h6">
+                        <li>
+                          <span class="tick-emoji">✔️</span> Idas Valley Sports Ground: <br />
+                          Home of -
+                          <ul style="list-style: disc inside; padding-left: 1.5rem;">
+                            <li>Stellenbosch FC</li>
+                            <li>Federico Coppini Tennis Foundation</li>
+                          </ul>
+                        </li>
+                        <li>
+                          <span class="tick-emoji">✔️</span> Lentelus Sports Ground:
+                          <ul style="list-style: disc inside; padding-left: 1.5rem;">
+                            <li>Historic home of Maties Football Club</li>
+                          </ul>
+                        </li>
+                        <li><span class="tick-emoji">✔️</span> Community tennis courts</li>
+                        <li><span class="tick-emoji">✔️</span> Rugby fields</li>
+                        <li><span class="tick-emoji">✔️</span> Running routes</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6 col-12" :class="{ 'q-my-md': $q.screen.lt.md }">
+                      <section class="location-carousel-section border-radius">
+                        <q-carousel
+                          animated
+                          v-model="sportSlide"
+                          transition-prev="slide-left"
+                          transition-next="slide-left"
+                          transition-duration="600"
+                          autoplay
+                          infinite
+                          :autoplay-interval="32000"
+                          :height="$q.screen.lt.sm ? '340px' : '450px'"
+                          control-color="white"
+                          class="location-carousel__container"
+                        >
+                          <q-carousel-slide
+                            v-for="card in sportCards"
+                            :key="card._id"
+                            :name="card._id"
+                            class="location-carousel__slide"
+                          >
+                            <q-img
+                              :src="card.imageUrl"
+                              :alt="'The-WEB Residence - ' + (card.title || 'Slide ' + card._id)"
+                              class="location-carousel__image"
+                              fit="cover"
+                              loading="eager"
+                              no-transition
+                            />
+                          </q-carousel-slide>
+                        </q-carousel>
+                      </section>
+                    </div>
+                  </div>
+                </q-expansion-item>
+              </div>
+            </div>
             </div>
             <div class="text-body1 text-center location-cta">
               <em>At The-WEB, you don't just live near campus, you live at the heart of a lifestyle.

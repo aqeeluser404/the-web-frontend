@@ -18,13 +18,12 @@ over animation, cleaner typography, and a responsive grid.
       <!-- </div> -->
     <!-- </div>
   </div> -->
-
+  <div class="section-spacer-sm"></div>
   <div
-    class="text-h6 text-center section-label large-screen-only small-heading padding-t-xl"
-  >
+    class="text-h6 text-center section-label large-screen-only small-heading padding-t-xl">
     <b>⸻&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;⸻</b>
   </div>
-  <div class="text-h6 text-center section-label small-screen-only padding-t-xl">
+  <div class="text-h6 text-center section-label small-screen-only small-heading padding-t-xl">
     <b>—&nbsp;&nbsp;&nbsp;GALLERY&nbsp;&nbsp;&nbsp;—</b>
   </div>
   <div
@@ -121,48 +120,118 @@ export default {
           image: "/assets/gallery/rooftop + mountain/rtm2.jpg",
         },
         {
-          label: "PRIMARY",
-          title: "Pool",
-          description: "Amenity proof point",
+          label: "AMENITIES",
+          title: "Amenities",
+          description: "Pool, Laundry, Security & Solar",
           image: "/assets/gallery/pool/p1.jpg",
         },
-        {
-          label: "DETAIL",
-          title: "Bathrooms",
-          description: "Bathroom lifestyle detail",
-          image: "/assets/gallery/rest room/rr4.jpg",
-        },
-        {
-          label: "FEATURE",
-          title: "Laundry",
-          description: "Amenity support",
-          image: "/assets/gallery/laundry/l3.jpg",
-        },
-        {
-          label: "FEATURE",
-          title: "Security",
-          description: "Optional proof",
-          image: "/assets/gallery/biometric security/bs1.jpg",
-        },
-        {
-          label: "FEATURE",
-          title: "Solar Energy",
-          description: "Sustainability support",
-          image: "/assets/gallery/solar array/sa1.jpg",
-        },
         // {
-        //   label: "SETTING",
-        //   title: "Location",
-        //   description: "Site support",
-        //   image: "/assets/gallery/mountain location/ml4.jpg",
+        //   label: "PRIMARY",
+        //   title: "Pool",
+        //   description: "Amenity proof point",
+        //   image: "/assets/gallery/pool/p1.jpg",
         // },
         // {
         //   label: "DETAIL",
-        //   title: "Wardrobe capacity",
-        //   description: "Practical detail",
-        //   image: "/assets/gallery/wardrobe capacity/wc1.jpg",
+        //   title: "Bathrooms",
+        //   description: "Bathroom lifestyle detail",
+        //   image: "/assets/gallery/rest room/rr4.jpg",
+        // },
+        // {
+        //   label: "FEATURE",
+        //   title: "Laundry",
+        //   description: "Amenity support",
+        //   image: "/assets/gallery/laundry/l3.jpg",
+        // },
+        // {
+        //   label: "FEATURE",
+        //   title: "Security",
+        //   description: "Optional proof",
+        //   image: "/assets/gallery/biometric security/bs1.jpg",
+        // },
+        // {
+        //   label: "FEATURE",
+        //   title: "Solar Energy",
+        //   description: "Sustainability support",
+        //   image: "/assets/gallery/solar array/sa1.jpg",
         // },
       ],
+
+      // cards: [
+      //   {
+      //     label: "HERO",
+      //     title: "The Building",
+      //     description: "Main establishing image",
+      //     image: "/assets/gallery/exterior identity/ei4.jpg",
+      //   },
+      //   {
+      //     label: "PRIMARY",
+      //     title: "Shared Living",
+      //     description: "Strongest interior lifestyle frame",
+      //     image: "/assets/gallery/open plan living/opl3.jpg",
+      //   },
+      //   {
+      //     label: "PRIMARY",
+      //     title: "Private Rooms",
+      //     description: "Best room-plan frame",
+      //     image: "/assets/gallery/private room + study/DSC_5236_.jpg",
+      //   },
+      //   {
+      //     label: "PRIMARY",
+      //     title: "Study Spaces",
+      //     description: "Promoted to core pack",
+      //     image: "/assets/gallery/open plan living/opl1.jpg",
+      //   },
+      //   {
+      //     label: "PRIMARY",
+      //     title: "Rooftop Views",
+      //     description: "Identity and setting",
+      //     image: "/assets/gallery/rooftop + mountain/rtm2.jpg",
+      //   },
+      //   {
+      //     label: "PRIMARY",
+      //     title: "Pool",
+      //     description: "Amenity proof point",
+      //     image: "/assets/gallery/pool/p1.jpg",
+      //   },
+      //   {
+      //     label: "DETAIL",
+      //     title: "Bathrooms",
+      //     description: "Bathroom lifestyle detail",
+      //     image: "/assets/gallery/rest room/rr4.jpg",
+      //   },
+      //   {
+      //     label: "FEATURE",
+      //     title: "Laundry",
+      //     description: "Amenity support",
+      //     image: "/assets/gallery/laundry/l3.jpg",
+      //   },
+      //   {
+      //     label: "FEATURE",
+      //     title: "Security",
+      //     description: "Optional proof",
+      //     image: "/assets/gallery/biometric security/bs1.jpg",
+      //   },
+      //   {
+      //     label: "FEATURE",
+      //     title: "Solar Energy",
+      //     description: "Sustainability support",
+      //     image: "/assets/gallery/solar array/sa1.jpg",
+      //   },
+      //   // {
+      //   //   label: "SETTING",
+      //   //   title: "Location",
+      //   //   description: "Site support",
+      //   //   image: "/assets/gallery/mountain location/ml4.jpg",
+      //   // },
+      //   // {
+      //   //   label: "DETAIL",
+      //   //   title: "Wardrobe capacity",
+      //   //   description: "Practical detail",
+      //   //   image: "/assets/gallery/wardrobe capacity/wc1.jpg",
+      //   // },
+      // ],
+
       cards2: [
         {
           label: "HERO",

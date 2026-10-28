@@ -5,13 +5,22 @@
       <div class="row justify-between items-center full-width">
         <div class="text-h6">Rental History</div>
         <div class="row items-center q-gutter-sm">
-          <!-- <q-btn
-            @click="$emit('download')"
-            class="custom-button"
+          <q-btn
             icon="eva-cloud-download-outline"
             flat
+            dense
+            no-caps
             rounded
-          /> -->
+            color="primary"
+            @click="downloadFilteredRentals"
+          >
+            <!-- <q-tooltip>
+              Download rentals{{
+                selectedYear ? ` for ${selectedYear}` : ""
+              }}</q-tooltip
+            > -->
+            <q-tooltip>Download all rentals</q-tooltip>
+          </q-btn>
 
           <!-- View switcher -->
           <q-btn-toggle
@@ -472,6 +481,9 @@
 <script>
 import Helper from "src/services/helper/utils";
 import CustomButton from "src/components/elements/CustomButton.vue";
+import * as XLSX from "xlsx";
+import RentalService from "src/services/api/RentalService";
+import UserService from "src/services/api/UserService";
 
 export default {
   name: "RentalHistoryTable",
@@ -531,6 +543,369 @@ export default {
       const match = str.match(/\d+/);
       return match ? match[0] : str;
     },
+
+    async downloadFilteredRentals() {
+      try {
+        // Fetch fresh — bypass any parent filters
+        const [rentalsResponse, unitsResponse] = await Promise.all([
+          RentalService.findAllRentals(),
+          import("src/services/api/UnitService").then((m) =>
+            m.default.getAllUnits()
+          ),
+        ]);
+
+        const rentals = Array.isArray(rentalsResponse) ? rentalsResponse : [];
+        const units = Array.isArray(unitsResponse) ? unitsResponse : [];
+
+        if (rentals.length === 0) {
+          this.$q.notify({ type: "info", message: "No rentals to export." });
+          return;
+        }
+
+        // Enrich with user info
+        const userIds = [
+          ...new Set(rentals.map((r) => r.user).filter(Boolean)),
+        ];
+        let usersMap = {};
+        if (userIds.length) {
+          usersMap = await UserService.findUsersByIds(userIds);
+        }
+
+        // Unit lookup for names
+        const unitById = {};
+        units.forEach((u) => {
+          unitById[String(u._id)] = u;
+        });
+
+        const findUnitNumber = (unitId) => {
+          if (!unitId) return "";
+          const unit = unitById[String(unitId)];
+          return unit ? unit.unitNumber : "";
+        };
+
+        // ---- helpers ----
+        const formatDate = (value) => {
+          if (!value) return "—";
+          const d = new Date(value);
+          if (isNaN(d.getTime())) return "—";
+          const day = d.getDate();
+          const month = d.toLocaleString("en-ZA", { month: "short" });
+          const year = d.getFullYear();
+          return `${day} ${month} ${year}`;
+        };
+
+        const formatMoney = (value) => {
+          const n = Number(value);
+          if (isNaN(n) || n === 0) return "—";
+          return `R ${n.toLocaleString("en-ZA", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        };
+
+        const yesNo = (value) => (value ? "Yes" : "No");
+
+        const formatPlan = (name) => {
+          if (!name) return "—";
+          return name
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+        };
+
+        const capitalizeFirst = (str) => {
+          if (!str) return "—";
+          return str.charAt(0).toUpperCase() + str.slice(1);
+        };
+
+        // ---- build rows ----
+        const rows = rentals.map((rental, index) => {
+          const user = usersMap[rental.user] || {};
+          const sub = rental.selectedSubUnits || {};
+          const currentRoom = sub.bedType || sub.roomType || sub.type || "—";
+
+          const lastRenewal =
+            Array.isArray(rental.renewalHistory) &&
+            rental.renewalHistory.length > 0
+              ? rental.renewalHistory[rental.renewalHistory.length - 1]
+              : null;
+
+          return {
+            "#": index + 1,
+            "Application ID": rental._id || "—",
+            Applicant:
+              `${user.userFirstName || ""} ${user.userLastName || ""}`.trim() ||
+              user.username ||
+              "—",
+            Email: user.userEmail || "—",
+            Phone: user.userPhone || "—",
+            "Applied For": rental.unitYear || "—",
+            Unit: findUnitNumber(rental.unit) || "—",
+            "Room / Bed": currentRoom,
+            "Application Date": formatDate(rental.applicationDate),
+            "Start Date": formatDate(rental.rentalStartDate),
+            "End Date": formatDate(rental.rentalEndDate),
+            "Early End Date": rental.earlyEndDate
+              ? formatDate(rental.earlyEndDate)
+              : "—",
+            Status: capitalizeFirst(rental.status),
+            "Rental Price": formatMoney(rental.rentalPrice),
+            "Payment Plan": formatPlan(sub.price?.name),
+            Parking: rental.parking?.hasParking
+              ? `Yes — ${formatMoney(rental.parking.fee)}`
+              : "No",
+            "Renewed?": yesNo(rental.renewed),
+            "Renewed From": findUnitNumber(rental.renewedFromUnit) || "—",
+            "Renewed To": findUnitNumber(rental.renewedToUnit) || "—",
+            "Last Renewal": lastRenewal
+              ? `${lastRenewal.fromYear} → ${lastRenewal.toYear}`
+              : "—",
+          };
+        });
+
+        // ---- build sheet ----
+        const headers = Object.keys(rows[0]);
+        const colCount = headers.length;
+
+        const today = new Date();
+        const todayStr = today.toISOString().split("T")[0];
+        const title = "RENTAL HISTORY EXPORT";
+        const subtitle = `Generated ${formatDate(today)} · ${rows.length} ${
+          rows.length === 1 ? "entry" : "entries"
+        }`;
+
+        const aoa = [[title], [subtitle], [], headers];
+        rows.forEach((row) => aoa.push(headers.map((h) => row[h])));
+
+        const worksheet = XLSX.utils.aoa_to_sheet(aoa);
+
+        worksheet["!merges"] = [
+          { s: { r: 0, c: 0 }, e: { r: 0, c: colCount - 1 } },
+          { s: { r: 1, c: 0 }, e: { r: 1, c: colCount - 1 } },
+        ];
+
+        const titleCell = worksheet["A1"];
+        if (titleCell) {
+          titleCell.s = {
+            font: { bold: true, sz: 16, color: { rgb: "009B77" } },
+            alignment: { horizontal: "center", vertical: "center" },
+          };
+        }
+        const subtitleCell = worksheet["A2"];
+        if (subtitleCell) {
+          subtitleCell.s = {
+            font: { italic: true, sz: 10, color: { rgb: "757575" } },
+            alignment: { horizontal: "center", vertical: "center" },
+          };
+        }
+
+        headers.forEach((_, i) => {
+          const cellRef = XLSX.utils.encode_cell({ r: 3, c: i });
+          if (worksheet[cellRef]) {
+            worksheet[cellRef].s = {
+              font: { bold: true, color: { rgb: "FFFFFF" } },
+              fill: { fgColor: { rgb: "009B77" } },
+              alignment: { horizontal: "left", vertical: "center" },
+            };
+          }
+        });
+
+        worksheet["!cols"] = headers.map((header) => {
+          const maxLen = Math.max(
+            header.length,
+            ...rows.map((row) => String(row[header] ?? "").length)
+          );
+          return { wch: Math.min(maxLen + 2, 40) };
+        });
+
+        worksheet["!rows"] = [
+          { hpt: 28 },
+          { hpt: 18 },
+          { hpt: 8 },
+          { hpt: 20 },
+        ];
+
+        worksheet["!freeze"] = { xSplit: 0, ySplit: 4 };
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Rental History");
+
+        XLSX.writeFile(workbook, `rental_history_${todayStr}.xlsx`);
+
+        this.$q.notify({
+          type: "positive",
+          color: "primary",
+          message: `Exported ${rows.length} entries.`,
+        });
+      } catch (error) {
+        console.error("Export error:", error);
+        this.$q.notify({
+          type: "negative",
+          message: "Export failed: " + (error.message || "Please try again"),
+        });
+      }
+    },
+
+    // downloadFilteredRentals() {
+    //   const rentals = this.rentals || [];
+
+    //   if (rentals.length === 0) {
+    //     this.$q.notify({
+    //       type: "info",
+    //       message: "No rentals to export with the current filters.",
+    //     });
+    //     return;
+    //   }
+
+    //   // ---- helpers ----
+    //   const formatDate = (value) => {
+    //     if (!value) return "—";
+    //     const d = new Date(value);
+    //     if (isNaN(d.getTime())) return "—";
+    //     const day = d.getDate();
+    //     const month = d.toLocaleString("en-ZA", { month: "short" });
+    //     const year = d.getFullYear();
+    //     return `${day} ${month} ${year}`;
+    //   };
+
+    //   const formatMoney = (value) => {
+    //     const n = Number(value);
+    //     if (isNaN(n) || n === 0) return "—";
+    //     return `R ${n.toLocaleString("en-ZA", {
+    //       minimumFractionDigits: 2,
+    //       maximumFractionDigits: 2,
+    //     })}`;
+    //   };
+
+    //   const yesNo = (value) => (value ? "Yes" : "No");
+
+    //   const formatPlan = (name) => {
+    //     if (!name) return "—";
+    //     return name
+    //       .split("-")
+    //       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    //       .join(" ");
+    //   };
+
+    //   const capitalizeFirst = (str) => {
+    //     if (!str) return "—";
+    //     return str.charAt(0).toUpperCase() + str.slice(1);
+    //   };
+
+    //   // ---- build rows ----
+    //   const rows = rentals.map((rental, index) => {
+    //     const sub = rental.selectedSubUnits || {};
+    //     const currentRoom = sub.bedType || sub.roomType || sub.type || "—";
+
+    //     const lastRenewal =
+    //       Array.isArray(rental.renewalHistory) &&
+    //       rental.renewalHistory.length > 0
+    //         ? rental.renewalHistory[rental.renewalHistory.length - 1]
+    //         : null;
+
+    //     return {
+    //       "#": index + 1,
+    //       "Application ID": rental._id || "—",
+    //       Applicant:
+    //         `${rental.userFirstName || ""} ${
+    //           rental.userLastName || ""
+    //         }`.trim() ||
+    //         rental.username ||
+    //         "—",
+    //       Email: rental.userEmail || "—",
+    //       Phone: rental.userPhone || "—",
+    //       "Applied For": rental.unitYear || "—",
+    //       Unit: rental.unitType || "—",
+    //       "Room / Bed": currentRoom,
+    //       "Application Date": formatDate(rental.applicationDate),
+    //       "Start Date": formatDate(rental.rentalStartDate),
+    //       "End Date": formatDate(rental.rentalEndDate),
+    //       "Early End Date": rental.earlyEndDate
+    //         ? formatDate(rental.earlyEndDate)
+    //         : "—",
+    //       Status: capitalizeFirst(rental.status),
+    //       "Rental Price": formatMoney(rental.rentalPrice),
+    //       "Payment Plan": formatPlan(sub.price?.name),
+    //       Parking: rental.parking?.hasParking
+    //         ? `Yes — ${formatMoney(rental.parking.fee)}`
+    //         : "No",
+    //       "Renewed?": yesNo(rental.renewed),
+    //       "Last Renewal": lastRenewal
+    //         ? `${lastRenewal.fromYear} → ${lastRenewal.toYear}`
+    //         : "—",
+    //     };
+    //   });
+
+    //   // ---- build sheet with title rows ----
+    //   const headers = Object.keys(rows[0]);
+    //   const colCount = headers.length;
+
+    //   const today = new Date();
+    //   const todayStr = today.toISOString().split("T")[0];
+    //   const title = "RENTAL HISTORY EXPORT";
+    //   const subtitle = `Generated ${formatDate(today)} · ${rows.length} ${
+    //     rows.length === 1 ? "entry" : "entries"
+    //   }`;
+
+    //   const aoa = [[title], [subtitle], [], headers];
+    //   rows.forEach((row) => aoa.push(headers.map((h) => row[h])));
+
+    //   const worksheet = XLSX.utils.aoa_to_sheet(aoa);
+
+    //   worksheet["!merges"] = [
+    //     { s: { r: 0, c: 0 }, e: { r: 0, c: colCount - 1 } },
+    //     { s: { r: 1, c: 0 }, e: { r: 1, c: colCount - 1 } },
+    //   ];
+
+    //   const titleCell = worksheet["A1"];
+    //   if (titleCell) {
+    //     titleCell.s = {
+    //       font: { bold: true, sz: 16, color: { rgb: "009B77" } },
+    //       alignment: { horizontal: "center", vertical: "center" },
+    //     };
+    //   }
+    //   const subtitleCell = worksheet["A2"];
+    //   if (subtitleCell) {
+    //     subtitleCell.s = {
+    //       font: { italic: true, sz: 10, color: { rgb: "757575" } },
+    //       alignment: { horizontal: "center", vertical: "center" },
+    //     };
+    //   }
+
+    //   headers.forEach((_, i) => {
+    //     const cellRef = XLSX.utils.encode_cell({ r: 3, c: i });
+    //     if (worksheet[cellRef]) {
+    //       worksheet[cellRef].s = {
+    //         font: { bold: true, color: { rgb: "FFFFFF" } },
+    //         fill: { fgColor: { rgb: "009B77" } },
+    //         alignment: { horizontal: "left", vertical: "center" },
+    //       };
+    //     }
+    //   });
+
+    //   worksheet["!cols"] = headers.map((header) => {
+    //     const maxLen = Math.max(
+    //       header.length,
+    //       ...rows.map((row) => String(row[header] ?? "").length)
+    //     );
+    //     return { wch: Math.min(maxLen + 2, 40) };
+    //   });
+
+    //   worksheet["!rows"] = [{ hpt: 28 }, { hpt: 18 }, { hpt: 8 }, { hpt: 20 }];
+
+    //   worksheet["!freeze"] = { xSplit: 0, ySplit: 4 };
+
+    //   const workbook = XLSX.utils.book_new();
+    //   XLSX.utils.book_append_sheet(workbook, worksheet, "Rental History");
+
+    //   XLSX.writeFile(workbook, `rental_history_${todayStr}.xlsx`);
+
+    //   this.$q.notify({
+    //     type: "positive",
+    //     color: "primary",
+    //     message: `Exported ${rows.length} entries.`,
+    //   });
+    // },
 
     onMenuOpen() {
       this._closeMenuOnScroll = (event) => {

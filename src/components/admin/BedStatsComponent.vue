@@ -279,11 +279,51 @@ export default {
     },
   },
 
-  watch: {
-    refreshKey() {
-      this.fetchStatsData();
+watch: {
+  refreshKey() {
+    this.fetchStatsData();
+  },
+  internalYear: {
+    immediate: true,
+    handler() {
+      this.$nextTick(() => {
+        console.log("[STATS] year:", this.internalYear);
+        console.log("[STATS] occupiedCurrentYear:", this.occupiedCurrentYear);
+        console.log(
+          "[STATS] occupiedCurrentYearRentals:",
+          this.occupiedCurrentYearRentals.length
+        );
+        console.log("[STATS] reservedInYear:", this.reservedInYear);
+
+        // ✅ PASTE IT RIGHT HERE
+        const unmatched = this.occupiedCurrentYearRentals.filter((r) => {
+          const id =
+            r.selectedSubUnits?.bedType || r.selectedSubUnits?.roomType;
+          if (!id) return true;
+
+          return !this.unitsCurrentYear.some((u) =>
+            (u.subUnits || []).some((s) => {
+              const subId = s.roomType || s.bedType;
+              return subId === id;
+            })
+          );
+        });
+
+        console.log(
+          "[STATS] unmatched rentals:",
+          unmatched.map((r) => ({
+            id: r._id,
+            sub:
+              r.selectedSubUnits?.bedType || r.selectedSubUnits?.roomType,
+            unit: r.unit,
+            unitYear: r.unitYear,
+            status: r.status,
+          }))
+        );
+      });
     },
   },
+},
 
   async mounted() {
     await this.fetchStatsData();

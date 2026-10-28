@@ -128,6 +128,237 @@ export default {
       showImageDialog: false,
       currentDialogImageUrl: "",
 
+      // sections: [
+      //   {
+      //     title: "The Building",
+      //     images: [
+      //       "/assets/gallery/exterior identity/ei4.jpg",
+      //       "/assets/gallery/exterior identity/ei1.jpg",
+      //       "/assets/gallery/exterior identity/ei2.jpg",
+      //       "/assets/gallery/exterior identity/ei3.jpg",
+      //       "/assets/gallery/exterior identity/ei5.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Street-edge identity",
+      //         images: [
+      //           "/assets/gallery/exterior identity/ei1.jpg",
+      //           "/assets/gallery/exterior identity/ei2.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Shared Living",
+      //     images: [
+      //       "/assets/gallery/shared living + kitchen/slk6.jpg",
+      //       "/assets/gallery/open plan living/opl3.jpg",
+      //       "/assets/gallery/shared living + kitchen/slk1.jpg",
+      //       "/assets/gallery/shared living + kitchen/slk2.jpg",
+      //       "/assets/gallery/shared living + kitchen/slk3.jpg",
+      //       // "/assets/gallery/shared living + kitchen/slk4.jpg",
+      //       "/assets/gallery/shared living + kitchen/slk5.jpg",
+      //       "/assets/gallery/open plan living/opl2.jpg",
+      //       "/assets/gallery/open plan living/opl4.jpg",
+      //       "/assets/gallery/open plan living/opl5.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Kitchen elevation",
+      //         images: [
+      //           "/assets/gallery/shared living + kitchen/slk1.jpg",
+      //           "/assets/gallery/shared living + kitchen/slk2.jpg",
+      //           "/assets/gallery/shared living + kitchen/slk3.jpg",
+      //         ],
+      //       },
+      //       {
+      //         title: "Living / breakfast",
+      //         images: [
+      //           "/assets/gallery/shared living + kitchen/slk4.jpg",
+      //           "/assets/gallery/shared living + kitchen/slk5.jpg",
+      //           "/assets/gallery/shared living + kitchen/slk6.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Private Rooms",
+      //     images: [
+      //       "/assets/gallery/private room + study/DSC_5236_.jpg",
+      //       "/assets/gallery/private room + study/prs1.jpg",
+      //       "/assets/gallery/private room + study/prs2.jpg",
+      //       "/assets/gallery/private room + study/prs3.jpg",
+      //       "/assets/gallery/private room + study/prs4.jpg",
+      //       "/assets/gallery/private room + study/prs5.jpg",
+      //       "/assets/gallery/wardrobe capacity/wc1.jpg",
+      //       // "/assets/gallery/wardrobe capacity/wc2.jpg",
+      //       // "/assets/gallery/wardrobe capacity/wc3.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Room daylight",
+      //         images: [
+      //           "/assets/gallery/private room + study/prs1.jpg",
+      //           "/assets/gallery/private room + study/prs2.jpg",
+      //           "/assets/gallery/private room + study/prs3.jpg",
+      //         ],
+      //       },
+      //       {
+      //         title: "Wardrobe",
+      //         images: [
+      //           "/assets/gallery/wardrobe capacity/wc1.jpg",
+      //           "/assets/gallery/wardrobe capacity/wc2.jpg",
+      //           "/assets/gallery/wardrobe capacity/wc3.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Study Spaces",
+      //     images: [
+      //       "/assets/gallery/open plan living/opl1.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Living detail",
+      //         images: [
+      //           "/assets/gallery/open plan living/opl1.jpg",
+      //           "/assets/gallery/open plan living/opl2.jpg",
+      //           "/assets/gallery/open plan living/opl3.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Rooftop Views",
+      //     images: [
+      //       "/assets/gallery/rooftop + mountain/rtm2.jpg",
+      //       "/assets/gallery/rooftop + mountain/rtm4.jpg",
+      //       "/assets/gallery/rooftop + mountain/rtm1.jpg",
+      //       // "/assets/gallery/rooftop + mountain/rtm3.jpg",
+      //       "/assets/gallery/rooftop + mountain/rtm5.jpg",
+      //       "/assets/gallery/mountain location/ml1.jpg",
+      //       // "/assets/gallery/mountain location/ml2.jpg",
+      //       "/assets/gallery/mountain location/ml3.jpg",
+      //       "/assets/gallery/mountain location/ml4.jpg",
+      //       // "/assets/gallery/mountain location/ml5.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Rooftop terrace",
+      //         images: [
+      //           "/assets/gallery/rooftop + mountain/rtm1.jpg",
+      //           "/assets/gallery/rooftop + mountain/rtm2.jpg",
+      //           "/assets/gallery/rooftop + mountain/rtm3.jpg",
+      //           "/assets/gallery/rooftop + mountain/rtm4.jpg",
+      //           "/assets/gallery/rooftop + mountain/rtm5.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Pool",
+      //     images: [
+      //       "/assets/gallery/pool/p1.jpg",
+      //       "/assets/gallery/pool/p2.jpg",
+      //       "/assets/gallery/pool/p3.jpg",
+      //       // "/assets/gallery/pool/p4.jpg",
+      //     ],
+      //     subsections: [],
+      //   },
+
+      //   {
+      //     title: "Bathrooms",
+      //     images: [
+      //       "/assets/gallery/rest room/rr4.jpg",
+      //       "/assets/gallery/rest room/rr1.jpg",
+      //       "/assets/gallery/rest room/rr2.jpg",
+      //       "/assets/gallery/rest room/rr6.jpg",
+      //       "/assets/gallery/rest room/rr7.jpg",
+      //       // "/assets/gallery/rest room/rr3.jpg",
+      //       // "/assets/gallery/rest room/rr5.jpg",
+      //     ],
+      //     subsections: [
+      //       {
+      //         title: "Basin detail",
+      //         images: [
+      //           "/assets/gallery/rest room/rr1.jpg",
+      //           "/assets/gallery/rest room/rr2.jpg",
+      //         ],
+      //       },
+      //       {
+      //         title: "Bathroom context",
+      //         images: [
+      //           "/assets/gallery/rest room/rr3.jpg",
+      //           "/assets/gallery/rest room/rr4.jpg",
+      //           "/assets/gallery/rest room/rr5.jpg",
+      //         ],
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: "Laundry",
+      //     images: [
+      //       "/assets/gallery/laundry/l3.jpg",
+      //       "/assets/gallery/laundry/l1.jpg",
+      //       // "/assets/gallery/laundry/l2.jpg",
+      //     ],
+      //     subsections: [],
+      //   },
+      //   {
+      //     title: "Security",
+      //     images: [
+      //       "/assets/gallery/biometric security/bs1.jpg",
+      //       "/assets/gallery/biometric security/bs2.jpg",
+      //     ],
+      //     subsections: [],
+      //   },
+      //   {
+      //     title: "Solar Energy",
+      //     images: [
+      //       "/assets/gallery/solar array/sa1.jpg",
+      //       // "/assets/gallery/solar array/sa2.jpg",
+      //     ],
+      //     subsections: [],
+      //   },
+      //   // {
+      //   //   title: "Location",
+      //   //   images: [
+      //   //     "/assets/gallery/mountain location/ml1.jpg",
+      //   //     // "/assets/gallery/mountain location/ml2.jpg",
+      //   //     "/assets/gallery/mountain location/ml3.jpg",
+      //   //     "/assets/gallery/mountain location/ml4.jpg",
+      //   //     "/assets/gallery/mountain location/ml5.jpg",
+      //   //   ],
+      //   //   subsections: [
+      //   //     {
+      //   //       title: "Balcony view",
+      //   //       images: [
+      //   //         "/assets/gallery/mountain location/ml1.jpg",
+      //   //         // "/assets/gallery/mountain location/ml2.jpg",
+      //   //       ],
+      //   //     },
+      //   //     {
+      //   //       title: "Neighbourhood view",
+      //   //       images: [
+      //   //         "/assets/gallery/mountain location/ml3.jpg",
+      //   //         "/assets/gallery/mountain location/ml4.jpg",
+      //   //         "/assets/gallery/mountain location/ml5.jpg",
+      //   //       ],
+      //   //     },
+      //   //   ],
+      //   // },
+      //   // {
+      //   //   title: "Wardrobe capacity",
+      //   //   images: [
+      //   //     "/assets/gallery/wardrobe capacity/wc1.jpg",
+      //   //     "/assets/gallery/wardrobe capacity/wc2.jpg",
+      //   //     "/assets/gallery/wardrobe capacity/wc3.jpg",
+      //   //   ],
+      //   //   subsections: [],
+      //   // },
+      // ],
+
       sections: [
         {
           title: "The Building",
@@ -256,17 +487,56 @@ export default {
             },
           ],
         },
+
         {
-          title: "Pool",
+          title: "Amenities",
           images: [
             "/assets/gallery/pool/p1.jpg",
             "/assets/gallery/pool/p2.jpg",
             "/assets/gallery/pool/p3.jpg",
             // "/assets/gallery/pool/p4.jpg",
+            "/assets/gallery/laundry/l3.jpg",
+            "/assets/gallery/laundry/l1.jpg",
+            // "/assets/gallery/laundry/l2.jpg",
+            "/assets/gallery/biometric security/bs1.jpg",
+            "/assets/gallery/biometric security/bs2.jpg",
+            "/assets/gallery/solar array/sa1.jpg",
+            // "/assets/gallery/solar array/sa2.jpg",
           ],
-          subsections: [],
+          subsections: [
+            {
+              title: "Pool",
+              images: [
+                "/assets/gallery/pool/p1.jpg",
+                "/assets/gallery/pool/p2.jpg",
+                "/assets/gallery/pool/p3.jpg",
+                // "/assets/gallery/pool/p4.jpg",
+              ],
+            },
+            {
+              title: "Laundry",
+              images: [
+                "/assets/gallery/laundry/l3.jpg",
+                "/assets/gallery/laundry/l1.jpg",
+                // "/assets/gallery/laundry/l2.jpg",
+              ],
+            },
+            {
+              title: "Security",
+              images: [
+                "/assets/gallery/biometric security/bs1.jpg",
+                "/assets/gallery/biometric security/bs2.jpg",
+              ],
+            },
+            {
+              title: "Solar Energy",
+              images: [
+                "/assets/gallery/solar array/sa1.jpg",
+                // "/assets/gallery/solar array/sa2.jpg",
+              ],
+            },
+          ],
         },
-
         {
           title: "Bathrooms",
           images: [
@@ -295,31 +565,6 @@ export default {
               ],
             },
           ],
-        },
-        {
-          title: "Laundry",
-          images: [
-            "/assets/gallery/laundry/l3.jpg",
-            "/assets/gallery/laundry/l1.jpg",
-            // "/assets/gallery/laundry/l2.jpg",
-          ],
-          subsections: [],
-        },
-        {
-          title: "Security",
-          images: [
-            "/assets/gallery/biometric security/bs1.jpg",
-            "/assets/gallery/biometric security/bs2.jpg",
-          ],
-          subsections: [],
-        },
-        {
-          title: "Solar Energy",
-          images: [
-            "/assets/gallery/solar array/sa1.jpg",
-            // "/assets/gallery/solar array/sa2.jpg",
-          ],
-          subsections: [],
         },
         // {
         //   title: "Location",
