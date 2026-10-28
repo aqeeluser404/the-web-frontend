@@ -131,12 +131,12 @@ export default {
         //   description: "Amenity proof point",
         //   image: "/assets/gallery/pool/p1.jpg",
         // },
-        // {
-        //   label: "DETAIL",
-        //   title: "Bathrooms",
-        //   description: "Bathroom lifestyle detail",
-        //   image: "/assets/gallery/rest room/rr4.jpg",
-        // },
+        {
+          label: "DETAIL",
+          title: "Bathrooms",
+          description: "Bathroom lifestyle detail",
+          image: "/assets/gallery/rest room/rr4.jpg",
+        },
         // {
         //   label: "FEATURE",
         //   title: "Laundry",
