@@ -811,43 +811,43 @@ firstFloorCards() {
     // FETCHING UNITS AND RENTALS
     // ------------------------------------------------------------------------------------------
 
-    async fetchUnits() {
-      // Show loading dialog
-      this.$emit('update:loading', true)
-      this.loadingDialog = true // If you have a local loading state
+    // async fetchUnits() {
+    //   // Show loading dialog
+    //   this.$emit('update:loading', true)
+    //   this.loadingDialog = true // If you have a local loading state
 
-      try {
-        const response = await UnitService.getAllUnits()
+    //   try {
+    //     const response = await UnitService.getAllUnits()
 
-        // Single pass: build normalized units + reserved list together
-        this.allReservedUnits = []
-        this.units = response.map(unit => {
-          if (unit.reservedBy) this.allReservedUnits.push(unit)
-          return {
-            ...unit,
-            unitYear: Number(unit.unitYear) || 2026
-          }
-        })
+    //     // Single pass: build normalized units + reserved list together
+    //     this.allReservedUnits = []
+    //     this.units = response.map(unit => {
+    //       if (unit.reservedBy) this.allReservedUnits.push(unit)
+    //       return {
+    //         ...unit,
+    //         unitYear: Number(unit.unitYear) || 2026
+    //       }
+    //     })
 
-        this.organizeUnitsByFloor()
+    //     this.organizeUnitsByFloor()
 
-        if (this.isLoggedIn) {
-          await this.fetchMyRentals()
-        }
-      } catch (err) {
-        console.error('Error fetching units:', err)
-        // Optionally show an error message
-        this.$q.notify({
-          type: 'negative',
-          message: 'Failed to load units. Please try again.',
-          position: 'top'
-        })
-      } finally {
-        // Hide loading dialog
-        this.$emit('update:loading', false)
-        this.loadingDialog = false
-      }
-    },
+    //     if (this.isLoggedIn) {
+    //       await this.fetchMyRentals()
+    //     }
+    //   } catch (err) {
+    //     console.error('Error fetching units:', err)
+    //     // Optionally show an error message
+    //     this.$q.notify({
+    //       type: 'negative',
+    //       message: 'Failed to load units. Please try again.',
+    //       position: 'top'
+    //     })
+    //   } finally {
+    //     // Hide loading dialog
+    //     this.$emit('update:loading', false)
+    //     this.loadingDialog = false
+    //   }
+    // },
     async fetchMyRentals() {
       // These two don't depend on each other's result, run in parallel
       const [user] = await Promise.all([

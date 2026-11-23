@@ -445,6 +445,35 @@ export default {
           ],
         },
         {
+          title: "Bathrooms",
+          images: [
+            "/assets/gallery/rest room/rr4.jpg",
+            "/assets/gallery/rest room/rr1.jpg",
+            "/assets/gallery/rest room/rr2.jpg",
+            "/assets/gallery/rest room/rr6.jpg",
+            "/assets/gallery/rest room/rr7.jpg",
+            // "/assets/gallery/rest room/rr3.jpg",
+            // "/assets/gallery/rest room/rr5.jpg",
+          ],
+          subsections: [
+            {
+              title: "Basin detail",
+              images: [
+                "/assets/gallery/rest room/rr1.jpg",
+                "/assets/gallery/rest room/rr2.jpg",
+              ],
+            },
+            {
+              title: "Bathroom context",
+              images: [
+                "/assets/gallery/rest room/rr3.jpg",
+                "/assets/gallery/rest room/rr4.jpg",
+                "/assets/gallery/rest room/rr5.jpg",
+              ],
+            },
+          ],
+        },
+        {
           title: "Study Spaces",
           images: [
             "/assets/gallery/open plan living/opl1.jpg",
@@ -533,35 +562,6 @@ export default {
               images: [
                 "/assets/gallery/solar array/sa1.jpg",
                 // "/assets/gallery/solar array/sa2.jpg",
-              ],
-            },
-          ],
-        },
-        {
-          title: "Bathrooms",
-          images: [
-            "/assets/gallery/rest room/rr4.jpg",
-            "/assets/gallery/rest room/rr1.jpg",
-            "/assets/gallery/rest room/rr2.jpg",
-            "/assets/gallery/rest room/rr6.jpg",
-            "/assets/gallery/rest room/rr7.jpg",
-            // "/assets/gallery/rest room/rr3.jpg",
-            // "/assets/gallery/rest room/rr5.jpg",
-          ],
-          subsections: [
-            {
-              title: "Basin detail",
-              images: [
-                "/assets/gallery/rest room/rr1.jpg",
-                "/assets/gallery/rest room/rr2.jpg",
-              ],
-            },
-            {
-              title: "Bathroom context",
-              images: [
-                "/assets/gallery/rest room/rr3.jpg",
-                "/assets/gallery/rest room/rr4.jpg",
-                "/assets/gallery/rest room/rr5.jpg",
               ],
             },
           ],
